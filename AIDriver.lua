@@ -122,7 +122,7 @@ AIDriver.proximityMinLimitedSpeed = 2
 AIDriver.proximityLimitLow = 1
 
 AIDriver.APPROACH_AUGER_TRIGGER_SPEED = 3
-
+AIDriver.EMERGENCY_BRAKE_FORCE = 1000000
 -- we use this as an enum
 AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
@@ -247,7 +247,7 @@ function AIDriver:beforeStart()
 	if self.collisionDetector == nil then
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
-
+	self.normalBrakeForce = self.vehicle.spec_motorized.brakeForce
 	self:setBackMarkerNode(self.vehicle)
 	self:setFrontMarkerNode(self.vehicle)
 
@@ -306,6 +306,21 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
+end
+
+function AIDriver:setEmergencyBrake()
+	local brakeForce = self.vehicle.spec_motorized.brakeForce
+	if brakeForce ~= self.EMERGENCY_BRAKE_FORCE and self.vehicle:getLastSpeed() >= 0.1 then 
+		brakeForce = self.EMERGENCY_BRAKE_FORCE
+		self:setSpeed(0)
+	end
+end
+
+function AIDriver:resetEmergencyBrake()
+	local brakeForce = self.vehicle.spec_motorized.brakeForce
+	if self.vehicle:getLastSpeed() < 0.1 and brakeForce == self.EMERGENCY_BRAKE_FORCE then 
+		brakeForce = self.normalBrakeForce
+	end
 end
 
 --- Stop the driver when the work is done. Could just dismiss at this point,
@@ -374,6 +389,7 @@ function AIDriver:update(dt)
 	self:resetSpeed()
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
+--	self:resetEmergencyBrake()
 end
 
 --- Main driving function

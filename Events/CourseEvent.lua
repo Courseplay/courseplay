@@ -38,7 +38,7 @@ function CourseEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn i
 	else
 		streamWriteBool(streamId, false)
 	end
-	streamWriteInt32(streamId, #(self.value))
+	streamWriteInt32(streamId, #(self.course))
 	for w = 1, #(self.course) do
 		CourseEvent:writeWaypoint(streamId, self.course[w])
 	end

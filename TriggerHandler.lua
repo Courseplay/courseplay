@@ -32,6 +32,7 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.disabledCombiUnloadingTrigger = nil
 	self.debugTicks = 100
 	self.debugChannel = 2
+	self.lastDistanceToTrigger = nil
 end 
 
 function TriggerHandler:initStates(states)
@@ -52,6 +53,7 @@ end
 
 function TriggerHandler:onStart()
 	self:changeLoadingState(self.states.NOTHING)
+	self.lastDistanceToTrigger = nil
 end 
 
 function TriggerHandler:onStop()
@@ -140,6 +142,33 @@ function TriggerHandler:getSiloSelectedFillTypeData()
 	end
 end
 
+
+function TriggerHandler:getTriggerDischargeNode(trigger)
+	return trigger.dischargeInfo and trigger.dischargeInfo.nodes[1].node-- or trigger.triggerNode
+end
+
+function TriggerHandler:isAutoAimNodeDistanceOkay(object,fillUnitIndex,trigger)
+	if object and fillUnitIndex and trigger then
+		local node = object:getFillUnitExactFillRootNode(fillUnitIndex)
+		local triggerNode = self:getTriggerDischargeNode(trigger)
+		if node and triggerNode then 
+			local distance = calcDistanceFrom(triggerNode, node)
+			if self.lastDistanceToTrigger and distance > self.lastDistanceToTrigger then 
+				self:debug(object,"autoAimNode and TriggerNode distance okay !")
+				return true
+			else 
+				self:debug(object,"autoAimNode and TriggerNode distance not okay, continue..!")
+				self.lastDistanceToTrigger = distance
+			end
+		else 
+			self:debug(object,"autoAimNodeX or TriggerNodeX not found!")
+		end
+	else 
+		self:debug(object,"autoAimNode or TriggerNode not found!")
+	end
+end
+
+
 ----
 
 --Driver set to wait while loading
@@ -225,6 +254,7 @@ function TriggerHandler:disableTriggerSpeed(object)
 	self.triggers[object]=nil
 	if not self:isDriveNowActivated() and not self:isLoading() and not self:isUnloading() and next(self.triggers) == nil then 
 		self:changeLoadingState(self.states.NOTHING)
+		self.lastDistanceToTrigger = nil
 	end
 	if not self:isLoading() and not self:isUnloading() then 
 		self:resetFillableObject()
@@ -591,12 +621,19 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 				triggerHandler:resetLoadingState()
 				return
 			end
+		--TODO: once again fix g_company triggers.. and improve emergeny brake 	
+		--	if not triggerHandler:isAutoAimNodeDistanceOkay(fillableObject,fillUnitIndex,self) then 
+		--		triggerHandler:resetLoadingState()
+		--		return 
+		--	else 
+		--		triggerHandler.driver:setEmergencyBrake()
+		--	end
 			if fillableObject.spec_cover and fillableObject.spec_cover.isDirty then 
 				--setLoadingState(object,fillUnitIndex,fillType,trigger)
 				triggerHandler:setLoadingState()
 				triggerHandler:debugSparse(fillableObject, 'Cover is still opening!')
 				return
-			end
+			end			
 			local fillTypeData,fillTypeDataSize = triggerHandler:getSiloSelectedFillTypeData()
 			local loadingCallback = {}
 			local indexCallback = 1
@@ -857,7 +894,6 @@ end
 --LoadTrigger callback used to open correct cover for loading 
 function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	--legancy code!!!
-	print("loadTriggerCallback!")
 	courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	
 	local fillableObject = g_currentMission:getNodeObject(otherId)
@@ -912,7 +948,6 @@ end
 
 --FillTrigger callback used to set approach speed for Cp driver
 function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	print("fillTriggerCallback!")
 	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject and fillableObject:isa(Vehicle) then 
@@ -1026,4 +1061,3 @@ function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
 	end
 	TriggerHandler.onActivateObject(self,superFunc,rootVehicle)
 end
-

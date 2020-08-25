@@ -1344,6 +1344,17 @@ function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 	if g_server == nil and CpManager.isMultiplayer then
 		if self.cp.driver ~= nil then 
 			self.cp.driver:readUpdateStream(streamId)
+		--	streamWriteInt32(streamId,self.cp.waypointIndex)
+		--	streamWriteInt32(streamId,self.cp.numWaypoints)
+		--	streamWriteBool(streamId,self.cp.isDriving)
+			--cp.infoText !!
+			--globalInfoText!!
+			--distanceCheck
+			--canDrive
+			--isRecording ??
+			--currentCourseName
+			--convoy to setting
+			--gitAdditionalText
 		end 
 	end
 end
