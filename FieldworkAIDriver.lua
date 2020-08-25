@@ -345,7 +345,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 			self.fieldworkState = self.states.WORKING
 			self:setSpeed(self:getWorkSpeed())
 		else
-			self:debug('waiting for all tools to lower')
+			self:debugSparse('waiting for all tools to lower')
 			self:setSpeed(0)
 			self:checkFillLevels()
 		end

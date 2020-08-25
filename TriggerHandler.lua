@@ -144,7 +144,6 @@ end
 
 
 function TriggerHandler:getTriggerDischargeNode(trigger)
---	printTable(trigger)
 	return trigger.dischargeInfo and trigger.dischargeInfo.nodes and (trigger.dischargeInfo.nodes.node or trigger.dischargeInfo.nodes[1].node) -- or trigger.triggerNode
 end
 
@@ -1075,9 +1074,6 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 			self.dischargeInfo.nodes = {}
 			table.insert(self.dischargeInfo.nodes, {node=dischargeNode, width=width, length=length, priority=1})
 		end
-		print("dischargeInfo not found!!")
-	else 
-		print("dischargeInfo okay!!")
 	end
 	return isOk
 end
