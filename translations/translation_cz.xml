@@ -482,11 +482,11 @@
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vyložit kombajn na první souvrati" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Povolit vykládku kombajnu za jízdy, odvozce vyjede z pole." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Počítadlo poslední jízdy = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Nakládka rozdílných nákladů" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Samostatné přívěsy:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuální naložení" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
