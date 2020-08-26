@@ -471,8 +471,6 @@ end;
 function courseplay:removeSavedCombineFromTractor(vehicle)
 	vehicle.cp.savedCombine = nil;
 	vehicle.cp.selectedCombineNumber = 0;
-	vehicle:setCpVar('HUD4savedCombine',nil,courseplay.isClient);
-	vehicle:setCpVar('HUD4savedCombineName',nil,courseplay.isClient);
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -2295,6 +2293,9 @@ function HeadlandOverlapPercent:init(vehicle)
 	self:set(7)
 end
 
+--toggleHeadlandDirection
+--toggleHeadlandOrder
+
 --- Implement raise/lower  setting
 ---@class ImplementRaiseLowerTimeSetting : SettingList
 ImplementRaiseLowerTimeSetting = CpObject(SettingList)
@@ -3546,6 +3547,88 @@ function ShowVisualWaypointsCrossPointSetting:onChange()
 	courseplay.signs:setSignsVisibility(self.vehicle)
 end
 
+--[[
+
+---@class SearchCombineAutomaticallySetting : BooleanSetting
+SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
+function SearchCombineAutomaticallySetting:init(vehicle)
+	BooleanSetting.init(self, 'searchCombineAutomatically','COURSEPLAY_COMBINE_SEARCH_MODE', 'COURSEPLAY_COMBINE_SEARCH_MODE', vehicle, {'COURSEPLAY_MANUAL_SEARCH','COURSEPLAY_AUTOMATIC_SEARCH'}) 
+	self:set(false)
+end
+
+---@class ConvoyActiveSetting : BooleanSetting
+ConvoyActiveSetting = CpObject(BooleanSetting)
+function ConvoyActiveSetting:init(vehicle)
+	BooleanSetting.init(self, 'convoyActive','COURSEPLAY_COMBINE_CONVOY', 'COURSEPLAY_COMBINE_CONVOY', vehicle) 
+	self:set(false)
+end
+
+--??
+---@class Mode10_automaticSpeedSetting : BooleanSetting
+Mode10_automaticSpeedSetting = CpObject(BooleanSetting)
+function Mode10_automaticSpeedSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_automaticSpeed','-', '-', vehicle) 
+	self:set(false)
+end
+
+---@class Mode10_drivingThroughtLoadingSetting : BooleanSetting
+Mode10_drivingThroughtLoadingSetting = CpObject(BooleanSetting)
+function Mode10_drivingThroughtLoadingSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_drivingThroughtLoading','COURSEPLAY_MODE10_SILO_LOADEDBY', 'COURSEPLAY_MODE10_SILO_LOADEDBY', vehicle,{'COURSEPLAY_MODE10_REVERSE_UNLOADING','COURSEPLAY_MODE10_DRIVINGTHROUGH'}) 
+	self:set(false)
+end
+
+---@class Mode10_modeSetting : BooleanSetting
+Mode10_modeSetting = CpObject(BooleanSetting)
+function Mode10_modeSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_mode','COURSEPLAY_MODE10_MODE', 'COURSEPLAY_MODE10_MODE', vehicle, {'COURSEPLAY_MODE10_MODE_BUILDUP','COURSEPLAY_MODE10_MODE_LEVELING'}) 
+	self:set(false)
+end
+
+---@class Mode10_searchModeSetting : BooleanSetting
+Mode10_searchModeSetting = CpObject(BooleanSetting)
+function Mode10_searchModeSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_searchMode','COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle, {'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'}) 
+	self:set(false)
+end
+
+---@class OppositeTurnModeSetting : BooleanSetting
+OppositeTurnModeSetting = CpObject(BooleanSetting)
+function OppositeTurnModeSetting:init(vehicle)
+	BooleanSetting.init(self, 'oppositeTurnMode','COURSEPLAY_OPPOSITE_TURN_DIRECTION', 'COURSEPLAY_OPPOSITE_TURN_DIRECTION', vehicle,{'COURSEPLAY_OPPOSITE_TURN_AT_END','COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE'}) 
+	self:set(false)
+end
+
+---@class ShovelStopAndGoSetting : BooleanSetting
+ShovelStopAndGoSetting = CpObject(BooleanSetting)
+function ShovelStopAndGoSetting:init(vehicle)
+	BooleanSetting.init(self, 'shovelStopAndGo','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
+	self:set(false)
+	self.shovelPositionTexts = {'COURSEPLAY_SHOVEL_LOADING_POSITION','COURSEPLAY_SHOVEL_TRANSPORT_POSITION','COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION','COURSEPLAY_SHOVEL_UNLOADING_POSITION'}
+	self.shovelPositionStates = {false,false,false,false}
+end
+
+function ShovelStopAndGoSetting:getShovelPositionText(shovelPosition)
+	return self.shovelPositionTexts[shovelPosition]
+end
+
+function ShovelStopAndGoSetting:getHasShovelPosition(shovelPosition)
+	return self.shovelPositionStates[shovelPosition]
+end
+
+function ShovelStopAndGoSetting:setHasShovelPositionState(shovelPosition,state)
+	self.shovelPositionStates[shovelPosition] = state
+end
+
+---@class ShowSelectedFieldEdgePathSetting : SettingList
+ShowSelectedFieldEdgePathSetting = CpObject(SettingList)
+function ShowSelectedFieldEdgePathSetting:init(vehicle)
+	SettingList.init(self, 'showSelectedFieldEdgePath','COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER', 'COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER', vehicle) 
+	self:set(false)
+end
+
+
+]]--
 
 --- Container for settings
 --- @class SettingsContainer

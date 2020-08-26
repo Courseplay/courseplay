@@ -94,7 +94,8 @@ function courseplay:start_record(vehicle)
 	--    courseplay:clearCurrentLoadedCourse(vehicle)
 	courseplay:setIsRecording(vehicle, true);
 	courseplay:setRecordingIsPaused(vehicle, false);
-	vehicle:setIsCourseplayDriving(false);
+	--probably not needed as courseplay:stop called it already!!
+--	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setWaypointIndex(vehicle, 1,true);
 	vehicle.cp.numWaitPoints = 0;
@@ -112,7 +113,8 @@ function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
 	courseplay:setIsRecording(vehicle, false);
 	courseplay:setRecordingIsPaused(vehicle, false);
-	vehicle:setIsCourseplayDriving(false);
+	--probably not needed as courseplay:stop called it already!!
+--	vehicle:setIsCourseplayDriving(false);
 	vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
 	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex - 1;

@@ -53,13 +53,17 @@ function CourseEvent:run(connection) -- wir fuehren das empfangene event aus
 end
 
 function CourseEvent.sendEvent(vehicle,course)
-	if g_server ~= nil then
-		courseplay.debugVehicle(5,vehicle,"broadcast course event")
-		g_server:broadcastEvent(CourseEvent:new(vehicle,course), nil, nil, vehicle);
-	else
-		courseplay.debugVehicle(5,vehicle,"send course event")
-		g_client:getServerConnection():sendEvent(CourseEvent:new(vehicle,course));
-	end;
+	if course and #course > 0 then
+		if g_server ~= nil then
+			courseplay.debugVehicle(5,vehicle,"broadcast course event")
+			g_server:broadcastEvent(CourseEvent:new(vehicle,course), nil, nil, vehicle);
+		else
+			courseplay.debugVehicle(5,vehicle,"send course event")
+			g_client:getServerConnection():sendEvent(CourseEvent:new(vehicle,course));
+		end;
+	else 
+		courseplay.infoVehicle(vehicle, 'CourseEvent Error: course = nil or #course<1!!!')
+	end
 end
 
 
