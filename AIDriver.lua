@@ -308,21 +308,6 @@ function AIDriver:stop(msgReference)
 	self.state = self.states.STOPPED
 end
 
-function AIDriver:setEmergencyBrake()
-	local brakeForce = self.vehicle.spec_motorized.brakeForce
-	if brakeForce ~= self.EMERGENCY_BRAKE_FORCE and self.vehicle:getLastSpeed() >= 0.1 then 
-		brakeForce = self.EMERGENCY_BRAKE_FORCE
-		self:setSpeed(0)
-	end
-end
-
-function AIDriver:resetEmergencyBrake()
-	local brakeForce = self.vehicle.spec_motorized.brakeForce
-	if self.vehicle:getLastSpeed() < 0.1 and brakeForce == self.EMERGENCY_BRAKE_FORCE then 
-		brakeForce = self.normalBrakeForce
-	end
-end
-
 --- Stop the driver when the work is done. Could just dismiss at this point,
 --- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
 function AIDriver:setDone(msgReference)
@@ -389,7 +374,6 @@ function AIDriver:update(dt)
 	self:resetSpeed()
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
---	self:resetEmergencyBrake()
 end
 
 --- Main driving function

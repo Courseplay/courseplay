@@ -482,7 +482,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="letzter Durchlauf = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="verschiedene Ladegüter" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="verschiedene Trailer: " />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Menge entladen" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
 		<!-- Replace marker, do not remove! -->
 </texts>

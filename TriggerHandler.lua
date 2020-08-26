@@ -144,27 +144,28 @@ end
 
 
 function TriggerHandler:getTriggerDischargeNode(trigger)
-	return trigger.dischargeInfo and trigger.dischargeInfo.nodes[1].node-- or trigger.triggerNode
+	return trigger.dischargeInfo and trigger.dischargeInfo.nodes and (trigger.dischargeInfo.nodes.node or trigger.dischargeInfo.nodes[1].node) -- or trigger.triggerNode
 end
 
-function TriggerHandler:isAutoAimNodeDistanceOkay(object,fillUnitIndex,trigger)
+--TODO visual debug of triggerNode and dischargeNode!!
+function TriggerHandler:isNearDischargeNode(object,fillUnitIndex,trigger)
 	if object and fillUnitIndex and trigger then
 		local node = object:getFillUnitExactFillRootNode(fillUnitIndex)
 		local triggerNode = self:getTriggerDischargeNode(trigger)
 		if node and triggerNode then 
 			local distance = calcDistanceFrom(triggerNode, node)
 			if self.lastDistanceToTrigger and distance > self.lastDistanceToTrigger then 
-				self:debug(object,"autoAimNode and TriggerNode distance okay !")
+				self:debug(object,"dischargeNode and TriggerNode distance okay !")
 				return true
 			else 
-				self:debug(object,"autoAimNode and TriggerNode distance not okay, continue..!")
+				self:debug(object,"dischargeNode and TriggerNode distance not okay, continue..!")
 				self.lastDistanceToTrigger = distance
 			end
 		else 
-			self:debug(object,"autoAimNodeX or TriggerNodeX not found!")
+			self:debug(object,"dischargeNodeX or TriggerNodeX not found!")
 		end
 	else 
-		self:debug(object,"autoAimNode or TriggerNode not found!")
+		self:debug(object,"dischargeNode or TriggerNode not found!")
 	end
 end
 
@@ -622,12 +623,12 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 				return
 			end
 		--TODO: once again fix g_company triggers.. and improve emergeny brake 	
-		--	if not triggerHandler:isAutoAimNodeDistanceOkay(fillableObject,fillUnitIndex,self) then 
-		--		triggerHandler:resetLoadingState()
-		--		return 
-		--	else 
-		--		triggerHandler.driver:setEmergencyBrake()
-		--	end
+			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) then 
+				triggerHandler:resetLoadingState()
+				return 
+			else 
+				triggerHandler.vehicle:brake(1)
+			end
 			if fillableObject.spec_cover and fillableObject.spec_cover.isDirty then 
 				--setLoadingState(object,fillUnitIndex,fillType,trigger)
 				triggerHandler:setLoadingState()
@@ -1053,7 +1054,6 @@ Pipe.onDischargeStateChanged = Utils.overwrittenFunction(Pipe.onDischargeStateCh
 
 --Global company....
 
-
 function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
 	local rootVehicle
 	if self.validFillableObject then 
@@ -1061,3 +1061,20 @@ function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
 	end
 	TriggerHandler.onActivateObject(self,superFunc,rootVehicle)
 end
+
+function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
+	local isOk = superFunc(self,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
+	if self.dischargeInfo == nil or self.dischargeInfo.nodes == nil or self.dischargeInfo.nodes[1] == nil or self.dischargeInfo.nodes[1].node == nil then
+		local dischargeNode = I3DUtil.indexToObject(nodeId, getXMLString(xmlFile, xmlKey .. ".dischargeInfo#dischargeNode"), source.i3dMappings)
+		if dischargeNode ~= nil then
+			self.dischargeInfo = {}
+			self.dischargeInfo.name = "fillVolumeDischargeInfo"
+			local width = g_company.xmlUtils.getXMLValue(getXMLFloat, xmlFile, xmlKey .. ".dischargeInfo#width", 0.5)
+			local length = g_company.xmlUtils.getXMLValue(getXMLFloat, xmlFile, xmlKey .. ".dischargeInfo#length", 0.5)
+			self.dischargeInfo.nodes = {}
+			table.insert(self.dischargeInfo.nodes, {node=dischargeNode, width=width, length=length, priority=1})
+		end
+	end
+	return isOk
+end
+

@@ -64,6 +64,10 @@ function courseplay:register(secondTime)
 				g_company.loadingTrigger.onActivateObject = Utils.overwrittenFunction(g_company.loadingTrigger.onActivateObject, TriggerHandler.onActivateObjectGlobalCompany)
 				print("  overwrittenFunction g_company.loadingTrigger.onActivateObject to TriggerHandler.onActivateObjectGlobalCompany")
 			end
+			if g_company.loadingTrigger.load then
+				g_company.loadingTrigger.load = Utils.overwrittenFunction(g_company.loadingTrigger.load, TriggerHandler.onLoad_GC_LoadingTriggerFix);
+				print("  overwrittenFunction TriggerHandler.onLoad_GC_LoadingTriggerFix TriggerHandler.load to g_company.loadingTrigger.load")
+			end
 		end
 	else
 		print('## Courseplay: register into vehicle types:');
