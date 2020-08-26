@@ -189,9 +189,11 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
           wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
         else
           local pp = vehicle.Waypoints[i - 1];
-          wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;
-          wp.rotX = 0;
-          wp.rotY = pp.rotY;
+		  if pp then
+			  wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;
+			  wp.rotX = 0;
+			  wp.rotY = pp.rotY;
+		  end
         end;
 
         local diamondColor = 'regular';

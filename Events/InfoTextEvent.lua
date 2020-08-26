@@ -37,8 +37,8 @@ function InfoTextEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn
 	else
 		streamWriteBool(streamId, false)
 	end
-	streamWriteBool(streamId, self.forceRemove)
-	streamWriteString(streamId, self.refIdx)
+	streamWriteBool(streamId, self.forceRemove or false)
+	streamWriteString(streamId, self.refIdx or "")
 end
 
 function InfoTextEvent:run(connection) -- wir fuehren das empfangene event aus
@@ -53,8 +53,8 @@ function InfoTextEvent.sendEvent(vehicle,refIdx,forceRemove)
 	if g_server ~= nil then
 		courseplay.debugVehicle(5,vehicle,"broadcast infoText event")
 		g_server:broadcastEvent(InfoTextEvent:new(vehicle,refIdx,forceRemove), nil, nil, vehicle);
-	else
-		courseplay.debugVehicle(5,vehicle,"send infoText event")
-		g_client:getServerConnection():sendEvent(InfoTextEvent:new(vehicle,refIdx,forceRemove));
+--	else
+--		courseplay.debugVehicle(5,vehicle,"send infoText event")
+--		g_client:getServerConnection():sendEvent(InfoTextEvent:new(vehicle,refIdx,forceRemove));
 	end;
 end

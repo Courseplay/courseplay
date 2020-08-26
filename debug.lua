@@ -547,27 +547,31 @@ end
 --- Cleanup on exit map
 function cpDebug:deleteMap()
 	--- Delete activeDrawData itemNodes
-	for drawType,drawDatas in pairs(self.activeDrawData) do
-		for _,drawData in pairs(drawDatas) do
-			self:deleteDrawItem(drawData.itemNode);
+	if self.activeDrawData then
+		for drawType,drawDatas in pairs(self.activeDrawData) do
+			for _,drawData in pairs(drawDatas) do
+				self:deleteDrawItem(drawData.itemNode);
+			end;
+			self.drawBuffer[drawType] = {};
 		end;
-		self.drawBuffer[drawType] = {};
-	end;
-
+	end
 	--- Delete drawBuffer itemNodes
-	for drawType,drawDatas in pairs(self.drawBuffer) do
-		for _,drawData in pairs(drawDatas) do
-			self:deleteDrawItem(drawData.itemNode);
+	if self.drawBuffer then
+		for drawType,drawDatas in pairs(self.drawBuffer) do
+			for _,drawData in pairs(drawDatas) do
+				self:deleteDrawItem(drawData.itemNode);
+			end;
+			self.drawBuffer[drawType] = {};
 		end;
-		self.drawBuffer[drawType] = {};
-	end;
-
+	end
 	--- Deleting oldDrawData itemNodes is not needed since it's set and reset on each draw
 
 	--- Delete draw prototypes itemNodes
-	for _,itemNode in pairs(self.drawPrototypes) do
-		self:deleteDrawItem(itemNode);
-	end;
+	if self.drawPrototypes then
+		for _,itemNode in pairs(self.drawPrototypes) do
+			self:deleteDrawItem(itemNode);
+		end;
+	end
 end;
 
 function cpDebug:update(dt) end; -- TODO: might not be used at all, so we can delete it when sure

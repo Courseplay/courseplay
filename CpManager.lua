@@ -147,11 +147,12 @@ function CpManager:deleteMap()
 	courseplay.courses.batchWriteSize = nil;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- deactivate debug channels
-	for channel,_ in pairs(courseplay.debugChannels) do
-		courseplay.debugChannels[channel] = false;
-	end;
-
+	if courseplay.debugChannels then
+		-- deactivate debug channels
+		for channel,_ in pairs(courseplay.debugChannels) do
+			courseplay.debugChannels[channel] = false;
+		end;
+	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete vehicles' button overlays
 	for i,vehicle in pairs(g_currentMission.vehicles) do
