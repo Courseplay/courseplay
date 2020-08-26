@@ -1429,7 +1429,7 @@ function CombineAIDriver:isReadyToUnload(noUnloadWithPipeInFruit)
 		local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(ix)
 		-- if distance to last turn is not known then we are ok. If it is known and the turn
 		-- is close, we aren't ready.
-		if dToNextTurn < 10 then
+		if dToNextTurn and dToNextTurn < 10 then
 			self:debugSparse('isReadyToUnload(): too close to turn')
 			return false
 		else
