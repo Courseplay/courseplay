@@ -376,6 +376,11 @@ function AIDriver:update(dt)
 	self.triggerHandler:onUpdate(dt)
 end
 
+--- UpdateTick AI driver
+function AIDriver:updateTick(dt)
+	self.triggerHandler:onUpdateTick(dt)
+end
+
 --- Main driving function
 -- should be called from update()
 -- This base implementation just follows the waypoints, anything more than that
