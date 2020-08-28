@@ -233,7 +233,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirala" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Spirala od środka" />
 		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Liczba rzędów spirali" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Ustala liczbę rzedów spirali, zanim rozpocznie kolejną" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Ustala liczbę rzędów spirali, zanim rozpocznie kolejną" />
 		<text name="COURSEPLAY_ACTIVATED"								 	text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 	text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 	text="Nazwa i Kurs" />
@@ -363,7 +363,7 @@
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Edytor: Cofnij ostatnią edycję kursu" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Edytor: Zapisz zmiany kursu" />
 		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Edytor: Zwiększ prędkość punktu trasy" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Edytor: Zmniesz prędkość punktu trasy" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Edytor: Zmniejsz prędkość punktu trasy" />
 		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Edytor: Usuń punkt trasy" />
 		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Edytor: Usuń następny punkt" />  
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Edytor: Usuń wszystkie punkty do startu" />
@@ -443,13 +443,13 @@
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Przełączanie Mini-HUDa" />
 
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="HUD na PPM" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (gobalnie)" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (globalnie)" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="HUD na PPM" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (obecny pojazd)" />
 
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Pokaż tymczasowe punkty trasy" />
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Pokazuje kursy tymczasowe (jak wyszukiwanie ścieżki czy zawracanie)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Nakładna na uwrociach" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Nakładka na uwrociach" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Nakładka pomiędzy przejazdami na uwrociach określana procentowo" />
 
 		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy na uwrociach" />
@@ -469,22 +469,22 @@
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Wynagrodzenie pracowników Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Procent jaki dostają pracownicy Courseplay względem wynagrodzenia zwykłych pracowników" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Samoczynny rozładunek kombajnu" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Kombjan rozładuje się samoczynnie gdy jest pełen, a w poblizu znajduje się przyczepa" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Kombajn rozładuje się samoczynnie gdy jest pełen, a w pobliżu znajduje się przyczepa" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Cofanie przy wyszukiwaniu ścieżki na nawrotach" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Zezwól na wyszukiwanie ścieżki przy nawracaniu, która wymaga cofania (tylko przy maszynach podwieszanych)" />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Nie wybrano typu ładunku!/Nie wspiera kursu napełniania!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Dodaj nowy typ ładunku" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="dotarł do punktu napełniania." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="ma zły typ ładunku dla tego triggera." />
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Rozładuj kombajn na pierwszym uwrociu" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Zezwala na rozładunek poruszającego się kombajnu na pierwszym uwrociu, kierowca po rozładunku zjedzie z pola." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Poprzedni runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Załadunek oddzielnych typów ładunków" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
