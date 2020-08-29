@@ -478,17 +478,17 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
 
 		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="не выбран fillType!/не поддерживается курс пополнения!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="добавить новый fillType" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Добавить новый fillType" />
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="достиг точки заправки." />
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="неверный fillType для триггера." />
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Разгрузка комбайна на 1-й ПП" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Разрешить разгрузку движущегося комбайн на первой поворотной полосе (ПП), при этом разгрузчику придётся выезжать за пределы поля." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"				text="last runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Загружать отдельные FillTypes" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Разделить прицепы:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Объём разгрузки" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Ручная загрузка" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
