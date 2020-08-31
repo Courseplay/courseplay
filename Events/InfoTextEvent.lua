@@ -25,7 +25,9 @@ function InfoTextEvent:readStream(streamId, connection) -- wird aufgerufen wenn 
 		self.vehicle = nil
 	end
 	self.forceRemove = streamReadBool(streamId)
-	self.refIdx = streamReadString(streamId)
+	if not self.forceRemove then
+		self.refIdx = streamReadString(streamId)
+	end
 	self:run(connection);
 end
 
@@ -37,8 +39,10 @@ function InfoTextEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn
 	else
 		streamWriteBool(streamId, false)
 	end
-	streamWriteBool(streamId, self.forceRemove)
-	streamWriteString(streamId, self.refIdx)
+	streamWriteBool(streamId, self.forceRemove or false)
+	if not self.forceRemove then 
+		streamWriteString(streamId, self.refIdx)
+	end
 end
 
 function InfoTextEvent:run(connection) -- wir fuehren das empfangene event aus
