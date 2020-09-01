@@ -1035,7 +1035,16 @@ function courseplay:onUpdateTick(dt)
 		self.cpTrafficCollisionIgnoreList = {}			-- clear local colli list, will be updated inside resetTools(self) again
 		courseplay:resetTools(self)
 	end
-
+	
+	if self.cp.isDriving and g_server ~= nil then
+		local status, err = xpcall(self.cp.driver.updateTick, function(err) printCallstack(); return err end, self.cp.driver, dt)
+		if not status then
+			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
+			courseplay:stop(self)
+			return
+		end
+	end
+	
 	self.timer = self.timer + dt;
 end
 

@@ -4,8 +4,6 @@ TriggerHandler = CpObject()
 TriggerHandler.myLoadingStates = {
 	IS_LOADING = {},
 	NOTHING = {},
-	APPROACH_TRIGGER = {},
-	APPROACH_AUGER_TRIGGER = {},
 	IS_UNLOADING = {},
 	DRIVE_NOW = {},
 	STOPPED = {}
@@ -54,6 +52,7 @@ end
 function TriggerHandler:onStart()
 	self:changeLoadingState(self.states.NOTHING)
 	self.lastDistanceToTrigger = nil
+	self.triggers = {}
 end 
 
 function TriggerHandler:onStop()
@@ -61,7 +60,7 @@ function TriggerHandler:onStop()
 	self:forceStopLoading()
 end 
 
-function TriggerHandler:onUpdate()
+function TriggerHandler:onUpdate(dt)
 	if not self:isDriveNowActivated() and not self:isStopped() then
 		if self.validFillTypeLoading or self:isAllowedToLoadFuel() then
 			self:updateLoadingTriggers()
@@ -72,7 +71,23 @@ function TriggerHandler:onUpdate()
 			self:updateUnloadingTriggers()
 		end
 	end
+	--temp hack still needs fixing
+	if next(self.triggers) == nil then 
+		if self:isDriveNowActivated() then 
+			self:changeLoadingState(self.states.NOTHING)
+		end
+	end
 end 
+
+function TriggerHandler:onUpdateTick(dt)
+--	if not self:isStopped() then 
+	--	if self.validFillTypeUnloading then 
+			if g_updateLoopIndex % 100 == 0 then
+				self:updateExactFillRootNodeRaycast(self.vehicle)
+			end
+	--	end		
+--	end
+end
 
 function TriggerHandler:onContinue()
 	self:forceStopLoading()
@@ -155,17 +170,21 @@ function TriggerHandler:isNearDischargeNode(object,fillUnitIndex,trigger)
 		if node and triggerNode then 
 			local distance = calcDistanceFrom(triggerNode, node)
 			if self.lastDistanceToTrigger and distance > self.lastDistanceToTrigger then 
-				self:debug(object,"dischargeNode and TriggerNode distance okay !")
+				self:debugSparse(object,"dischargeNode and TriggerNode distance okay !")
 				return true
 			else 
-				self:debug(object,"dischargeNode and TriggerNode distance not okay, continue..!")
+				self:debugSparse(object,"dischargeNode and TriggerNode distance not okay, continue..!")
 				self.lastDistanceToTrigger = distance
 			end
+		elseif node == nil then 
+			self:debugSparse(object,"dischargeNodeX not found!")
+			return true
 		else 
-			self:debug(object,"dischargeNodeX or TriggerNodeX not found!")
+			self:debugSparse(object,"TriggerNodeX not found!")
+			return true
 		end
 	else 
-		self:debug(object,"dischargeNode or TriggerNode not found!")
+		self:debugSparse(object,"dischargeNode or TriggerNode not found!")
 	end
 end
 
@@ -208,7 +227,7 @@ end
 --Driver stops loading
 function TriggerHandler:resetLoadingState()
 	if not self:isDriveNowActivated() then
-		self:changeLoadingState(self.states.APPROACH_TRIGGER)
+		self:changeLoadingState(self.states.NOTHING)
 	end
 	self.augerTriggerSpeed=nil
 	self:resetFillableObject()
@@ -231,36 +250,9 @@ function TriggerHandler:resetUnloadingState()
 	self:resetFillableObject()
 end
 
-function TriggerHandler:enableTriggerSpeed(lastTriggerID,object,isInAugerWagonTrigger)
-	self.isInAugerWagonTrigger = isInAugerWagonTrigger
-	if (not self:isDriveNowActivated() or lastTriggerID ~= self.lastTriggerID )and not self:isLoading() and not self:isUnloading() then 
-		self:changeLoadingState(self.isInAugerWagonTrigger and self.states.APPROACH_AUGER_TRIGGER or self.states.APPROACH_TRIGGER)
-	end
-	if self.loadingState == self.states.APPROACH_TRIGGER and isInAugerWagonTrigger then 
-		self.loadingState = self.states.APPROACH_AUGER_TRIGGER
-	end
-	self.lastTriggerID = lastTriggerID
-	if lastTriggerID < 0 then 
-		self.lastUnloadingTriggerID = lastTriggerID*(-1)
-	end
-	self.triggers[object]=true
-end
-
 function TriggerHandler:setDriveNow()
 	self:forceStopLoading()
 	self:changeLoadingState(self.states.DRIVE_NOW)
-end
-
-function TriggerHandler:disableTriggerSpeed(object)
-	self.triggers[object]=nil
-	if not self:isDriveNowActivated() and not self:isLoading() and not self:isUnloading() and next(self.triggers) == nil then 
-		self:changeLoadingState(self.states.NOTHING)
-		self.lastDistanceToTrigger = nil
-	end
-	if not self:isLoading() and not self:isUnloading() then 
-		self:resetFillableObject()
-	end
-	self.isInAugerWagonTrigger = nil
 end
 
 function TriggerHandler:isInTrigger()
@@ -343,7 +335,10 @@ function TriggerHandler:activateFillTriggersWhenAvailable(object)
 		self:activateFillTriggersWhenAvailable(impl.object)
 	end
 end
---TODO: change this to dichargeNode.triggers ...
+
+--TODO: have async raycast for each seperarte, independent dischargeNodes
+-- 		in Dischargeable:updateRaycast(dischargeNode) or Dischargeable:onUpdateTick() directly ??
+
 --check for standart object unloading Triggers
 function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)    
 	local spec = object.spec_dischargeable
@@ -361,9 +356,6 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 					if not self:isUnloading() then
 						courseplay:setInfoText(rootVehicle,"COURSEPLAY_TIPTRIGGER_REACHED")
 					end
-					self:enableTriggerSpeed(-NetworkUtil.getObjectId(object),object)
-				else
-					self:disableTriggerSpeed(object)
 				end
 				if currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
 					CpManager:setGlobalInfoText(rootVehicle, 'FARM_SILO_IS_FULL');
@@ -401,11 +393,7 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 						end
 					end
 				end
-			else
-				self:disableTriggerSpeed(object)
 			end
-		else
-			self:disableTriggerSpeed(object)
 		end
 	end
 	for _,impl in pairs(object:getAttachedImplements()) do
@@ -413,7 +401,54 @@ function TriggerHandler:activateUnloadingTriggerWhenAvailable(object)
 	end
 end
 
+function TriggerHandler:updateExactFillRootNodeRaycast(object)
+	local spec = object.spec_fillUnit 
+	if spec then 
+		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
+			local node = object:getFillUnitExactFillRootNode(fillUnitIndex)
+			if node == nil then 
+				node = object.rootNode
+			end
+			if node then 
+				local x,y,z = getWorldTranslation(node)
+				dx,dy,dz = localDirectionToWorld(node, 0,-5,0)
+			--	print(string.format("x:%s, y:%s, z:%s, dx:%s, dy:%s, dz:%s",tostring(x),tostring(y),tostring(z),tostring(dx),tostring(dy),tostring(dz)))
+				
+				local raycast = RaycastObject(self,object)
+				self.currentRaycastObject = object
+				self.currentRaycastFillUnitIndex = fillUnitIndex
+			--	drawDebugArrow(x,y,z,dx,dy,dz,0,0,0, 0,0,200)
+				raycastAll(x,y,z, dx,dy,dz, "raycastUnloadTriggerCallback", 2, raycast, nil, false)
+			end
+		end
+	end	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:updateExactFillRootNodeRaycast(impl.object)
+	end
+end
 
+RaycastObject = CpObject()
+
+function RaycastObject:init(triggerHandler,object)
+	self.triggerHandler = triggerHandler
+	self.object = object
+end
+
+function RaycastObject:raycastUnloadTriggerCallback(hitActorId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
+	if hitActorId ~= nil then
+		local trigger = g_currentMission:getNodeObject(hitActorId)
+		local triggerHandler = self.triggerHandler
+		local object = self.object
+		if trigger and trigger:isa(UnloadTrigger) then--or trigger:isa(UnloadingStation) then 
+		--	DebugUtil.drawDebugNode(hitActorId, tostring(nameNum(object)..": UnloadTriggerFound"), false)
+			if triggerHandler.triggers[object] == nil then
+				triggerHandler.triggers[object] = true 
+			end
+		else 
+			triggerHandler.triggers[object] = nil
+		end
+	end
+end
 
 function TriggerHandler:enableFillTypeLoading()
 	self.validFillTypeLoading = true
@@ -622,15 +657,15 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 				triggerHandler:resetLoadingState()
 				return
 			end
-		--TODO: once again fix g_company triggers.. and improve emergeny brake 	
+			local node = fillableObject:getFillUnitExactFillRootNode(fillUnitIndex)
+	--		DebugUtil.drawDebugNode(node, "ExactFillRootNode", false)
 			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) then 
 				triggerHandler:resetLoadingState()
 				return 
-			else 
+			elseif not triggerHandler:isDriveNowActivated() then
 				triggerHandler.vehicle:brake(1)
 			end
 			if fillableObject.spec_cover and fillableObject.spec_cover.isDirty then 
-				--setLoadingState(object,fillUnitIndex,fillType,trigger)
 				triggerHandler:setLoadingState()
 				triggerHandler:debugSparse(fillableObject, 'Cover is still opening!')
 				return
@@ -894,6 +929,15 @@ end
 
 --LoadTrigger callback used to open correct cover for loading 
 function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if not self.objectsInTrigger then 
+		self.objectsInTrigger = {}
+	end
+	if onEnter then
+		self.objectsInTrigger[otherId] = true
+	elseif onLeave then 
+		self.objectsInTrigger[otherId] = nil
+	end
+	
 	--legancy code!!!
 	courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	
@@ -903,15 +947,18 @@ function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave
 		rootVehicle = fillableObject:getRootVehicle()
 	end
 	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
-	--	if rootVehicle.cp.driver.triggerHandler.validFillTypeLoading then
-			TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
-	--	end
+		TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
 	end
 end
 LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback,TriggerHandler.loadTriggerCallback)
 
-function TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
+function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
 	local triggerHandler = rootVehicle.cp.driver.triggerHandler
+	if not onLeave and triggerHandler.triggers[self] == nil then 
+		triggerHandler.triggers[self] = true
+	elseif onLeave and next(self.objectsInTrigger) == nil then 
+		triggerHandler.triggers[self] = nil
+	end
 	if onEnter then 
 		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger onEnter')
 		if fillableObject.getFillUnitIndexFromNode ~= nil then
@@ -935,20 +982,27 @@ function TriggerHandler:handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 		end
 	end
 	if onLeave then 
-		triggerHandler:disableTriggerSpeed(otherId)
 		spec = fillableObject.spec_fillUnit
 		if spec then
 			SpecializationUtil.raiseEvent(fillableObject, "onRemovedFillUnitTrigger",#spec.fillTrigger.triggers)
 		end
 		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: onLeave, disableTriggerSpeed')
 	else
-		triggerHandler:enableTriggerSpeed(triggerId,otherId)
 		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: enableTriggerSpeed')
 	end
 end
 
 --FillTrigger callback used to set approach speed for Cp driver
-function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if not self.objectsInTrigger then 
+		self.objectsInTrigger = {}
+	end
+	if onEnter then
+		self.objectsInTrigger[otherId] = true
+	elseif onLeave then 
+		self.objectsInTrigger[otherId] = nil
+	end
+	
 	local fillableObject = g_currentMission:getNodeObject(otherId)
 	local rootVehicle
 	if fillableObject and fillableObject:isa(Vehicle) then 
@@ -957,19 +1011,21 @@ function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherActorId, 
 	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
 		if not triggerHandler.validFillTypeLoading then
-			return superFunc(self,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-		end		
+			return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+		end
+		if not onLeave and triggerHandler.triggers[self] == nil then 
+			triggerHandler.triggers[self] = true
+		elseif onLeave and next(self.objectsInTrigger) == nil then 
+			triggerHandler.triggers[self] = nil
+		end
 		if onEnter then
 			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onEnter')
 		end
 		if onLeave then
-			triggerHandler:disableTriggerSpeed(otherActorId)
 			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onLeave')
-		else
-			triggerHandler:enableTriggerSpeed(triggerId,otherActorId)
 		end
 	end
-	return superFunc(self,triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
+	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 end
 FillTrigger.fillTriggerCallback = Utils.overwrittenFunction(FillTrigger.fillTriggerCallback, TriggerHandler.fillTriggerCallback)
 
@@ -983,6 +1039,14 @@ end
 --Augerwagons handling
 --Pipe callback used for augerwagons to open the cover on the fillableObject
 function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	if not self.objectsInTrigger then 
+		self.objectsInTrigger = {}
+	end
+	if onEnter then
+		self.objectsInTrigger[otherId] = true
+	elseif onLeave then 
+		self.objectsInTrigger[otherId] = nil
+	end	
 	local rootVehicle = self:getRootVehicle()
 	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) and rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
@@ -993,7 +1057,11 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 				return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 			end
 			local objectTriggerHandler = objectRootVehicle.cp.driver.triggerHandler
-			objectTriggerHandler:enableTriggerSpeed(NetworkUtil.getObjectId(self),object)
+			if not onLeave and objectTriggerHandler.triggers[self] == nil then 
+				objectTriggerHandler.triggers[self] = true
+			elseif onLeave and next(self.objectsInTrigger) == nil then 
+				objectTriggerHandler.triggers[self] = nil
+			end
 			if object.getFillUnitIndexFromNode ~= nil and not onLeave then
                 local fillUnitIndex = object:getFillUnitIndexFromNode(otherId)
                 if fillUnitIndex ~= nil then
@@ -1004,7 +1072,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
                         if fillType and validFillUnitIndex then 
 							courseplay.debugVehicle(2,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
 							SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
-							objectTriggerHandler:enableTriggerSpeed(NetworkUtil.getObjectId(self),object,true)
+							objectTriggerHandler.isInAugerWagonTrigger = true
 						end
 					end
 				end
@@ -1012,7 +1080,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 				SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
 				courseplay.debugVehicle(2,object,"unloadingTriggerCallback close Cover")
 				objectTriggerHandler:resetLoadingState()
-				objectTriggerHandler:disableTriggerSpeed(object)
+				objectTriggerHandler.isInAugerWagonTrigger = false
 			end
 		end
 		if onLeave then
@@ -1052,6 +1120,24 @@ function TriggerHandler:onDischargeStateChanged(superFunc,state)
 end
 Pipe.onDischargeStateChanged = Utils.overwrittenFunction(Pipe.onDischargeStateChanged,TriggerHandler.onDischargeStateChanged)
 
+function TriggerHandler:setDischargeState(superFunc,state, noEventSend)
+	local rootVehicle = self:getRootVehicle()
+	local spec = self.spec_dischargeable
+	if g_server ~=nil and courseplay:isAIDriverActive(rootVehicle) then
+		local triggerHandler = rootVehicle.cp.driver.triggerHandler
+		if state ~= spec.currentDischargeState then 
+			if state == Dischargeable.DISCHARGE_STATE_OFF then
+				if not self.spec_trailer or not self.spec_trailer.tipSideCount or not (self.spec_trailer.tipSideCount>0) then
+					triggerHandler:resetUnloadingState()
+				end
+			end			
+		end
+	end
+	return superFunc(self,state,noEventSend)
+end
+Dischargeable.setDischargeState = Utils.overwrittenFunction(Dischargeable.setDischargeState,TriggerHandler.setDischargeState)
+
+
 --Global company....
 
 function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
@@ -1077,4 +1163,3 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 	end
 	return isOk
 end
-
