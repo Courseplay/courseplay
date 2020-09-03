@@ -2490,7 +2490,7 @@ function ClickToSwitchSetting:init()
 	BooleanSetting.init(self, 'clickToSwitch', 'COURSEPLAY_CLICK_TO_SWITCH',
 				'COURSEPLAY_YES_NO_CLICK_TO_SWITCH', nil)
 	-- set default while we are transitioning from the the old setting to this new one
-	self:set(false)
+	self:set(true)
 end
 
 ---@class PipeAlwaysUnfold : BooleanSetting
@@ -3233,7 +3233,7 @@ function SeperateFillTypeLoadingSetting:init(vehicle)
 	self:set(1)
 end
 
-function SeperateFillTypeLoadingSetting:isActive()
+function SeperateFillTypeLoadingSetting:hasDiffFillTypes()
 	return self.current>1
 end
 

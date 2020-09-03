@@ -953,10 +953,7 @@ function FieldworkAIDriver:rememberWaypointToContinueFieldwork()
 end
 
 function FieldworkAIDriver:getCanShowDriveOnButton()
-	if self.state == ON_UNLOAD_OR_REFILL_COURSE or self.state == UNLOAD_OR_REFILL_ON_FIELD then 
-		return AIDriver.getCanShowDriveOnButton(self)
-	end
-	return self.state == self.states.ON_FIELDWORK_COURSE
+	return self.state == self.states.ON_FIELDWORK_COURSE or AIDriver.getCanShowDriveOnButton(self)
 end
 
 function FieldworkAIDriver:getLoweringDurationMs()
