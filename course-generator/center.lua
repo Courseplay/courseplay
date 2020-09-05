@@ -533,7 +533,8 @@ function linkParallelTracks(parallelTracks, bottomToTop, leftToRight, centerSett
 		parallelTracks = reorderTracksForCircularFieldwork(parallelTracks)
 		start = leftToRight and 2 or 1
 	elseif centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
-		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, centerSettings.nRowsPerLand)
+		parallelTracks = reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop,
+				centerSettings.nRowsPerLand, centerSettings.pipeOnLeftSide)
 		start = leftToRight and 2 or 1
 	end
 	-- now make sure that the we work on the tracks in alternating directions
@@ -713,11 +714,20 @@ function reorderTracksForCircularFieldwork(parallelTracks)
 	return reorderedTracks
 end
 
-function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, nRowsInLands)
+-- Work the tracks in a sequence that makes sure the pipe is not in the fruit
+function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop, nRowsInLands, pipeOnLeftSide)
 	local reorderedTracks = {}
-	-- TODO: add logic for pipe on the left side, as it is now only works for pipe on the right side
+	-- For pipe on the left side (most combines) we drive in a counterclockwise outward spiral the pipe
+	-- pointing to the inside, harvested land
+	local counterclockwise = (leftToRight and bottomToTop) or (not leftToRight and not bottomToTop)
+	if not pipeOnLeftSide then
+		courseGenerator.debug( "Pipe is on the right side, flip direction for lands mode")
+		-- Flip for pipe on the right side (some potato harvesters) and drive in a clockwise direction to make
+		-- sure the pipe points again to the inside, harvested land
+		counterclockwise = not counterclockwise
+	end
 	-- I know this could be generated but it is more readable and easy to visualize this way.
-	local rowOrderInLands = ((leftToRight and bottomToTop) or (not leftToRight and not bottomToTop))  and
+	local rowOrderInLands = counterclockwise and
 			{
 				{1},
 				{2, 1},
@@ -757,7 +767,6 @@ function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop
 
 	for i = 0, math.floor(#parallelTracks / nRowsInLands) - 1 do
 		for _, j in ipairs(rowOrderInLands[nRowsInLands]) do
-			print(i, j, i * nRowsInLands + j)
 			table.insert(reorderedTracks, parallelTracks[i * nRowsInLands + j])
 		end
 	end
@@ -767,7 +776,6 @@ function reorderTracksForLandsFieldwork(parallelTracks, leftToRight, bottomToTop
 
 	if nRowsLeft > 0 then
 		for _, j in ipairs(rowOrderInLands[nRowsLeft]) do
-			print(lastRow, j, lastRow + j)
 			table.insert(reorderedTracks, parallelTracks[lastRow + j])
 		end
 	end

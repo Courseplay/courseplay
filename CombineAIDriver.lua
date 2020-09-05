@@ -108,7 +108,7 @@ function CombineAIDriver:init(vehicle)
 		local dischargeNode = self.combine:getCurrentDischargeNode()
 		self:fixDischargeDistance(dischargeNode)
 		local dx, _, _ = localToLocal(dischargeNode.node, self.combine.rootNode, 0, 0, 0)
-		self.pipeOnLeftSide = dx > 0
+		self.pipeOnLeftSide = dx >= 0
 		self:debug('Pipe on left side %s', tostring(self.pipeOnLeftSide))
 		-- use self.combine so attached harvesters have the offset relative to the harvester's root node
 		-- (and thus, does not depend on the angle between the tractor and the harvester)
