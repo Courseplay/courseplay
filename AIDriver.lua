@@ -423,7 +423,7 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
-	if self:getIsInFilltrigger() or isInTrigger then
+	if self:getIsInFilltrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		if isAugerWagonTrigger then 
 			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)

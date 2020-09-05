@@ -65,8 +65,15 @@ function CombineAIDriver:init(vehicle)
 		self.combine = self.vehicle.spec_combine
 	else
 		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
+        local peletizerImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer)
 		if combineImplement then
 			self.combine = combineImplement.spec_combine
+        elseif peletizerImplement then
+            self.combine = peletizerImplement
+            self.combine.fillUnitIndex = 1
+            self.combine.spec_aiImplement.rightMarker = self.combine.rootNode
+            self.combine.spec_aiImplement.leftMarker  = self.combine.rootNode
+            self.combine.spec_aiImplement.backMarker  = self.combine.rootNode
 		else
 			self:error('Vehicle is not a combine and could not find implement with spec_combine')
 		end
@@ -79,6 +86,7 @@ function CombineAIDriver:init(vehicle)
 		local implementWithPipe = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
+            self.combine.spec_pipe = self.pipe
 			self.objectWithPipe = implementWithPipe
 		else
 			self:info('Could not find implement with pipe')
