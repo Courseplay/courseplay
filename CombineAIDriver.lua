@@ -65,8 +65,15 @@ function CombineAIDriver:init(vehicle)
 		self.combine = self.vehicle.spec_combine
 	else
 		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
+        local peletizerImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer)
 		if combineImplement then
 			self.combine = combineImplement.spec_combine
+        elseif peletizerImplement then
+            self.combine = peletizerImplement
+            self.combine.fillUnitIndex = 1
+            self.combine.spec_aiImplement.rightMarker = self.combine.rootNode
+            self.combine.spec_aiImplement.leftMarker  = self.combine.rootNode
+            self.combine.spec_aiImplement.backMarker  = self.combine.rootNode
 		else
 			self:error('Vehicle is not a combine and could not find implement with spec_combine')
 		end
@@ -1004,7 +1011,8 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
+    
+  if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
 		self:openPipe()
 	else
 		--wait until the objects under the pipe are gone

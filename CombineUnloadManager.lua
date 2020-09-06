@@ -79,7 +79,7 @@ function CombineUnloadManager:addCombineToList(vehicle, driver)
 		driver = driver,
 		combineObject = combineObject,
 		isChopper = courseplay:isChopper(combineObject),
-		isCombine = courseplay:isCombine(combineObject) and not courseplay:isChopper(combineObject),
+		isCombine = (courseplay:isCombine(combineObject) or combineObject.isPremos) and not courseplay:isChopper(combineObject),
 		isOnFieldNumber = 0;
 		fillLevel = 0;
 		fillLevelPct = 0;
