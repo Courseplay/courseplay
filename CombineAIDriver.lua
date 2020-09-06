@@ -86,7 +86,6 @@ function CombineAIDriver:init(vehicle)
 		local implementWithPipe = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
-            self.combine.spec_pipe = self.pipe
 			self.objectWithPipe = implementWithPipe
 		else
 			self:info('Could not find implement with pipe')
@@ -1012,7 +1011,19 @@ function CombineAIDriver:handlePipe()
 end
 
 function CombineAIDriver:handleCombinePipe()
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
+    
+    local activeUnloader = nil
+    local unloader
+    for _, unloader in ipairs(self.unloaders) do
+        if unloader.combineToUnload == self then
+            if unloader.onFieldState == unloader.states.DRIVE_TO_MOVING_COMBINE then
+                activeUnloader = unloader
+            break
+            end
+        end
+    end
+
+	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) or activeUnloader ~= nil then
 		self:openPipe()
 	else
 		--wait until the objects under the pipe are gone
