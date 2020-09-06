@@ -1012,18 +1012,7 @@ end
 
 function CombineAIDriver:handleCombinePipe()
     
-    local activeUnloader = nil
-    local unloader
-    for _, unloader in ipairs(self.unloaders) do
-        if unloader.combineToUnload == self then
-            if unloader.onFieldState == unloader.states.DRIVE_TO_MOVING_COMBINE then
-                activeUnloader = unloader
-            break
-            end
-        end
-    end
-
-	if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) or activeUnloader ~= nil then
+  if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
 		self:openPipe()
 	else
 		--wait until the objects under the pipe are gone
