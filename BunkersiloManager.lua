@@ -10,7 +10,9 @@ end
 g_bunkerSiloManager = BunkerSiloManager()
 
 
-function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
+function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
+	-- the developer could have added comments explaining what sx/wx/hx is but chose not to do so
+	-- ignoring his fellow developers ...
 	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz;
 	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz;
 	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz;
@@ -23,17 +25,20 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);
 
 	local widthCount = 0
-	if 	width then
+	if width then
+		courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (passed in)', bunkerWidth, width)
 		widthCount =math.ceil(bunkerWidth/width)
 	else
+		courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (calculated)', bunkerWidth, vehicle.cp.workWidth)
 		widthCount =math.ceil(bunkerWidth/vehicle.cp.workWidth)
+		width = vehicle.cp.workWidth
 	end
 
 	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
 		widthCount = widthCount+1
 	end
 
-	local heightCount = math.ceil(bunkerLength/vehicle.cp.workWidth)
+	local heightCount = math.ceil(bunkerLength/ width)
 	local unitWidth = bunkerWidth/widthCount
 	local unitHeigth = bunkerLength/heightCount
 	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
@@ -66,11 +71,11 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 				offset = unitWidth/2
 			else
 				if widthIndex == 1 then
-					offset = getOffTheWall+ (vehicle.cp.workWidth/2)
+					offset = getOffTheWall + (width / 2)
 				elseif widthIndex == widthCount then
-					offset = unitWidth- (getOffTheWall+ (vehicle.cp.workWidth/2))
+					offset = unitWidth- (getOffTheWall + (width / 2))
 				else
-					offset = unitWidth/2
+					offset = unitWidth / 2
 				end
 			end
 			local cx,cz = sx +(widthDirX*offset)+(heightLengthX/2),sz +(widthDirZ*offset)+ (heightLengthZ/2)
@@ -80,14 +85,14 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 			local unitArea = unitWidth*unitHeigth
 
 			map[heightIndex][widthIndex] ={
-				sx = sx;
+				sx = sx;	-- start?
 				sz = sz;
 				y = wY;
-				wx = newWx;
+				wx = newWx; -- width?
 				wz = newWz;
-				hx = newHx;
+				hx = newHx; -- height?
 				hz = newHz;
-				cx = cx;
+				cx = cx;     -- center
 				cz = cz;
 				bx = bx;
 				bz = bz;
