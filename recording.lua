@@ -14,21 +14,23 @@ function courseplay:record(vehicle)
 
 	elseif not vehicle.cp.isRecordingTurnManeuver then
 		local prevPoint = vehicle.Waypoints[vehicle.cp.waypointIndex - 1];
-		local prevCx, prevCz, prevAngle = prevPoint.cx, prevPoint.cz, prevPoint.angle;
-		local dist = courseplay:distance(cx, cz, prevCx, prevCz);
+		if prevPoint then
+			local prevCx, prevCz, prevAngle = prevPoint.cx, prevPoint.cz, prevPoint.angle;
+			local dist = courseplay:distance(cx, cz, prevCx, prevCz);
 
-		local angleDiff = abs(newAngle - prevAngle);
+			local angleDiff = abs(newAngle - prevAngle);
 
-		if vehicle.cp.drivingDirReverse == true then
-			if dist > 2 and (angleDiff > 1.5 or dist > 10) then
-				vehicle.cp.recordingTimer = 101;
+			if vehicle.cp.drivingDirReverse == true then
+				if dist > 2 and (angleDiff > 1.5 or dist > 10) then
+					vehicle.cp.recordingTimer = 101;
+				end;
+			else
+				-- record more waypoints during turns
+				if dist > 10 or ( angleDiff > 5 and dist > 1.5 ) then
+					vehicle.cp.recordingTimer = 101;
+				end
 			end;
-		else
-			-- record more waypoints during turns
-			if dist > 10 or ( angleDiff > 5 and dist > 1.5 ) then
-				vehicle.cp.recordingTimer = 101;
-			end
-		end;
+		end
 	end;
 	vehicle.cp.curSpeed = ceil(vehicle.lastSpeedReal*3600)
 	if vehicle.cp.recordingTimer > 100 then
@@ -94,6 +96,7 @@ function courseplay:start_record(vehicle)
 	--    courseplay:clearCurrentLoadedCourse(vehicle)
 	courseplay:setIsRecording(vehicle, true);
 	courseplay:setRecordingIsPaused(vehicle, false);
+	--probably not needed as courseplay:stop called it already!!
 	vehicle:setIsCourseplayDriving(false);
 	vehicle.cp.loadedCourses = {}
 	courseplay:setWaypointIndex(vehicle, 1,true);
@@ -112,7 +115,8 @@ function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
 	courseplay:setIsRecording(vehicle, false);
 	courseplay:setRecordingIsPaused(vehicle, false);
-	vehicle:setIsCourseplayDriving(false);
+	--probably not needed as courseplay:stop called it already!!
+--	vehicle:setIsCourseplayDriving(false);
 	vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
 	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex - 1;
