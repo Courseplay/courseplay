@@ -61,7 +61,7 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Plow, vehicle.specializations) or
 		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Plow) then
 		return PlowAIDriver(vehicle)
-    elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) then
+    elseif FS19_addon_strawHarvest and AIDriverUtil.hasAIImplementWithSpecialization(vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) then
         return CombineAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
