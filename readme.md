@@ -43,6 +43,7 @@ We work long, hard, in our own free time at developing and improving Courseplay.
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=7PDM2P6HQ5D56&item_name=Promote+the+development+of+Courseplay&currency_code=EUR&source=url)
 
+___
 
 ## Credits  
 * Peter Vaiko
