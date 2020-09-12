@@ -1017,6 +1017,10 @@ function FieldworkAIDriver:getTurnEndSideOffset()
 	return 0
 end
 
+function FieldworkAIDriver:getTurnEndForwardOffset()
+	return 0
+end
+
 function FieldworkAIDriver:startTurn(ix)
 	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
 	-- turn.lua. That often happens too early (when lowering the implement) when we still have a cross track error,
@@ -1024,7 +1028,7 @@ function FieldworkAIDriver:startTurn(ix)
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
-			self:getTurnEndSideOffset())
+			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
