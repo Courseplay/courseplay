@@ -165,33 +165,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 		turnInfo.turnRadius = vehicle.cp.turnDiameter * 0.5 + extRadius;
 		turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
-		local totalOffsetX = vehicle.cp.totalOffsetX * -1
 
 		--- Create temp target node and translate it.
-		turnInfo.targetNode = createTransformGroup("cpTempTargetNode");
-		link(g_currentMission.terrainRootNode, turnInfo.targetNode);
+		turnInfo.targetNode = turnContext.turnEndWpNode.node
 		local cx,cz = turnContext.turnEndWp.x, turnContext.turnEndWp.z
-		local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 300, cz);
-		setTranslation(turnInfo.targetNode, cx, cy, cz);
-		turnContext:setTargetNode(targetNode)
-		-- Rotate it's direction to the next wp.
-		local yRot = MathUtil.getYRotationFromDirection(turnContext.turnEndWp.dx, turnContext.turnEndWp.dz);
-		setRotation(turnInfo.targetNode, 0, yRot, 0);
-
-		-- Retranslate it again to the correct position if there is offsets.
-		if totalOffsetX ~= 0 then
-			local totalOffsetZ
-			if vehicle.cp.headlandTurn then
-				-- headland turns are not near 180 degrees so just moving the target left/right won't work.
-				-- we must move it back as well
-				totalOffsetZ = totalOffsetX / math.tan( turnInfo.deltaAngle / 2 )
-			else
-				totalOffsetZ = 0
-			end
-			cx, cy, cz = localToWorld( turnInfo.targetNode, totalOffsetX, 0, totalOffsetZ )
-			setTranslation(turnInfo.targetNode, cx, cy, cz);
-			courseplay:debug(("%s:(Turn) Offset x = %.1f, z = %.1f"):format( nameNum( vehicle ), totalOffsetX, totalOffsetZ ), 14 )
-		end;
 
 		--- Debug Print
 		if courseplay.debugChannels[14] then
@@ -340,8 +317,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 		courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
 		cpPrintLine(14, 3);
 
-		unlink(turnInfo.targetNode);
-		delete(turnInfo.targetNode);
 	end
 
 	----------------------------------------------------------
