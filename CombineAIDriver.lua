@@ -65,7 +65,8 @@ function CombineAIDriver:init(vehicle)
 		self.combine = self.vehicle.spec_combine
 	else
 		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
-        local peletizerImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer)
+        local peletizerImplement = FS19_addon_strawHarvest and
+				AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) or nil
 		if combineImplement then
 			self.combine = combineImplement.spec_combine
         elseif peletizerImplement then
