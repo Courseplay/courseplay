@@ -77,8 +77,8 @@
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Расстояние до точки разгрузки" />
-		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнение: %d из %d" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Разгрузка: %d из %d" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнено: %d из %d" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Разгружено: %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Отображение путевых точек:" />
 		<text name="COURSEPLAY_PATHFINDING" 								text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Плуг за границы поля" />
@@ -278,7 +278,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Разгрузка" />
+		<text name="COURSEPLAY_UNLOAD" 										text="с разгрузки" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 										text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
@@ -452,7 +452,7 @@
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Вкл/Выкл клик правой кнопкой для открытия HUD (на текущей технике). В противном случае используйте Right Ctrl+Del." />
 
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Отображать временные путевые точки" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Отображать временные маршруты (как поиск пути или повороты)." />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Отображать временные маршруты (такие как поиск пути или повороты)." />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Перекрытие поворотных полос" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Перекрытие проходов поворотных полос в процентах." />
 
