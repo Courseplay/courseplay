@@ -214,30 +214,3 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self.readyToLoadManualAtStart or AIDriver.getCanShowDriveOnButton(self)
 end
 
--- function GrainTransportAIDriver:getFillTypeInfo(object,totalFillTypeData)
-	-- local spec = object.spec_fillUnit
-	-- if spec and object.spec_trailer then 
-		-- for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
-			-- local fillLevelPercentage = object:getFillUnitFillLevelPercentage(fillUnitIndex)*100
-			-- local capacity = object:getFillUnitCapacity(fillUnitIndex)
-			-- local fillLevel = object:getFillUnitFillLevel(fillUnitIndex)
-			-- local fillType = object:getFillUnitFillType(fillUnitIndex)
-			-- if fillType then
-				-- if totalFillTypeData[fillType] == nil then 
-					-- totalFillTypeData[fillType] = {}
-					-- totalFillTypeData[fillType].capacity = capacity
-					-- totalFillTypeData[fillType].fillLevel = fillLevel
-					-- totalFillTypeData[fillType].fillLevelPercentage = fillLevelPercentage
-				-- else
-					-- totalFillTypeData[fillType].capacity = totalFillTypeData[fillType].capacity +capacity
-					-- totalFillTypeData[fillType].fillLevel = totalFillTypeData[fillType].fillLevel + fillLevel
-					-- totalFillTypeData[fillType].fillLevelPercentage = totalFillTypeData[fillType].fillLevel/totalFillTypeData[fillType].capacity*100
-				-- end
-			-- end
-		-- end
-	-- end
-	-- -- get all attached implements recursively
-	-- for _,impl in pairs(object:getAttachedImplements()) do
-		-- self:getFillTypeInfo(impl.object,totalFillTypeData)
-	-- end
--- end
