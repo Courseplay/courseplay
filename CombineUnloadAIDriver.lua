@@ -1860,7 +1860,7 @@ function CombineUnloadAIDriver:startChopperTurn(ix)
 		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_HEADLAND_TURN)
 	else
 		self.turnContext = TurnContext(self.followCourse, ix, self.aiDriverData,
-				self.combineToUnload.cp.workWidth, self.frontMarkerDistance, 0)
+				self.combineToUnload.cp.workWidth, self.frontMarkerDistance, 0, 0)
 		local finishingRowCourse = self.turnContext:createFinishingRowCourse(self.vehicle)
 		self:startCourse(finishingRowCourse, 1)
 		self:setNewOnFieldState(self.states.HANDLE_CHOPPER_180_TURN)
