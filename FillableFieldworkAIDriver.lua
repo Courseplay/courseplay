@@ -69,12 +69,10 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	else
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 10)
-	self.waitPointIx = waitPointIx
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 10)
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
-	self.isInWaitPointRange = self.waitPointIx and self.waitPointIx+8 >self.ppc:getCurrentWaypointIx() or isNearWaitPoint 
-	self:enableFillTypeLoading(self.isInWaitPointRange)
+	self:enableFillTypeLoading(isNearWaitPoint)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
@@ -92,7 +90,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		end
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
-		self:closePipeIfNeeded()
+		self:closePipeIfNeeded(isNearWaitPoint)
 	end	
 end
 

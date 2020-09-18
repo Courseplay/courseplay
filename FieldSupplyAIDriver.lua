@@ -170,3 +170,6 @@ function FieldSupplyAIDriver:getSiloSelectedFillTypeSetting()
 	return self.vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver
 end
 
+function FieldSupplyAIDriver:getCanShowDriveOnButton()
+	return AIDriver.getCanShowDriveOnButton(self)
+end

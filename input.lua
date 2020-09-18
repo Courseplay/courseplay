@@ -21,7 +21,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	-- if not mouseIsInHudArea then return; end;
 
 	-- should we switch vehicles?
-	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and not mouseIsInHudArea and
+	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle.cp.mouseCursorActive and vehicle:getIsEntered() and not mouseIsInHudArea and
 		mouseButton == courseplay.inputBindings.mouse.primaryButtonId then
 			clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	end
