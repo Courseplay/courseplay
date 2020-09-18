@@ -452,8 +452,9 @@
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Nakładka na uwrociach" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Nakładka pomiędzy przejazdami na uwrociach określana procentowo" />
 
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy na uwrociach" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Włącza/Wyłącza wyładunek słomy na uwrociach" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Nawożenie w siewniku" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
 
@@ -483,7 +484,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Poprzedni runCounter = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Załadunek oddzielnych typów ładunków" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
 		<!-- Replace marker, do not remove! -->
 	</texts>

@@ -440,8 +440,9 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Tubo sempre desdobrado quando ceifadeira aguardar" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Mostrar Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Alternar para Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Descarregar a palha na cabeceira" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Ligar / desligar a descarga de palha na cabeceira" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizante da semeadeira" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Ativar ou desativar a função fertilizante da semeadeira" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clique no botão direito do mouse para HUD" />
@@ -481,7 +482,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Ultimo contagem de corrida = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Carregar tipo de carga separada" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Carreta seprarada:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantidade para descarregar" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantidade para descarregar %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="carregar manualmente" />
 		<!-- Replace marker, do not remove! -->
 </texts>

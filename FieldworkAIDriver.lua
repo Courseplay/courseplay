@@ -1385,6 +1385,11 @@ function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
 			if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
 			fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
 			fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
+			--used to check treePlanter fillLevel
+			local treePlanterSpec = object.spec_treePlanter
+			if treePlanterSpec then 
+				fillLevelInfo[fillType].treePlanterSpec = object.spec_treePlanter
+			end
 		end
 	end
  	-- collect fill levels from all attached implements recursively

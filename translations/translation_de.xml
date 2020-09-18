@@ -459,8 +459,9 @@
 		
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Strohablage im Vorgewende" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Schaltet die Strohablage im Vorgewende an oder aus" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Drescher Strohablage" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Nur Mitte" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Strohablage an/aus/nur Mitte" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Pathfinding im Wendemanöver" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Pathfinding im Wendemanöver auf unförmigen Feldern, vom Vorgewende zur nächste Reihe" />

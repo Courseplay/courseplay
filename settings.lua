@@ -2509,32 +2509,44 @@ end
 
 ---@class SowingMachineFertilizerEnabled : BooleanSetting
 SowingMachineFertilizerEnabled = CpObject(BooleanSetting)
-function SowingMachineFertilizerEnabled:init()
+function SowingMachineFertilizerEnabled:init(vehicle)
 	BooleanSetting.init(self, 'sowingMachineFertilizerEnabled', 'COURSEPLAY_FERTILIZE_OPTION',
-				'COURSEPLAY_YES_NO_FERTILIZE_OPTION', nil)
+				'COURSEPLAY_YES_NO_FERTILIZE_OPTION', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
 end
 
----@class StrawOnHeadland : BooleanSetting
-StrawOnHeadland = CpObject(BooleanSetting)
-function StrawOnHeadland:init(vehicle)
-	BooleanSetting.init(self, 'strawOnHeadland', 'COURSEPLAY_STRAW_ON_HEADLAND',
-				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', vehicle)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(true)
+function SowingMachineFertilizerEnabled:isDisabled()
+	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine)
 end
 
-function StrawOnHeadland:isDisabled()
+---@class StrawSwathSetting : SettingList
+StrawSwathSetting = CpObject(SettingList)
+StrawSwathSetting.OFF = 0
+StrawSwathSetting.ON = 1
+StrawSwathSetting.ONLY_CENTER = 2
+function StrawSwathSetting:init(vehicle)
+	SettingList.init(self, 'strawSwath', 'COURSEPLAY_STRAW_ON_HEADLAND','COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', vehicle,
+		{StrawSwathSetting.OFF,StrawSwathSetting.ON,StrawSwathSetting.ONLY_CENTER},
+		{'COURSEPLAY_DEACTIVATED','COURSEPLAY_ACTIVATED','COURSEPLAY_STRAW_ON_ONLY_CENTER'})
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(1)
+end
+
+function StrawSwathSetting:isDisabled()
 	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
 end
 
 ---@class RidgeMarkersAutomatic : BooleanSetting
 RidgeMarkersAutomatic = CpObject(BooleanSetting)
-function RidgeMarkersAutomatic:init()
+function RidgeMarkersAutomatic:init(vehicle)
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
-			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+			'COURSEPLAY_YES_NO_RIDGEMARKERS', vehicle)
 	self:set(false)
+end
+
+function RidgeMarkersAutomatic:isDisabled()
+	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, RidgeMarker)
 end
 
 ---@class EnableVisualWaypointsTemporary : BooleanSetting

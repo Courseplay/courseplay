@@ -276,7 +276,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		end; 
 	-- MODE 3: AUGERWAGON
 	elseif vehicle.cp.mode == 3 then
-		if workTool.cp.isAugerWagon then
+		if SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) then
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end

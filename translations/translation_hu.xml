@@ -440,8 +440,9 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="A cső mindig nyitva van, amikor a kombájn kiürítésre vár" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Mini-HUD mutatása" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Szalmaürítés a mező szélén" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Szalmaürítés be-/kikapcsolása a mező szélén" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Vetőgép műtrágyázó funkciója" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Aktiválja, vagy deaktiválja a vetőgép műtrágyázó funkcióját" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Jobb klikk HUD" />
@@ -480,7 +481,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 		<!-- Replace marker, do not remove! -->
 </texts>

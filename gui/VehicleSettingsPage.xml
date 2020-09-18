@@ -101,7 +101,7 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement> -->
 			<!-- Option 6 -->
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="strawOnHeadland" toolTipElementId="ingameMenuHelpBoxText">
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="strawSwath" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
@@ -134,13 +134,13 @@
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
 			<!-- Option 4 -->
-		<!-- <GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="showMapHotspot" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
-			</GuiElement> -->
+			</GuiElement>
 			<!-- Option 5 -->
 		<!-- <GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateVehicleSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />

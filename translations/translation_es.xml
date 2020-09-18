@@ -440,8 +440,9 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Tubo descarga siempre desplegado cuando la cosechadora espera para descargar." />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Mostrar Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="On/Off Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Descarga de paja en cabecera" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="On/Off descarga de paja en cabecera." />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Usar fertilizante de sembradora" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="On/Off función fertilizante de sembradora." />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Activar HUD con click derecho (Global)" />
@@ -481,7 +482,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 		<!-- Replace marker, do not remove! -->
 </texts>
