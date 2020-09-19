@@ -1065,7 +1065,7 @@ FillTrigger.fillTriggerCallback = Utils.overwrittenFunction(FillTrigger.fillTrig
 
 --check if the vehicle is controlled by courseplay
 function courseplay:isAIDriverActive(rootVehicle) 
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle:getIsCourseplayDriving() and rootVehicle.cp.driver:isActive() and not (rootVehicle.ad and  rootVehicle.ad.isActive()) then
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle:getIsCourseplayDriving() and rootVehicle.cp.driver:isActive() and not (rootVehicle.ad and  rootVehicle.ad:isActive()) then
 		return true
 	end
 end
