@@ -392,7 +392,6 @@ function courseplay:onLoad(savegame)
 	self.cp.skipOffsetX = false;
 
 	self.cp.workWidth = 3
-	self.cp.headlandHeight = 0;
 
 	self.cp.searchCombineAutomatically = true;
 	self.cp.savedCombine = nil
