@@ -184,7 +184,7 @@
     <text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(Cliquez sur la carte pour sélectionner le point de départ)" />
     <text name="COURSEPLAY_START_WORKING_ON" 			            	text="Commencer le travail par" />
     <text name="COURSEPLAY_SKIP_ROWS"     			                	text="Sauter des rangs" />
-    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les Allers Retours" />
+    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les Allers-Retours" />
     <text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="Les fourrières" />
     <text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="Coins de fourrières" />
     <text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="Sens horaire" />
@@ -229,7 +229,7 @@
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des rangs" />
-    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Aller-Retours" />
+    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-Retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire (par bloc)" />
     <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale (tourne autour)" />
 	<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Enrayure à travers (centre)" />
@@ -457,9 +457,9 @@
 	
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du Mini-HUD" />
-	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
-	<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
-	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
+	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Mettre la paille en andain" />
+	<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Allers-Retours" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Permet de mettre la paille en andain dans toute la parcelle (Activé), uniquement lors des allers-retours avec broyage dans les fourrières (Allers-Retours), ou de la broyer dans toute la parcelle (Désactivé)" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
 
@@ -482,7 +482,7 @@
 	
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans 1ère fourrière" />
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant, en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière" />
-    <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="dernier produit, nombre de tours à 0" />
+    <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text=": Transport terminé, nombre de tours à 0" />
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Produit différent par benne" />
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
     <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
