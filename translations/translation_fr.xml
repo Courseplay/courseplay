@@ -457,8 +457,9 @@
 	
 	<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Afficher Mini-HUD" />
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du Mini-HUD" />
-	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Paille dans les fourrières" />
-	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Gestion de la paille dans les fourrières : la paille est conservée dans les aller-retours mais est broyée dans les fourrières" />
+	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+	<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
 

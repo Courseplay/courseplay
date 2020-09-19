@@ -169,12 +169,19 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	end
 	
 	for fillType, info in pairs(fillLevelInfo) do
-		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
-			allOk = false
-			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+		if info.treePlanterSpec then -- is TreePlanter
+			--check fillLevel of pallet on top of treePlanter or if their is one pallet
+			if not info.treePlanterSpec.mountedSaplingPallet or not info.treePlanterSpec.mountedSaplingPallet:getFillUnitFillLevel(1) then 
+				allOk = false
+			end
 		else
-			if fillType == FillType.SEEDS then hasSeeds = true end
-		end		
+			if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+				allOk = false
+				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+			else
+				if fillType == FillType.SEEDS then hasSeeds = true end
+			end		
+		end	
 	end
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then

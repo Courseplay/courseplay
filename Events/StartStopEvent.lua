@@ -40,7 +40,7 @@ function StartStopEvent:run(connection) -- wir fuehren das empfangene event aus
     elseif self.eventType == self.TYPE_STOP then
         SpecializationUtil.raiseEvent(self.vehicle, "onStopCpAIDriver")
     end
-
+	self.vehicle.cp.driver:refreshHUD()
 end
 
 

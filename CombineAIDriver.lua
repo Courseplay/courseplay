@@ -171,6 +171,8 @@ function CombineAIDriver:start(startingPoint)
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
 	self:fixMaxRotationLimit()
 	local total, pipeInFruit = self.fieldworkCourse:setPipeInFruitMap(self.pipeOffsetX, self.vehicle.cp.workWidth)
+	local ix = self.fieldworkCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
+	self:shouldStrawSwathBeOn(ix)
 	self:debug('Pipe in fruit map created, there are %d non-headland waypoints, of which at %d the pipe will be in the fruit',
 			total, pipeInFruit)
 end
@@ -1484,20 +1486,20 @@ function CombineAIDriver:willWaitForUnloadToFinish()
 end
 
 function CombineAIDriver:shouldStrawSwathBeOn(ix)
-	local strawSwath = self.combine.isSwathActive 
-	local headlandStraw = self.vehicle.cp.settings.strawOnHeadland:is(true)
+	local strawMode = self.vehicle.cp.settings.strawSwath:get()
 	local headland = self.course:isOnHeadland(ix)
-
-	-- Do not check headland or set swath if combine is set to no swath
-	if strawSwath then
-		if not headland or (headland and headlandStraw) then
-			strawSwath = true
-		else
-			strawSwath = false
+	if self.combine.isSwathActive then 
+		if strawMode == StrawSwathSetting.OFF or headland and strawMode==StrawSwathSetting.ONLY_CENTER then 
+			self:setStrawSwath(false)
 		end
-
-		self:setStrawSwath(strawSwath)
-	end
+	else
+		if strawMode > StrawSwathSetting.OFF then 
+			if headland and strawMode==StrawSwathSetting.ONLY_CENTER then 
+				return
+			end
+			self:setStrawSwath(true)
+		end
+	end	
 end
 
 CombineAIDriver.maxBackDistance = 10

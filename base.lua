@@ -533,7 +533,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
 	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
 	self.cp.settings:addSetting(StopForUnloadSetting, self)
-	self.cp.settings:addSetting(StrawOnHeadland, self)
+	self.cp.settings:addSetting(StrawSwathSetting, self)
 	self.cp.settings:addSetting(AllowUnloadOnFirstHeadlandSetting, self)
 	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
 	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
@@ -1246,7 +1246,8 @@ function courseplay:onReadStream(streamId, connection)
 			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
 		end
 	end
-
+	-- SETUP 2D COURSE DRAW DATA
+	self.cp.course2dUpdateDrawData = true;
 	
 	local debugChannelsString = streamDebugReadString(streamId)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do

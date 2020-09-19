@@ -442,8 +442,9 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="コンバインのアンロード待ち中、常にパイプを出します" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="ミニHUDを表示" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="ミニHUD表示を切り替える" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="まくら地へのわら排出" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="まくら地へのわら排出設定を切り替えます" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="播種機の肥料散布機能" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="播種機に肥料散布機能があれば使用します" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="右クリックHUD" />
@@ -482,7 +483,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 		<!-- Replace marker, do not remove! -->
 </texts>

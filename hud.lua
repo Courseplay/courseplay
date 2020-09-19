@@ -2315,7 +2315,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 6)
 	self:setupDebugButtons(vehicle, 6)
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
-	self:addRowButton(vehicle,vehicle.cp.settings.showMapHotspot,'next', 6, 4, 1 )
+--	self:addRowButton(vehicle,vehicle.cp.settings.showMapHotspot,'next', 6, 4, 1 )
 	self:addRowButton(vehicle,nil,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()
 
 

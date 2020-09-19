@@ -456,8 +456,9 @@
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Перекрытие поворотных полос" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Перекрытие проходов поворотных полос в процентах." />
 
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Вкл/Выкл выгрузку соломы на разворотной полосе." />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Удобрение сеялкой" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Активировать или деактивировать функцию удобрения сеялки." />
 
@@ -487,7 +488,6 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"				text="last runCounter = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Загружать отдельные FillTypes" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Разделить прицепы:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Объём разгрузки" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Ручная загрузка" />
 		<!-- Replace marker, do not remove! -->
 	</texts>

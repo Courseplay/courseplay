@@ -56,6 +56,18 @@ ___
 Please see [`__Attributions.md`](https://github.com/Courseplay/courseplay/blob/master/__Attributions.md) for more information.
 ___
 
+## Supporter
+
+People or Teams that Supports us
+
+* Ameyer1233 [ModHoster Profile](https://www.modhoster.de/community/user/meyer123) 
+
+* Burning Gamers [YouTube Channel](https://www.youtube.com/c/BurningGamersde/featured)
+
+* Mario Hirschfeld [YouTube Channel](https://www.youtube.com/c/MarioHirschfeld/featured)
+___
+
+
 ## Former developers
 * Thomas Gärtner
 * Satis

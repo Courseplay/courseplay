@@ -710,7 +710,8 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 			end
 			local node = fillableObject:getFillUnitExactFillRootNode(fillUnitIndex)
 	--		DebugUtil.drawDebugNode(node, "ExactFillRootNode", false)
-			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) then 
+			--checks if we are in the fillPlane, bugged with mode 4 as driver dosen't stop fast enough..
+			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) and not vehicle.cp.driver:is_a(FillableFieldworkAIDriver) then 
 				triggerHandler:resetLoadingState()
 				return 
 			elseif not triggerHandler:isDriveNowActivated() then
@@ -1064,7 +1065,10 @@ FillTrigger.fillTriggerCallback = Utils.overwrittenFunction(FillTrigger.fillTrig
 
 --check if the vehicle is controlled by courseplay
 function courseplay:isAIDriverActive(rootVehicle) 
-	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle:getIsCourseplayDriving() and rootVehicle.cp.driver:isActive() and not rootVehicle.cp.driver:isAutoDriveDriving() then
+	if rootVehicle and rootVehicle.cp and rootVehicle.cp.driver and rootVehicle:getIsCourseplayDriving() and rootVehicle.cp.driver:isActive() then
+		if rootVehicle.spec_autodrive and rootVehicle.spec_autodrive.stateModule and rootVehicle.spec_autodrive.stateModule:isActive() then 
+			return
+		end
 		return true
 	end
 end
@@ -1220,8 +1224,7 @@ function TriggerHandler:onUpdateDischargeable(dt, isActiveForInput, isActiveForI
 			spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
 		end
 		if currentDischargeNode.dischargeFailedReason and currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
-			CpManager:setGlobalInfoText(rootVehicle, 'FARM_SILO_IS_FULL')
-			triggerHandler:setUnloadingState()
+			CpManager:setGlobalInfoText(rootVehicle, 'FARM_SILO_IS_FULL') -- not working for now, might have to double check
 		end
 		if currentDischargeNode.dischargeObject then
 			if triggerHandler.objectsInTrigger[self] == nil then
@@ -1241,12 +1244,16 @@ Dischargeable.onUpdate = Utils.appendedFunction(Dischargeable.onUpdate, TriggerH
 
 --Global company....
 
-function TriggerHandler:onActivateObjectGlobalCompany(superFunc)
-	local rootVehicle
-	if self.validFillableObject then 
+function TriggerHandler:onActivateObjectGlobalCompany(superFunc,vehicle)
+	local rootVehicle = vehicle
+	if self.validFillableObject and (not vehicle or not vehicle:isa(Vehicle)) then 
 		rootVehicle = self.validFillableObject:getRootVehicle()
 	end
-	TriggerHandler.onActivateObject(self,superFunc,rootVehicle)
+	if courseplay:isAIDriverActive(rootVehicle) then
+		rootVehicle.cp.driver.triggerHandler.onActivateObject(self,superFunc,rootVehicle)
+	else 
+		return superFunc(self)
+	end
 end
 
 function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
@@ -1264,3 +1271,4 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 	end
 	return isOk
 end
+

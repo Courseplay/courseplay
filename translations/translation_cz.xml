@@ -453,8 +453,9 @@
 
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zobrazit Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Přepnout zobrazení Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Sláma na souvrati" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Zapnout vypnout pouštění slámy na souvrati" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Přihnojování při setí" />
     	<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Zapnout vypnout přijnojování u secího stroje" />
 
@@ -485,7 +486,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Počítadlo poslední jízdy = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Nakládka rozdílných nákladů" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Samostatné přívěsy:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuální naložení" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
