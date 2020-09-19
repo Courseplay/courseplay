@@ -461,7 +461,6 @@
 	<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Allers-Retours" />
 	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Permet de mettre la paille en andain dans toute la parcelle (Activé), uniquement lors des allers-retours avec broyage dans les fourrières (Allers-Retours), ou de la broyer dans toute la parcelle (Désactivé)" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
-	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
 
     <text name="COURSEPLAY_USE_PPC_TURNS"				   				text="Utiliser des points de références virtuels (PPC) dans les virages" />
