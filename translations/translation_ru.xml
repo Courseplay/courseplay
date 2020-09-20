@@ -40,7 +40,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Направление поворотной полосы" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Сгенерировать маршрут" />
-		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместно работающих орудий:" />
+		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместно работающих инструментов:" />
 		<text name="COURSEPLAY_DISTANCE" 									text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 								text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 									text="%d мин" />
@@ -111,7 +111,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 							text="максимальная" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="автоматически (до %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="Маршрут не загружен" />
-		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Сигнальные огни:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Проблесковые маячки:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="отключено" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="на дороге - маячок" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="на дороге - маячок и аварийка" />
@@ -249,9 +249,9 @@
 		<text name="COURSEPLAY_FINISH" 										text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Маршрут нерабочий" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько орудий на этом маршруте:" />
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Максим. дистанция до предыдущего:" />
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Миним. дистанция до предыдущего:" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько инструментов на этом маршруте:" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Макс. дистанция до предыдущего:" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Мин. дистанция до предыдущего:" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="СПЕЦИФИЧНЫЕ НАСТРОЙКИ ДЛЯ РЕЖИМА" />
 
@@ -274,14 +274,14 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Стоять пока ковш наполняется" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Способ запуска:" />
-		<text name="COURSEPLAY_NEAREST_POINT" 								text="с ближайшей очевидной точки" />
+		<text name="COURSEPLAY_NEAREST_POINT" 								text="с ближайшей точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
-		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
+		<text name="COURSEPLAY_NEXT_POINT" 									text="со следующей ближайшей точки" />
 		<text name="COURSEPLAY_UNLOAD" 										text="с разгрузки" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
 		<text name="COURSEPLAY_FIELD" 										text="поле №" />
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(текущий маршрут)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 						text="начальная обработка" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 							text="СКАНИРОВАНИЕ ПОЛЕЙ %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 								text="Нельзя найти шланг - отмена наполнения" />
@@ -290,7 +290,7 @@
 		<text name="COURSEPLAY_FILLEVEL" 									text="загруженность" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 								text="погрузка остановлена" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 							text="упаковщик нуждается в тюках" />
-		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Рассчитать границы текущего поля" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Определить границы текущего поля" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Выбрать поле:" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Добавить поле в список" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Переписать поле в списке" />
@@ -431,7 +431,7 @@
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и обратно)" />
 
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ" />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"						text="Загружать маршруты при запуске" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Загружать все маршруты при запуске игры. Если включено, тогда это замедлит загрузку сохраненной игры." />
