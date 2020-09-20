@@ -407,7 +407,7 @@
 		<text name="COURSEPLAY_FUEL_SEARCH_FOR"						    	text="Reabastecer o tanque de combustível" />
 		<text name="COURSEPLAY_FUEL_ALWAYS"						        	text="Sempre" />
 		<text name="COURSEPLAY_FUEL_BELOW_20PCT"							text="Abaixo de 20%" />
-		<text name="COURSEPLAY_FUELSAVEOPTION"						    	text="Fuel Save (Economizar Combustível)" />
+		<text name="COURSEPLAY_FUELSAVEOPTION"						    	text="Economia (Economizar Combustível)" />
 		
 		<text name="COURSEPLAY_RELOAD_COURSE_LIST" 							text="Recarregar lista de rotas" />
 		<text name="COURSEPLAY_COULDNT_GENERATE_COURSE" 			 		text="Não foi possível gerar a rota. Tente mudar as configurações ou mover o veículo."/>
@@ -440,9 +440,9 @@
 		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Tubo sempre desdobrado quando ceifadeira aguardar" />
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Mostrar Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Alternar para Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
-		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Colheitadeira descarrega palha" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="no centro" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Descarregar palha ligar/desligar/no centro" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizante da semeadeira" />
         <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Ativar ou desativar a função fertilizante da semeadeira" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clique no botão direito do mouse para HUD" />
