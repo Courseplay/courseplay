@@ -466,7 +466,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 		-- try not crashing into our combine on the way to the unload course
-		if self.combineJustUnloadedDon and
+		if self.combineJustUnloaded and
 				not self.combineJustUnloaded.cp.driver:isChopper() and
 				self:isWithinSafeManeuveringDistance(self.combineJustUnloaded) and
 				self.combineJustUnloaded.cp.driver:isManeuvering() then
