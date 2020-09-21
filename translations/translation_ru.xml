@@ -40,7 +40,7 @@
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Направление поворотной полосы" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Поворотная полоса до/после основного маршрута" />
 		<text name="COURSEPLAY_GENERATE_FIELD_COURSE"						text="Сгенерировать маршрут" />
-		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместно работающих инструментов:" />
+		<text name="COURSEPLAY_MULTI_TOOLS"									text="Совместно работающих орудий:" />
 		<text name="COURSEPLAY_DISTANCE" 									text="дистанция" />
 		<text name="COURSEPLAY_WAITING_TIME" 								text="Пауза в точке ожидания:" />
 		<text name="COURSEPLAY_MINUTES" 									text="%d мин" />
@@ -249,7 +249,7 @@
 		<text name="COURSEPLAY_FINISH" 										text="Финиш" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Маршрут нерабочий" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько инструментов на этом маршруте:" />
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько орудий на этом маршруте:" />
 		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Макс. дистанция до предыдущего:" />
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Мин. дистанция до предыдущего:" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
