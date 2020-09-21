@@ -274,14 +274,14 @@
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Стоять пока ковш наполняется" />
 		
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Способ запуска:" />
-		<text name="COURSEPLAY_NEAREST_POINT" 								text="с ближайшей точки" />
+		<text name="COURSEPLAY_NEAREST_POINT" 								text="с ближайшей очевидной точки" />
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
-		<text name="COURSEPLAY_NEXT_POINT" 									text="со следующей ближайшей точки" />
+		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
 		<text name="COURSEPLAY_UNLOAD" 										text="с разгрузки" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
-		<text name="COURSEPLAY_FIELD" 										text="поле №" />
-		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(текущий маршрут)" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать границу" />
+		<text name="COURSEPLAY_FIELD" 										text="поля №" />
+		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 						text="начальная обработка" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 							text="СКАНИРОВАНИЕ ПОЛЕЙ %d/%d" />
 		<text name="COURSEPLAY_HOSEMISSING" 								text="Нельзя найти шланг - отмена наполнения" />
@@ -456,9 +456,9 @@
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Перекрытие поворотных полос" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Перекрытие проходов поворотных полос в процентах." />
 
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
-		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы комбайном" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="только центр" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Выгрузка соломы вкл/выкл/только центр" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Удобрение сеялкой" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Активировать или деактивировать функцию удобрения сеялки." />
 
