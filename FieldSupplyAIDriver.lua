@@ -50,7 +50,6 @@ end
 function FieldSupplyAIDriver:start(startingPoint)
 	self.refillState = self.states.REFILL_DONE
 	AIDriver.start(self,startingPoint)
-	self:getSiloSelectedFillTypeSetting():cleanUpOldFillTypes()
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 	self:findPipe() --for Augerwagons
 end

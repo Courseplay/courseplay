@@ -44,7 +44,6 @@ function courseplay:onLoad(savegame)
 	self.cp.haveInversedRidgeMarkerState = nil; --bool
 
 	--turn maneuver
-	self.cp.oppositeTurnMode = false;
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.aiTurnNoBackward = false --bool
 	self.cp.canBeReversed = nil --bool
@@ -135,18 +134,6 @@ function courseplay:onLoad(savegame)
 	self.cp.hasSugarCaneTrailer = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
-	
-	self.cp.convoyActive = false
-	self.cp.convoy= {
-					  distance = 0,
-					  number = 0,
-					  members = 0,
-					  minDistance = 100,
-					  maxDistance = 300
-					  }
-	
-	
-	
 
 	-- ai mode 9: shovel
 	self.cp.shovelEmptyPoint = nil;
@@ -567,6 +554,10 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(BunkerSpeedSetting,self)
 	self.cp.settings:addSetting(ShowVisualWaypointsSetting,self)
 	self.cp.settings:addSetting(ShowVisualWaypointsCrossPointSetting,self)
+	self.cp.settings:addSetting(OppositeTurnModeSetting,self)
+	self.cp.settings:addSetting(ConvoyActiveSetting,self)
+	self.cp.settings:addSetting(ConvoyMinDistanceSetting,self)
+	self.cp.settings:addSetting(ConvoyMaxDistanceSetting,self) -- do we need this one ?
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -1252,15 +1243,7 @@ function courseplay:onReadStream(streamId, connection)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
-	
-	--Ingame Map Sync
-	if streamDebugReadBool(streamId) then
-		--add to activeCoursePlayers
-		CpManager:addToActiveCoursePlayers(self)	
-		-- add ingameMap icon
-		courseplay:createMapHotspot(self);
-	end
-	
+		
 	--Make sure every vehicle has same AIDriver as the Server
 	courseplay:setAIDriver(self, self.cp.mode)
 	
@@ -1327,13 +1310,6 @@ function courseplay:onWriteStream(streamId, connection)
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
 		
-	if self.cp.mapHotspot then
-		streamDebugWriteBool(streamId,true)
-	else
-		streamDebugWriteBool(streamId,false)
-	end
-	
-	
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
@@ -1368,7 +1344,6 @@ function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 			--canDrive
 			--isRecording ??
 			--currentCourseName
-			--convoy to setting
 			--gitAdditionalText
 		end 
 	end
@@ -1403,7 +1378,6 @@ function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
 			--canDrive
 			--isRecording ??
 			--currentCourseName
-			--convoy to setting
 			--gitAdditionalText
 		end 
 	end
@@ -1438,7 +1412,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
-		self.cp.oppositeTurnMode					= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#oppositeTurnMode'),		false);
 		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
 		self.cp.abortWork							= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),				0);
 		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
@@ -1447,7 +1420,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.generationPosition.x				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionX'),			0);
 		self.cp.generationPosition.z				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionZ'),			0);
 		self.cp.generationPosition.fieldNum 		= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#savedFieldNum'),			0);
-		self.cp.convoyActive						= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#convoyActive'),			false);
 		if self.cp.abortWork == 0 then
 			self.cp.abortWork = nil;
 		end;
@@ -1584,14 +1556,12 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
-	setXMLBool(xmlFile, newKey..".fieldWork #oppositeTurnMode", self.cp.oppositeTurnMode)
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))
 	setXMLBool(xmlFile, newKey..".fieldWork #hasSavedPosition", self.cp.generationPosition.hasSavedPosition)
 	setXMLString(xmlFile, newKey..".fieldWork #savedPositionX", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.x,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #savedPositionZ", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.z,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
-	setXMLBool(xmlFile, newKey..".fieldWork #convoyActive", self.cp.convoyActive)
 
 	--LevlingAndCompactingSettings
 	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
@@ -1760,7 +1730,7 @@ function courseplay:onStartCpAIDriver()
 	CpManager:addToActiveCoursePlayers(self)
 	
 	-- add ingameMap Hotspot
-	courseplay:createMapHotspot(self);
+	self.cp.settings.showMapHotspot:createMapHotspot();
 	
 	--legancy 
 	self:setIsCourseplayDriving(true)
@@ -1793,7 +1763,7 @@ function courseplay:onStopCpAIDriver()
 	CpManager:removeFromActiveCoursePlayers(self);
 
 	-- remove ingame map hotspot
-	courseplay:deleteMapHotspot(self);
+	self.cp.settings.showMapHotspot:deleteMapHotspot();
 	
 	--legancy
 	self:setIsCourseplayDriving(false)
