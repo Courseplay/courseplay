@@ -130,7 +130,7 @@
 		<text name="COURSEPLAY_COMBINED_COURSES" 							text="- комбинированный" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 						text="Еду к комбайну" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 						text="Еду рядом с комбайном" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="Маневрирую для погрузки" /> <!-- или разрузки -->
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 							text="Маневрирую для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 					text="Комбайн просит остановится" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 		text="Ожидаю пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 							text="Возвращение к %d %d" />
@@ -431,7 +431,7 @@
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и обратно)" />
 
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ" />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"						text="Загружать маршруты при запуске" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Загружать все маршруты при запуске игры. Если включено, тогда это замедлит загрузку сохраненной игры." />
