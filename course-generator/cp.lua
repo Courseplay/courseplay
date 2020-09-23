@@ -117,13 +117,18 @@ function courseGenerator.generate( vehicle )
 	local minDistanceBetweenPoints = 0.5
 	local doSmooth = true
 	local roundCorners = false
+	local pipeOnLeftSide = true
+	if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineAIDriver) then
+		pipeOnLeftSide = vehicle.cp.driver:isPipeOnLeft()
+	end
 	local centerSettings = {
 		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
 		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad( vehicle.cp.rowDirectionDeg ) or 0,
 		nRowsToSkip = vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip,
 		mode = vehicle.cp.courseGeneratorSettings.centerMode:get(),
-		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get()
+		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get(),
+		pipeOnLeftSide = pipeOnLeftSide
 	}
 
 	local minSmoothAngle, maxSmoothAngle
@@ -222,7 +227,7 @@ function courseGenerator.generate( vehicle )
 
 	if CpManager.isMP then
 	--	CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints);
-		CourseEvent:sendEvent(vehicle,vehicle.Waypoints)
+		CourseEvent.sendEvent(vehicle,vehicle.Waypoints)
 	end
 	
 	return status, ok

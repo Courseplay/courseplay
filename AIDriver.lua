@@ -191,14 +191,18 @@ function AIDriver:updateLoadingText()
 	end
 end
 
-function AIDriver:writeUpdateStream(streamId)
+function AIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 	self.triggerHandler:writeUpdateStream(streamId)
 	streamWriteString(streamId,self.state.name)
-	streamWriteBool(streamId,self.active)
+	if self.active then 
+		streamWriteBool(streamId,true)
+	else 
+		streamWriteBool(streamId,false)
+	end
 --	streamWriteBool(streamId,self.vehicle.cp.isDriving)
 end 
 
-function AIDriver:readUpdateStream(streamId)
+function AIDriver:readUpdateStream(streamId, timestamp, connection)
 	self.triggerHandler:readUpdateStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.state = self.states[nameState]
@@ -308,21 +312,6 @@ function AIDriver:stop(msgReference)
 	self.state = self.states.STOPPED
 end
 
-function AIDriver:setEmergencyBrake()
-	local brakeForce = self.vehicle.spec_motorized.brakeForce
-	if brakeForce ~= self.EMERGENCY_BRAKE_FORCE and self.vehicle:getLastSpeed() >= 0.1 then 
-		brakeForce = self.EMERGENCY_BRAKE_FORCE
-		self:setSpeed(0)
-	end
-end
-
-function AIDriver:resetEmergencyBrake()
-	local brakeForce = self.vehicle.spec_motorized.brakeForce
-	if self.vehicle:getLastSpeed() < 0.1 and brakeForce == self.EMERGENCY_BRAKE_FORCE then 
-		brakeForce = self.normalBrakeForce
-	end
-end
-
 --- Stop the driver when the work is done. Could just dismiss at this point,
 --- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
 function AIDriver:setDone(msgReference)
@@ -389,7 +378,11 @@ function AIDriver:update(dt)
 	self:resetSpeed()
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
---	self:resetEmergencyBrake()
+end
+
+--- UpdateTick AI driver
+function AIDriver:updateTick(dt)
+	self.triggerHandler:onUpdateTick(dt)
 end
 
 --- Main driving function
@@ -434,7 +427,8 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
-	if self:getIsInFilltrigger() or isInTrigger then
+--	if self:getIsInFilltrigger() or self:hasTipTrigger() then-- or isInTrigger then
+	if isInTrigger then 
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		if isAugerWagonTrigger then 
 			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
@@ -1610,7 +1604,6 @@ function AIDriver:onDraw()
 	if CpManager.isDeveloper and self.pathfinder then
 		PathfinderUtil.showNodes(self.pathfinder)
 	end
-
 end
 --TODO: do we want to continue using this setter/getter for driveUnloadNow??
 function AIDriver:setDriveUnloadNow(driveUnloadNow)

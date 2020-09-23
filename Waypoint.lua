@@ -359,6 +359,11 @@ function Course:enrichWaypointData()
 			self.firstCenterWpIx = self.firstCenterWpIx or i	
 		end
 		if self:isTurnStartAtIx(i) then self.totalTurns = self.totalTurns + 1 end
+		if self:isTurnEndAtIx(i) then
+			self.dFromLastTurn = 0
+		elseif self.dFromLastTurn then
+			self.dFromLastTurn = self.dFromLastTurn + dToNext
+		end
 		self.waypoints[i].dToNext = dToNext
 		self.waypoints[i].dToHere = self.length
 		self.waypoints[i].turnsToHere = self.totalTurns
@@ -1016,6 +1021,46 @@ end
 
 function Course:getDistanceToNextTurn(ix)
 	return self.waypoints[ix].dToNextTurn
+end
+
+function Course:getDistanceFromLastTurn(ix)
+	return self.waypoints[ix].dFromLastTurn
+end
+
+--- Are we closer than distance to the next turn?
+---@param distance number
+---@return boolean true when we are closer than distance to the next turn, false otherwise, even
+--- if we can't determine the distance to the next turn.
+function Course:isCloseToNextTurn(distance)
+	local ix = self.currentWaypoint
+	if ix then
+		local dToNextTurn = self:getDistanceToNextTurn(ix)
+		if dToNextTurn and dToNextTurn < distance then
+			return true
+		elseif self:isTurnEndAtIx(ix) or self:isTurnStartAtIx(ix) then
+			return true
+		else
+			return false
+		end
+	end
+	return false
+end
+
+--- Are we closer than distance to the next turn?
+---@param distance number
+---@return boolean true when we are closer than distance to the next turn, false otherwise, even
+--- if we can't determine the distance to the next turn.
+function Course:isCloseToLastTurn(distance)
+	local ix = self.currentWaypoint
+	if ix then
+		local dFromLastTurn = self:getDistanceFromLastTurn(ix)
+		if dFromLastTurn and dFromLastTurn < distance then
+			return true
+		else
+			return false
+		end
+	end
+	return false
 end
 
 function Course:getRowLength(ix)

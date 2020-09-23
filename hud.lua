@@ -988,7 +988,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:disableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.driveOnAtFillLevel)
 					end
 				
-				--TODO: setDriveNow and forceGoToUnloadCourse should be same !! 
+				--TODO: setDriveNow should be AIDriver function! 
 				elseif entry.functionToCall == 'setDriveNow' then
 					if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						if vehicle.cp.driver and vehicle.cp.driver.getCanShowDriveOnButton then
@@ -1803,7 +1803,12 @@ function courseplay.hud:setupCombinesListPageButtons(vehicle,page,assignedCombin
 			width = self.buttonCoursesPosX[4] - self.contentMinX,
 			height = self.linesPosY[3] + self.lineHeight - self.linesPosY[self.numLines]
 		};
+		local wMiddle	   = self.buttonSize.middle.w;
+		local hMiddle	   = self.buttonSize.middle.h;
+		local listArrowX = self.contentMaxX - wMiddle;
 		vehicle.cp.hud.combinesListMouseArea= courseplay.button:new(vehicle, page, nil, 'changeListOffset', -1, combinesListMouseWheelArea.x, combinesListMouseWheelArea.y, combinesListMouseWheelArea.width, combinesListMouseWheelArea.height, nil, -self.numLines, false, true):setSetting(assignedCombinesSetting);
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'navUp' },   'changeListOffset', -1, listArrowX, self.linesButtonPosY[3],			   wMiddle, hMiddle, nil, -self.numLines*2):setSetting(assignedCombinesSetting);
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'navDown' }, 'changeListOffset',  1, listArrowX, self.linesButtonPosY[self.numLines], wMiddle, hMiddle, nil,  self.numLines*2):setSetting(assignedCombinesSetting);
 	else
 		courseplay.infoVehicle(vehicle, "setupCombinesListPageButtons failed, assignedCombinesSetting not found!")
 	end
@@ -2310,7 +2315,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 6)
 	self:setupDebugButtons(vehicle, 6)
 	self:setupShowWaypointsButtons(vehicle, 6, 3)
-	self:addRowButton(vehicle,vehicle.cp.settings.showMapHotspot,'next', 6, 4, 1 )
+--	self:addRowButton(vehicle,vehicle.cp.settings.showMapHotspot,'next', 6, 4, 1 )
 	self:addRowButton(vehicle,nil,'openAdvancedSettingsDialog', 6, 5, 1 ):setOnlyCallLocal()
 
 

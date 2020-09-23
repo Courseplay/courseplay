@@ -115,3 +115,8 @@ function OverloaderAIDriver:isTrailerEmpty()
     end
     return true
 end
+
+--override this as mode 3 unloading works seperate without triggerHandler
+function OverloaderAIDriver:enableFillTypeUnloading()
+	
+end

@@ -147,11 +147,12 @@ function CpManager:deleteMap()
 	courseplay.courses.batchWriteSize = nil;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	-- deactivate debug channels
-	for channel,_ in pairs(courseplay.debugChannels) do
-		courseplay.debugChannels[channel] = false;
-	end;
-
+	if courseplay.debugChannels then
+		-- deactivate debug channels
+		for channel,_ in pairs(courseplay.debugChannels) do
+			courseplay.debugChannels[channel] = false;
+		end;
+	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete vehicles' button overlays
 	for i,vehicle in pairs(g_currentMission.vehicles) do
@@ -658,12 +659,13 @@ function CpManager:loadFile(fileName)
 end
 
 function CpManager:loadAIDriver()
-	self:loadFile()
+	local result = self:loadFile()
 	if g_currentMission.controlledVehicle then
 		-- re-instantiate the AIDriver after loaded
 		courseplay:setAIDriver(g_currentMission.controlledVehicle, g_currentMission.controlledVehicle.cp.mode)
 		g_combineUnloadManager:addNewCombines()
 	end
+	return result
 end
 
 function CpManager:saveVehiclePositions()
@@ -916,38 +918,38 @@ function CpManager:setupGlobalInfoText()
 
 
 	self.globalInfoText.msgReference = {
-		BGA_IS_FULL					= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
-		DAMAGE_IS					= { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
-		DAMAGE_MUST					= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
-		DAMAGE_SHOULD				= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
-		END_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
-		END_POINT_MODE_1			= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT_MODE_1' };
-		END_POINT_MODE_8			= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT_MODE_8' };
-		FARM_SILO_NO_FILLTYPE		= { level = -2, text = 'COURSEPLAY_FARM_SILO_NO_FILLTYPE'};
-		FARM_SILO_IS_EMPTY			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
-		FARM_SILO_IS_FULL			= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_FULL'};
-		FUEL_IS						= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
-		FUEL_MUST					= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
-		FUEL_SHOULD					= { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
-		HOSE_MISSING				= { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
-		NEEDS_REFILLING				= { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
-		NEEDS_UNLOADING				= { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
-		OVERLOADING_POINT			= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
-		PICKUP_JAMMED				= { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
-		SLIPPING_1					= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING' };
-		SLIPPING_2					= { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING' };
-		TRAFFIC						= { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
-		UNLOADING_BALE				= { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
-		WAIT_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
-		WATER						= { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
-		WEATHER						= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
-		WEIGHING_VEHICLE			= { level =  0, text = 'COURSEPLAY_IS_BEING_WEIGHED' };
-		WORK_END					= { level =  1, text = 'COURSEPLAY_WORK_END' };
-		REACHED_OVERLOADING_POINT	= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
-		NO_SELECTED_FILLTYPE		= { level =  0, text = 'COURSEPLAY_NO_SELECTED_FILLTYPE' };
-		REACHED_REFILLING_POINT		= { level =  0, text = 'COURSEPLAY_REACHED_REFILL_POINT' };
-		WRONG_FILLTYPE_FOR_TRIGGER	= { level =  0, text = 'COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER' };
-		RUNCOUNTER_ERROR_FOR_TRIGGER= { level =  0, text = 'COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER' };
+		BGA_IS_FULL							= { level = -1, text = 'COURSEPLAY_BGA_IS_FULL'};
+		DAMAGE_IS							= { level =  0, text = 'COURSEPLAY_DAMAGE_IS_BEING_REPAIRED' };
+		DAMAGE_MUST							= { level = -2, text = 'COURSEPLAY_DAMAGE_MUST_BE_REPAIRED' };
+		DAMAGE_SHOULD						= { level = -1, text = 'COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED' };
+		END_POINT							= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT' };
+		END_POINT_MODE_1					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT_MODE_1' };
+		END_POINT_MODE_8					= { level =  0, text = 'COURSEPLAY_REACHED_END_POINT_MODE_8' };
+		FARM_SILO_NO_FILLTYPE				= { level = -2, text = 'COURSEPLAY_FARM_SILO_NO_FILLTYPE'};
+		FARM_SILO_IS_EMPTY					= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_EMPTY'};
+		FARM_SILO_IS_FULL					= { level =  0, text = 'COURSEPLAY_FARM_SILO_IS_FULL'};
+		FUEL_IS								= { level =  0, text = 'COURSEPLAY_IS_BEING_REFUELED' };
+		FUEL_MUST							= { level = -2, text = 'COURSEPLAY_MUST_BE_REFUELED' };
+		FUEL_SHOULD							= { level = -1, text = 'COURSEPLAY_SHOULD_BE_REFUELED' };
+		HOSE_MISSING						= { level = -2, text = 'COURSEPLAY_HOSEMISSING' };
+		NEEDS_REFILLING						= { level = -1, text = 'COURSEPLAY_NEEDS_REFILLING' };
+		NEEDS_UNLOADING						= { level = -1, text = 'COURSEPLAY_NEEDS_UNLOADING' };
+		OVERLOADING_POINT					= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
+		PICKUP_JAMMED						= { level = -2, text = 'COURSEPLAY_PICKUP_JAMMED' };
+		SLIPPING_1							= { level = -1, text = 'COURSEPLAY_SLIPPING_WARNING' };
+		SLIPPING_2							= { level = -2, text = 'COURSEPLAY_SLIPPING_WARNING' };
+		TRAFFIC								= { level = -1, text = 'COURSEPLAY_IS_IN_TRAFFIC' };
+		UNLOADING_BALE						= { level =  0, text = 'COURSEPLAY_UNLOADING_BALES' };
+		WAIT_POINT							= { level =  0, text = 'COURSEPLAY_REACHED_WAITING_POINT' };
+		WATER								= { level = -2, text = 'COURSEPLAY_WATER_WARNING' };
+		WEATHER								= { level =  0, text = 'COURSEPLAY_WEATHER_WARNING' };
+		WEIGHING_VEHICLE					= { level =  0, text = 'COURSEPLAY_IS_BEING_WEIGHED' };
+		WORK_END							= { level =  1, text = 'COURSEPLAY_WORK_END' };
+		REACHED_OVERLOADING_POINT			= { level =  0, text = 'COURSEPLAY_REACHED_OVERLOADING_POINT' };
+		NO_SELECTED_FILLTYPE				= { level =  0, text = 'COURSEPLAY_NO_SELECTED_FILLTYPE' };
+		REACHED_REFILLING_POINT				= { level =  0, text = 'COURSEPLAY_REACHED_REFILL_POINT' };
+		WRONG_FILLTYPE_FOR_TRIGGER			= { level =  0, text = 'COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER' };
+		RUNCOUNTER_ERROR_FOR_TRIGGER		= { level =  0, text = 'COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER' };
 	};
 end;
 

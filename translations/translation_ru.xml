@@ -77,8 +77,8 @@
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="застрял." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Расстояние до точки разгрузки" />
-		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнение: %d из %d" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Разгрузка: %d из %d" />
+		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Заполнено: %d из %d" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Разгружено: %d из %d" />
 		<text name="COURSEPLAY_WAYPOINT_MODE" 								text="Отображение путевых точек:" />
 		<text name="COURSEPLAY_PATHFINDING" 								text="Избегать движения по посевам:" />
 		<text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Плуг за границы поля" />
@@ -111,7 +111,7 @@
 		<text name="COURSEPLAY_MAX_SPEED_MODE_MAX" 							text="максимальная" />
 		<text name="COURSEPLAY_MAX_SPEED_MODE_AUTOMATIC" 					text="автоматически (до %s)" />
 		<text name="COURSEPLAY_NO_COURSE_LOADED" 							text="Маршрут не загружен" />
-		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Сигнальные огни:" />
+		<text name="COURSEPLAY_WARNING_LIGHTS" 								text="Проблесковые маячки:" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_0" 						text="отключено" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_1" 						text="на дороге - маячок" />
 		<text name="COURSEPLAY_WARNING_LIGHTS_MODE_2" 						text="на дороге - маячок и аварийка" />
@@ -250,8 +250,8 @@
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Маршрут нерабочий" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Функция удобрения сеялки:" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Несколько орудий на этом маршруте:" />
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Максим. дистанция до предыдущего:" />
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Миним. дистанция до предыдущего:" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Макс. дистанция до предыдущего:" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Мин. дистанция до предыдущего:" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="СПЕЦИФИЧНЫЕ НАСТРОЙКИ ДЛЯ РЕЖИМА" />
 
@@ -278,9 +278,9 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="со стартовой точки" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="с ближайшей подходящей точки" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Разгрузка" />
-		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать поле:" />
-		<text name="COURSEPLAY_FIELD" 										text="поле №" />
+		<text name="COURSEPLAY_UNLOAD" 										text="с разгрузки" />
+		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Выбрать границу" />
+		<text name="COURSEPLAY_FIELD" 										text="поля №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(загруженный маршрут)" />
 		<text name="COURSEPLAY_FIELD_SCAN_IN_PROGRESS" 						text="начальная обработка" />
 		<text name="COURSEPLAY_SCANNING_FIELD_NMB" 							text="СКАНИРОВАНИЕ ПОЛЕЙ %d/%d" />
@@ -290,7 +290,7 @@
 		<text name="COURSEPLAY_FILLEVEL" 									text="загруженность" />
 		<text name="COURSEPLAY_PICKUP_JAMMED" 								text="погрузка остановлена" />
 		<text name="COURSEPLAY_BALER_NEEDS_NETS" 							text="упаковщик нуждается в тюках" />
-		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Рассчитать границы текущего поля" />
+		<text name="COURSEPLAY_SCAN_CURRENT_FIELD_EDGES" 					text="Определить границы текущего поля" />
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Выбрать поле:" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Добавить поле в список" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Переписать поле в списке" />
@@ -431,7 +431,7 @@
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"						text="(и обратно)" />
 
 
-		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ..." />
+		<text name="COURSEPLAY_OPEN_ADVANCED_SETTINGS"						text="ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ" />
 
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP"						text="Загружать маршруты при запуске" />
 		<text name="COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP"				text="Загружать все маршруты при запуске игры. Если включено, тогда это замедлит загрузку сохраненной игры." />
@@ -452,12 +452,13 @@
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Вкл/Выкл клик правой кнопкой для открытия HUD (на текущей технике). В противном случае используйте Right Ctrl+Del." />
 
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Отображать временные путевые точки" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Отображать временные маршруты (как поиск пути или повороты)." />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Отображать временные маршруты (такие как поиск пути или повороты)." />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Перекрытие поворотных полос" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Перекрытие проходов поворотных полос в процентах." />
 
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Вкл/Выкл выгрузку соломы на разворотной полосе." />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Выгрузка соломы комбайном" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="только центр" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Выгрузка соломы вкл/выкл/только центр" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Удобрение сеялкой" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Активировать или деактивировать функцию удобрения сеялки." />
 
@@ -478,17 +479,16 @@
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
 
 		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="не выбран fillType!/не поддерживается курс пополнения!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="добавить новый fillType" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Добавить новый fillType" />
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="достиг точки заправки." />
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="неверный fillType для триггера." />
 
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Разгрузка комбайна на 1-й ПП" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Разрешить разгрузку движущегося комбайн на первой поворотной полосе (ПП), при этом разгрузчику придётся выезжать за пределы поля." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"				text="last runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Загружать отдельные FillTypes" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Разделить прицепы:" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Ручная загрузка" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

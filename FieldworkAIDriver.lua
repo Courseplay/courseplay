@@ -345,7 +345,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 			self.fieldworkState = self.states.WORKING
 			self:setSpeed(self:getWorkSpeed())
 		else
-			self:debug('waiting for all tools to lower')
+			self:debugSparse('waiting for all tools to lower')
 			self:setSpeed(0)
 			self:checkFillLevels()
 		end
@@ -953,10 +953,7 @@ function FieldworkAIDriver:rememberWaypointToContinueFieldwork()
 end
 
 function FieldworkAIDriver:getCanShowDriveOnButton()
-	if self.state == ON_UNLOAD_OR_REFILL_COURSE or self.state == UNLOAD_OR_REFILL_ON_FIELD then 
-		return AIDriver.getCanShowDriveOnButton(self)
-	end
-	return self.state == self.states.ON_FIELDWORK_COURSE
+	return self.state == self.states.ON_FIELDWORK_COURSE or AIDriver.getCanShowDriveOnButton(self)
 end
 
 function FieldworkAIDriver:getLoweringDurationMs()
@@ -1017,6 +1014,10 @@ function FieldworkAIDriver:getTurnEndSideOffset()
 	return 0
 end
 
+function FieldworkAIDriver:getTurnEndForwardOffset()
+	return 0
+end
+
 function FieldworkAIDriver:startTurn(ix)
 	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
 	-- turn.lua. That often happens too early (when lowering the implement) when we still have a cross track error,
@@ -1024,7 +1025,7 @@ function FieldworkAIDriver:startTurn(ix)
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
 	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
-			self:getTurnEndSideOffset())
+			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
 			return
@@ -1384,6 +1385,11 @@ function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
 			if not fillLevelInfo[fillType] then fillLevelInfo[fillType] = {fillLevel=0, capacity=0} end
 			fillLevelInfo[fillType].fillLevel = fillLevelInfo[fillType].fillLevel + fillUnit.fillLevel
 			fillLevelInfo[fillType].capacity = fillLevelInfo[fillType].capacity + fillUnit.capacity
+			--used to check treePlanter fillLevel
+			local treePlanterSpec = object.spec_treePlanter
+			if treePlanterSpec then 
+				fillLevelInfo[fillType].treePlanterSpec = object.spec_treePlanter
+			end
 		end
 	end
  	-- collect fill levels from all attached implements recursively

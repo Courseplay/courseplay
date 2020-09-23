@@ -69,12 +69,10 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	else
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 10)
-	self.waitPointIx = waitPointIx
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 10)
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
-	self.isInWaitPointRange = self.waitPointIx and self.waitPointIx+8 >self.ppc:getCurrentWaypointIx() or isNearWaitPoint 
-	self:enableFillTypeLoading(self.isInWaitPointRange)
+	self:enableFillTypeLoading(isNearWaitPoint)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
@@ -92,7 +90,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		end
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
-		self:closePipeIfNeeded()
+		self:closePipeIfNeeded(isNearWaitPoint)
 	end	
 end
 
@@ -171,12 +169,19 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	end
 	
 	for fillType, info in pairs(fillLevelInfo) do
-		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
-			allOk = false
-			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+		if info.treePlanterSpec then -- is TreePlanter
+			--check fillLevel of pallet on top of treePlanter or if their is one pallet
+			if not info.treePlanterSpec.mountedSaplingPallet or not info.treePlanterSpec.mountedSaplingPallet:getFillUnitFillLevel(1) then 
+				allOk = false
+			end
 		else
-			if fillType == FillType.SEEDS then hasSeeds = true end
-		end		
+			if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+				allOk = false
+				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+			else
+				if fillType == FillType.SEEDS then hasSeeds = true end
+			end		
+		end	
 	end
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
@@ -261,3 +266,21 @@ end
 function FillableFieldworkAIDriver:notAllowedToLoadNextFillType()
 	return true
 end
+
+function FillableFieldworkAIDriver:getTurnEndForwardOffset()
+	-- TODO: do other implements need this?
+	if  SpecializationUtil.hasSpecialization(Sprayer, self.vehicle.specializations)
+			and self.vehicle.cp.workWidth > self.vehicle.cp.turnDiameter then
+		-- compensate for very wide implements like sprayer booms where the tip of the implement
+		-- on the inner side of the turn may be very far forward of the vehicle's root and miss
+		-- parts of the inside corner.
+		local forwardOffset = - (self.vehicle.cp.workWidth - self.vehicle.cp.turnDiameter) / 2.5
+		self:debug('sprayer working width %.1f > turn diameter %.1f, applying forward offset %.1f to turn end',
+				self.vehicle.cp.workWidth, self.vehicle.cp.turnDiameter, forwardOffset)
+		return forwardOffset
+	else
+		return 0
+	end
+end
+
+

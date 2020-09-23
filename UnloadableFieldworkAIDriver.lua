@@ -39,6 +39,7 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
+	self.refillUntilPct = vehicle.cp.settings.refillUntilPct
 end
 
 function UnloadableFieldworkAIDriver:setHudContent()
@@ -61,6 +62,8 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Plow, vehicle.specializations) or
 		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Plow) then
 		return PlowAIDriver(vehicle)
+    elseif FS19_addon_strawHarvest and AIDriverUtil.hasAIImplementWithSpecialization(vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) then
+        return CombineAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
 	end
@@ -179,7 +182,7 @@ function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
 		self:debugSparse('Stop for unloading: %s: %.2f', fillTypeName, pc )
 		return false
 	end
-	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
+	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage or pc>self.refillUntilPct:get() then
 		self:debugSparse('Full: %s: %.2f', fillTypeName, pc )
 		return false
 	end
@@ -241,6 +244,9 @@ function UnloadableFieldworkAIDriver:setLightsMask(vehicle)
 end
 
 function UnloadableFieldworkAIDriver:setDriveNow()
-	self:stopAndChangeToUnload()
-	AIDriver.setDriveNow(self)
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		self:stopAndChangeToUnload()
+	else
+		AIDriver.setDriveNow(self)
+	end
 end

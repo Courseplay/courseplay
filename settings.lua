@@ -471,8 +471,6 @@ end;
 function courseplay:removeSavedCombineFromTractor(vehicle)
 	vehicle.cp.savedCombine = nil;
 	vehicle.cp.selectedCombineNumber = 0;
-	vehicle:setCpVar('HUD4savedCombine',nil,courseplay.isClient);
-	vehicle:setCpVar('HUD4savedCombineName',nil,courseplay.isClient);
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -2295,6 +2293,9 @@ function HeadlandOverlapPercent:init(vehicle)
 	self:set(7)
 end
 
+--toggleHeadlandDirection
+--toggleHeadlandOrder
+
 --- Implement raise/lower  setting
 ---@class ImplementRaiseLowerTimeSetting : SettingList
 ImplementRaiseLowerTimeSetting = CpObject(SettingList)
@@ -2489,7 +2490,7 @@ function ClickToSwitchSetting:init()
 	BooleanSetting.init(self, 'clickToSwitch', 'COURSEPLAY_CLICK_TO_SWITCH',
 				'COURSEPLAY_YES_NO_CLICK_TO_SWITCH', nil)
 	-- set default while we are transitioning from the the old setting to this new one
-	self:set(false)
+	self:set(true)
 end
 
 ---@class PipeAlwaysUnfold : BooleanSetting
@@ -2508,32 +2509,44 @@ end
 
 ---@class SowingMachineFertilizerEnabled : BooleanSetting
 SowingMachineFertilizerEnabled = CpObject(BooleanSetting)
-function SowingMachineFertilizerEnabled:init()
+function SowingMachineFertilizerEnabled:init(vehicle)
 	BooleanSetting.init(self, 'sowingMachineFertilizerEnabled', 'COURSEPLAY_FERTILIZE_OPTION',
-				'COURSEPLAY_YES_NO_FERTILIZE_OPTION', nil)
+				'COURSEPLAY_YES_NO_FERTILIZE_OPTION', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
 end
 
----@class StrawOnHeadland : BooleanSetting
-StrawOnHeadland = CpObject(BooleanSetting)
-function StrawOnHeadland:init(vehicle)
-	BooleanSetting.init(self, 'strawOnHeadland', 'COURSEPLAY_STRAW_ON_HEADLAND',
-				'COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', vehicle)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(true)
+function SowingMachineFertilizerEnabled:isDisabled()
+	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, SowingMachine)
 end
 
-function StrawOnHeadland:isDisabled()
+---@class StrawSwathSetting : SettingList
+StrawSwathSetting = CpObject(SettingList)
+StrawSwathSetting.OFF = 0
+StrawSwathSetting.ON = 1
+StrawSwathSetting.ONLY_CENTER = 2
+function StrawSwathSetting:init(vehicle)
+	SettingList.init(self, 'strawSwath', 'COURSEPLAY_STRAW_ON_HEADLAND','COURSEPLAY_YES_NO_STRAW_ON_HEADLAND', vehicle,
+		{StrawSwathSetting.OFF,StrawSwathSetting.ON,StrawSwathSetting.ONLY_CENTER},
+		{'COURSEPLAY_DEACTIVATED','COURSEPLAY_ACTIVATED','COURSEPLAY_STRAW_ON_ONLY_CENTER'})
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(1)
+end
+
+function StrawSwathSetting:isDisabled()
 	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineAIDriver)
 end
 
 ---@class RidgeMarkersAutomatic : BooleanSetting
 RidgeMarkersAutomatic = CpObject(BooleanSetting)
-function RidgeMarkersAutomatic:init()
+function RidgeMarkersAutomatic:init(vehicle)
 	BooleanSetting.init(self, 'ridgeMarkersAutomatic', 'COURSEPLAY_RIDGEMARKERS',
-			'COURSEPLAY_YES_NO_RIDGEMARKERS', nil)
+			'COURSEPLAY_YES_NO_RIDGEMARKERS', vehicle)
 	self:set(false)
+end
+
+function RidgeMarkersAutomatic:isDisabled()
+	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, RidgeMarker)
 end
 
 ---@class EnableVisualWaypointsTemporary : BooleanSetting
@@ -3232,7 +3245,7 @@ function SeperateFillTypeLoadingSetting:init(vehicle)
 	self:set(1)
 end
 
-function SeperateFillTypeLoadingSetting:isActive()
+function SeperateFillTypeLoadingSetting:hasDiffFillTypes()
 	return self.current>1
 end
 
@@ -3546,6 +3559,88 @@ function ShowVisualWaypointsCrossPointSetting:onChange()
 	courseplay.signs:setSignsVisibility(self.vehicle)
 end
 
+--[[
+
+---@class SearchCombineAutomaticallySetting : BooleanSetting
+SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
+function SearchCombineAutomaticallySetting:init(vehicle)
+	BooleanSetting.init(self, 'searchCombineAutomatically','COURSEPLAY_COMBINE_SEARCH_MODE', 'COURSEPLAY_COMBINE_SEARCH_MODE', vehicle, {'COURSEPLAY_MANUAL_SEARCH','COURSEPLAY_AUTOMATIC_SEARCH'}) 
+	self:set(false)
+end
+
+---@class ConvoyActiveSetting : BooleanSetting
+ConvoyActiveSetting = CpObject(BooleanSetting)
+function ConvoyActiveSetting:init(vehicle)
+	BooleanSetting.init(self, 'convoyActive','COURSEPLAY_COMBINE_CONVOY', 'COURSEPLAY_COMBINE_CONVOY', vehicle) 
+	self:set(false)
+end
+
+--??
+---@class Mode10_automaticSpeedSetting : BooleanSetting
+Mode10_automaticSpeedSetting = CpObject(BooleanSetting)
+function Mode10_automaticSpeedSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_automaticSpeed','-', '-', vehicle) 
+	self:set(false)
+end
+
+---@class Mode10_drivingThroughtLoadingSetting : BooleanSetting
+Mode10_drivingThroughtLoadingSetting = CpObject(BooleanSetting)
+function Mode10_drivingThroughtLoadingSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_drivingThroughtLoading','COURSEPLAY_MODE10_SILO_LOADEDBY', 'COURSEPLAY_MODE10_SILO_LOADEDBY', vehicle,{'COURSEPLAY_MODE10_REVERSE_UNLOADING','COURSEPLAY_MODE10_DRIVINGTHROUGH'}) 
+	self:set(false)
+end
+
+---@class Mode10_modeSetting : BooleanSetting
+Mode10_modeSetting = CpObject(BooleanSetting)
+function Mode10_modeSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_mode','COURSEPLAY_MODE10_MODE', 'COURSEPLAY_MODE10_MODE', vehicle, {'COURSEPLAY_MODE10_MODE_BUILDUP','COURSEPLAY_MODE10_MODE_LEVELING'}) 
+	self:set(false)
+end
+
+---@class Mode10_searchModeSetting : BooleanSetting
+Mode10_searchModeSetting = CpObject(BooleanSetting)
+function Mode10_searchModeSetting:init(vehicle)
+	BooleanSetting.init(self, 'mode10_searchMode','COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle, {'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'}) 
+	self:set(false)
+end
+
+---@class OppositeTurnModeSetting : BooleanSetting
+OppositeTurnModeSetting = CpObject(BooleanSetting)
+function OppositeTurnModeSetting:init(vehicle)
+	BooleanSetting.init(self, 'oppositeTurnMode','COURSEPLAY_OPPOSITE_TURN_DIRECTION', 'COURSEPLAY_OPPOSITE_TURN_DIRECTION', vehicle,{'COURSEPLAY_OPPOSITE_TURN_AT_END','COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE'}) 
+	self:set(false)
+end
+
+---@class ShovelStopAndGoSetting : BooleanSetting
+ShovelStopAndGoSetting = CpObject(BooleanSetting)
+function ShovelStopAndGoSetting:init(vehicle)
+	BooleanSetting.init(self, 'shovelStopAndGo','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
+	self:set(false)
+	self.shovelPositionTexts = {'COURSEPLAY_SHOVEL_LOADING_POSITION','COURSEPLAY_SHOVEL_TRANSPORT_POSITION','COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION','COURSEPLAY_SHOVEL_UNLOADING_POSITION'}
+	self.shovelPositionStates = {false,false,false,false}
+end
+
+function ShovelStopAndGoSetting:getShovelPositionText(shovelPosition)
+	return self.shovelPositionTexts[shovelPosition]
+end
+
+function ShovelStopAndGoSetting:getHasShovelPosition(shovelPosition)
+	return self.shovelPositionStates[shovelPosition]
+end
+
+function ShovelStopAndGoSetting:setHasShovelPositionState(shovelPosition,state)
+	self.shovelPositionStates[shovelPosition] = state
+end
+
+---@class ShowSelectedFieldEdgePathSetting : SettingList
+ShowSelectedFieldEdgePathSetting = CpObject(SettingList)
+function ShowSelectedFieldEdgePathSetting:init(vehicle)
+	SettingList.init(self, 'showSelectedFieldEdgePath','COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER', 'COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER', vehicle) 
+	self:set(false)
+end
+
+
+]]--
 
 --- Container for settings
 --- @class SettingsContainer

@@ -90,8 +90,6 @@ function courseplay:onLoad(savegame)
 	self.cp.shortestDistToWp = nil
 
 	self.Waypoints = {}
-	self.cp.isEntered = false
-	self.cp.remoteIsEntered = false
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
 	self.cp.coursePlayerNum = nil;
 
@@ -394,7 +392,6 @@ function courseplay:onLoad(savegame)
 	self.cp.skipOffsetX = false;
 
 	self.cp.workWidth = 3
-	self.cp.headlandHeight = 0;
 
 	self.cp.searchCombineAutomatically = true;
 	self.cp.savedCombine = nil
@@ -535,7 +532,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
 	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
 	self.cp.settings:addSetting(StopForUnloadSetting, self)
-	self.cp.settings:addSetting(StrawOnHeadland, self)
+	self.cp.settings:addSetting(StrawSwathSetting, self)
 	self.cp.settings:addSetting(AllowUnloadOnFirstHeadlandSetting, self)
 	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
 	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
@@ -616,7 +613,9 @@ function courseplay:onDraw()
 
 	courseplay:showAIMarkers(self)
 	courseplay:showTemporaryMarkers(self)
-
+	if self.cp.driver then 
+		self.cp.driver.triggerHandler:onDraw()
+	end
 	local isDriving = self:getIsCourseplayDriving();
 
 	--WORKWIDTH DISPLAY
@@ -832,7 +831,6 @@ function courseplay:onDraw()
 			courseplay:distanceCheck(self);
 		elseif self.cp.infoText ~= nil and StringUtil.startsWith(self.cp.infoText, 'COURSEPLAY_DISTANCE') then  
 			self.cp.infoText = nil
-			self.cp.infoTextNilSent = false
 		end;
 		
 		if self:getIsEntered() and self.cp.toolTip ~= nil then
@@ -918,30 +916,15 @@ function courseplay:drawWaypointsLines(vehicle)
 	end;
 end;
 
-function courseplay:onUpdate(dt)
-	
+function courseplay:onUpdate(dt)	
 	if g_server == nil and self.isPostSynced == nil then 
 		self.cp.driver:postSync()
 		self.isPostSynced=true
 	end
-	
-	if not self.cp.remoteIsEntered then
-		if self.cp.isEntered ~= Enterable.getIsEntered(self) then
-			--CourseplayEvent.sendEvent(self, "self.cp.remoteIsEntered",Enterable.getIsEntered(self))
-			self:setCpVar('remoteIsEntered',Enterable.getIsEntered(self))
-			--self.cp.remoteIsEntered = Enterable.getIsEntered(self)
-		end
-		self:setCpVar('isEntered',Enterable.getIsEntered(self))
+
+	if self.cp.infoText ~= nil then
+		self.cp.infoText = nil
 	end
-	
-	if not courseplay.isClient then -- and self.cp.infoText ~= nil then --(self.cp.isDriving or self.cp.isRecording or self.cp.recordingIsPaused) then
-		if self.cp.infoText == nil and not self.cp.infoTextNilSent then
-			CourseplayEvent.sendEvent(self, "self.cp.infoText",nil)
-			self.cp.infoTextNilSent = true
-		elseif self.cp.infoText ~= nil then
-			self.cp.infoText = nil
-		end
-	end;
 
 	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
 		courseplay:drawWaypointsLines(self);
@@ -1035,7 +1018,16 @@ function courseplay:onUpdateTick(dt)
 		self.cpTrafficCollisionIgnoreList = {}			-- clear local colli list, will be updated inside resetTools(self) again
 		courseplay:resetTools(self)
 	end
-
+	
+	if self.cp.isDriving and g_server ~= nil then
+		local status, err = xpcall(self.cp.driver.updateTick, function(err) printCallstack(); return err end, self.cp.driver, dt)
+		if not status then
+			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
+			courseplay:stop(self)
+			return
+		end
+	end
+	
 	self.timer = self.timer + dt;
 end
 
@@ -1104,16 +1096,20 @@ function courseplay:onDelete()
 end;
 
 function courseplay:setInfoText(vehicle, text)
-	if not vehicle.cp.isEntered then
+	if not vehicle:getIsEntered() then
 		return
 	end
 	if vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText ~= text then
-		vehicle:setCpVar('infoText',text,courseplay.isClient)
+	--	vehicle:setCpVar('infoText',text,courseplay.isClient)
+	--	vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
+		vehicle.cp.infoText = text
 		vehicle.cp.lastInfoText = text
-		vehicle.cp.infoTextNilSent = false
+--		vehicle.cp.infoTextNilSent = false
 	elseif vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText == text then
-		vehicle:setCpVar('infoText',text,true)
-		vehicle.cp.infoTextNilSent = false
+--		vehicle:setCpVar('infoText',text,true)
+		vehicle.cp.infoText = text
+--		vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
+--		vehicle.cp.infoTextNilSent = false
 	end;
 end;
 
@@ -1249,7 +1245,8 @@ function courseplay:onReadStream(streamId, connection)
 			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
 		end
 	end
-
+	-- SETUP 2D COURSE DRAW DATA
+	self.cp.course2dUpdateDrawData = true;
 	
 	local debugChannelsString = streamDebugReadString(streamId)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
@@ -1340,15 +1337,33 @@ function courseplay:onWriteStream(streamId, connection)
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
+--TODO figure out how dirtyFlags work ??
+
 function courseplay:onReadUpdateStream(streamId, timestamp, connection)
-	if g_server == nil and CpManager.isMultiplayer then
+	 if connection:getIsServer() then
 		if self.cp.driver ~= nil then 
-			self.cp.driver:readUpdateStream(streamId)
-		--	streamWriteInt32(streamId,self.cp.waypointIndex)
+			self.cp.driver:readUpdateStream(streamId, timestamp, connection)
+		end 
+		--only sync while cp is drivin!
+		if streamReadBool(streamId) then
+			if streamReadBool(streamId) then 
+				self.cp.waypointIndex = streamReadInt32(streamId)
+			else 
+				self.cp.waypointIndex = nil
+			end
+			if streamReadBool(streamId) then 
+				self.cp.infoText = streamReadString(streamId)
+			else 
+				self.cp.infoText = nil
+			end
+			if streamReadBool(streamId) then 
+				self.cp.currentCourseName = streamReadString(streamId)
+			else 
+				self.cp.currentCourseName = nil
+			end
+			
 		--	streamWriteInt32(streamId,self.cp.numWaypoints)
 		--	streamWriteBool(streamId,self.cp.isDriving)
-			--cp.infoText !!
-			--globalInfoText!!
 			--distanceCheck
 			--canDrive
 			--isRecording ??
@@ -1360,10 +1375,37 @@ function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 end
 
 function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
-	if g_server ~= nil and CpManager.isMultiplayer then
-		if self.cp.driver ~= nil then
-			self.cp.driver:writeUpdateStream(streamId)
-		end
+	 if not connection:getIsServer() then
+		if self.cp.driver ~= nil then 
+			self.cp.driver:writeUpdateStream(streamId, connection, dirtyMask)
+		end 
+		if streamWriteBool(streamId, self:getIsCourseplayDriving() or false) then
+			if self.cp.waypointIndex then
+				streamWriteBool(streamId,true)
+				streamWriteInt32(streamId,self.cp.waypointIndex)
+			else 
+				streamWriteBool(streamId,false)
+			end
+			if self.cp.infoText then
+				streamWriteBool(streamId,true)
+				streamWriteString(streamId,self.cp.infoText)
+			else 
+				streamWriteBool(streamId,false)
+			end
+			if self.cp.currentCourseName then
+				streamWriteBool(streamId,true)
+				streamWriteString(streamId,self.cp.currentCourseName)
+			else 
+				streamWriteBool(streamId,false)
+			end
+			--globalInfoText!!
+			--distanceCheck
+			--canDrive
+			--isRecording ??
+			--currentCourseName
+			--convoy to setting
+			--gitAdditionalText
+		end 
 	end
 end
 
@@ -1669,7 +1711,9 @@ function courseplay:setWaypointIndex(vehicle, number,isRecording)
 			vehicle.cp.waypointIndex = number
 			--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 		else
-			vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+		--	vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
+			vehicle.cp.waypointIndex = number
+--			vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 		end
 		if vehicle.cp.waypointIndex > 1 then
 			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
@@ -1684,7 +1728,8 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
-	self:setCpVar('isDriving',active,courseplay.isClient)
+	--self:setCpVar('isDriving',active,courseplay.isClient)
+	self.cp.isDriving = active
 end;
 
 --This is a copy from the Autodrive code "https://github.com/Stephan-S/FS19_AutoDrive" 
@@ -1717,6 +1762,9 @@ function courseplay:onStartCpAIDriver()
 	-- add ingameMap Hotspot
 	courseplay:createMapHotspot(self);
 	
+	--legancy 
+	self:setIsCourseplayDriving(true)
+	
 end
 
 function courseplay:onStopCpAIDriver()
@@ -1746,6 +1794,9 @@ function courseplay:onStopCpAIDriver()
 
 	-- remove ingame map hotspot
 	courseplay:deleteMapHotspot(self);
+	
+	--legancy
+	self:setIsCourseplayDriving(false)
 end
 
 -- do not remove this comment
