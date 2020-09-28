@@ -701,7 +701,7 @@ function FieldworkAIDriver:setUpCourses()
 	if self.vehicle.cp.multiTools > 1 then
 		self:debug('Calculating offset course for position %d of %d', self.vehicle.cp.laneNumber, self.vehicle.cp.multiTools)
 		self.fieldworkCourse = self.fieldworkCourse:calculateOffsetCourse(
-				self.vehicle.cp.multiTools, self.vehicle.cp.laneNumber,  courseplay:getWorkWidth(self.vehicle),
+				self.vehicle.cp.multiTools, self.vehicle.cp.laneNumber,  self.fieldworkCourse.workWidth/self.vehicle.cp.multiTools,
 				self.vehicle.cp.settings.symmetricLaneChange:is(true))
 	end
 end
