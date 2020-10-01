@@ -160,7 +160,7 @@ end
 function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
-	if self:getSiloSelectedFillTypeSetting():isEmpty() and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, Cultivator) then
+	if self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, FertilizingCultivator) then
 		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
 		return true
 	end

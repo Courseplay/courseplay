@@ -193,11 +193,13 @@ function CpManager:deleteMap()
 	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
-	for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
-		if fruitData.overlay then
-			fruitData.overlay:delete();
+	if courseplay.fields.seedUsageCalculator.fruitTypes then
+		for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
+			if fruitData.overlay then
+				fruitData.overlay:delete();
+			end;
 		end;
-	end;
+	end
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
 

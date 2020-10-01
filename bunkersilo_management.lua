@@ -116,8 +116,11 @@ function courseplay:checkAndSetMovingToolsPosition(vehicle, movingTools, seconda
 				else
 					Cylindered.setDirty(mtMainObject, mt);
 				end	
-				vehicle:raiseDirtyFlags(mtMainObject.spec_cylindered.cylinderedDirtyFlag);
+				mt.networkPositionIsDirty = true
+				mtMainObject:raiseDirtyFlags(mtMainObject.spec_cylindered.cylinderedDirtyFlag);
+				mtMainObject:raiseDirtyFlags(mt.dirtyFlag)
 			end;
+
 		end;
 	end;
 
@@ -142,7 +145,7 @@ function courseplay:getMovingTools(vehicle)
 	local frontLoader, shovel ,pipe = 0, 0;
 	local vAI = vehicle:getAttachedImplements()
 	for i=1, #(vAI) do
-		if vAI[i].object.cp.hasSpecializationShovel then
+		if vAI[i].object.cp.hasSpecializationShovel or vAI[i].object.spec_dynamicMountAttacher then
 			shovel = i;
 		elseif courseplay:isFrontloader(vAI[i].object) then
 			frontLoader = i;
