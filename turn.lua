@@ -602,7 +602,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	local center1, center2, startDir, stopDir = {}, {}, {}, {};
 
 	local isReverseingBaleLoader = turnInfo.reversingWorkTool and courseplay:isBaleLoader(turnInfo.reversingWorkTool)
-
+	
 	--- Get the Triangle sides
 	local centerOffset = (turnInfo.targetDeltaX * turnInfo.direction) - turnInfo.turnRadius;
 	local sideC = turnInfo.turnDiameter;
@@ -612,7 +612,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 	--- Check if we can turn on the headlands
 	local spaceNeeded = 0;
-	if vehicle.cp.oppositeTurnMode or isReverseingBaleLoader then
+	if vehicle.cp.settings.oppositeTurnMode:is(true) or isReverseingBaleLoader then
 		spaceNeeded = -turnInfo.zOffset + centerHeight + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
 	else
 		spaceNeeded = -turnInfo.zOffset + turnInfo.turnRadius + turnInfo.halfVehicleWidth;
@@ -655,7 +655,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	local width = vehicle.cp.courseWorkWidth * 0.5;
 	local doNormalTurn = true;
 	local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
-	if vehicle.cp.oppositeTurnMode then
+	if vehicle.cp.settings.oppositeTurnMode:is(true) then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = (turnInfo.haveHeadlands and widthNeeded > (width + turnInfo.headlandHeight) or widthNeeded > width);
 		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
@@ -871,7 +871,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		local width = vehicle.cp.courseWorkWidth * 0.5;
 		local doNormalTurn = true;
 		local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
-		if vehicle.cp.oppositeTurnMode then
+		if vehicle.cp.settings.oppositeTurnMode:is(true) then
 			width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 			doNormalTurn = widthNeeded > width;
 			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
@@ -997,7 +997,7 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	local doNormalTurn = true;
 	local widthNeeded = turnInfo.turnDiameter + turnInfo.halfVehicleWidth - vehicle.cp.courseWorkWidth;
 	-- TODO: even if getLaneInfo() was working correctly, this part only works for rectangular fields
-	if vehicle.cp.oppositeTurnMode then
+	if vehicle.cp.settings.oppositeTurnMode:is(true) then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = widthNeeded > width;
 		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);

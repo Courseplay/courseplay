@@ -39,10 +39,7 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 	self.refillState = self.states.TO_BE_REFILLED
 end
-function FillableFieldworkAIDriver:start(startingPoint)
-	self:getSiloSelectedFillTypeSetting():cleanUpOldFillTypes()
-	FieldworkAIDriver.start(self,startingPoint)
-end
+
 function FillableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)

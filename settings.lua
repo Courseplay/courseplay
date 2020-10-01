@@ -111,20 +111,6 @@ function courseplay:setDriveNow(vehicle)
 	vehicle.cp.driver:setDriveNow()
 end
 
-
-function courseplay:toggleConvoyActive(vehicle)
-	vehicle.cp.convoyActive =  not vehicle.cp.convoyActive
-	--self:setCpVar('convoyActive', self.cp.convoyActive, courseplay.isClient);
-end
-
-function courseplay:setConvoyMinDistance(vehicle, changeBy)
-	vehicle.cp.convoy.minDistance = MathUtil.clamp(vehicle.cp.convoy.minDistance + changeBy*10, 20, 2000);
-end
-
-function courseplay:setConvoyMaxDistance(vehicle, changeBy)
-	vehicle.cp.convoy.maxDistance = MathUtil.clamp(vehicle.cp.convoy.maxDistance + changeBy*10, 40, 3000);
-end
-
 function courseplay:toggleMode10automaticSpeed(self)
 	if self.cp.mode10.leveling then
 		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
@@ -1425,77 +1411,7 @@ function courseplay:setSlippingStage(vehicle, stage)
 end;
 
 
-function courseplay:getMapHotspotText(vehicle)
-	local text = '';
-	if vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_ONLY) then 
-		text = nameNum(vehicle, true) .. '\n';
-	elseif vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
-		text = nameNum(vehicle, true) .. '\n';
-		text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-	end
-	return text
-end
 
-
-function courseplay:createMapHotspot(vehicle)
-	if vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
-		return
-	end
-	--[[
-	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
-	local _, textSize = getNormalizedScreenValues(0, 6);
-	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
-	local width, height = getNormalizedScreenValues(11,11);
-]]
-	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
-	local _, textSize = getNormalizedScreenValues(0, 9)
-	local _, textOffsetY = getNormalizedScreenValues(0, 18)
-	local width, height = getNormalizedScreenValues(24, 24)
-	vehicle.cp.mapHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
-	vehicle.cp.mapHotspot:setSize(width, height)
-	vehicle.cp.mapHotspot:setLinkedNode(vehicle.components[1].node)											-- objectId to what the hotspot is attached to
-	vehicle.cp.mapHotspot:setText('CP\n' .. courseplay:getMapHotspotText(vehicle))
-	vehicle.cp.mapHotspot:setImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER), {0.052, 0.1248, 0.672, 1})
-	vehicle.cp.mapHotspot:setBackgroundImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER))
-	vehicle.cp.mapHotspot:setIconScale(0.7)
-	vehicle.cp.mapHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
-	vehicle.cp.mapHotspot:setColor(Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]))
-	g_currentMission:addMapHotspot(vehicle.cp.mapHotspot)
-
-
-	--[[ FS17 doc, left here for later reference only
-		"cpHelper",                                 -- name: 				mapHotspot Name
-		"CP\n"..name,                               -- fullName: 			Text shown in icon
-		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
-		getNormalizedUVs({768, 768, 256, 256}),     -- imageUVs:			UVs location of the icon in the image file. Use getNormalizedUVs to get an correct UVs array
-		colour,                                     -- baseColor:			What colour to show
-		hotspotX,                                   -- xMapPos:				x position of the hotspot on the map
-		hotspotZ,                                   -- zMapPos:				z position of the hotspot on the map
-		width,                                      -- width:				Image width
-		height,                                     -- height:				Image height
-		false,                                      -- blinking:			If the hotspot is blinking (Like the icons do, when a great demands is active)
-		false,                                      -- persistent:			Do the icon needs to be shown even when outside map ares (Like Greatdemands are shown at the minimap edge if outside the minimap)
-		true,                                       -- showName:			Should we show the fullName or not.
-		vehicle.components[1].node,                 -- objectId:			objectId to what the hotspot is attached to
-		true,                                       -- renderLast:			Does this need to be renderes as one of the last icons
-		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- category:			The MapHotspot category.
-		textSize,                                   -- textSize:			fullName text size. you can use getNormalizedScreenValues(x, y) to get the normalized text size by using the return value of the y.
-		textOffsetY,                                -- textOffsetY:			Text offset horizontal
-		{1, 1, 1, 1},                               -- textColor:			Text colour (r, g, b, a) in 0-1 format
-		nil,                                        -- bgImageFilename:		Image path for custome background images (If nil, then it will use Giants default image file)
-		getNormalizedUVs({768, 768, 256, 256}),     -- bgImageUVs:			UVs location of the background icon in the image file. Use getNormalizedUVs to get an correct UVs array
-		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
-		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
-	) ]]
-end
-
-function courseplay:deleteMapHotspot(vehicle)
-	if vehicle.cp.mapHotspot then
-		g_currentMission:removeMapHotspot(vehicle.cp.mapHotspot)
-		vehicle.cp.mapHotspot:delete()
-		vehicle.cp.mapHotspot = nil
-	end
-end
 
 function courseplay:changeDriveControlMode(vehicle, changeBy)
 	vehicle.cp.driveControl.mode = MathUtil.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
@@ -1651,7 +1567,7 @@ end
 
 -- function only called from network to set synced setting
 function Setting:setFromNetwork(value)
-	self:set(value)
+	self:set(value,true)
 	self:onChange()
 end
 
@@ -1735,8 +1651,10 @@ IntSetting = CpObject(Setting)
 --- @param label string text ID in translations used as a label for this setting on the GUI
 --- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
 --- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
-function IntSetting:init(name, label, toolTip, vehicle, value)
-	Setting.init(self, name, label, toolTip, vehicle, value)
+function IntSetting:init(name, label, toolTip, vehicle,MIN,MAX)
+	Setting.init(self, name, label, toolTip, vehicle)
+	self.MAX = MAX
+	self.MIN = MIN
 end
 
 function IntSetting:loadFromXml(xml, parentKey)
@@ -1758,6 +1676,24 @@ function IntSetting:onReadStream(stream)
 	local value = streamDebugReadInt32(stream)
 	if value then 
 		self:setFromNetwork(value)
+	end
+end
+
+function IntSetting:changeByX(x)
+	self:set(self:get()+x)
+end
+
+function IntSetting:set(value,noEventSend)
+	local minOk = self.MIN and value>=self.MIN or self.MIN == nil
+	local maxOk = self.MAX and value<=self.MAX or self.MAX == nil
+	if minOk and maxOk and value then 
+		self.value = value
+		if noEventSend == nil or noEventSend == false then
+			if self.syncValue then
+				SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, value)
+			end
+		end
+		self:onChange()
 	end
 end
 
@@ -2065,6 +2001,11 @@ function BooleanSetting:toggle()
 	self:set(not self:get())
 end
 
+function BooleanSetting:changeByX(x)
+	self:toggle()
+end
+
+
 function BooleanSetting:loadFromXml(xml, parentKey)
 	local value = getXMLBool(xml, self:getKey(parentKey))
 	if value ~= nil then
@@ -2163,6 +2104,10 @@ function AutoDriveModeSetting:update()
 			table.remove(self.values, 3)
 			table.remove(self.texts, 3)
 			table.remove(self.texts, 3)
+		end
+		if self.valueFromXml then
+			self:set(self.valueFromXml)
+			self.valueFromXml = nil
 		end
 	end
 end
@@ -2730,17 +2675,112 @@ function ShowMapHotspotSetting:init(vehicle)
 		}
 		)
 	self:set(2)
+	self.mapHotspot=nil
 end
 
 function ShowMapHotspotSetting:onChange()
 	--TODO get the other components in here ??
 	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
-		if vehicle.cp.mapHotspot then
-			vehicle.cp.mapHotspot:setText('CP\n' .. courseplay:getMapHotspotText(vehicle))
+		local showMapHotspot = vehicle.cp.settings.showMapHotspot
+		if showMapHotspot and showMapHotspot:getMapHotspot() then
+			showMapHotspot:getMapHotspot():setText('CP\n' .. showMapHotspot:getMapHotspotText(vehicle))
 			courseplay.hud:setReloadPageOrder(vehicle, 7, true)
 		end
 	end
 end
+
+function ShowMapHotspotSetting:getMapHotspot()
+	return self.mapHotspot
+end
+
+function ShowMapHotspotSetting:deleteMapHotspot()
+	if self.mapHotspot then
+		g_currentMission:removeMapHotspot(self.mapHotspot)
+		self.mapHotspot:delete()
+		self.mapHotspot = nil
+	end
+end
+
+function ShowMapHotspotSetting:getMapHotspotText(vehicle)
+	local text = '';
+	if vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_ONLY) then 
+		text = nameNum(vehicle, true) .. '\n';
+	elseif vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
+		text = nameNum(vehicle, true) .. '\n';
+		text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
+	end
+	return text
+end
+
+function ShowMapHotspotSetting:createMapHotspot()
+	if self.vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
+		return
+	end
+	--[[
+	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
+	local _, textSize = getNormalizedScreenValues(0, 6);
+	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
+	local width, height = getNormalizedScreenValues(11,11);
+]]
+	local hotspotX, _, hotspotZ = getWorldTranslation(self.vehicle.rootNode)
+	local _, textSize = getNormalizedScreenValues(0, 9)
+	local _, textOffsetY = getNormalizedScreenValues(0, 18)
+	local width, height = getNormalizedScreenValues(24, 24)
+	self.mapHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
+	self.mapHotspot:setSize(width, height)
+	self.mapHotspot:setLinkedNode(self.vehicle.components[1].node)											-- objectId to what the hotspot is attached to
+	self.mapHotspot:setText(string.format('CP(%s)\n%s', tostring(self.vehicle.currentHelper.name),self:getMapHotspotText(self.vehicle)))
+	self.mapHotspot:setImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER), {0.052, 0.1248, 0.672, 1})
+	self.mapHotspot:setBackgroundImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER))
+	self.mapHotspot:setIconScale(0.7)
+	self.mapHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
+	self.mapHotspot:setColor(Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[self.vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]))
+	g_currentMission:addMapHotspot(self.mapHotspot)
+
+
+	--[[ FS17 doc, left here for later reference only
+		"cpHelper",                                 -- name: 				mapHotspot Name
+		"CP\n"..name,                               -- fullName: 			Text shown in icon
+		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
+		getNormalizedUVs({768, 768, 256, 256}),     -- imageUVs:			UVs location of the icon in the image file. Use getNormalizedUVs to get an correct UVs array
+		colour,                                     -- baseColor:			What colour to show
+		hotspotX,                                   -- xMapPos:				x position of the hotspot on the map
+		hotspotZ,                                   -- zMapPos:				z position of the hotspot on the map
+		width,                                      -- width:				Image width
+		height,                                     -- height:				Image height
+		false,                                      -- blinking:			If the hotspot is blinking (Like the icons do, when a great demands is active)
+		false,                                      -- persistent:			Do the icon needs to be shown even when outside map ares (Like Greatdemands are shown at the minimap edge if outside the minimap)
+		true,                                       -- showName:			Should we show the fullName or not.
+		vehicle.components[1].node,                 -- objectId:			objectId to what the hotspot is attached to
+		true,                                       -- renderLast:			Does this need to be renderes as one of the last icons
+		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- category:			The MapHotspot category.
+		textSize,                                   -- textSize:			fullName text size. you can use getNormalizedScreenValues(x, y) to get the normalized text size by using the return value of the y.
+		textOffsetY,                                -- textOffsetY:			Text offset horizontal
+		{1, 1, 1, 1},                               -- textColor:			Text colour (r, g, b, a) in 0-1 format
+		nil,                                        -- bgImageFilename:		Image path for custome background images (If nil, then it will use Giants default image file)
+		getNormalizedUVs({768, 768, 256, 256}),     -- bgImageUVs:			UVs location of the background icon in the image file. Use getNormalizedUVs to get an correct UVs array
+		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
+		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
+	) ]]
+end
+
+
+function ShowMapHotspotSetting:onWriteStream(stream)
+	SettingList.onWriteStream(self,stream)
+	streamWriteBool(stream,self.mapHotspot or false)
+	
+end
+
+function ShowMapHotspotSetting:onReadStream(stream)
+	SettingList.onReadStream(self,stream)
+	if streamReadBool(stream) then
+		--add to activeCoursePlayers
+		CpManager:addToActiveCoursePlayers(self)	
+		-- add ingameMap icon
+		self:createMapHotspot();
+	end
+end
+
 
 ---@class SaveFuelOptionSetting : BooleanSetting
 SaveFuelOptionSetting = CpObject(BooleanSetting)
@@ -2860,6 +2900,7 @@ function SiloSelectedFillTypeSetting:fillTypeDataToAdd(selectedfillType,counter,
 	return data
 end
 
+--deletes not supported fillTypes
 function SiloSelectedFillTypeSetting:cleanUpOldFillTypes(noEventSend)
 	local supportedFillTypes = {}
 	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
@@ -2869,30 +2910,47 @@ function SiloSelectedFillTypeSetting:cleanUpOldFillTypes(noEventSend)
 	end
 end
 
+function SiloSelectedFillTypeSetting:validateCurrentValue()
+	self:cleanUpOldFillTypes(true)
+end
+
+
 function SiloSelectedFillTypeSetting:checkSelectedFillTypes(supportedFillTypes,cleanUp)
 	totalData = self:getData()
 	for index,data in ipairs(totalData) do 
-		if supportedFillTypes[data.fillType] then
+		if supportedFillTypes[data.fillType] then --already selected fillTypes disable multi select
 			supportedFillTypes[data.fillType]=0
-		elseif cleanUp then
-			self:deleteByIndex(index)
+		elseif cleanUp then	--delete not supported fillTypes 
+			self:deleteByIndex(index) 
 		end
 	end
 end 
 
 function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
-	if object and object.spec_fillUnit and object:getFillUnits() then
+	if object and object.spec_fillUnit and object.getFillUnits then
 		if supportedFillTypes ~= nil then 
 			for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
 				for fillType,bool in pairs(object:getFillUnitSupportedFillTypes(fillUnitIndex)) do 
 					local found = false
+					local specMotor = object.spec_motorized
+					--disable motor consumer fillTypes as they get loaded seperatly 
+					if specMotor then 
+						local consumer = specMotor.consumersByFillType[fillType] 
+						if consumer then 
+							if consumer.fillUnitIndex == fillUnitIndex then 
+								found = true
+							end							
+						end
+					end
+					--disabled FillTypes(AIR, sometimes DEF or DIESEL)
 					if self.disallowedFillTypes then		
 						for _,_fillType in pairs(self.disallowedFillTypes) do 
 							if fillType == _fillType then
 								found = true
 							end
 						end
-					end					
+					end	
+					--all okay and fillType is new add it to spported
 					if bool and not found then 
 						if supportedFillTypes[fillType] == nil then
 							supportedFillTypes[fillType]=100
@@ -2908,7 +2966,7 @@ function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillT
 	end
 end
 
---TODO: fix this one not working as it should!!
+--check if at least one fillType in list and if runCounterActive then check sepreate counters
 function SiloSelectedFillTypeSetting:isActive()  
 	if self:getSize() == 0 then 
 		return false
@@ -3207,7 +3265,7 @@ GrainTransportDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillType
 function GrainTransportDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	SiloSelectedFillTypeSetting.init(self, vehicle, "GrainTransportDriver")
 	self.MAX_FILLTYPES = 5
-	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
+	self.disallowedFillTypes = {FillType.AIR}
 end
 
 ---@class FillableFieldWorkDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
@@ -3258,6 +3316,7 @@ function SeperateFillTypeLoadingSetting:checkAndSetValidValue(new)
 	end
 end
 
+--gets seperate FillUnits example Wilson == 2
 function SeperateFillTypeLoadingSetting:getSeperateFillUnits()
 	local TrailerInfo = {}
 	TrailerInfo.fillUnits = 0
@@ -3426,6 +3485,7 @@ function AssignedCombinesSetting:getPossibleCombines()
 	return g_combineUnloadManager:getPossibleCombines(self.vehicle)
 end
 
+--enables/disables connection between combine/tractor
 function AssignedCombinesSetting:toggleAssignedCombine(index,noEventSend)
 	local newIndex = index-2+self.offsetHead
 	local possibleCombines = self:getPossibleCombines()
@@ -3460,6 +3520,7 @@ function AssignedCombinesSetting:getTexts()
 	return texts
 end
 
+--removes inactive combines connections 
 function AssignedCombinesSetting:clearInactiveCombines(possibleCombines)
 	local validCombines = {}
 	for index, combine in pairs(possibleCombines) do 
@@ -3480,6 +3541,7 @@ function AssignedCombinesSetting:allowedToChangeListOffsetDown()
 	return self.offsetHead >0
 end
 
+--move List up/down
 function AssignedCombinesSetting:changeListOffset(x,noEventSend)	
 	if x>0 and self:allowedToChangeListOffsetUp() then 
 		self.offsetHead = self.offsetHead+1
@@ -3559,19 +3621,50 @@ function ShowVisualWaypointsCrossPointSetting:onChange()
 	courseplay.signs:setSignsVisibility(self.vehicle)
 end
 
+---@class ConvoyActiveSetting : BooleanSetting
+ConvoyActiveSetting = CpObject(BooleanSetting)
+function ConvoyActiveSetting:init(vehicle)
+	BooleanSetting.init(self, 'convoyActive','COURSEPLAY_COMBINE_CONVOY', 'COURSEPLAY_COMBINE_CONVOY', vehicle) 
+	self:set(false)
+end
+
+--not sure if this one would still be needed ??
+---@class ConvoyMaxDistanceSetting : IntSetting
+ConvoyMaxDistanceSetting = CpObject(IntSetting)
+function ConvoyMaxDistanceSetting:init(vehicle)
+	IntSetting.init(self, 'convoyMaxDistance','COURSEPLAY_CONVOY_MAX_DISTANCE', 'COURSEPLAY_CONVOY_MAX_DISTANCE', vehicle,40,3000) 
+	self:set(300)
+end
+
+function ConvoyMaxDistanceSetting:getText()
+	return string.format('%d%s', self:get(),courseplay:loc('COURSEPLAY_UNIT_METER'));
+end
+
+---@class ConvoyMinDistanceSetting : IntSetting
+ConvoyMinDistanceSetting = CpObject(IntSetting)
+function ConvoyMinDistanceSetting:init(vehicle)
+	IntSetting.init(self, 'convoyMinDistance','COURSEPLAY_CONVOY_MIN_DISTANCE', 'COURSEPLAY_CONVOY_MIN_DISTANCE', vehicle,10,2000) 
+	self:set(100)
+end
+
+function ConvoyMinDistanceSetting:getText()
+	return string.format('%d%s', self:get(),courseplay:loc('COURSEPLAY_UNIT_METER'));
+end
+
+---@class OppositeTurnModeSetting : BooleanSetting
+OppositeTurnModeSetting = CpObject(BooleanSetting)
+function OppositeTurnModeSetting:init(vehicle)
+	BooleanSetting.init(self, 'oppositeTurnMode','COURSEPLAY_OPPOSITE_TURN_DIRECTION', 'COURSEPLAY_OPPOSITE_TURN_DIRECTION', vehicle,{'COURSEPLAY_OPPOSITE_TURN_AT_END','COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE'}) 
+	self:set(false)
+end
+
+
 --[[
 
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
 function SearchCombineAutomaticallySetting:init(vehicle)
 	BooleanSetting.init(self, 'searchCombineAutomatically','COURSEPLAY_COMBINE_SEARCH_MODE', 'COURSEPLAY_COMBINE_SEARCH_MODE', vehicle, {'COURSEPLAY_MANUAL_SEARCH','COURSEPLAY_AUTOMATIC_SEARCH'}) 
-	self:set(false)
-end
-
----@class ConvoyActiveSetting : BooleanSetting
-ConvoyActiveSetting = CpObject(BooleanSetting)
-function ConvoyActiveSetting:init(vehicle)
-	BooleanSetting.init(self, 'convoyActive','COURSEPLAY_COMBINE_CONVOY', 'COURSEPLAY_COMBINE_CONVOY', vehicle) 
 	self:set(false)
 end
 
@@ -3601,13 +3694,6 @@ end
 Mode10_searchModeSetting = CpObject(BooleanSetting)
 function Mode10_searchModeSetting:init(vehicle)
 	BooleanSetting.init(self, 'mode10_searchMode','COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle, {'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'}) 
-	self:set(false)
-end
-
----@class OppositeTurnModeSetting : BooleanSetting
-OppositeTurnModeSetting = CpObject(BooleanSetting)
-function OppositeTurnModeSetting:init(vehicle)
-	BooleanSetting.init(self, 'oppositeTurnMode','COURSEPLAY_OPPOSITE_TURN_DIRECTION', 'COURSEPLAY_OPPOSITE_TURN_DIRECTION', vehicle,{'COURSEPLAY_OPPOSITE_TURN_AT_END','COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE'}) 
 	self:set(false)
 end
 

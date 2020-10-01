@@ -62,6 +62,9 @@ function FieldworkAIDriver:init(vehicle)
 	-- duration of the last turn maneuver. This is a default value and the driver will measure
 	-- the actual turn times. Used to calculate the remaining fieldwork time
 	self.turnDurationMs = 20000
+	self.convoyCurrentDistance = 0
+	self.convoyCurrentPosition = 0
+	self.convoyTotalMembers = 0
 end
 
 function FieldworkAIDriver:setHudContent()
@@ -285,6 +288,24 @@ function FieldworkAIDriver:stop(msgReference)
 	AIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
 	self.vehicle.cp.alignment.enabled = self.alignmentEnabled
+end
+
+function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
+	if self.vehicle.cp.settings.convoyActive:is(true) then 
+		streamWriteInt32(streamId,self.convoyCurrentDistance)
+		streamWriteIntN(streamId,self.convoyCurrentPosition,5)
+		streamWriteIntN(streamId,self.convoyTotalMembers,5)
+	end
+	AIDriver.writeUpdateStream(self,streamId, connection, dirtyMask)
+end 
+
+function FieldworkAIDriver:readUpdateStream(streamId, timestamp, connection)
+	if self.vehicle.cp.settings.convoyActive:is(true) then 
+		self.convoyCurrentDistance=streamReadInt32(streamId)
+		self.convoyCurrentPosition=streamReadIntN(streamId,5)
+		self.convoyTotalMembers=streamReadIntN(streamId,5)
+	end
+	AIDriver.readUpdateStream(self,streamId, timestamp, connection)
 end
 
 function FieldworkAIDriver:drive(dt)
@@ -749,13 +770,13 @@ end
 --- generated and for instance on the headland the vehicles on the inside will have less  
 --- waypoints, so we operate with progress percentage
 function FieldworkAIDriver:manageConvoy()
-	if not self.vehicle.cp.convoyActive then return false end
+	if not self.vehicle.cp.settings.convoyActive:is(true) then return false end
 	--get my position in convoy and look for the closest combine
 	local position = 1
 	local total = 1
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
-		if otherVehicle ~= self.vehicle and otherVehicle.cp.convoyActive and self:hasSameCourse(otherVehicle) then
+		if otherVehicle ~= self.vehicle and otherVehicle.cp.settings.convoyActive:is(true) and self:hasSameCourse(otherVehicle) then
 			local myProgress = self:getProgress()
 			local length = self.fieldworkCourse:getLength()
 			local otherProgress = otherVehicle.cp.driver:getProgress()
@@ -774,7 +795,7 @@ function FieldworkAIDriver:manageConvoy()
 
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
-		if closestDistance < self.vehicle.cp.convoy.minDistance then
+		if closestDistance <  self.vehicle.cp.settings.convoyMinDistance:get() then
 			self:debugSparse('too close (%.1f) to other vehicles in convoy, holding.', closestDistance)
 			self:setSpeed(0)
 			self:overrideAutoEngineStop()
@@ -784,15 +805,9 @@ function FieldworkAIDriver:manageConvoy()
 	end
 
 	-- TODO: check for change should be handled by setCpVar()
-	if self.vehicle.cp.convoy.distance ~= closestDistance then
-		self.vehicle:setCpVar('convoy.distance',closestDistance)
-	end
-	if self.vehicle.cp.convoy.number ~= position then
-		self.vehicle:setCpVar('convoy.number',position)
-	end
-	if self.vehicle.cp.convoy.members ~= total then
-		self.vehicle:setCpVar('convoy.members',total)
-	end
+	self.convoyCurrentDistance=closestDistance
+	self.convoyCurrentPosition=position
+	self.convoyTotalMembers=total
 end
 
 -- Although raising the AI start/stop events supposed to fold/unfold the implements, it does not always happen.
