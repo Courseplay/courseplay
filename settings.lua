@@ -2767,7 +2767,7 @@ end
 
 function ShowMapHotspotSetting:onWriteStream(stream)
 	SettingList.onWriteStream(self,stream)
-	streamWriteBool(stream,self.mapHotspot or false)
+	streamWriteBool(stream,self.mapHotspot~=nil)
 	
 end
 
