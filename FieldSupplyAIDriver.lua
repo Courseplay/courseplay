@@ -172,3 +172,8 @@ end
 function FieldSupplyAIDriver:getCanShowDriveOnButton()
 	return AIDriver.getCanShowDriveOnButton(self)
 end
+
+--- Don't pay worker double when AutoDrive is driving 
+function FieldSupplyAIDriver:shouldPayWages()
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+end 
