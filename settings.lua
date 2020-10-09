@@ -2494,6 +2494,14 @@ function RidgeMarkersAutomatic:isDisabled()
 	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, RidgeMarker)
 end
 
+---@class CrabRemember : BooleanSetting
+CrabRemember = CpObject(BooleanSetting)
+function CrabRemember:init(vehicle)
+	BooleanSetting.init(self, 'CrabRemember', 'COURSEPLAY_CRABREMEMBER',
+		'COURSEPLAY_YES_NO_CRABREMEMBER', vehicle)
+	self:set(false)
+end
+
 ---@class EnableVisualWaypointsTemporary : BooleanSetting
 EnableVisualWaypointsTemporary = CpObject(BooleanSetting)
 function EnableVisualWaypointsTemporary:init()
@@ -2767,7 +2775,7 @@ end
 
 function ShowMapHotspotSetting:onWriteStream(stream)
 	SettingList.onWriteStream(self,stream)
-	streamWriteBool(stream,self.mapHotspot~=nil)
+	streamWriteBool(stream,self.mapHotspot or false)
 	
 end
 

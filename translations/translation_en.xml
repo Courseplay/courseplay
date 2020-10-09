@@ -241,6 +241,8 @@
 		<text name="COURSEPLAY_DEACTIVATED" 								text="Deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Ridge markers" />
 		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
+    <text name="COURSEPLAY_CRABREMEMBER" 								    text="Crab Remember" />
+		<text name="COURSEPLAY_YES_NO_CRABREMEMBER"							text="Crab Remember on/off" />  
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Unloading on field" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="Automatic" />
 		<text name="COURSEPLAY_MANUAL" 										text="Manually" />

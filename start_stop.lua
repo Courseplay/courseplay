@@ -210,7 +210,12 @@ function courseplay:start(self)
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
 	StartStopEvent:sendStartEvent(self)
+  -- Remember crab steering if relevant
+  local crabState = self.spec_crabSteering.state
 	self.cp.driver:start(self.cp.settings.startingPoint)
+  if crabState ~= nil and self.cp.settings.CrabRemember:is(true) then
+    self:setCrabSteering(crabState)
+  end
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
