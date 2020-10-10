@@ -2494,11 +2494,11 @@ function RidgeMarkersAutomatic:isDisabled()
 	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, RidgeMarker)
 end
 
----@class CrabRemember : BooleanSetting
-CrabRemember = CpObject(BooleanSetting)
-function CrabRemember:init(vehicle)
-	BooleanSetting.init(self, 'CrabRemember', 'COURSEPLAY_CRABREMEMBER',
-		'COURSEPLAY_YES_NO_CRABREMEMBER', vehicle)
+---@class KeepCurrentSteering : BooleanSetting
+KeepCurrentSteering = CpObject(BooleanSetting)
+function KeepCurrentSteering:init(vehicle)
+	BooleanSetting.init(self, 'KeepCurrentSteering', 'COURSEPLAY_KEEP_CURRENT_STEERING',
+			'COURSEPLAY_YES_NO_KEEP_CURRENT_STEERING', vehicle)
 	self:set(false)
 end
 

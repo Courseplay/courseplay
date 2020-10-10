@@ -211,13 +211,13 @@ function courseplay:start(self)
 	end
 	StartStopEvent:sendStartEvent(self)
   -- Remeber crab steering if relevant
-  local crabState
+  local crabSteeringState
   if self.spec_crabSteering ~= nil then
-    crabState = self.spec_crabSteering.state
+    crabSteeringState = self.spec_crabSteering.state
   end
 	self.cp.driver:start(self.cp.settings.startingPoint)
-  if crabState ~= nil and self.cp.settings.CrabRemember:is(true) then
-    self:setCrabSteering(crabState)
+  if crabSteeringState ~= nil and self.cp.settings.KeepCurrentSteering:is(true) then
+    self:setCrabSteering(crabSteeringState)
   end
 end;
 
