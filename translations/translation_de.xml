@@ -254,7 +254,7 @@
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Drescher-Rohr ist in der Frucht" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modusabhängige Einstellungen" />
     <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_YES_NO_KEEP_CURRENT_STEERING"		text="Keep Current Steering on/off" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't not change the current crab steering setting of the vehicle" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="keine Schaufel vorhanden" />

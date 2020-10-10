@@ -216,7 +216,7 @@ function courseplay:start(self)
     crabSteeringState = self.spec_crabSteering.state
   end
 	self.cp.driver:start(self.cp.settings.startingPoint)
-  if crabSteeringState ~= nil and self.cp.settings.KeepCurrentSteering:is(true) then
+  if crabSteeringState ~= nil and self.cp.settings.keepCurrentSteering:is(true) then
     self:setCrabSteering(crabSteeringState)
   end
 end;
