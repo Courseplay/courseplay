@@ -254,6 +254,8 @@
     <text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distance mini" />
     <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" /> <!-- this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
     <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mod" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
+		<text name="COURSEPLAY_YES_NO_KEEP_CURRENT_STEERING"		text="Keep Current Steering on/off" />
   	
     <!-- shovel stuff -->
     <text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet" />

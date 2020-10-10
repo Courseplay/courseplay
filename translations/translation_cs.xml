@@ -56,10 +56,10 @@
 		<text name="COURSEPLAY_SAVE_FOLDER_NAME_WITH" 						text="%s 保存目录" />
 		<text name="COURSEPLAY_FILTER_COURSE_WITH" 							text="%s 检索任务" />
 		<text name="COURSEPLAY_COURSES_FILTER_TITLE" 						text="任务: %q" />																  
-		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="加载任务/合并到加载任务" />
-		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="加载任务到结尾" />
-		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="移动到目录" />
-		<text name="COURSEPLAY_DELETE_COURSE" 						 		text="删除任务/目录" />
+		<text name="COURSEPLAY_LOAD_COURSE" 						 		text="Load course/merge into loaded course" />
+		<text name="COURSEPLAY_APPEND_COURSE" 						 		text="Append course at the end" />
+		<text name="COURSEPLAY_MOVE_TO_FOLDER" 						 		text="Move to folder" />
+		<text name="COURSEPLAY_DELETE_COURSE" 						 		text="Delete course/folder" />
 		<text name="COURSEPLAY_CREATE_FOLDER" 								text="新建目录" />
 		<text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				text="检索任务和目录" />
 		<text name="COURSEPLAY_DEACTIVATE_FILTER" 							text="关闭检索" />
@@ -231,15 +231,15 @@
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="上/下" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="围绕" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="螺旋" />
-		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="地块" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="地块的行数" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="在地块上工作时，每个地块有多少行" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="开启" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="仅名称" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="名称和任务" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="关闭" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="田埂标记" />
-		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="行标记 开/关" />																		  
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />																		  
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="在田间卸载" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="自动" />
 		<text name="COURSEPLAY_MANUAL" 										text="手动" />
@@ -253,6 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="最小距离" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="收割机管道开启" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="模式设置" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
+		<text name="COURSEPLAY_YES_NO_KEEP_CURRENT_STEERING"		text="Keep Current Steering on/off" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="找不到铲斗" />
@@ -370,7 +372,7 @@
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP编辑器：删除所有路径点以结束" />
 		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP编辑器：插入路径点" />
 		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP编辑器：更改路径点类型" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: 播种机的肥料" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="正常" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="等待" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="合并" />
@@ -434,27 +436,27 @@
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="使用AI转向而不是计算的" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="自动扫描地块" />
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay 赚取工资" />
-		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="点击切换" />
-		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="点击切换车辆" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="伸出管道" />
-		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="联合收割机等待卸载时，伸出管道" />
+		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
+		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
 
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="显示迷你HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="切换迷你HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="收割机输出秸秆" />
-		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="仅中心" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="秸秆排放开/关/仅中心" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="使用播种机肥料" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="开/关播种机的肥料功能" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="点击右键 HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="启用/禁用右键单击以打开HUD（全局）" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="点击右键 HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="启用/禁用右键单击以打开HUD（当前车辆）" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
 		
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="显示临时路径点" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="显示临时任务（例如寻路或转弯）" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="岬角重叠" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="岬角之间的重叠以百分比为单位" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="早期" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="晚期" />
@@ -469,22 +471,22 @@
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Courseplay工资是工人工资的百分比" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="联合收割机自卸" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="有拖车时装满并自动卸载联合收割机" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="反向进行寻路" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="允许找到需要反向驱动的转弯路径（仅适用于非牵引式机具）" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="未选择填充类型！/不支持填充任务！" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="添加新的填充类型" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="已达到填充点." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="填充类型错误." />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
 		
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="在第一岬角上卸载收割机" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="允许在第一个岬角上卸下正在移动的收割机，卸车机将其从田野中驶出." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="最后一次运行 = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="加载单独的填充类型" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="独立拖车:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="卸货量 %d 的 %d" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="手动加载" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

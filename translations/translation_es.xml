@@ -253,6 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distancia Mínima" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Tubo cosechadoras esta en modo cultivo" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Ajustes específicos del modo" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
+		<text name="COURSEPLAY_YES_NO_KEEP_CURRENT_STEERING"		text="Keep Current Steering on/off" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Falta la pala" />
