@@ -212,13 +212,7 @@ function courseplay:start(self)
 	StartStopEvent:sendStartEvent(self)
   -- Remeber crab steering if relevant
   local crabSteeringState
-  if self.spec_crabSteering ~= nil then
-    crabSteeringState = self.spec_crabSteering.state
-  end
 	self.cp.driver:start(self.cp.settings.startingPoint)
-  if crabSteeringState ~= nil and self.cp.settings.keepCurrentSteering:is(true) then
-    self:setCrabSteering(crabSteeringState)
-  end
 end;
 
 function courseplay:getCanUseCpMode(vehicle)
