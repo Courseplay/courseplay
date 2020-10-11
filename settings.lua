@@ -2494,6 +2494,14 @@ function RidgeMarkersAutomatic:isDisabled()
 	return self.vehicle.cp.driver and not AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, RidgeMarker)
 end
 
+---@class KeepCurrentSteering : BooleanSetting
+KeepCurrentSteering = CpObject(BooleanSetting)
+function KeepCurrentSteering:init(vehicle)
+	BooleanSetting.init(self, 'keepCurrentSteering', 'COURSEPLAY_KEEP_CURRENT_STEERING',
+			'COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP ', vehicle)
+	self:set(false)
+end
+
 ---@class EnableVisualWaypointsTemporary : BooleanSetting
 EnableVisualWaypointsTemporary = CpObject(BooleanSetting)
 function EnableVisualWaypointsTemporary:init()

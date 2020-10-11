@@ -241,6 +241,8 @@
 		<text name="COURSEPLAY_DEACTIVATED" 								text="Deactivated" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Ridge markers" />
 		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
+    	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Keep Current Steering" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay won't change the current crab steering setting of the vehicle" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Unloading on field" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="Automatic" />
 		<text name="COURSEPLAY_MANUAL" 										text="Manually" />

@@ -138,6 +138,13 @@ function FieldworkAIDriver.register()
 
 	print('## Courseplay: Appending event listener for loader wagons.')
 	Pickup.registerEventListeners = Utils.appendedFunction(Pickup.registerEventListeners, PickupRegisterEventListeners)
+
+	-- User option "keepCurrentSteering"
+	CrabSteering.onAIImplementStart = Utils.overwrittenFunction(CrabSteering.onAIImplementStart,
+		function(self, superFunc)
+			if superFunc ~= nil and self.cp.settings.keepCurrentSteering:is(false) then superFunc(self) end
+	end)
+
 end
 
 --- Start the course and turn on all implements when needed

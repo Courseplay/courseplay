@@ -253,6 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="最小距離" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="コンバインのパイプが作物側" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="モード別設定" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="バケットが見つかりません" />
