@@ -253,8 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimální odstup" /> 
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="vysýpací roura v neposekaném" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="nastavení specifického režimu" /> 
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Udržet aktualní nastavení řízení" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay nezmění aktuální nastavení krabího řízení vozidla" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Lžíce nenalezena" />
