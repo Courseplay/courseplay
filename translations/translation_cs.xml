@@ -253,8 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="最小距离" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="收割机管道开启" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="模式设置" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="保持方向" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay 不会更改车辆的当前方向设置" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="找不到铲斗" />
