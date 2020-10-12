@@ -237,7 +237,7 @@
 		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Указывается количество рядов в загоне при работе в режиме 'загонами v2'." />
 		<text name="COURSEPLAY_ACTIVATED" 									text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="название техники" />
-		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="название техники и маршрут" />
+		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="назв.техники и маршрут" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="нет" />
 		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Маркеры" />
 		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Вкл/Откл маркеры во время посева." />
@@ -254,8 +254,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Мин. дистанция до предыдущего:" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="выгрузной шнек со стороны посевов" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="СПЕЦИФИЧНЫЕ НАСТРОЙКИ ДЛЯ РЕЖИМА" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING"						text="Сохранять сост. рулевого управления" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay сохраняет установленный способ руления крабовым ходом." />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Ковш не обнаружен" />
@@ -325,7 +325,7 @@
 		<text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="движение задним ходом" />
 		<text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="движение вперёд" />
 		<text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS" 					text="добавить точки в разрыв" />
-		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Показать инфо на карте:" />
+		<text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Отображать инфо на карте" />
 		<text name="COURSEPLAY_DRIVECONTROL" 								text="Настройки Drive Control:" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_0" 						text="автоматически" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_1" 						text="Всегда 4х4" />
