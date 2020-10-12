@@ -253,8 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minmale Entfernung" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Drescher-Rohr ist in der Frucht" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modusabhängige Einstellungen" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+    	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Lenkungsart beibehalten" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Aktuell gewählte Lenkungsart wird von Courseplay nicht verändert" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="keine Schaufel vorhanden" />
