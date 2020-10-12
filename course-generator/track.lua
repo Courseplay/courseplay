@@ -221,7 +221,7 @@ function reverseCourse( course )
 	-- remove any non-center track turns first
 	--removeHeadlandTurns( course )
 	for i = #course, 1, -1 do
-		local newPoint = copyPoint( course[ i ])
+		local newPoint = shallowCopy( course[ i ])
 		-- reverse center track turns
 		if newPoint.turnStart then
 			newPoint.turnStart = nil

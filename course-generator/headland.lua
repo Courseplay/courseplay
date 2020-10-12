@@ -190,14 +190,37 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 	result:calculateData()
 end
 
---- add a series of points (track) to the headland path. This is to
+--- add on round to the headland path. This is to
 -- assemble the complete spiral headland path from the individual
 -- parallel headland tracks.
+---@param track Polygon
 local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
-	for i, point in track:iterator( from, to, step ) do
+	print(#track, from, to, step)
+	local i = from
+	local count = 0
+	while count <= #track do
 		table.insert( headlandPath, track[ i ])
 		headlandPath[ #headlandPath ].passNumber = passNumber
+		i = i + step
+		count = count + 1
 	end
+	-- now, one round is complete. Making sure we do attempt to switch headlands in tight corners
+	-- so if this isn't a relatively straight section, keep going until we find one before
+	-- switching to the next headland
+	local dElapsed = 0
+	-- search only for the next 30 meters
+	while dElapsed < 30 do
+		dElapsed = dElapsed + track[i].nextEdge.length
+		local r = track:getSmallestRadiusWithinDistance(i, 20, 10, step)
+		if r > 20 then return i end
+		table.insert( headlandPath, track[ i ])
+		headlandPath[ #headlandPath ].passNumber = passNumber
+		-- nice straight
+		print(i, dElapsed, r)
+		i = i + step
+	end
+	-- no straight section found, bail out here
+	return i
 end
 
 --- Link the generated, parallel circular headland tracks to
@@ -216,8 +239,91 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 	local headlandPath = Polyline:new()
 	-- find closest point to starting position on outermost headland track
 	local fromIndex = field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
+	table.insert(headlandPath, shallowCopy(field.headlandTracks[ 1 ][fromIndex + (isClockwise and 1 or -1)]))
 	-- start one waypoint back to have an overlap with the transition to the next headland so nothing is missed
-	table.insert(headlandPath, copyPoint(field.headlandTracks[ 1 ][fromIndex + (isClockwise and 1 or -1)]))
+	local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 )
+	vectors = {}
+	-- direction we'll be looking for the next inward headland track (relative to
+	-- the headland vertex direcions) We want to go a bit forward, not directly
+	-- perpendicular
+	local inwardAngleOffset = 60
+	local inwardAngle
+	for i = 1, #field.headlandTracks do
+		-- now find out which direction we have to drive on the headland pass.
+		if field.headlandTracks[ i ].isClockwise == isClockwise then
+			-- increasing index is clockwise, so
+			-- driving direction is in increasing index, start at toIndex and go a full circle
+			-- back to fromIndex
+			toIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, toIndex, fromIndex, 1 )
+			startLocation = field.headlandTracks[ i ][ toIndex ]
+			field.headlandTracks[ i ].circleStart = toIndex
+			field.headlandTracks[ i ].circleStep = 1
+			inwardAngle = inwardAngleOffset
+		else
+			-- must reverse direction
+			-- driving direction is in decreasing index, so we start at fromIndex and go a full circle
+			-- to toIndex
+			fromIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, fromIndex, toIndex, -1 )
+			startLocation = field.headlandTracks[ i ][ fromIndex ]
+			field.headlandTracks[ i ].circleStart = fromIndex
+			field.headlandTracks[ i ].circleStep = -1
+			inwardAngle = 180 - inwardAngleOffset
+		end
+		-- remember this, we'll need when generating the link from the last headland pass
+		-- to the parallel tracks
+		-- switch to the next headland track
+ 		local heading = startLocation.nextEdge.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise, math.rad( inwardAngle ))
+		-- We should be able to find the next headland track within a reasonable distance but this
+		-- may not work around corners so we try further
+		local distances = { implementWidth * 1.5, implementWidth * 3, implementWidth * 6, implementWidth * 12 }
+		for _, distance in ipairs( distances ) do
+			-- we may have an issue finding the next track around corners, so try a couple of other headings
+			local headings = { heading }
+			for h = 10,120,10 do
+				table.insert( headings, heading + math.rad( h ))
+				table.insert( headings, heading - math.rad( h ))
+			end
+			for _, h in ipairs( headings ) do
+				if lines then
+					table.insert( lines, { startLocation, addPolarVectorToPoint( startLocation, h, distance )})
+				end
+				if field.headlandTracks[ i + 1 ] then
+					fromIndex, toIndex = field.headlandTracks[ i + 1 ]:getIntersectionWithLine( startLocation, addPolarVectorToPoint( startLocation, h, distance ))
+					if fromIndex then
+						courseGenerator.debug( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle )
+						break
+					end
+				end
+			end
+			if fromIndex then
+				break
+			else
+				courseGenerator.debug( "Could not link headland track %d to next track at distance %.2f", i, distance )
+			end
+		end
+	end
+
+	if doSmooth then
+		-- skip the first and last point when smoothing, this makes sure smooth() won't try
+		-- to wrap around the ends like in case of a closed polygon, this is just a line here.
+		headlandPath:smooth( minSmoothAngle, maxSmoothAngle, 2 )
+		field.headlandPath = headlandPath
+		addMissingPassNumber( field.headlandPath )
+	else
+		field.headlandPath = headlandPath
+	end
+end
+
+-- at this point the headland tracks are polygons and their clockwise orientation is the same as the field
+-- boundary they were generated from. isClockwise is the desired clockwise orientation
+function linkHeadlandTracks2( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
+	-- first, find the intersection of the outermost headland track and the
+	-- vehicles heading vector.
+	local headlandPath = Polyline:new()
+	-- find closest point to starting position on outermost headland track
+	local fromIndex = field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
+	-- start one waypoint back to have an overlap with the transition to the next headland so nothing is missed
+	table.insert(headlandPath, shallowCopy(field.headlandTracks[ 1 ][fromIndex + (isClockwise and 1 or -1)]))
 	local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 )
 	vectors = {}
 	-- direction we'll be looking for the next inward headland track (relative to
@@ -234,7 +340,6 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 			addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, toIndex, fromIndex, 1 )
 			startLocation = field.headlandTracks[ i ][ toIndex ]
 			field.headlandTracks[ i ].circleStart = toIndex
-			field.headlandTracks[ i ].circleEnd = fromIndex
 			field.headlandTracks[ i ].circleStep = 1
 			inwardAngle = inwardAngleOffset
 		else
@@ -244,14 +349,13 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 			addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, fromIndex, toIndex, -1 )
 			startLocation = field.headlandTracks[ i ][ fromIndex ]
 			field.headlandTracks[ i ].circleStart = fromIndex
-			field.headlandTracks[ i ].circleEnd = toIndex
 			field.headlandTracks[ i ].circleStep = -1
 			inwardAngle = 180 - inwardAngleOffset
 		end
 		-- remember this, we'll need when generating the link from the last headland pass
 		-- to the parallel tracks
 		-- switch to the next headland track
- 		local heading = field.headlandTracks[ i ][ fromIndex ].nextEdge.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise, math.rad( inwardAngle ))
+		local heading = field.headlandTracks[ i ][ fromIndex ].nextEdge.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise, math.rad( inwardAngle ))
 		-- We should be able to find the next headland track within a reasonable distance but this
 		-- may not work around corners so we try further
 		local distances = { implementWidth * 1.5, implementWidth * 3, implementWidth * 6, implementWidth * 12 }
@@ -375,7 +479,7 @@ function calculateOneSide(boundary, innerBoundary, startIx, endIx, step, rightSi
 	-- construct the boundary
 	headlands[0] = Polyline:new()
 	for i, p in boundary:iterator(startIx, endIx, step) do
-		table.insert(headlands[0], copyPoint(p))
+		table.insert(headlands[0], shallowCopy(p))
 	end
 	headlands[0]:calculateData()
 
@@ -517,7 +621,7 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTrack
 			end
 			table.insert(result, p)
 			if i == #firstHeadlands then
-				table.insert(innerBoundary, copyPoint(p))
+				table.insert(innerBoundary, shallowCopy(p))
 			end
 		end
 		result[#result].turnStart = true
@@ -590,4 +694,19 @@ function extendLineToOtherLine(line, otherLine, extension)
 	_, _, is = otherLine:getIntersectionWithLine(line[#line], down)
 	if is then table.insert(line, is) end
 	line:calculateData()
+end
+
+Headland = CpObject()
+
+function Headland:init(vertices, clockwise, startLocation)
+	self.polygon = Polygon:new(vertices)
+	self.clockwise = clockwise
+	local startIx = self.polygon:getClosestPointIndex(startLocation)
+	local endIx = startIx
+
+
+end
+
+function Headland:getClosestPointIndex(startLocation)
+	return self.polygon:getClosestPointIndex(startLocation)
 end
