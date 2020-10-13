@@ -1215,14 +1215,12 @@ function Polygon:getSmallestRadiusWithinDistance(ix, dForward, dBackward, forwar
 	while dElapsed < dBackward do
 		dElapsed = dElapsed + self[i].prevEdge.length
 		minRadius = self[i].radius < minRadius and self[i].radius or minRadius
-		print('back ' .. i, dElapsed, self[i].radius, minRadius)
 		i = i - forwardStep
 	end
 	i, dElapsed = ix, 0
 	while dElapsed < dForward do
 		dElapsed = dElapsed + self[i].nextEdge.length
 		minRadius = self[i].radius < minRadius and self[i].radius or minRadius
-		print('fwd  ' .. i, dElapsed, self[i].radius, minRadius)
 		i = i + forwardStep
 	end
 	return minRadius

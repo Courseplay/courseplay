@@ -2238,6 +2238,37 @@ function HeadlandOverlapPercent:init(vehicle)
 	self:set(7)
 end
 
+--- Course generator settings (read from the XML, may be added to the UI later when needed):
+---
+--- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
+--- we only change lanes on relatively straight sections of the headland (not around corners)
+---@class HeadlandLaneChangeMinRadius
+HeadlandLaneChangeMinRadius = CpObject(IntSetting)
+
+function HeadlandLaneChangeMinRadius:init()
+	IntSetting.init(self, 'headlandLaneChangeMinRadius', 'HeadlandLaneChangeMinRadius',
+			'Minimum radius where a lane change on the headland is allowed')
+	self:set(20)
+end
+
+--- No lane change allowed on the headland if there is a corner ahead within this distance in meters
+---@class HeadlandLaneChangeMinDistanceToCorner
+HeadlandLaneChangeMinDistanceToCorner = CpObject(IntSetting)
+function HeadlandLaneChangeMinDistanceToCorner:init()
+	IntSetting.init(self, 'headlandLaneChangeMinDistanceToCorner', 'HeadlandLaneChangeMinDistanceToCorner',
+			'Minimum distance to a corner for a lane change on the headland')
+	self:set(20)
+end
+
+--- No lane change allowed on the headland if there is a corner behind within this distance in meters
+---@class HeadlandLaneChangeMinDistanceFromCorner
+HeadlandLaneChangeMinDistanceFromCorner = CpObject(IntSetting)
+function HeadlandLaneChangeMinDistanceFromCorner:init()
+	IntSetting.init(self, 'headlandLaneChangeMinDistanceFromCorner', 'HeadlandLaneChangeMinDistanceFromCorner',
+			'Minimum distance from a corner for a lane change on the headland')
+	self:set(10)
+end
+
 --toggleHeadlandDirection
 --toggleHeadlandOrder
 
@@ -3803,6 +3834,13 @@ function SettingsContainer:validateSetting(setting)
 	return true
 end
 
+function SettingsContainer.createGlobalCourseGeneratorSettings()
+	local container = SettingsContainer('globalCourseGeneratorSettings')
+	container:addSetting(HeadlandLaneChangeMinRadius)
+	container:addSetting(HeadlandLaneChangeMinDistanceToCorner)
+	container:addSetting(HeadlandLaneChangeMinDistanceFromCorner)
+	return container
+end
 
 -- do not remove this comment
 -- vim: set noexpandtab:

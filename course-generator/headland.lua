@@ -190,12 +190,13 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 	result:calculateData()
 end
 
---- add on round to the headland path. This is to
--- assemble the complete spiral headland path from the individual
--- parallel headland tracks.
+--- add one round to the headland path. This is to
+--- assemble the complete spiral headland path from the individual
+--- parallel headland tracks.
+--- If the end of the round is near a corner, continue until we reach a relatively straight section to
+--- avoid complications during lane switch as in corners there will be very sharp angles.
 ---@param track Polygon
 local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
-	print(#track, from, to, step)
 	local i = from
 	local count = 0
 	while count <= #track do
@@ -208,18 +209,25 @@ local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to
 	-- so if this isn't a relatively straight section, keep going until we find one before
 	-- switching to the next headland
 	local dElapsed = 0
-	-- search only for the next 30 meters
-	while dElapsed < 30 do
+	-- search only for the next few meters
+	local searchLimit = courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceToCorner:get() +
+			courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceFromCorner:get()
+	while dElapsed < searchLimit do
 		dElapsed = dElapsed + track[i].nextEdge.length
-		local r = track:getSmallestRadiusWithinDistance(i, 20, 10, step)
-		if r > 20 then return i end
+		local r = track:getSmallestRadiusWithinDistance(i,
+				courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceToCorner:get(),
+				courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceFromCorner:get(),
+				step)
+		-- nice straight section, done
+		if r > courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinRadius:get() then
+			return i
+		end
 		table.insert( headlandPath, track[ i ])
 		headlandPath[ #headlandPath ].passNumber = passNumber
-		-- nice straight
-		print(i, dElapsed, r)
 		i = i + step
 	end
 	-- no straight section found, bail out here
+	courseGenerator.debug('No straight section found for headland lane change')
 	return i
 end
 
@@ -694,19 +702,4 @@ function extendLineToOtherLine(line, otherLine, extension)
 	_, _, is = otherLine:getIntersectionWithLine(line[#line], down)
 	if is then table.insert(line, is) end
 	line:calculateData()
-end
-
-Headland = CpObject()
-
-function Headland:init(vertices, clockwise, startLocation)
-	self.polygon = Polygon:new(vertices)
-	self.clockwise = clockwise
-	local startIx = self.polygon:getClosestPointIndex(startLocation)
-	local endIx = startIx
-
-
-end
-
-function Headland:getClosestPointIndex(startLocation)
-	return self.polygon:getClosestPointIndex(startLocation)
 end
