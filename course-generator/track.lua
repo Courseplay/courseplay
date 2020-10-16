@@ -221,7 +221,7 @@ function reverseCourse( course )
 	-- remove any non-center track turns first
 	--removeHeadlandTurns( course )
 	for i = #course, 1, -1 do
-		local newPoint = copyPoint( course[ i ])
+		local newPoint = shallowCopy( course[ i ])
 		-- reverse center track turns
 		if newPoint.turnStart then
 			newPoint.turnStart = nil
@@ -318,35 +318,20 @@ function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 			local cutFromHere, cutToHere = 0, i - 1
 			local totalAngle = 0
 			-- this is the first waypoint of a block with up/down rows.
-			if centerSettings.mode == courseGenerator.CENTER_MODE_CIRCULAR or
-				centerSettings.mode == courseGenerator.CENTER_MODE_LANDS then
-				-- In these modes we want to reach the first up/down row waypoint on the headland as the starting row
-				-- is usually somewhere in the middle of the field
-				-- walk back from the up/down row on the headland and see if we have a connecting track here
-				for j, point in course:iterator(i - 2, 1, -1) do
-					if not point.isConnectingTrack then
-						cutFromHere = j + 1
-						-- want to remove these regardless of the angle
-						totalAngle = math.huge
-						break
-					end
-				end
-			else
-				-- In other modes we add a turn maneuver if needed as we start at the row adjacent to the headland
-				local d = 0
-				-- walk back from the up/down row on the headland and see if we need a turn here
-				for j, point in course:iterator(i - 1, 1, -1) do
-					d = d + point.nextEdge.length
-					totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
-					if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
-						-- here's a point on a relatively straight section but we turned quite a lot since
-						-- we left the up/down waypoint, so put a turn here
-						cutFromHere = j + 1
-						break
-					end
+			-- add a turn maneuver if needed as we start at the row adjacent to the headland
+			local d = 0
+			-- walk back from the up/down row on the headland and see if we need a turn here
+			for j, point in course:iterator(i - 1, 1, -1) do
+				d = d + point.nextEdge.length
+				totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
+				if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
+					-- here's a point on a relatively straight section but we turned quite a lot since
+					-- we left the up/down waypoint, so put a turn here
+					cutFromHere = j + 1
+					break
 				end
 			end
-			-- remove the waypoints between turn start and end
+			-- remove the waypoints between the newly added turn start and end
 			if cutFromHere > 0 and math.abs(totalAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
 				for j = cutFromHere, cutToHere do
 					table.remove(course, cutFromHere)

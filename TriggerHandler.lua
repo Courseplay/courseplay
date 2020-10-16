@@ -222,7 +222,7 @@ function TriggerHandler:disableUnloadingIfEmpty()
 	if self.fillableObject then		
 		local fillUnitIndex = self.fillableObject.fillUnitIndex
 		local object = self.fillableObject.object
-		if object:getFillUnitFillLevelPercentage(fillUnitIndex)*100 < 0.5 and not (object.spec_cover and object.spec_cover.hasCovers) then 
+		if object:getFillUnitFillLevelPercentage(fillUnitIndex)*100 < 0.5 and object.spec_waterTrailer then 
 			self:resetUnloadingState()
 		end
 	end
@@ -369,6 +369,10 @@ end
 
 --AIDriver uses this function to check if we are in trigger or not!
 function TriggerHandler:isInTrigger()
+	local oldCpTrigger = self.vehicle.cp.currentTipTrigger
+	if oldCpTrigger and oldCpTrigger.bunkerSilo ~= nil then
+		return false
+	end
 	local bool = self.validFillTypeLoading and (self.driver:getIsInFilltrigger() or next(self.triggers) ~=nil) or self.validFillTypeUnloading and  self.driver:hasTipTrigger()
 --	local bool = next(self.triggers) ~=nil or next(self.objectsInTrigger) ~=nil
 	return bool, self.isInAugerWagonTrigger
@@ -413,8 +417,8 @@ end
 
 --scanning for LoadingTriggers and FillTriggers(checkFillTriggers)
 function TriggerHandler:activateLoadingTriggerWhenAvailable()
-	for key, object in pairs(g_currentMission.activatableObjects) do
-		if object:getIsActivatable(self.vehicle) then
+	for key, object in pairs(g_currentMission.activatableObjects) do		
+		if self:objectInTrigger(object,self.vehicle) and object:getIsActivatable(self.vehicle) then
 			if object:isa(LoadTrigger) and (object ~= NetworkUtil.getObject(self.lastUnloadingTriggerID) or self:isNearFillPoint()) then 
 				self:activateTriggerForVehicle(object, self.vehicle)
 				return
@@ -422,6 +426,21 @@ function TriggerHandler:activateLoadingTriggerWhenAvailable()
         end
     end
     return
+end
+
+function TriggerHandler:objectInTrigger(trigger,object)
+	if not trigger.courseplayersInTrigger then 
+		return
+	end
+	if trigger.courseplayersInTrigger[object] then 
+		return true
+	end
+	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		if self:objectInTrigger(trigger,impl.object) then 
+			return true
+		end
+	end
 end
 
 --this one needs a rework as the raycast dosn't get past the vehicle/trailer..
@@ -664,7 +683,6 @@ function TriggerHandler:activateTriggerForVehicle(trigger, vehicle)
 	end
 
 	--Call giant method with new params set
-	--trigger:onActivateObject(vehicle,callback);
 	trigger:onActivateObject(vehicle)
 	--Restore previous values
 	g_currentMission.getFarmId = defaultGetFarmIdFunction;
@@ -674,22 +692,20 @@ end
 -- LoadTrigger doesn't allow filling non controlled tools
 function TriggerHandler:getIsActivatable(superFunc,objectToFill)
 	--when the trigger is filling, it uses this function without objectToFill
-	if objectToFill ~= nil then
+	if objectToFill then
+		local oldVehicle = {}
+		local oldVehicle = g_currentMission.controlledVehicle
 		local vehicle = objectToFill:getRootVehicle()
-		if objectToFill:getIsCourseplayDriving() or (vehicle~= nil and vehicle:getIsCourseplayDriving()) then
-			--if i'm in the vehicle, all is good and I can use the normal function, if not, i have to cheat:
-			if g_currentMission.controlledVehicle ~= vehicle then
-				local oldControlledVehicle = g_currentMission.controlledVehicle;
-				g_currentMission.controlledVehicle = vehicle or objectToFill;
-				local result = superFunc(self,objectToFill);
-				g_currentMission.controlledVehicle = oldControlledVehicle;
-				return result;
-			end
-		end
+		g_currentMission.controlledVehicle = vehicle or objectToFill
+		local bool = superFunc(self,objectToFill)
+		g_currentMission.controlledVehicle = oldVehicle
+		return bool
+	else 
+		return superFunc(self,objectToFill)
 	end
-	return superFunc(self,objectToFill);
 end
 LoadTrigger.getIsActivatable = Utils.overwrittenFunction(LoadTrigger.getIsActivatable,TriggerHandler.getIsActivatable)
+
 
 --LoadTrigger activate, if fillType is right and fillLevel ok 
 function TriggerHandler:onActivateObject(superFunc,vehicle)
@@ -781,7 +797,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 			end
 		end
 	else 
-		return superFunc(self,vehicle)
+		return superFunc(self)
 	end
 end
 LoadTrigger.onActivateObject = Utils.overwrittenFunction(LoadTrigger.onActivateObject,TriggerHandler.onActivateObject)
@@ -900,7 +916,7 @@ function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend,tr
 				end
 			end
 			spec.fillTrigger.isFilling = isFilling
-			spec.fillTrigger.currentTrigger = trigger
+			spec.fillTrigger.currentTrigger = isFilling and trigger or nil
 			 if self.isClient then
 				self:setFillSoundIsPlaying(isFilling)
 				if spec.fillTrigger.currentTrigger ~= nil then
@@ -918,6 +934,7 @@ FillUnit.setFillUnitIsFilling = Utils.overwrittenFunction(FillUnit.setFillUnitIs
 --LoadTrigger callback used to open correct cover for loading 
 function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	local rootVehicle
+	local fillableObject = g_currentMission:getNodeObject(otherId)
 	if fillableObject and fillableObject:isa(Vehicle) then 
 		rootVehicle = fillableObject:getRootVehicle()
 	end
@@ -925,28 +942,24 @@ function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave
 	if not self.courseplayersInTrigger then 
 		self.courseplayersInTrigger = {}
 	end
-	if onEnter and rootVehicle then
-		if self.courseplayersInTrigger[rootVehicle] == nil then
-			self.courseplayersInTrigger[rootVehicle]= {}
-		end
-		self.courseplayersInTrigger[rootVehicle][fillableObject] = true
-	elseif onLeave and rootVehicle then 
-		if self.courseplayersInTrigger[rootVehicle] then
-			self.courseplayersInTrigger[rootVehicle][fillableObject] = nil
-			if next(self.courseplayersInTrigger[rootVehicle]) == nil then
-				self.courseplayersInTrigger[rootVehicle] = nil
+	if rootVehicle then 
+		if onLeave then 
+			if self.courseplayersInTrigger[rootVehicle] then
+				self.courseplayersInTrigger[rootVehicle][fillableObject] = nil
+				if next(self.courseplayersInTrigger[rootVehicle]) == nil then
+					self.courseplayersInTrigger[rootVehicle] = nil
+				end
 			end
+		else 
+			if self.courseplayersInTrigger[rootVehicle] == nil then
+				self.courseplayersInTrigger[rootVehicle]= {}
+			end
+			self.courseplayersInTrigger[rootVehicle][fillableObject] = true
 		end
-	end
-		
+	end		
 	--legancy code!!! (not sure if still needed??) 
 	courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
 	
-	local fillableObject = g_currentMission:getNodeObject(otherId)
-	local rootVehicle
-	if fillableObject and fillableObject:isa(Vehicle) then 
-		rootVehicle = fillableObject:getRootVehicle()
-	end
 	if courseplay:isAIDriverActive(rootVehicle) then
 		TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
 	end
@@ -991,6 +1004,7 @@ function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 	else
 		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: enableTriggerSpeed')
 	end
+	courseplay.debugVehicle(2,fillableObject, "validFillableObject: "..tostring(self.validFillableObject))
 end
 
 --FillTrigger callback used to set approach speed for Cp driver
@@ -1261,11 +1275,7 @@ function TriggerHandler:onActivateObjectGlobalCompany(superFunc,vehicle)
 	if self.validFillableObject and (not vehicle or not vehicle:isa(Vehicle)) then 
 		rootVehicle = self.validFillableObject:getRootVehicle()
 	end
-	if courseplay:isAIDriverActive(rootVehicle) then
-		rootVehicle.cp.driver.triggerHandler.onActivateObject(self,superFunc,rootVehicle)
-	else 
-		return superFunc(self)
-	end
+	TriggerHandler.onActivateObject(self,superFunc,rootVehicle)
 end
 
 function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
@@ -1283,4 +1293,3 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 	end
 	return isOk
 end
-

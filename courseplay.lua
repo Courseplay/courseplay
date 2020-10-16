@@ -332,6 +332,8 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(ShowMiniHud)
 	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobal)
 
+	courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
+
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
 

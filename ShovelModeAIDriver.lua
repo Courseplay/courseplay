@@ -77,6 +77,7 @@ function ShovelModeAIDriver:start()
 	self:findShovel(self.vehicle) 
 	if not self.shovel then 
 		self:error("Error: shovel not found!!")
+		courseplay:stop(self.vehicle)
 		return
 	end
 	

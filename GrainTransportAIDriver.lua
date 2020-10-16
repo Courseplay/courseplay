@@ -103,8 +103,12 @@ function GrainTransportAIDriver:drive(dt)
 		self:hold()
 	end
 	
+	
+	
 	if giveUpControl then
 		self.ppc:update()
+	--	not sure might need this one for heaps on ground or backwards into bunker silo ?
+	--	self.triggerHandler:disableFillTypeUnloading()
 		-- unload_tippers does the driving
 		return
 	else

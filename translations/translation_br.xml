@@ -253,6 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distância mínima" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Ceifadeira está colhendo" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Configurações específicas do modo" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			                text="Mantenha a direção atual" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		        text="Courseplay não mudará a configuração atual de direção do veículo" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Nenhuma pá carregadeira encontrada" />

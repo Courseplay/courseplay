@@ -158,8 +158,8 @@ Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, coursepla
 
 
 function courseplay:prePreDelete(self)
-	if self.cp ~= nil then
-		courseplay:deleteMapHotspot(self);
+	if self.cp and self.cp.settings and self.cp.settings.showMapHotspot ~= nil then
+		self.cp.settings.showMapHotspot:deleteMapHotspot();
 		-- combineUnloadManager
 	end
 end;

@@ -367,7 +367,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			workTool.cp.shovelState = 1;
 
-		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel) then 
+		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel or SpecializationUtil.hasSpecialization(DynamicMountAttacher, workTool.specializations) ) then 
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			workTool.spec_attachable.attacherVehicle.cp.shovelState = 1
@@ -2015,7 +2015,7 @@ function courseplay:getIsToolValidForCpMode(workTool, cpModeToCheck)
 
 		modeValid = true;
 
-	elseif cpModeToCheck == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and courseplay:hasShovel(workTool) then
+	elseif cpModeToCheck == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and (courseplay:hasShovel(workTool) or SpecializationUtil.hasSpecialization(DynamicMountAttacher, workTool.specializations)) then
 		modeValid = true;
 	
 	elseif cpModeToCheck == courseplay.MODE_BUNKERSILO_COMPACTER and (courseplay:hasLeveler(workTool) or courseplay:hasBunkerSiloCompacter(workTool)) then

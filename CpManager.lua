@@ -193,11 +193,13 @@ function CpManager:deleteMap()
 	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
-	for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
-		if fruitData.overlay then
-			fruitData.overlay:delete();
+	if courseplay.fields.seedUsageCalculator.fruitTypes then
+		for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
+			if fruitData.overlay then
+				fruitData.overlay:delete();
+			end;
 		end;
-	end;
+	end
 	courseplay.fields.seedUsageCalculator = {};
 	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
 
@@ -452,6 +454,7 @@ function CpManager.saveXmlSettings(self)
 		setXMLFloat(cpSettingsXml, key .. '#opacity',	CpManager.course2dPdaMapOpacity);
 
 		courseplay.globalSettings:saveToXML(cpSettingsXml, 'CPSettings')
+		courseplay.globalCourseGeneratorSettings:saveToXML(cpSettingsXml, 'CPSettings.courseGenerator')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -1187,6 +1190,8 @@ function CpManager:loadXmlSettings()
 		self.course2dPlotField.y = self.course2dPlotPosY;
 
 		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
+		courseplay.globalCourseGeneratorSettings:loadFromXML(cpSettingsXml, 'CPSettings.courseGenerator')
+
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

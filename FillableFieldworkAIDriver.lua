@@ -39,10 +39,7 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 	self.refillState = self.states.TO_BE_REFILLED
 end
-function FillableFieldworkAIDriver:start(startingPoint)
-	self:getSiloSelectedFillTypeSetting():cleanUpOldFillTypes()
-	FieldworkAIDriver.start(self,startingPoint)
-end
+
 function FillableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)
@@ -163,7 +160,7 @@ end
 function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
-	if self:getSiloSelectedFillTypeSetting():isEmpty() and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, Cultivator) then
+	if self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, FertilizingCultivator) then
 		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
 		return true
 	end

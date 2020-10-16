@@ -435,7 +435,7 @@ end
 function translatePoints( points, dx, dy )
 	local result = Polygon:new()
 	for i, point in points:iterator() do
-		local newPoint = copyPoint( point )
+		local newPoint = shallowCopy( point )
 		newPoint.x = points[ i ].x + dx
 		newPoint.y = points[ i ].y + dy
 		table.insert( result, newPoint )
@@ -450,7 +450,7 @@ function rotatePoints( points, angle )
 	local sin = math.sin( angle )
 	local cos = math.cos( angle )
 	for i, point in points:iterator() do
-		local newPoint = copyPoint( point )
+		local newPoint = shallowCopy( point )
 		newPoint.x = points[ i ].x * cos - points[ i ].y  * sin
 		newPoint.y = points[ i ].x * sin + points[ i ].y  * cos
 		table.insert( result, newPoint )
@@ -493,7 +493,7 @@ end
 
 -- shallow copy for preserving point attributes through 
 -- transformations
-function copyPoint( point )
+function shallowCopy( point )
 	local result = {}
 	for k, v in pairs( point ) do
 		result[ k ] = v
@@ -569,7 +569,7 @@ end
 function PointXY:copy( other )
 	local newPoint = {}
 	if other then
-		newPoint = copyPoint( other )
+		newPoint = shallowCopy( other )
 	end
 	return setmetatable( newPoint, self )
 end
@@ -614,7 +614,7 @@ end
 function Polyline:copy( other )
 	local newPolyline = {}
 	for i, p in other:iterator() do
-		newPolyline[ i ] = copyPoint( p )
+		newPolyline[ i ] = shallowCopy( p )
 	end
 	return setmetatable( newPolyline, self )
 end
@@ -835,7 +835,7 @@ function Polyline:refine( iterator, minSmoothAngle, maxSmoothAngle )
 				math.abs( self[ i ].deltaAngle ) < maxSmoothAngle then
 				-- insert points only when there is really a curve here
 				-- also, preserve all attributes of the point
-				local newPoint = copyPoint( self[ i ])
+				local newPoint = shallowCopy( self[ i ])
 				newPoint.x, newPoint.y =  getPointInTheMiddle( self[ i ], self[ i + 1 ])
 				newPoint.text = 'refined'
 				newPoint.smoothed = true
@@ -1015,7 +1015,7 @@ end
 function Polyline:appendLine(line, extensionLength, trimOnly, isRetry)
 	local lineToAppend = Polyline:new()
 	for i, p in line:iteratorFromEndClosestToPoint(self[#self]) do
-		table.insert(lineToAppend, copyPoint(p))
+		table.insert(lineToAppend, shallowCopy(p))
 	end
 	-- lineToAppend now has the points to append in the correct order
 	-- see if it intersects us
@@ -1153,14 +1153,11 @@ end
 --- Always return a valid index to allow iterating over
 -- the beginning or end of a closed polygon.
 function Polygon:getIndex( index )
+	index = index % #self
 	if index == 0 then
 		return #self
-	elseif index > #self then
-		return index % #self
-	elseif index > 0 then
-		return index
 	else
-		return #self + index
+		return index
 	end
 end
 
@@ -1211,4 +1208,20 @@ function Polygon:iteratorClosestDistance(startIx, endIx)
 	end
 	local step = dPlus < dMinus and 1 or -1
 	return self:iterator(startIx, endIx, step)
+end
+
+function Polygon:getSmallestRadiusWithinDistance(ix, dForward, dBackward, forwardStep)
+	local i, dElapsed, minRadius = ix, 0, math.huge
+	while dElapsed < dBackward do
+		dElapsed = dElapsed + self[i].prevEdge.length
+		minRadius = self[i].radius < minRadius and self[i].radius or minRadius
+		i = i - forwardStep
+	end
+	i, dElapsed = ix, 0
+	while dElapsed < dForward do
+		dElapsed = dElapsed + self[i].nextEdge.length
+		minRadius = self[i].radius < minRadius and self[i].radius or minRadius
+		i = i + forwardStep
+	end
+	return minRadius
 end

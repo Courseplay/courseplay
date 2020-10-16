@@ -837,7 +837,7 @@ function splitCenterIntoBlocks( tracks, width )
 		end
 		for i = 1, #t.intersections, 2 do
 			local track = { from=t.from, to=t.to,
-			                intersections={ copyPoint( t.intersections[ i ]), copyPoint( t.intersections[ i + 1 ])},
+			                intersections={ shallowCopy( t.intersections[ i ]), shallowCopy( t.intersections[ i + 1 ])},
 			                originalTrackNumber = t.originalTrackNumber,
 			                adjacentIslands = t.adjacentIslands }
 			table.insert( splitTracks, track )
@@ -1023,7 +1023,7 @@ function fixLongTurns( track, width )
 				-- move to about width distance 
 				local moveDistance = d - width
 				if inFrontOf( track[ i + 1 ], track[ i ]) then
-					newPoint = copyPoint( track[ i ])
+					newPoint = shallowCopy( track[ i ])
 					-- turn end is in front of turn start so move the turn start closer 
 					newPoint.x, newPoint.y = getPointBetween( track[ i ], track[ i + 1 ], moveDistance )
 					-- the new point is the turn start
@@ -1032,7 +1032,7 @@ function fixLongTurns( track, width )
 					track[ i ].turnStart = nil
 				else
 					-- turn end is behind the turn start, move turn end closer 
-					newPoint = copyPoint( track[ i + 1 ])
+					newPoint = shallowCopy( track[ i + 1 ])
 					newPoint.x, newPoint.y = getPointBetween( track[ i + 1 ], track[ i ], moveDistance )
 					newPoint.turnEnd = true
 					track[ i + 1 ].turnEnd = nil
