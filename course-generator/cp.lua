@@ -176,7 +176,7 @@ function courseGenerator.generate( vehicle )
 		extendTracks, minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
-		vehicle.cp.returnToFirstPoint, courseGenerator.pointsToXy( islandNodes ),
+		courseGenerator.pointsToXy( islandNodes ),
 		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
 	)
 

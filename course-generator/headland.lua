@@ -190,24 +190,7 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 	result:calculateData()
 end
 
---- add one round to the headland path. This is to
---- assemble the complete spiral headland path from the individual
---- parallel headland tracks.
---- If the end of the round is near a corner, continue until we reach a relatively straight section to
---- avoid complications during lane switch as in corners there will be very sharp angles.
----@param track Polygon
-local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to, step)
-	local i = from
-	local count = 0
-	while count <= #track do
-		table.insert( headlandPath, track[ i ])
-		headlandPath[ #headlandPath ].passNumber = passNumber
-		i = i + step
-		count = count + 1
-	end
-	-- now, one round is complete. Making sure we do attempt to switch headlands in tight corners
-	-- so if this isn't a relatively straight section, keep going until we find one before
-	-- switching to the next headland
+local function continueUntilStraightSection(headlandPath, track, passNumber, i, step, isConnectingTrack)
 	local dElapsed = 0
 	-- search only for the next few meters
 	local searchLimit = courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceToCorner:get() +
@@ -220,15 +203,63 @@ local function addTrackToHeadlandPath( headlandPath, track, passNumber, from, to
 				step)
 		-- nice straight section, done
 		if r > courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinRadius:get() then
+			courseGenerator.debug('Added waypoints to reach a straight section for the headland %d lane change after %.1f m, r = %.1f',
+				passNumber, dElapsed, r)
 			return i
 		end
 		table.insert( headlandPath, track[ i ])
 		headlandPath[ #headlandPath ].passNumber = passNumber
+		headlandPath[ #headlandPath ].isConnectingTrack = isConnectingTrack
 		i = i + step
 	end
 	-- no straight section found, bail out here
-	courseGenerator.debug('No straight section found for headland lane change')
+	courseGenerator.debug('No straight section found after %1.f m for headland %d lane change to next', dElapsed, passNumber)
 	return i
+end
+
+--- add one round to the headland path. This is to
+--- assemble the complete spiral headland path from the individual
+--- parallel headland tracks.
+--- There are three modes to call this function: for the innermost headland, for the others and for headlands around
+--- islands.
+---
+--- For the innermost headland (addFullCircle == true), we add another full circle, marking all points
+--- as connecting tracks. This is to provide a transition to the up/down rows. Later we'll traverse these
+--- points until we reach the starting row.
+---
+--- For the other headlands (addFullCircle == false)
+--- If the end of the round is near a corner, continue until we reach a relatively straight section to
+--- avoid complications during lane switch as in corners there will be very sharp angles.
+---
+--- For islands, we do not add any waypoints after a single full circle, just change to the next headland when we
+--- are done with the previous. This isn't perfect but makes it easy for us to return to the up/down rows.
+---
+---@param track Polygon
+local function addTrackToHeadlandPath(headlandPath, track, passNumber, from, step, addFullCircle, isConnectingTrack, justOneRound)
+	local i = from
+	local count = 0
+	while count <= #track do
+		table.insert(headlandPath, shallowCopy(track[ i ]))
+		headlandPath[#headlandPath].passNumber = passNumber
+		headlandPath[#headlandPath].isConnectingTrack = isConnectingTrack
+		i = i + step
+		count = count + 1
+	end
+	courseGenerator.debug('Added %d (of %d) waypoints to headland %d (%s)',
+			count, #headlandPath, passNumber, addFullCircle and 'add full round' or 'add straight section')
+	if justOneRound then
+		return i
+	end
+	headlandPath[#headlandPath].endOfHeadland = true
+	if addFullCircle then
+		local ret = addTrackToHeadlandPath( headlandPath, track, passNumber, i, step, false, true)
+		return ret
+	else
+		-- now, one round is complete. Making sure we do not attempt to switch headlands in tight corners
+		-- so if this isn't a relatively straight section, keep going until we find one before
+		-- switching to the next headland
+		return continueUntilStraightSection(headlandPath, track, passNumber, i, step, true)
+	end
 end
 
 --- Link the generated, parallel circular headland tracks to
@@ -241,7 +272,7 @@ end
 --    to the first point of the first pass and then continue from there
 --    inwards
 --
-function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
+function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle, isIsland)
 	-- first, find the intersection of the outermost headland track and the
 	-- vehicles heading vector.
 	local headlandPath = Polyline:new()
@@ -262,7 +293,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 			-- increasing index is clockwise, so
 			-- driving direction is in increasing index, start at toIndex and go a full circle
 			-- back to fromIndex
-			toIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, toIndex, fromIndex, 1 )
+			toIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, toIndex, 1, i == #field.headlandTracks, false, isIsland )
 			startLocation = field.headlandTracks[ i ][ toIndex ]
 			field.headlandTracks[ i ].circleStart = toIndex
 			field.headlandTracks[ i ].circleStep = 1
@@ -271,7 +302,7 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 			-- must reverse direction
 			-- driving direction is in decreasing index, so we start at fromIndex and go a full circle
 			-- to toIndex
-			fromIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, fromIndex, toIndex, -1 )
+			fromIndex = addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, fromIndex, -1, i == #field.headlandTracks, false, isIsland )
 			startLocation = field.headlandTracks[ i ][ fromIndex ]
 			field.headlandTracks[ i ].circleStart = fromIndex
 			field.headlandTracks[ i ].circleStep = -1
@@ -321,90 +352,6 @@ function linkHeadlandTracks( field, implementWidth, isClockwise, startLocation, 
 		field.headlandPath = headlandPath
 	end
 end
-
--- at this point the headland tracks are polygons and their clockwise orientation is the same as the field
--- boundary they were generated from. isClockwise is the desired clockwise orientation
-function linkHeadlandTracks2( field, implementWidth, isClockwise, startLocation, doSmooth, minSmoothAngle, maxSmoothAngle )
-	-- first, find the intersection of the outermost headland track and the
-	-- vehicles heading vector.
-	local headlandPath = Polyline:new()
-	-- find closest point to starting position on outermost headland track
-	local fromIndex = field.headlandTracks[ 1 ]:getClosestPointIndex(startLocation)
-	-- start one waypoint back to have an overlap with the transition to the next headland so nothing is missed
-	table.insert(headlandPath, shallowCopy(field.headlandTracks[ 1 ][fromIndex + (isClockwise and 1 or -1)]))
-	local toIndex = field.headlandTracks[ 1 ]:getIndex( fromIndex + 1 )
-	vectors = {}
-	-- direction we'll be looking for the next inward headland track (relative to
-	-- the headland vertex direcions) We want to go a bit forward, not directly
-	-- perpendicular
-	local inwardAngleOffset = 60
-	local inwardAngle
-	for i = 1, #field.headlandTracks do
-		-- now find out which direction we have to drive on the headland pass.
-		if field.headlandTracks[ i ].isClockwise == isClockwise then
-			-- increasing index is clockwise, so
-			-- driving direction is in increasing index, start at toIndex and go a full circle
-			-- back to fromIndex
-			addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, toIndex, fromIndex, 1 )
-			startLocation = field.headlandTracks[ i ][ toIndex ]
-			field.headlandTracks[ i ].circleStart = toIndex
-			field.headlandTracks[ i ].circleStep = 1
-			inwardAngle = inwardAngleOffset
-		else
-			-- must reverse direction
-			-- driving direction is in decreasing index, so we start at fromIndex and go a full circle
-			-- to toIndex
-			addTrackToHeadlandPath( headlandPath, field.headlandTracks[ i ], i, fromIndex, toIndex, -1 )
-			startLocation = field.headlandTracks[ i ][ fromIndex ]
-			field.headlandTracks[ i ].circleStart = fromIndex
-			field.headlandTracks[ i ].circleStep = -1
-			inwardAngle = 180 - inwardAngleOffset
-		end
-		-- remember this, we'll need when generating the link from the last headland pass
-		-- to the parallel tracks
-		-- switch to the next headland track
-		local heading = field.headlandTracks[ i ][ fromIndex ].nextEdge.angle + getInwardDirection( field.headlandTracks[ i ].isClockwise, math.rad( inwardAngle ))
-		-- We should be able to find the next headland track within a reasonable distance but this
-		-- may not work around corners so we try further
-		local distances = { implementWidth * 1.5, implementWidth * 3, implementWidth * 6, implementWidth * 12 }
-		for _, distance in ipairs( distances ) do
-			-- we may have an issue finding the next track around corners, so try a couple of other headings
-			local headings = { heading }
-			for h = 10,120,10 do
-				table.insert( headings, heading + math.rad( h ))
-				table.insert( headings, heading - math.rad( h ))
-			end
-			for _, h in ipairs( headings ) do
-				if lines then
-					table.insert( lines, { startLocation, addPolarVectorToPoint( startLocation, h, distance )})
-				end
-				if field.headlandTracks[ i + 1 ] then
-					fromIndex, toIndex = field.headlandTracks[ i + 1 ]:getIntersectionWithLine( startLocation, addPolarVectorToPoint( startLocation, h, distance ))
-					if fromIndex then
-						courseGenerator.debug( "Linked headland track %d to next track, heading %.1f, distance %.1f, inwardAngle = %d", i, math.deg( h ), distance, inwardAngle )
-						break
-					end
-				end
-			end
-			if fromIndex then
-				break
-			else
-				courseGenerator.debug( "Could not link headland track %d to next track at distance %.2f", i, distance )
-			end
-		end
-	end
-
-	if doSmooth then
-		-- skip the first and last point when smoothing, this makes sure smooth() won't try
-		-- to wrap around the ends like in case of a closed polygon, this is just a line here.
-		headlandPath:smooth( minSmoothAngle, maxSmoothAngle, 2 )
-		field.headlandPath = headlandPath
-		addMissingPassNumber( field.headlandPath )
-	else
-		field.headlandPath = headlandPath
-	end
-end
-
 
 -- in courseGenerator.HEADLAND_MODE_NARROW_FIELD mode we want to lift the
 -- implements on the short edge (except for the outermost headland).

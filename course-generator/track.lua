@@ -82,10 +82,6 @@
 --   turn radius of the vehicle. Will do whatever we can not to generate turns sharper
 --   than this
 --
--- returnToFirstPoint
---   Return to the first waypoint of the course after done. Will add a section from the 
---   last to the first wp if true.
---
 -- islandNodes
 --   List of points within the field which should be bypassed like utility poles or 
 --   trees. 
@@ -109,7 +105,7 @@
 
 function generateCourseForField( field, implementWidth, headlandSettings, extendTracks,
 																 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle, doSmooth, fromInside,
-																 turnRadius, returnToFirstPoint, islandNodes, islandBypassMode, centerSettings )
+																 turnRadius, islandNodes, islandBypassMode, centerSettings )
 
 	local resultIsOk = true
 
@@ -173,11 +169,7 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 		end
 	end
 	if #field.course > 0 then
-		if returnToFirstPoint then
-			courseGenerator.debug("Adding waypoints to return to first point.")
-			addWpsToReturnToFirstPoint( field.course, field.boundary )
-		end
-		fixHeadlandToCenterTransition(field.course, headlandSettings, centerSettings, turnRadius, field.bigIslands, field.headlandTracks, implementWidth)
+		addHeadlandToCenterTransition(field.course, headlandSettings, centerSettings, turnRadius, field.bigIslands, field.headlandTracks, implementWidth)
 		if not headlandSettings.headlandFirst then
 			field.course = reverseCourse( field.course )
 		end
@@ -305,45 +297,62 @@ function addWpsToReturnToFirstPoint( course, boundary )
 	course:calculateData()
 end
 
-
---- Check the transitions from headland to the center up/down rows and add a turn when neeeded
+--- Add the transition from headland to the center (up/down rows)
+---
+--- The innermost headland always has an extra round added (one complete round working and one more marked as connecting
+--- track), see linkHeadlandTracks(). We certainly have to drive the first round to complete the work, how much of the
+--- second round is needed depends on where the up/down rows start. This will be somewhere in the first half of the
+--- extra round.
+---
+--- Here, we traverse that extra round backwards from the headland waypoint closest to the first up/down waypoint
+--- and then cut that section from the course.
+---
 ---@param course Polyline course waypoints, in the order of driving
 ---@param i number index of a waypoint which is a start of an up/down row block
-function fixHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
+function addHeadlandToCenterTransition(course, headlandSettings, centerSettings, turnRadius, islands, headlands, width)
 	course:calculateData()
 	local i = 2
-		while i < #course do
-		if course[i].mayNeedTurn then
-			course[i].mayNeedTurn = nil
+	while i < #course do
+		if course[i].upDownRowStart then
+			-- this is where the up/down rows start (and the extra headland round ends)
+			course[i].upDownRowStart = nil
 			local cutFromHere, cutToHere = 0, i - 1
-			local totalAngle = 0
-			-- this is the first waypoint of a block with up/down rows.
-			-- add a turn maneuver if needed as we start at the row adjacent to the headland
-			local d = 0
-			-- walk back from the up/down row on the headland and see if we need a turn here
+			local dPrev = getDistanceBetweenPoints(course[i], course[i - 1])
+			-- walk back from the up/down row on the headland until we reach the headland waypoint closest to the
+			-- first up/down waypoint
 			for j, point in course:iterator(i - 1, 1, -1) do
-				d = d + point.nextEdge.length
-				totalAngle = totalAngle + getDeltaAngle(point.nextEdge.angle, point.prevEdge.angle)
-				if point.radius > turnRadius * 2 and (d > turnRadius * math.pi or totalAngle > math.pi) then
-					-- here's a point on a relatively straight section but we turned quite a lot since
-					-- we left the up/down waypoint, so put a turn here
+				local d = getDistanceBetweenPoints(course[i], point)
+				-- TODO: there may be a better criteria to check this.
+				if d < 2 * width and d > dPrev then
+					-- distance just started to grow
 					cutFromHere = j + 1
 					break
+				else
+					-- this point on the connecting track is closer to the first point in the up/down rows
+					dPrev = d
 				end
 			end
 			-- remove the waypoints between the newly added turn start and end
-			if cutFromHere > 0 and math.abs(totalAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
-				for j = cutFromHere, cutToHere do
+			if cutFromHere > 0 then
+				courseGenerator.debug('Removing waypoints %d - %d to fix headland-up/down transition', cutFromHere, cutToHere)
+				for _ = cutFromHere, cutToHere do
 					table.remove(course, cutFromHere)
 				end
-				course[cutFromHere - 1].turnStart = true
-				course[cutFromHere].turnEnd = true
 			end
+			course:calculateData()
+			local deltaAngle = getDeltaAngle(course[cutFromHere].nextEdge.angle, course[cutFromHere].prevEdge.angle)
+			if deltaAngle > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
+				courseGenerator.debug('Adding a turn starting at %d for the headland-up/down transition', cutFromHere)
+				course[cutFromHere].turnStart = true
+				course[cutFromHere + 1].turnEnd = true
+			end
+			break
 		end
 		i = i + 1
 	end
 	course:calculateData()
 end
+
 -- set up all island related data for the field  
 function setupIslands( field, nPasses, implementWidth, overlapPercent, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle,
                        doSmooth, islandNodes )

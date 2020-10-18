@@ -115,7 +115,7 @@ local exitCornerMap = {
 }
 
 --- find the corner where we will exit the block if entering at entry corner.
-function getBlockExitCorner( entryCorner, nRows, nRowsToSkip )
+local function getBlockExitCorner( entryCorner, nRows, nRowsToSkip )
 	-- if we have an even number of rows, we'll end up on the same side (left/right)
 	local sameSide = nRows % 2 == 0
 	-- if we skip an odd number of rows, we'll end up where we started (bottom/top)
@@ -124,13 +124,18 @@ function getBlockExitCorner( entryCorner, nRows, nRowsToSkip )
 end
 
 
-function isCornerOnTheBottom( entryCorner )
+local function isCornerOnTheBottom( entryCorner )
 	return entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
 end
 
-function isCornerOnTheLeft( entryCorner )
+local function isCornerOnTheLeft( entryCorner )
 	return entryCorner == courseGenerator.BLOCK_CORNER_TOP_LEFT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
 end
+
+local function getEntryCornerForFirstHeadland(entryCorner, clockwise)
+
+end
+
 --- Find the best angle to use for the tracks in a polygon.
 --  The best angle results in the minimum number of tracks
 --  (and thus, turns) needed to cover the polygon.
@@ -299,8 +304,8 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		connectingTracks[ i ] = Polygon:new()
 		local nPoints = block.trackToThisBlock and #block.trackToThisBlock or 0
 		courseGenerator.debug( "Connecting track to block %d has %d points", i, nPoints )
-		-- do not add connecting tracks to the first block if there's no headland
-		if nHeadlandPasses > 0 then
+		-- do not add connecting tracks to the first block (or if there's no headland)
+		if nHeadlandPasses > 0 and i > 1 then
 			for j = 1, nPoints do
 				table.insert( connectingTracks[ i ], block.trackToThisBlock[ j ])
 				table.insert( track, block.trackToThisBlock[ j ])
@@ -318,17 +323,13 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 		local linkedTracks = linkParallelTracks(block.tracksWithWaypoints,
 			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings, continueWithTurn,
 			transformedHeadlands, rotatedIslands, width)
-		if not continueWithTurn then
-			-- this is a transition to/from up/down rows and may need to be fixed
-			-- by adding a turn if the delta angle is high enough.
-			-- for now, mark it, will fix after everything is finished
-			linkedTracks[1].mayNeedTurn = true
+		-- remember where the up/down rows start (transition from headland to up/down rows)
+		if i == 1 then
+			linkedTracks[1].upDownRowStart = #track
 		end
 		for _, p in ipairs(linkedTracks) do
 			table.insert(track, p)
 		end
-		-- TODO: This seems to be causing circling with large implements, disabling for now.
-		-- fixLongTurns( track, width )
 	end
 
 	if centerSettings.nRowsToSkip == 0 then
@@ -792,7 +793,7 @@ end
 --
 function splitCenterIntoBlocks( tracks, width )
 
-	function createEmptyBlocks( n )
+	local function createEmptyBlocks( n )
 		local b = {}
 		for i = 1, n do
 			table.insert( b, {})
@@ -805,7 +806,7 @@ function splitCenterIntoBlocks( tracks, width )
 	-- innermost field headland. Try to remove those intersection points.
 	-- most likely can happen with a field headland only on non-convex fields but not sure
 	-- how to handle that case.
-	function cleanupIntersections( is )
+	local function cleanupIntersections( is )
 		local onIsland = false
 		for i = 2, #is do
 			if not onIsland and is[ i - 1 ].islandId then
@@ -825,7 +826,7 @@ function splitCenterIntoBlocks( tracks, width )
 		end
 	end
 
-	function splitTrack( t )
+	local function splitTrack( t )
 		local splitTracks = {}
 		cleanupIntersections( t.intersections )
 		if #t.intersections % 2 ~= 0 or #t.intersections < 2 then
@@ -845,7 +846,7 @@ function splitCenterIntoBlocks( tracks, width )
 		return splitTracks
 	end
 
-	function closeCurrentBlocks( blocks, currentBlocks )
+	local function closeCurrentBlocks( blocks, currentBlocks )
 		if currentBlocks then
 			for _, block in ipairs( currentBlocks ) do
 				-- for our convenience, remember the corners
@@ -853,9 +854,9 @@ function splitCenterIntoBlocks( tracks, width )
 				block.bottomRightIntersection = block[ 1 ].intersections[ 2 ]
 				block.topLeftIntersection = block[ #block ].intersections[ 1 ]
 				block.topRightIntersection = block[ #block ].intersections[ 2 ]
-				-- this is for visualization only
 				block.polygon = Polygon:new()
 				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_LEFT ] = block.bottomLeftIntersection
+				-- this is for visualization only
 				table.insert( rotatedMarks, block.bottomLeftIntersection )
 				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
 				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT ] = block.bottomRightIntersection
@@ -1231,21 +1232,17 @@ function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
 	for i in headland:iterator( startIx, endIx, step ) do
 		table.insert( track, headland[ i ])
 	end
-	-- remove first and last point to provide a smoother transition to the up/down rows.
-	-- if we don't do this, the first or last waypoint on the headland may be behind 
-	-- the current track wp and thus we first turn 180 back and then forward again
-	table.remove( track, 1 )
-	table.remove( track, #track )
 	return track
 end
 
--- TODO: make sure this work with the spiral and circular center patterns as well.
+-- TODO: make sure this work with the spiral, circular and lands center patterns as well, where
+-- the transition to the the up/down rows may not be in the corner
 function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBlockDirection, nRowsToSkip )
 	local workedBlocks = {}
 	for i, block in ipairs( blocksInSequence ) do
 		if i == 1 then
 			-- the track to the first block starts at the end of the innermost headland
-			block.trackToThisBlock = getTrackBetweenPointsOnHeadland(	innermostHeadland, circleStart,
+			block.trackToThisBlock = getTrackBetweenPointsOnHeadland(innermostHeadland, circleStart,
 				block.polygon[ block.entryCorner ].index, firstBlockDirection )
 		end
 		if i > 1 then

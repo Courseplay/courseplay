@@ -517,7 +517,7 @@ function Island:getHeadlandPath( point, distance, width, minSmoothAngle, maxSmoo
 end
 
 function Island:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle )
-	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle )
+	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle, true )
 end
 
 function Island:adjacentTo( point )
