@@ -169,8 +169,8 @@
     <text name="COURSEPLAY_ENDING_LOCATION" 							text="Position de fin" />
     <text name="COURSEPLAY_STARTING_DIRECTION" 					 		text="Direction de départ:" />
     <text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Retourner au premier point" />
-    <text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
-	<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
+    <text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="Désactivé et arrêter la course" />
+	<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="Activé et arrêter la course" />
     <text name="COURSEPLAY_CORNER_1" 						 			text="Sud-Ouest" />
     <text name="COURSEPLAY_CORNER_2" 						 			text="Nord-Ouest" />
     <text name="COURSEPLAY_CORNER_3" 						 			text="Nord-Est" />
@@ -256,8 +256,8 @@
     <text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distance mini" />
     <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" /> <!-- this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
     <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mod" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Réglages de direction" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "			text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
   	
     <!-- shovel stuff -->
     <text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet" />
@@ -445,8 +445,8 @@
     <text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Relever/Désactiver l'outil à la fin d'un rang dès que possible ou le plus tard possible" />
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Baisser/Activer l'outil" />
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Baisser/Activer l'outil au début d'un rang au dernier moment ou en avance" />
-    <text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
+    <text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Replier l'outil" />
+	<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="L'outil sera replié automatiquement à la fin de la course" />
     <text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
 	<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Goulotte toujours dépliée" />
