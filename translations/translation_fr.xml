@@ -169,6 +169,8 @@
     <text name="COURSEPLAY_ENDING_LOCATION" 							text="Position de fin" />
     <text name="COURSEPLAY_STARTING_DIRECTION" 					 		text="Direction de départ:" />
     <text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Retourner au premier point" />
+    <text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
+	<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
     <text name="COURSEPLAY_CORNER_1" 						 			text="Sud-Ouest" />
     <text name="COURSEPLAY_CORNER_2" 						 			text="Nord-Ouest" />
     <text name="COURSEPLAY_CORNER_3" 						 			text="Nord-Est" />
@@ -443,6 +445,8 @@
     <text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Relever/Désactiver l'outil à la fin d'un rang dès que possible ou le plus tard possible" />
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Baisser/Activer l'outil" />
     <text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Baisser/Activer l'outil au début d'un rang au dernier moment ou en avance" />
+    <text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
     <text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />
     <text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Cliquez sur un vehicle pour y prendre place" />
 	<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Goulotte toujours dépliée" />

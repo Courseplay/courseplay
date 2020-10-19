@@ -164,6 +164,8 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Eind locatie" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Start richting" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Keer terug naar start" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
 		<text name="COURSEPLAY_CORNER_1" 									text="Zuid-West" />
 		<text name="COURSEPLAY_CORNER_2" 									text="Noord-West" />
 		<text name="COURSEPLAY_CORNER_3" 									text="Noord-Oost" />
@@ -462,6 +464,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden opgeheven, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Wanneer moeten werktuigen worden neergelaten" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Wanneer moeten werktuigen worden neergelaten, bij het beëindigen van een rij of het starten van een kopakkerbocht" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Use pathfinding in turns" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />

@@ -168,6 +168,8 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="終了地点" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="開始方向" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="開始地点に戻る" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
 		<text name="COURSEPLAY_CORNER_1" 									text="南西" />
 		<text name="COURSEPLAY_CORNER_2" 									text="北西" />
 		<text name="COURSEPLAY_CORNER_3" 									text="北東" />
@@ -465,6 +467,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="列終了時やまくら地でのターン開始時にツールを上げるタイミング" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="ツールを下げるタイミング" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="列開始時やまくら地でのターン終了時にツールを下げるタイミング" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="ターン中に経路探索する" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="四角くないフィールドのターン中、例えばまくら地から次の列に移動する際に経路探索を行います" />
