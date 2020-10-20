@@ -168,8 +168,8 @@
     	<text name="COURSEPLAY_ENDING_LOCATION" 						 	text="Lokacja końcowa:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION"						 	text="Kierunek startowy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT"					 	text="Powrót do 1 punktu:" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="Dezaktywuj i zwolnij kierowcę CP" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="Aktywuj i zwolnij kierowcę CP" />
 		<text name="COURSEPLAY_CORNER_1"								 	text="Południowy-Zachód" />
 		<text name="COURSEPLAY_CORNER_2"								 	text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 	text="Północny-Wschód" />
@@ -255,8 +255,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Minimalny dystans" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 	text="Rura wyładowcza po stronie uprawy" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Specyficzne ustawienia trybu" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING"						text="Utrzymuj obecny tryb ster." />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP"				text="Courseplay nie zmieni aktualnego trybu sterowania kołami w pojeździe" />
 		
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 	text="Nie znaleziono łychy" />
@@ -468,8 +468,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Określa kiedy podnieść narzędzie, na końcu ścieżki albo rozpoczęciu zawracania" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Kiedy opuścić narzędzia" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Określa kiedy opuścić narzędzie, na początku ścieżki albo zakończeniu zawracania" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Składanie narzędzi" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Włącza/wyłącza, składanie narzędzi po zakończeniu pracy" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Korzystaj z wyszukiwania ścieżki na nawrotach" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Korzystaj z wyszukiwania ścieżki na nawrotach na polach o nieregularnym kształcie, np. aby jechać na uwrociu do następnego rzędu" />
