@@ -2269,6 +2269,33 @@ function HeadlandLaneChangeMinDistanceFromCorner:init()
 	self:set(10)
 end
 
+--- Pathfinder parameters settings (read from the XML, may be added to the UI later when needed):
+---
+
+--- The hybrid A* algorithm's default delta angle at the goal is 6 degrees, meaning the goal node must
+--- be within this angle for the goal to be considered as reached. This may lead to very long or completely
+--- unsuccessful path finding if the goal is close to an obstacle for example.
+--- We'll therefore start relaxing this criteria so bigger angle differences are acceptable as the pathfinder
+--- number of unsuccessful iterations grow.
+---
+--- This is a factor at which we increase the goal angle difference, a value of 0 won't change it.
+---@class DeltaAngleRelaxfactor
+DeltaAngleRelaxFactor = CpObject(FloatSetting)
+function DeltaAngleRelaxFactor:init()
+	IntSetting.init(self, 'deltaAngleRelaxFactor', 'DeltaAngleRelaxFactor',
+			'Factor to decrease pathfinder accuracy with unsuccessful iterations')
+	self:set(10)
+end
+
+--- Maximum value of the delta angle at the goal in radians, see above.
+---@class MaxDeltaAngleAtGoal
+MaxDeltaAngleAtGoal = CpObject(FloatSetting)
+function MaxDeltaAngleAtGoal:init()
+	IntSetting.init(self, 'maxDeltaAngleAtGoal', 'MaxDeltaAngleAtGoal',
+			'Maximum angle difference allowed at goal')
+	self:set(math.pi / 2)
+end
+
 --toggleHeadlandDirection
 --toggleHeadlandOrder
 
@@ -3878,6 +3905,13 @@ function SettingsContainer.createGlobalCourseGeneratorSettings()
 	container:addSetting(HeadlandLaneChangeMinRadius)
 	container:addSetting(HeadlandLaneChangeMinDistanceToCorner)
 	container:addSetting(HeadlandLaneChangeMinDistanceFromCorner)
+	return container
+end
+
+function SettingsContainer.createGlobalPathfinderSettings()
+	local container = SettingsContainer('globalPathfinderSettings')
+	container:addSetting(MaxDeltaAngleAtGoal)
+	container:addSetting(DeltaAngleRelaxFactor)
 	return container
 end
 

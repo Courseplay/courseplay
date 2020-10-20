@@ -332,6 +332,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobal)
 
 	courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
+	courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
 
 	--print("\t### Courseplay: setGlobalData() finished");
 end;
