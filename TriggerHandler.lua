@@ -916,12 +916,17 @@ function TriggerHandler:setFillUnitIsFilling(superFunc,isFilling, noEventSend,tr
 				end
 			end
 			spec.fillTrigger.isFilling = isFilling
-			spec.fillTrigger.currentTrigger = isFilling and trigger or nil
-			 if self.isClient then
+			if trigger then
+				spec.fillTrigger.currentTrigger = trigger
+			end
+			if self.isClient then
 				self:setFillSoundIsPlaying(isFilling)
 				if spec.fillTrigger.currentTrigger ~= nil then
 					spec.fillTrigger.currentTrigger:setFillSoundIsPlaying(isFilling)
 				end
+			end
+			if not trigger then 
+				spec.fillTrigger.currentTrigger = nil
 			end
 			SpecializationUtil.raiseEvent(self, "onFillUnitIsFillingStateChanged", isFilling)
 		end

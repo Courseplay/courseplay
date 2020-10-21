@@ -403,7 +403,6 @@ function courseplay:onLoad(savegame)
 	self.cp.isNewCourseGenSelected = function()
 		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SE_LEGACY
 	end
-	self.cp.returnToFirstPoint = false;
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	-- TODO: add all old course gen settings to a SettingsContainer
@@ -518,7 +517,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
 	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
 	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
-  self.cp.settings:addSetting(KeepCurrentSteering, self)
+  	self.cp.settings:addSetting(KeepCurrentSteering, self)
 	self.cp.settings:addSetting(StopForUnloadSetting, self)
 	self.cp.settings:addSetting(StrawSwathSetting, self)
 	self.cp.settings:addSetting(AllowUnloadOnFirstHeadlandSetting, self)
@@ -556,6 +555,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(ShowVisualWaypointsSetting,self)
 	self.cp.settings:addSetting(ShowVisualWaypointsCrossPointSetting,self)
 	self.cp.settings:addSetting(OppositeTurnModeSetting,self)
+	self.cp.settings:addSetting(FoldImplementAtEndSetting, self)
 	self.cp.settings:addSetting(ConvoyActiveSetting,self)
 	self.cp.settings:addSetting(ConvoyMinDistanceSetting,self)
 	self.cp.settings:addSetting(ConvoyMaxDistanceSetting,self) -- do we need this one ?

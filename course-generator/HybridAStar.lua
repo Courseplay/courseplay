@@ -387,6 +387,8 @@ function HybridAStar:init(yieldAfter, maxIterations)
 	self.deltaPosGoal = 2 * self.deltaPos
 	-- if the goal heading is within self.deltaThetaDeg degrees we consider it reached
 	self.deltaThetaGoal = math.rad(self.deltaThetaDeg)
+	self.maxDeltaTheta = courseplay.globalPathfinderSettings.maxDeltaAngleAtGoal:get()
+	self.originalDeltaThetaGoal = self.deltaThetaGoal
 	-- the same two parameters are used to discretize the continuous state space
 	self.analyticSolverEnabled = true
 end
@@ -549,11 +551,16 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 			self.expansions = self.expansions + 1
 		end
 		self.iterations = self.iterations + 1
+		local r = self.iterations / self.maxIterations
+		-- as we reach the maximum iterations, relax our criteria to reach the goal: allow for arriving at
+		-- bigger angle differences
+		self.deltaThetaGoal = math.min(self.maxDeltaTheta,
+				self.originalDeltaThetaGoal + courseplay.globalPathfinderSettings.deltaAngleRelaxFactor:get() * r)
 	end
 	--self:printOpenList(openList)
 	self.path = {}
-	self:debug('No path found: iterations %d, yields %d, cost %.1f - %.1f', self.iterations, self.yields,
-            self.nodes.lowestCost, self.nodes.highestCost)
+	self:debug('No path found: iterations %d, yields %d, cost %.1f - %.1f, eltaTheta %.1f', self.iterations, self.yields,
+            self.nodes.lowestCost, self.nodes.highestCost, math.deg(self.deltaThetaGoal))
     return true, nil
 end
 
@@ -581,7 +588,8 @@ function HybridAStar:rollUpPath(node, goal, path)
 	end
 	-- start node always points forward, make sure it is reverse if the second node is reverse...
 	self.path[1].gear = self.path[2] and self.path[2].gear or self.path[1].gear
-	self:debug('Nodes %d, iterations %d, yields %d', #self.path, self.iterations, self.yields)
+	self:debug('Nodes %d, iterations %d, yields %d, deltaTheta %.1f', #self.path, self.iterations, self.yields,
+			math.deg(self.deltaThetaGoal))
 end
 
 function HybridAStar:printOpenList(openList)
@@ -604,6 +612,8 @@ function AStar:init(yieldAfter)
 	self.deltaPosGoal = self.deltaPos
 	self.deltaThetaDeg = 181
 	self.deltaThetaGoal = math.rad(self.deltaThetaDeg)
+	self.maxDeltaTheta = math.pi
+	self.originalDeltaThetaGoal = self.deltaThetaGoal
 	self.analyticSolverEnabled = false
 end
 

@@ -233,14 +233,18 @@ function ShovelModeAIDriver:drive(dt)
 	elseif self.shovelState == self.states.STATE_START_UNLOAD then
 		self.refSpeed = self.vehicle.cp.speeds.turn
 		local currentDischargeNode = self.shovel:getCurrentDischargeNode()
-		if self.shovel:getCanDischargeToObject(currentDischargeNode) and currentDischargeNode.dischargeObject then
+		if self:getIsShovelEmpty() then 
+			self:setShovelState(self.states.STATE_WAIT_FOR_UNLOADREADY);
+		end
+		if self.shovel:getCanDischargeToObject(currentDischargeNode) and currentDischargeNode.dischargeObject and (self:hasEnoughSpaceInObject(currentDischargeNode) or self.foundTrailer) then
 			if self:setShovelToPositionFinshed(5,dt) then
 				self:setShovelState(self.states.STATE_WAIT_FOR_UNLOADREADY);
 			end;
 			self:hold()
 		elseif currentDischargeNode.dischargeObject or currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
+			self:setShovelToPositionFinshed(4,dt)
 			self:hold()
-		else --drive in straight line to waitPoint is UnloadStation(UnloadTrigger) or correct Trailer was found
+		elseif not self:getIsShovelEmpty() then  --drive in straight line to waitPoint is UnloadStation(UnloadTrigger) or correct Trailer was found
 			notAllowedToDrive = true
 			local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
 			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
@@ -254,7 +258,9 @@ function ShovelModeAIDriver:drive(dt)
 				self.ppc:initialize(newPoint)
 				self:setShovelState(self.states.STATE_GO_BACK_FROM_EMPTYPOINT);
 			end
-		end
+		elseif not self.shovel:getCanDischargeToObject(dischargeNode) or self:almostFullObject(dischargeNode) and not self.foundTrailer then
+			self:setShovelState(self.states.STATE_START_UNLOAD);
+		end		
 	elseif self.shovelState == self.states.STATE_GO_BACK_FROM_EMPTYPOINT then
 		self.refSpeed = self.vehicle.cp.speeds.reverse
 		if not self.course:isReverseAt(self.ppc:getCurrentWaypointIx()) then
@@ -277,6 +283,27 @@ function ShovelModeAIDriver:drive(dt)
 	end
 	self:resetSpeed()
 	self:checkLastWaypoint()
+end
+
+function ShovelModeAIDriver:hasEnoughSpaceInObject(dischargeNode)
+	local fillType = self.shovel:getDischargeFillType(dischargeNode)
+	local object = dischargeNode.dischargeObject
+	if object.getFillUnitFreeCapacity ~= nil then
+		local freeSpace = object:getFillUnitFreeCapacity(dischargeNode.dischargeFillUnitIndex, fillType, self.vehicle:getActiveFarm())
+		local minNeededFreeSpace = self:getMinNeededFreeCapacity()
+		self:debugSparse("freeSpace"..tostring(freeSpace).." minNeededFreeSpace: "..tostring(minNeededFreeSpace))
+		if freeSpace >= minNeededFreeSpace then 
+			return true
+		end
+	end
+end
+
+function ShovelModeAIDriver:almostFullObject(dischargeNode)
+	local fillType = self.shovel:getDischargeFillType(dischargeNode)
+	local object = dischargeNode.dischargeObject
+	if object.getFillUnitFreeCapacity ~= nil and object:getFillUnitFreeCapacity(dischargeNode.dischargeFillUnitIndex, fillType, self.vehicle:getActiveFarm()) <=300*1/self.shovel:getDischargeNodeEmptyFactor(dischargeNode)  then
+		return true
+	end
 end
 
 function ShovelModeAIDriver:driveIntoSilo(dt)
@@ -329,6 +356,11 @@ end
 
 function ShovelModeAIDriver:getIsShovelEmpty()
 	return self.shovel:getFillUnitFillLevel(1) <= self.shovel:getFillUnitCapacity(1)*0.01
+end
+
+
+function ShovelModeAIDriver:getMinNeededFreeCapacity()
+	return math.min(self.shovel:getFillUnitCapacity(1)/5,self.shovel:getFillUnitFillLevel(1))
 end
 
 function ShovelModeAIDriver:getFillLevelDoesChange()

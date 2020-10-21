@@ -378,11 +378,17 @@ function AIDriver:update(dt)
 	self:resetSpeed()
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
+	self:shouldDriverBeReleased()
 end
 
 --- UpdateTick AI driver
 function AIDriver:updateTick(dt)
 	self.triggerHandler:onUpdateTick(dt)
+end
+
+--check if we should stop Driver completely
+function AIDriver:shouldDriverBeReleased()
+	--override from FieldWorkAIDriver
 end
 
 --- Main driving function
@@ -623,12 +629,16 @@ function AIDriver:onEndCourse()
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
 	elseif self.vehicle.cp.settings.stopAtEnd:is(true) then
-		if self.state ~= self.states.STOPPED then
-			self:stop('END_POINT')
-		end
+		self:onEndCourseFinished()
 	else
 		-- continue at the first waypoint
 		self.ppc:initialize(1)
+	end
+end
+
+function AIDriver:onEndCourseFinished()
+	if self.state ~= self.states.STOPPED then
+		self:stop('END_POINT')
 	end
 end
 

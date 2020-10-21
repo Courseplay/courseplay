@@ -541,7 +541,10 @@ function FieldworkAIDriver:onEndCourse()
 				-- pathfinding was successful, drive back to first point
 				self.state = self.states.RETURNING_TO_FIRST_POINT
 				self:raiseImplements()
-				self:foldImplements()
+				-- Should we fold Implement when work is done and we drive to start point?
+				if self.vehicle.cp.settings.foldImplementAtEnd:is(true) then
+					self:foldImplements()
+				end
 			else
 				-- no path or too short, stop here.
 				AIDriver.onEndCourse(self)
@@ -551,8 +554,30 @@ function FieldworkAIDriver:onEndCourse()
 			end
 		else
 			AIDriver.onEndCourse(self)
-			self:foldImplements()
+			-- Should we fold Implement when work is done ?
+			if self.vehicle.cp.settings.foldImplementAtEnd:is(true) then
+				self:foldImplements()
+			end
 		end
+	end
+end
+
+--Check if we need to release the driver completely
+function FieldworkAIDriver:onEndCourseFinished()
+	if self.vehicle.cp.settings.returnToFirstPoint:isReleaseDriverActive() then
+		self:debug("returnToFirstPoint => Stopped Driver completely")
+		self.shouldBeReleasedOnceEntered = true
+	end
+	AIDriver.onEndCourseFinished(self)
+end
+
+--release the driver completely once entered
+function FieldworkAIDriver:shouldDriverBeReleased()
+	if self.vehicle:getIsEntered() and self.shouldBeReleasedOnceEntered then
+		self.shouldBeReleasedOnceEntered = nil
+		--unitl there is leftover code in courseplay:stop() we need to use it
+		--setCourseplayFunc used as a way to call it on server and client
+		self.vehicle:setCourseplayFunc("stop", nil, false);
 	end
 end
 
@@ -639,7 +664,7 @@ end
 --- Should we return to the first point of the course after we are done?
 function FieldworkAIDriver:shouldReturnToFirstPoint()
 	-- TODO: implement and check setting in course or HUD
-	if self.vehicle.cp.settings.returnToFirstPoint:is(true) then
+	if self.vehicle.cp.settings.returnToFirstPoint:isReturnToStartActive() then
 		self:debug('Returning to first point.')
 		return true
 	else
@@ -1361,7 +1386,7 @@ end
 
 --- Don't pay worker double when AutoDrive is driving
 function FieldworkAIDriver:shouldPayWages()
-	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE and self.state ~= self.states.STOPPED
 end
 
 function FieldworkAIDriver:onBlocked()

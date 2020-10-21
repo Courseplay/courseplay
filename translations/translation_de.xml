@@ -168,6 +168,8 @@
         <text name="COURSEPLAY_ENDING_LOCATION" 							text="Endposition" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Startrichtung" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Am Startpunkt enden" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deaktiviert und entlasse CP Fahrer" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="aktiviert und entlasse CP Fahrer" />
 		<text name="COURSEPLAY_CORNER_1" 									text="Südwest" />
 		<text name="COURSEPLAY_CORNER_2" 									text="Nordwest" />
 		<text name="COURSEPLAY_CORNER_3" 									text="Nordost" />
@@ -447,6 +449,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Tool anheben am Ende einer Reihe oder am start des Vorgewende-Wendemanövers" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Tool absenken" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Geräte einklappen" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Aktiviert/Deaktiviert das einklappen des Gerätes am Ende der Feldarbeit" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Rechtsklick HUD" />
@@ -487,6 +491,7 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="verschiedene Trailer: " />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
+		
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>
