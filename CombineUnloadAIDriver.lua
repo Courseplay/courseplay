@@ -1823,7 +1823,7 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 	end
 
 	--when the combine is empty, stop and wait for next combine
-	if self:getCombinesFillLevelPercent() <= 0.1 and self:getFillLevelThreshold() >1 then
+	if self:getCombinesFillLevelPercent() <= 0.1 then
 		--when the combine is in a pocket, make room to get back to course
 		if self.combineToUnload.cp.driver and self.combineToUnload.cp.driver:isWaitingInPocket() then
 			self:debug('combine empty and in pocket, drive back')
@@ -1834,10 +1834,12 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 			self:startMovingBackFromCombine(self.states.MOVE_BACK_FROM_EMPTY_COMBINE)
 			return
 		else
-			self:debug('combine empty and moving forward')
-			self:releaseUnloader()
-			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
-			return
+				if	self:getFillLevelThreshold() >1 then
+					self:debug('combine empty and moving forward')
+					self:releaseUnloader()
+					self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+					return
+				end
 		end
 	end
 
