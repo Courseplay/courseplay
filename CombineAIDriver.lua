@@ -178,8 +178,8 @@ function CombineAIDriver:start(startingPoint)
 end
 
 function CombineAIDriver:stop(msgReference)
-	self:resetFixMaxRotationLimit()
-	AIDriver.stop(self,msgReference)
+    self:resetFixMaxRotationLimit()
+    UnloadableFieldworkAIDriver.stop(self,msgReference)
 end
 
 function CombineAIDriver:setHudContent()
