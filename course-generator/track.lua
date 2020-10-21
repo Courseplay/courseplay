@@ -321,15 +321,19 @@ function addHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 			-- walk back from the up/down row on the headland until we reach the headland waypoint closest to the
 			-- first up/down waypoint
 			for j, point in course:iterator(i - 1, 1, -1) do
-				local d = getDistanceBetweenPoints(course[i], point)
+				local d1 = getDistanceBetweenPoints(course[i], point)
+				-- distance from the next waypoint
+				local d2 = getDistanceBetweenPoints(course[i], course[j - 1])
 				-- TODO: there may be a better criteria to check this.
-				if d < 2 * width and d > dPrev then
+				-- d2 must be > d1, meaning it must keep growing as if j in is a corner then d1 > dPrev for just that
+				-- waypoint, but the next will be again d1 < dPrev
+				if d1 < 2 * width and d1 > dPrev and d2 > d1 then
 					-- distance just started to grow
 					cutFromHere = j + 1
 					break
 				else
 					-- this point on the connecting track is closer to the first point in the up/down rows
-					dPrev = d
+					dPrev = d1
 				end
 			end
 			-- remove the waypoints between the newly added turn start and end
