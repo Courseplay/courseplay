@@ -123,8 +123,9 @@ function generateCourseForField( field, implementWidth, headlandSettings, extend
 	field.headlandTracks = {}
 
 	courseGenerator.debug("####### COURSE GENERATOR START ##########################################################")
-	courseGenerator.debug("Headland mode %s, number of passes %d, center mode %s", courseGenerator.headlandModeTexts[headlandSettings.mode],
-		headlandSettings.nPasses, courseGenerator.centerModeTexts[centerSettings.mode])
+	courseGenerator.debug("Headland mode %s, number of passes %d, center mode %s, min headland turn angle %.1f",
+			courseGenerator.headlandModeTexts[headlandSettings.mode], headlandSettings.nPasses,
+			courseGenerator.centerModeTexts[centerSettings.mode], headlandSettings.minHeadlandTurnAngleDeg)
 
 	if headlandSettings.nPasses > 0 and
 		(headlandSettings.mode == courseGenerator.HEADLAND_MODE_NORMAL or

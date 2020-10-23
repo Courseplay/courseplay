@@ -886,6 +886,10 @@ function CombineAIDriver:startTurn(ix)
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
 			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
+		elseif self.course:isOnConnectingTrack(ix) then
+			self:debug('Headland turn but this a connecting track, use normal turn maneuvers.')
+			self.turnType = self.turnTypes.HEADLAND_NORMAL
+			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.settings.turnOnField:is(true) then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
 			self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)

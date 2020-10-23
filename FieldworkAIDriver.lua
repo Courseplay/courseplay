@@ -603,7 +603,8 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			-- an alignment course
 			local d, firstUpDownWpIx = self.course:getDistanceToFirstUpDownRowWaypoint(ix)
 			self:debug('up/down rows start in %s meters.', tostring(d))
-			if d < self.vehicle.cp.turnDiameter * 2 and firstUpDownWpIx then
+			-- (no alignment if there is a turn generated here)
+			if d < self.vehicle.cp.turnDiameter * 2 and firstUpDownWpIx and not self.course:isTurnEndAtIx(firstUpDownWpIx) then
 				self:debug('End connecting track, start working on up/down rows (waypoint %d) with alignment course if needed.', firstUpDownWpIx)
 				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
