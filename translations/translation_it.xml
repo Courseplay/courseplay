@@ -168,8 +168,8 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Posizione di arrivo" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Direzione di partenza" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Ritorno al primo punto" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deactivated and release CP Driver" />
-		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="activated and release CP Driver" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="Ritorna al primo punto poi ferma l'autista CP " />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="Torna al punto di avvio prima di staccare l'autista CP" />
 		<text name="COURSEPLAY_CORNER_1" 									text="Sud-Ovest" />
 		<text name="COURSEPLAY_CORNER_2" 									text="Nord-Ovest" />
 		<text name="COURSEPLAY_CORNER_3" 									text="Nord-Est" />
@@ -234,14 +234,14 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR" 						text="circolare" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL" 							text="spirale" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Numero di file per terra" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Quando si lavora in terre, quante file sono per terra" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="attivato" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="solo nome" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="nome e percorso" />
 		<text name="COURSEPLAY_DEACTIVATED" 								text="disattivato" />
-		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Segnafile" />
-		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Ridge markers on/off" />
+		<text name="COURSEPLAY_RIDGEMARKERS" 								text="Segnafila" />
+		<text name="COURSEPLAY_YES_NO_RIDGEMARKERS"							text="Segnafila on/off" />
 		<text name="COURSEPLAY_UNLOADING_ON_FIELD" 							text="Scaricando sul campo" />
 		<text name="COURSEPLAY_AUTOMATIC" 									text="automatico" />
 		<text name="COURSEPLAY_MANUAL" 										text="manuale" />
@@ -255,8 +255,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE" 						text="Distanza minima" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT" 							text="Il condotto di scarico è sul raccolto" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS" 						text="Modalità impostazioni specifiche" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+        <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			  		    text="Mantieni la sterzata attuale" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay non cambierà l'attuale impostazione del tipo di sterzata del veicolo" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Pala non trovata" />
@@ -281,7 +281,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="primo punto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="punto corrente" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="punto successivo" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Scarico" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Percorso perimetrale del" />
 		<text name="COURSEPLAY_FIELD" 										text="campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(percorso attualmente caricato)" />
@@ -367,15 +367,15 @@
 		<text name="input_COURSEPLAY_EDITOR_TOGGLE" 						text="Courseplay Editor: Attiva/disattiva l'editor dei percorsi" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO" 							text="Courseplay Editor: Annulla l'ultima modifica al percorso" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE" 							text="Courseplay Editor: Salva percorso modificato" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE" 				text="Courseplay Editor: Aumenta velocità waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE" 				text="Courseplay Editor: Riduci velocità waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT" 				text="Courseplay Editor: Cancella waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT" 			text="Courseplay Editor: Cancella prossimo waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START" 				text="Courseplay Editor: Cancella tutti i waypoint dall'inizio" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END" 					text="Courseplay Editor: Cancella tutti i waypoint fino alla fine" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT" 				text="Courseplay Editor: Inserisci waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" 			text="Courseplay Editor: Cambia tipo di waypoint" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE" 				text="Courseplay Editor: Aumenta velocità punti di passaggio" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE" 				text="Courseplay Editor: Riduci velocità punti di passaggio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT" 				text="Courseplay Editor: Cancella punti di passaggio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT" 			text="Courseplay Editor: Cancella prossimo punti di passaggio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START" 				text="Courseplay Editor: Cancella tutti i punti di passaggio dall'inizio" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END" 					text="Courseplay Editor: Cancella tutti i punti di passaggio fino alla fine" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT" 				text="Courseplay Editor: Inserisci punti di passaggio" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" 			text="Courseplay Editor: Cambia tipo di punti di passaggio" />
+		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Semina senza fertillizzare" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normale" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Punto d'attesa" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Punto d'incrocio" />
@@ -442,24 +442,24 @@
 		<text name="COURSEPLAY_EARN_WAGES" 									text="I lavoratori Courseplay ricevono il salario" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Fai click per spostarsi" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Fai clic su un veicolo per spostarsi su di esso" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
-		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
-		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
-		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Aprire sempre il tubo" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="La Trebbia apre sempre il tubo in attesa dello scarico" />
+        <text name="COURSEPLAY_SHOW_MINI_HUD"								text="Visualizza Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Togli Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Scarica paglia sui cumuli" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Solo al centro" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Attiva/disattiva Scarico palgi sui cumuli" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Usa Fertilizzante nella seminatrice" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Attiva o disattiva la fertilizzazione della seminatrice" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Clik destro apri HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Abilita/disabilita apertura HUD con il tasto destro del mouse, se disabilitato usa CTRL+DEL (Generale)" />
+		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Clik destro apri HUD" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Abilita/disabilita apertura HUD con il tasto destro del mouse, se disabilitato usa CTRL+DEL (Veicolo corrente)" />
 
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Visulaizza destinazioni provvisorie" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Visualizza percorsi provvisori (like pathfinding or turns)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Sovrapposizione testa" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Percentuale sovrapposizione teste" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY" 				text="Prima" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE" 					text="Dopo" />
@@ -467,30 +467,30 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP" 				text="Quando sollevare attrezzi quando si termina una fila o si inizia una svolta a fine campo" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME" 						text="Quando abbassare gli attrezzi" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP" 				text="Quando abbassare attrezzi quando si termina una fila o si inizia una svolta a fine campo" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Ripiega l'attrezzo" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Attivare / disattivare se l'attrezzo deve essere ripiegato al termine del lavoro" />
 
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS" 					text="Use pathfinding in turns" />
-		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP" 			text="Use pathfinding in turns on odd shaped fields, for example to drive on the headland to the next row" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS" 					text="Usa ricerca percorso in svolta" />
+		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP" 			text="Usa ricerca percorso nelle svolte, su campi non standard, per esempio guidare fino all'inizio della riga successiva" />
 		<text name="COURSEPLAY_WORKER_WAGES" 								text="Salario lavoratori Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP" 						text="I salari dei lavoratori Courseplay come percentuale dei salari dei lavoratori normali" />
 		<text name="COURSEPLAY_SELF_UNLOAD" 								text="Scarico automatico mietitrebbia" />
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP" 						text="Scarica automaticamente una mietitrebbia quando è piena e c'è un rimorchio in giro" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Usa retromarcia in ricerca percorso nelle svolte" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Consenti la retromarcia durante la ricerca del percorso per le svolte (Solo con attrezzi non trainati)" />
+		
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="nessun prodotto selezionato!/nessun percorso di ricarica supportato!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="aggiungi nuovo prodotto" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="aggiungi nuovo prodotto" />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Prodotto errato per il deposito." />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
-
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Scaricare la mietitrice sul primo promontorio" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Consentire lo scarico di una mietitrice in movimento sul primo promontorio, lo scaricatore guida fuori dal campo." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Ultimo conteggio = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Caricamento prodotti separati" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Rimorchio separato:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantita da scaricare" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Caricamento manuale" />
 		<!-- Replace marker, do not remove! -->
-</texts>
+	</texts>
 </l10n>
