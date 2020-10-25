@@ -484,8 +484,9 @@ end
 ---@param goal State3D goal node
 ---@param context PathfinderUtil.Context
 ---@param allowReverse boolean allow reverse driving
-function PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000)
+---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
+function PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000, mustBeAccurate)
     local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
             PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
     return pathfinder, done, path
@@ -589,23 +590,27 @@ end
 ---@param fieldNum number if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
 ---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
 ---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
+---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
                                                           xOffset, zOffset, allowReverse,
-                                                          fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+                                                          fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty,
+                                                          mustBeAccurate)
     local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(
+            vehicle, start, goal, allowReverse, fieldNum,
+            vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 end
 
 function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                           allowReverse, fieldNum,
-                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
     PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
     local context = PathfinderUtil.Context(PathfinderUtil.VehicleData(vehicle, true, 0.2), PathfinderUtil.FieldData(fieldNum), parameters, vehiclesToIgnore)
-    return PathfinderUtil.startPathfinding(start, goal, context, allowReverse)
+    return PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
 end
 
 function PathfinderUtil.toggleVisualDebug()

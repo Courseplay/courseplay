@@ -1254,8 +1254,10 @@ function CombineAIDriver:startSelfUnload()
 		self.waypointIxAfterPathfinding = nil
 		local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
 		local done, path
+		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true, fieldNum)
+				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true,
+				fieldNum, {}, nil, nil, true)
 		if done then
 			return self:onPathfindingDone(path)
 		else
