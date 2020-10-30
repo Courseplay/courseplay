@@ -178,8 +178,8 @@ function CombineAIDriver:start(startingPoint)
 end
 
 function CombineAIDriver:stop(msgReference)
-	self:resetFixMaxRotationLimit()
-	AIDriver.stop(self,msgReference)
+    self:resetFixMaxRotationLimit()
+    UnloadableFieldworkAIDriver.stop(self,msgReference)
 end
 
 function CombineAIDriver:setHudContent()
@@ -886,6 +886,10 @@ function CombineAIDriver:startTurn(ix)
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
 			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
+		elseif self.course:isOnConnectingTrack(ix) then
+			self:debug('Headland turn but this a connecting track, use normal turn maneuvers.')
+			self.turnType = self.turnTypes.HEADLAND_NORMAL
+			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.settings.turnOnField:is(true) then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
 			self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
@@ -1250,8 +1254,10 @@ function CombineAIDriver:startSelfUnload()
 		self.waypointIxAfterPathfinding = nil
 		local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
 		local done, path
+		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true, fieldNum)
+				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true,
+				fieldNum, {}, nil, nil, true)
 		if done then
 			return self:onPathfindingDone(path)
 		else

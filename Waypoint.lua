@@ -1190,7 +1190,7 @@ function Course:getNextSectionWithProperty(startIx, hasProperty)
 		else
 			-- wp hasn't this property, stop here
 			section:enrichWaypointData()
-			return section, i + 1
+			return section, i
 		end
 	end
 	section:enrichWaypointData()
@@ -1283,6 +1283,10 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 				else
 					offsetHeadlands:calculateData()
 					self:markAsHeadland(offsetHeadlands)
+					if origHeadlandsCourse:isTurnStartAtIx(origHeadlandsCourse:getNumberOfWaypoints()) then
+						courseplay.debugFormat(7, 'Original headland transitioned to the center with a turn, adding a turn start to the offset one')
+						offsetHeadlands[#offsetHeadlands].turnStart = true
+					end
 					addTurnsToCorners(offsetHeadlands, math.rad(60), true)
 					courseGenerator.pointsToXzInPlace(offsetHeadlands)
 					offsetCourse:appendWaypoints(offsetHeadlands)
@@ -1295,7 +1299,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 			end
 		else
 			local upDownCourse
-			courseplay.debugFormat(7, 'Get next none-headland %d', ix)
+			courseplay.debugFormat(7, 'Get next non-headland %d', ix)
 			upDownCourse, ix = self:getNextNonHeadlandSection(ix)
 			if upDownCourse:getNumberOfWaypoints() > 0 then
 				courseplay.debugFormat(7, 'Up/down section to %d', ix)

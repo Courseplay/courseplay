@@ -373,11 +373,12 @@ end
 HybridAStar.EnvironmentData = CpObject()
 
 
-function HybridAStar:init(yieldAfter, maxIterations)
+function HybridAStar:init(yieldAfter, maxIterations, mustBeAccurate)
 	self.count = 0
 	self.yields = 0
 	self.yieldAfter = yieldAfter or 200
 	self.maxIterations = maxIterations or 40000
+	self.mustBeAccurate = mustBeAccurate
 	self.path = {}
 	self.iterations = 0
 	-- state space resolution
@@ -553,9 +554,12 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 		self.iterations = self.iterations + 1
 		local r = self.iterations / self.maxIterations
 		-- as we reach the maximum iterations, relax our criteria to reach the goal: allow for arriving at
-		-- bigger angle differences
-		self.deltaThetaGoal = math.min(self.maxDeltaTheta,
-				self.originalDeltaThetaGoal + courseplay.globalPathfinderSettings.deltaAngleRelaxFactor:get() * r)
+		-- bigger angle differences (except if we have to be accurate, for example combine self unloading must
+		-- accurately find the trailer)
+		if not self.mustBeAccurate then
+			self.deltaThetaGoal = math.min(self.maxDeltaTheta,
+					self.originalDeltaThetaGoal + courseplay.globalPathfinderSettings.deltaAngleRelaxFactor:get() * r)
+		end
 	end
 	--self:printOpenList(openList)
 	self.path = {}
@@ -631,7 +635,8 @@ HybridAStarWithAStarInTheMiddle = CpObject(PathfinderInterface)
 
 ---@param hybridRange number range in meters around start/goal to use hybrid A *
 ---@param yieldAfter number coroutine yield after so many iterations (number of iterations in one update loop)
-function HybridAStarWithAStarInTheMiddle:init(hybridRange, yieldAfter, maxIterations)
+---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
+function HybridAStarWithAStarInTheMiddle:init(hybridRange, yieldAfter, maxIterations, mustBeAccurate)
 	-- path generation phases
 	self.START_TO_MIDDLE = 1
 	self.MIDDLE = 2
@@ -639,7 +644,7 @@ function HybridAStarWithAStarInTheMiddle:init(hybridRange, yieldAfter, maxIterat
 	self.ALL_HYBRID = 4 -- start and goal close enough, we only need a single phase with hybrid
 	self.hybridRange = hybridRange
 	self.yieldAfter = yieldAfter or 100
-	self.hybridAStarPathfinder = HybridAStar(self.yieldAfter, maxIterations)
+	self.hybridAStarPathfinder = HybridAStar(self.yieldAfter, maxIterations, mustBeAccurate)
 	self.aStarPathfinder = self:getAStar()
 end
 

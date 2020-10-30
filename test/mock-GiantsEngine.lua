@@ -45,6 +45,19 @@ function MathUtil.vector3Length(x, y, z)
 	return math.sqrt(x*x + z*z)
 end
 
+function MathUtil.vector2Normalize(x, y)
+	local l = math.sqrt(x * x + y * y)
+	if l > 0 then
+		return x / l, y / l
+	else
+		return 0, 0
+	end
+end
+
+function MathUtil.getYRotationFromDirection(dx, dz)
+	return math.atan2(dx, dz)
+end
+
 DebugUtil = {}
 DebugUtil.drawDebugNode = noOp
 

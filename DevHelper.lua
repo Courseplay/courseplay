@@ -43,7 +43,7 @@ function DevHelper:update()
     if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_aiVehicle then
 
         if self.vehicle ~= g_currentMission.controlledVehicle then
-            PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
+            self.otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
             self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         end
 
@@ -65,7 +65,11 @@ function DevHelper:update()
 
     if self.vehicleData then
         self.collisionData = PathfinderUtil.getCollisionData(self.node, self.vehicleData, 'me')
-        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(self.collisionData, self.node, self.vehicleData)
+        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(
+                self.collisionData,
+                self.node,
+                self.vehicleData,
+                self.otherVehiclesCollisionData)
         if hasCollision then
             self.data.vehicleOverlap = vehicle
         else
