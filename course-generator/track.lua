@@ -360,9 +360,11 @@ function addHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 			course:calculateData()
 			local deltaAngle = getDeltaAngle(course[cutFromHere].nextEdge.angle, course[cutFromHere - 1].prevEdge.angle)
 			if math.abs(deltaAngle) > math.rad(headlandSettings.minHeadlandTurnAngleDeg) then
-				courseGenerator.debug('Adding a turn starting at %d for the headland-up/down transition', cutFromHere - 1)
-				course[cutFromHere - 1].turnStart = true
-				course[cutFromHere].turnEnd = true
+				-- Do not add a turn here for now, we rely on the FieldworkAIDriver to create an alignment course
+				-- for the headland->center transition.
+				--courseGenerator.debug('Adding a turn starting at %d for the headland-up/down transition', cutFromHere - 1)
+				--course[cutFromHere - 1].turnStart = true
+				--course[cutFromHere].turnEnd = true
 			end
 			break
 		end
