@@ -130,8 +130,8 @@ function inputCourseNameDialogue:onSaveClick()
 		g_currentMission.cp_folders[folderID] = folder
 		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
 		g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
-		if not courseplay.isClient then
-			courseplay.courses:saveFolderToXml(folderID, nil, true)
+		if courseplay.isServer then
+			courseplay.courses:saveFolderToXml(folderID, nil, true);
 		end
 		courseplay.settings.add_folder(folderID)
 		courseplay.settings.setReloadCourseItems()

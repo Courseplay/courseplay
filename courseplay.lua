@@ -58,6 +58,7 @@ local function initialize()
 		'courseplay_event',
 		'course_management',
     	'courseeditor',
+    	'CourseEditorEvent',
     	'clicktoswitch',
 		'debug', 
 		'distance', 
