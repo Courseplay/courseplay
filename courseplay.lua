@@ -171,7 +171,9 @@ local function initialize()
 		'gui_new/elements/TableSort',
 		'gui_new/elements/GuiMover',
 		'gui_new/elements/Text',
+		
 		'gui_new/screens/Main',
+		'gui_new/screens/CourseManager',
 	};
 
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
