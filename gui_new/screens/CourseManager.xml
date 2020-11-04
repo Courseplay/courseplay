@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<!--
+CoursePlay - Gui - CourseManager
+
+@Interface: 1.6.0.0 b9166
+@Author: LS-Modcompany / kevink98
+@Date: 26.07.2020
+@Version: 1.0.0.0
+
+@Changelog:
+	v1.0.0.0 (kevink98):
+		- initial fs19
+
+-->
+
+<GUI>  
+
+  <GuiElement type="ingameMap" template="cpCmPda" id="gui_ingameMap">
+        <!--GuiElement type="guiMover" template="cpCmPdaGuiMover" id="gui_ingameMapMover" target="gui_ingameMap" /--> 
+
+
+  </GuiElement>    
+
+  <GuiElement type="image" template="cpCmMain" id="gui_dialog">  
+    <GuiElement type="image" template="cpCmMainBarTop">  
+        <GuiElement type="guiMover" template="cpCmMainGuiMover" target="gui_dialog" /> 
+        <GuiElement type="image" template="cpMainLogo" /> 
+        <GuiElement type="text" template="cpMainTitle1" text="COURSE" /> 
+        <GuiElement type="text" template="cpMainTitle2" text="PLAY" /> 
+        <GuiElement type="text" template="cpMainTitle3" text=" Kursmanager" /> 
+        <GuiElement type="button" template="cpMainCloseButton" onClick="onClose" /> 
+    </GuiElement>    
+
+
+    
+    <GuiElement type="image" template="cpCmMainBarBottom">      
+        <GuiElement type="image" template="cpMainBarBottomIcon" />  
+        <GuiElement type="text" template="cpMainBarBottomHelptext" text="Hilfetext" /> 
+    </GuiElement>
+  </GuiElement>
+</GUI>

@@ -15,9 +15,9 @@ CoursePlay - Gui - Main
 -->
 
 <GUI>  
-  <GuiElement type="image" template="cpMain">  
+  <GuiElement type="image" template="cpMain" id="gui_dialog">  
     <GuiElement type="image" template="cpMainBarTop">  
-        <GuiElement type="guiMover" template="cpMainGuiMover" /> 
+        <GuiElement type="guiMover" template="cpMainGuiMover" target="gui_dialog" /> 
         <GuiElement type="image" template="cpMainLogo" /> 
         <GuiElement type="text" template="cpMainTitle1" text="COURSE" /> 
         <GuiElement type="text" template="cpMainTitle2" text="PLAY" /> 
@@ -25,12 +25,37 @@ CoursePlay - Gui - Main
         <GuiElement type="button" template="cpMainCloseButton" onClick="onClose" /> 
 
     </GuiElement>
-    
+        <GuiElement type="flowLayout" template="cpMainLayout">
+          <GuiElement type="flowLayout" template="cpMainLayout1">
+            <GuiElement type="button" template="cpMainCategorie_StartStop" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="startstop" /> 
+            <GuiElement type="button" template="cpMainCategorie_KursManager"  onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenCourseManager" parameter="kursmanager" /> 
+
+            <GuiElement type="button" template="cpMainCategorie_Abfahrer" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="abfahrer" /> 
+            <GuiElement type="button" template="cpMainCategorie_FillSettings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="fillsettings" /> 
+            <GuiElement type="button" template="cpMainCategorie_Drescher" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="drescher" /> 
+            <GuiElement type="button" template="cpMainCategorie_Tempo" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="tempo" /> 
+            <GuiElement type="button" template="cpMainCategorie_VehicleSettings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="vehiclesettings" /> 
+            <GuiElement type="button" template="cpMainCategorie_FieldSettings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="fieldsettings" /> 
+            <!--GuiElement type="button" template="cpMainCategorie_Frontlader" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="" /--> 
+            <!--GuiElement type="button" template="cpMainCategorie_Silo" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="" /--> 
+
+            <GuiElement type="button" template="cpMainCategorie_Settings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settings" /> 
+                        
+          </GuiElement>
+          <GuiElement type="flowLayout" template="cpMainLayout2">
+          </GuiElement>
+        </GuiElement>
+
+
+
+
+
+
+
     
     <GuiElement type="image" template="cpMainBarBottom">      
         <GuiElement type="image" template="cpMainBarBottomIcon" />  
-        <GuiElement type="text" template="cpMainBarBottomHelptext" text="Hilfetext" /> 
-
+        <GuiElement type="text" template="cpMainBarBottomHelptext" id="gui_helpText" /> 
     </GuiElement>
   </GuiElement>
 </GUI>

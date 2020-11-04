@@ -44,6 +44,11 @@ function CpManager:loadMap(name)
 	self:setup2dCourseData(false); -- NOTE: this call is only to initiate the position and opacity
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	-- LOAD NEW GUI 
+	courseplay.guiManager = GuiManager:new()
+	courseplay.guiManager:load()
+
+	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAYSETTINGS.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
 	if g_server ~= nil then
 		self:loadXmlSettings();
@@ -54,8 +59,7 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
-	courseplay.guiManager = GuiManager:new()
-	courseplay.guiManager:load()
+	
 	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	self:setupGlobalInfoText(); -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
@@ -349,7 +353,7 @@ function CpManager:draw()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- GUI
-	courseplay.guiManager:draw() -- TODO: Need this call?
+	--courseplay.guiManager:draw() -- TODO: Need this call?
 end;
 
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
@@ -514,6 +518,8 @@ function CpManager.saveXmlSettings(self)
 
 		courseplay.globalSettings:saveToXML(cpSettingsXml, 'CPSettings')
 		courseplay.globalCourseGeneratorSettings:saveToXML(cpSettingsXml, 'CPSettings.courseGenerator')
+
+		courseplay.guiManager:saveXmlSettings(cpSettingsXml, 'CPSettings')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -1301,6 +1307,8 @@ function CpManager:loadXmlSettings()
 		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
 		courseplay.globalCourseGeneratorSettings:loadFromXML(cpSettingsXml, 'CPSettings.courseGenerator')
 
+		-- MergeConflict
+		--courseplay.guiManager:loadXmlSettings(cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

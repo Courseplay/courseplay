@@ -31,23 +31,20 @@ function CpGuiMover:new(gui, custom_mt)
 	
 	self.mouseDown = false
 	self.mouseEntered = false
-    
-    
+        
 	return self
 end
 
 function CpGuiMover:loadTemplate(templateName, xmlFile, key)
 	CpGuiMover:superClass().loadTemplate(self, templateName, xmlFile, key)
-	
-    
-    
+	       
+    self.target = courseplay.guiManager:getTemplateValueXML(xmlFile, "target", key)
+        
 	self:loadOnCreate()
 end
 
 function CpGuiMover:copy(src)
-	CpGuiMover:superClass().copy(self, src)
-	
-    
+	CpGuiMover:superClass().copy(self, src)    
     
 	self:copyOnCreate()
 end
@@ -89,8 +86,12 @@ function CpGuiMover:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
         end
 
         if self.mouseEntered and self.mouseDown then
-            self.gui.rootElement.elements[1].position[1] = self.gui.rootElement.elements[1].position[1] - (self.lastPos[1] - posX)
-            self.gui.rootElement.elements[1].position[2] = self.gui.rootElement.elements[1].position[2] - (self.lastPos[2] - posY)
+            self.gui[self.target].position[1] = self.gui[self.target].position[1] - (self.lastPos[1] - posX)
+            self.gui[self.target].position[2] = self.gui[self.target].position[2] - (self.lastPos[2] - posY)
+            
+            if self.gui.setGuiMoverValues ~= nil then
+                self.gui:setGuiMoverValues(self.target, self.gui[self.target].position)
+            end
             eventUsed = true
         end
 
