@@ -133,6 +133,7 @@ local function initialize()
 		'Events/AssignedCombinesEvents',
 		'Events/CourseEvent',
 		'Events/InfoTextEvent',
+		'Events/WorkingToolPositionsEvents',
 		'Generic/LinkedList'
 	};
 

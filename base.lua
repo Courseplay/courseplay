@@ -559,6 +559,9 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(ConvoyActiveSetting,self)
 	self.cp.settings:addSetting(ConvoyMinDistanceSetting,self)
 	self.cp.settings:addSetting(ConvoyMaxDistanceSetting,self) -- do we need this one ?
+	self.cp.settings:addSetting(FrontloaderToolPositionsSetting,self)
+	self.cp.settings:addSetting(AugerPipeToolPositionsSetting,self)
+
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -969,20 +972,8 @@ function courseplay:onUpdate(dt)
 		self.cp.fieldEdge.selectedField.fieldNum = 0;
 	end	
 	
-	-- MODE 9: move shovel to positions (manually)
-	if (self.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or self.cp.shovelPositionFromKey) and self.cp.manualShovelPositionOrder ~= nil and self.cp.movingToolsPrimary then
-		if courseplay:checkAndSetMovingToolsPosition(self, self.cp.movingToolsPrimary, self.cp.movingToolsSecondary, self.cp.shovelStatePositions[ self.cp.manualShovelPositionOrder ], dt) or courseplay:timerIsThrough(self, 'manualShovelPositionOrder') then
-			courseplay:resetManualShovelPositionOrder(self);
-				self:setCpVar('shovelPositionFromKey', false, courseplay.isClient);
-		end;
-	end;
-	-- MODE 3: move pipe to positions (manually)
-	if (self.cp.mode == courseplay.MODE_OVERLOADER or self.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) and self.cp.manualPipePositionOrder ~= nil and self.cp.pipeWorkToolIndex then
-		local workTool = self.attachedImplements[self.cp.pipeWorkToolIndex].object
-		if courseplay:checkAndSetMovingToolsPosition(self, workTool.spec_cylindered.movingTools, nil, self.cp.pipePositions, dt , self.cp.pipeIndex ) or courseplay:timerIsThrough(self, 'manualPipePositionOrder') then
-			courseplay:resetManualPipePositionOrder(self);
-		end;
-	end;	
+
+
 	--sugarCaneTrailer update tipping function. Moved here so it only runs once. To ensure we start closed or open
 	if self.cp.hasSugarCaneTrailer then
 		courseplay:updateSugarCaneTrailerTipping(self,dt)
@@ -990,6 +981,9 @@ function courseplay:onUpdate(dt)
 	-- this really should be only done in one place.
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
 	
+	--updateFunction for play testing workingToolPostions(manually)
+	self.cp.settings.frontloaderToolPositions:updatePositions(dt)
+	self.cp.settings.augerPipeToolPositions:updatePositions(dt)
 
 end; --END update()
 
@@ -1445,53 +1439,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		courseplay:changeLoadUnloadOffsetZ(self, nil, tonumber(offsetData[6]));
 		if offsetData[7] ~= nil then self.cp.laneNumber = tonumber(offsetData[7]) end;
 
-		-- SHOVEL POSITIONS
-		curKey = key .. '.courseplay.shovel';
-		local shovelRots = getXMLString(xmlFile, curKey .. '#rot');
-		local shovelTrans = getXMLString(xmlFile, curKey .. '#trans');
-		self.cp.shovelStopAndGo = Utils.getNoNil(getXMLBool(xmlFile, curKey .. '#shovelStopAndGo'), true);
-		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (before loading)', 10), 10);
-		if shovelRots and shovelTrans then
-			self.cp.shovelStatePositions = {};
-			shovelRots = StringUtil.splitString(';', shovelRots);
-			shovelTrans = StringUtil.splitString(';', shovelTrans);
-			if #shovelRots == 4 and #shovelTrans == 4 then
-				for state=2, 5 do
-					local shovelRotsSplit = table.map(StringUtil.splitString(' ', shovelRots[state-1]), tonumber);
-					local shovelTransSplit = table.map(StringUtil.splitString(' ', shovelTrans[state-1]), tonumber);
-					if shovelRotsSplit and shovelTransSplit then
-						self.cp.shovelStatePositions[state] = {
-							rot = shovelRotsSplit,
-							trans = shovelTransSplit
-						};
-					end;
-					self.cp.hasShovelStatePositions[state] = self.cp.shovelStatePositions[state] ~= nil and self.cp.shovelStatePositions[state].rot ~= nil and self.cp.shovelStatePositions[state].trans ~= nil;
-				end;
-			end;
-		end;
-		courseplay:debug(tableShow(self.cp.shovelStatePositions, nameNum(self) .. ' shovelStatePositions (after loading)', 10), 10);
-		--courseplay.buttons:setActiveEnabled(self, 'shovel');
-
-	
-
-		--overLoaderPipe
-		curKey = key .. '.courseplay.overLoaderPipe';
-		local rot =  getXMLFloat(xmlFile, curKey .. '#rot')
-		local trans = getXMLFloat(xmlFile, curKey .. '#trans')
-		local pipeIndex =  getXMLInt(xmlFile, curKey .. '#pipeIndex')
-		local pipeWorkToolIndex = getXMLInt(xmlFile, curKey .. '#pipeWorkToolIndex')
 		
-		if rot and trans and pipeIndex and pipeWorkToolIndex then
-			self.cp.pipePositions = {}
-			self.cp.pipePositions.rot = {}
-			self.cp.pipePositions.trans={}
-			table.insert(self.cp.pipePositions.rot,rot)
-			table.insert(self.cp.pipePositions.trans,trans)
-
-			self.cp.pipeIndex =  pipeIndex
-			self.cp.pipeWorkToolIndex = pipeWorkToolIndex
-		end
-	
 		--mode10
 		curKey = key .. '.courseplay.mode10';
 		self.cp.mode10.leveling =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#leveling'), true);
@@ -1574,56 +1522,8 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".mode10 #bladeOffset", string.format("%.1f",self.cp.mode10.bladeOffset))
 	setXMLBool(xmlFile, newKey..".mode10 #drivingThroughtLoading", self.cp.mode10.drivingThroughtLoading)
 	
-	--shovelMode positions
-	--Shovel positions (<shovel rot="1;2;3;4" trans="1;2;3;4" />)
-	local shovelRotsAttrNodes, shovelTransAttrNodes;
-	local shovelRotsTmp, shovelTransTmp = {}, {};
-	if self.cp.shovelStatePositions and self.cp.shovelStatePositions[2] and self.cp.shovelStatePositions[3] and self.cp.shovelStatePositions[4] and self.cp.shovelStatePositions[5] then
-		if self.cp.shovelStatePositions[2].rot and self.cp.shovelStatePositions[3].rot and self.cp.shovelStatePositions[4].rot and self.cp.shovelStatePositions[5].rot then
-			local shovelStateRotSaveTable = {};
-			for a=1,4 do
-				shovelStateRotSaveTable[a] = {};
-				local rotTable = self.cp.shovelStatePositions[a+1].rot;
-				for i=1,#rotTable do
-					shovelStateRotSaveTable[a][i] = courseplay:round(rotTable[i], 4);
-				end;
-				table.insert(shovelRotsTmp, tostring(table.concat(shovelStateRotSaveTable[a], ' ')));
-			end;
-			if #shovelRotsTmp > 0 then
-				shovelRotsAttrNodes = tostring(table.concat(shovelRotsTmp, ';'));
-				courseplay:debug(nameNum(self) .. ": shovelRotsAttrNodes=" .. shovelRotsAttrNodes, 10);
-			end;
-		end;
-		if self.cp.shovelStatePositions[2].trans and self.cp.shovelStatePositions[3].trans and self.cp.shovelStatePositions[4].trans and self.cp.shovelStatePositions[5].trans then
-			local shovelStateTransSaveTable = {};
-			for a=1,4 do
-				shovelStateTransSaveTable[a] = {};
-				local transTable = self.cp.shovelStatePositions[a+1].trans;
-				for i=1,#transTable do
-					shovelStateTransSaveTable[a][i] = courseplay:round(transTable[i], 4);
-				end;
-				table.insert(shovelTransTmp, tostring(table.concat(shovelStateTransSaveTable[a], ' ')));
-			end;
-			if #shovelTransTmp > 0 then
-				shovelTransAttrNodes = tostring(table.concat(shovelTransTmp, ';'));
-				courseplay:debug(nameNum(self) .. ": shovelTransAttrNodes=" .. shovelTransAttrNodes, 10);
-			end;
-		end;
-		if shovelRotsAttrNodes or shovelTransAttrNodes then
-			setXMLBool(xmlFile, newKey..".shovel #shovelStopAndGo", self.cp.shovelStopAndGo)
-			setXMLString(xmlFile, newKey..".shovel #rot", shovelRotsAttrNodes)
-			setXMLString(xmlFile, newKey..".shovel #trans",  shovelTransAttrNodes)
-		end;
-	end;
-		
-	--overloaderPipe
-	if self.cp.pipeWorkToolIndex ~= nil then
-		setXMLString(xmlFile, newKey..".overLoaderPipe #rot", tostring(table.concat(self.cp.pipePositions.rot)))
-		setXMLString(xmlFile, newKey..".overLoaderPipe #trans", tostring(table.concat(self.cp.pipePositions.trans)))
-		setXMLInt(xmlFile, newKey..".overLoaderPipe #pipeIndex", self.cp.pipeIndex)
-		setXMLInt(xmlFile, newKey..".overLoaderPipe #pipeWorkToolIndex", self.cp.pipeWorkToolIndex)
-	end
-
+	
+	
 	self.cp.settings:saveToXML(xmlFile, newKey)
 
 end

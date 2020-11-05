@@ -27,7 +27,8 @@ OverloaderAIDriver.myStates = {
 }
 
 function OverloaderAIDriver:init(vehicle)
-    CombineUnloadAIDriver.init(self, vehicle)
+    self:findPipeAndTrailer()
+	CombineUnloadAIDriver.init(self, vehicle)
     self:initStates(OverloaderAIDriver.myStates)
     self:debug('OverloaderAIDriver:init()')
     self.mode = courseplay.MODE_OVERLOADER
@@ -40,11 +41,22 @@ function OverloaderAIDriver:findPipeAndTrailer()
     if implementWithPipe then
         self.pipe = implementWithPipe.spec_pipe
 		self.objectWithPipe = implementWithPipe
-        self:debug('Overloader found its pipe')
+        self.moveablePipe = implementWithPipe.spec_cylindered
+		self:debug('Overloader found its pipe')
+		if self.moveablePipe then
+			self:debug('Overloader found moveable pipe')
+		end
     else
         self:debug('Overloader has no implement with pipe')
     end
     self.trailer = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Trailer)
+end
+
+function OverloaderAIDriver:setHudContent()
+	CombineUnloadAIDriver.setHudContent(self)
+	if self.moveablePipe then
+		courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
+	end
 end
 
 function OverloaderAIDriver:start(startingPoint)
