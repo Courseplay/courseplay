@@ -3941,16 +3941,13 @@ function WorkingToolPositionsSetting:saveToXMLFile(xmlFile, key, usedModNames)
 	end
 	for positionIndex, movingTools in ipairs(spec.cpWorkingToolPos) do 
 		local positionKey = string.format("%s.cpWorkingToolPos(%d)", key, positionIndex)
-	--	print(string.format("save ShovelPos(%d)",positionIndex))
 		for toolIndex, objectPos in ipairs(movingTools) do
 			local toolKey = string.format("%s.movingTool(%d)", positionKey, toolIndex)
 			if objectPos.curRot then
 				setXMLFloat(xmlFile, toolKey.."#rotation", objectPos.curRot)
-			--	print(toolKey.."#rotation")
 			end
 			if objectPos.curTrans then
 				setXMLFloat(xmlFile, toolKey.."#translation", objectPos.curTrans)
-			--	print(toolKey.."#translation")
 			end
 		end
 	end
@@ -3968,7 +3965,6 @@ function WorkingToolPositionsSetting:onLoad(savegame)
 		if not hasXMLProperty(savegame.xmlFile, baseKey) then
 			break
 		end
-	--	print(string.format("load ShovelPos(%d)",posIndex))
 		if spec.cpWorkingToolPos == nil then 
 			spec.cpWorkingToolPos = {}
 		end

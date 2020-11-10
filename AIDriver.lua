@@ -1870,7 +1870,12 @@ function AIDriver:checkFuel()
 	local allowedToDrive = true
 	if self.vehicle.getConsumerFillUnitIndex ~= nil then
 		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
-		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
+		local electricIndex = self.vehicle:getConsumerFillUnitIndex(FillType.ELECTRICCHARGE)
+		local fuelIndex = dieselIndex or electricIndex
+		if fuelIndex == nil then 
+			return true
+		end
+		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(fuelIndex) * 100;
 		if currentFuelPercentage < 5 then
 			allowedToDrive = false;
 			CpManager:setGlobalInfoText(self.vehicle, 'FUEL_MUST');

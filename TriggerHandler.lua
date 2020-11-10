@@ -408,7 +408,9 @@ end
 
 function TriggerHandler:needsFuel()
 	local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
-	local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100
+	local electricIndex = self.vehicle:getConsumerFillUnitIndex(FillType.ELECTRICCHARGE)
+	local fuelIndex = dieselIndex or electricIndex
+	local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(fuelIndex) * 100
 	local searchForFuel = self.allwaysSearchFuel:is(true) and currentFuelPercentage <99 or currentFuelPercentage < 20
 	if searchForFuel then 
 		return true
@@ -771,7 +773,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 			--seperarte for only loading Fuel in to motors!
 			if triggerHandler:isAllowedToLoadFuel() and fillableObject == vehicle then 
 				for fillTypeIndex, fillLevel in pairs(fillLevels) do
-					if fillTypeIndex == FillType.DIESEL  then 
+					if fillTypeIndex == FillType.DIESEL or fillTypeIndex == FillType.ELECTRICCHARGE then 
 						if fillableObject:getFillUnitAllowsFillType(fillUnitIndex, fillTypeIndex) then
 							if triggerHandler:maxFillLevelNotReached(fillableObject,fillUnitIndex,99,fillTypeIndex) then 
 								if fillLevel>0 then 
