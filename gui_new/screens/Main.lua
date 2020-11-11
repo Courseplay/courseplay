@@ -26,14 +26,15 @@ CpGuiMain._mt = Class(CpGuiMain)
 GuiManager.guiClass.main = CpGuiMain
 
 GuiManager.BUTTONS = {}
-GuiManager.BUTTONS.STARTSTOP = "startstop"
-GuiManager.BUTTONS.KURSMANAGER = "kursmanager"
-GuiManager.BUTTONS.ABFAHRER = "abfahrer"
-GuiManager.BUTTONS.FILLSETTINGS = "fillsettings"
-GuiManager.BUTTONS.DRESCHER = "drescher"
-GuiManager.BUTTONS.TEMPO = "tempo"
-GuiManager.BUTTONS.VEHICLESETTINGS = "vehiclesettings"
-GuiManager.BUTTONS.FIELDSETTINGS = "fieldsettings"
+GuiManager.BUTTONS.STEERING = "steering"
+GuiManager.BUTTONS.COURSEMANAGER = "courseManager"
+GuiManager.BUTTONS.DRIVERS = "drivers"
+GuiManager.BUTTONS.DRIVERSSEARCH = "driversSearch"
+GuiManager.BUTTONS.SETTINGS = "settings"
+
+--GuiManager.BUTTONS.TEMPO = "tempo"
+--GuiManager.BUTTONS.SETTINGSVEHICLE = "vehiclesettings"
+--GuiManager.BUTTONS.SETTINGSFIELDS = "settingsFields"
 --GuiManager.BUTTONS.FRONTLADER = "frontlader"
 --GuiManager.BUTTONS.SILO = "silo"
 GuiManager.BUTTONS.SETTINGS = "settings"
@@ -46,26 +47,29 @@ function CpGuiMain:new(target, custom_mt)
 	
     self.dialogPosition = {0, 0}
 
+    self.pageFunctions = CpGuiPageFunctions:new(self)
+    self.lastPageIndex = "steering"
+
 	return self
 end
 
 function CpGuiMain:onCreate() 
     
     self.languages = {}
-    self.languages[GuiManager.BUTTONS.STARTSTOP] = courseplay:loc("COURSEPLAY_PAGE_TITLE_CP_CONTROL")
-    self.languages[GuiManager.BUTTONS.KURSMANAGER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COURSES")
-    self.languages[GuiManager.BUTTONS.ABFAHRER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
-    self.languages[GuiManager.BUTTONS.FILLSETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
-    self.languages[GuiManager.BUTTONS.DRESCHER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES")
-    self.languages[GuiManager.BUTTONS.TEMPO] = courseplay:loc("COURSEPLAY_PAGE_TITLE_SPEEDS")
-    self.languages[GuiManager.BUTTONS.VEHICLESETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS")
-    self.languages[GuiManager.BUTTONS.FIELDSETTINGS] = courseplay:loc("COURSEPLAY_MODESPECIFIC_SETTINGS")
+    self.languages[GuiManager.BUTTONS.STEERING] = courseplay:loc("COURSEPLAY_PAGE_TITLE_CP_CONTROL")
+    self.languages[GuiManager.BUTTONS.COURSEMANAGER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COURSES")
+    self.languages[GuiManager.BUTTONS.DRIVERS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
+    --self.languages[GuiManager.BUTTONS.FILLSETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
+    self.languages[GuiManager.BUTTONS.DRIVERSSEARCH] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES")
+    --self.languages[GuiManager.BUTTONS.TEMPO] = courseplay:loc("COURSEPLAY_PAGE_TITLE_SPEEDS")
+    --self.languages[GuiManager.BUTTONS.VEHICLESETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS")
+    --self.languages[GuiManager.BUTTONS.FIELDSETTINGS] = courseplay:loc("COURSEPLAY_MODESPECIFIC_SETTINGS")
     self.languages[GuiManager.BUTTONS.SETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS")    
 end
 
 function CpGuiMain:onOpen() 
     self.gui_dialog.position = self.dialogPosition
-
+    self.pageFunctions:setPage(self.lastPageIndex)
 end
 
 function CpGuiMain:onClose() 
@@ -120,11 +124,15 @@ end
 
     
 function CpGuiMain:onEnableHelp(button, para)
-    self.gui_helpText:setText(self.languages[para])        
+    if self.languages[para] ~= nil then
+        self.gui_helpText:setText(self.languages[para], true)
+    else
+        self.gui_helpText:setText(string.format("Missing text for %s!", para), true)
+    end
 end
 
 function CpGuiMain:onDisableHelp(button, para)
-    self.gui_helpText:setText("")    
+    self.gui_helpText:setText("")
 end
 
 
@@ -139,5 +147,11 @@ end
 function CpGuiMain:onOpenSettings()
     --courseplay.guiManager:openGui("cp_settings")
 end
+
+function CpGuiMain:onClickOpenPage(btn, site)
+    self.lastPageIndex = self.pageFunctions:setPageByName(site)
+end
+
+
 
 

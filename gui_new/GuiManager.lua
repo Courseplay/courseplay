@@ -24,6 +24,7 @@ GuiManager._mt = Class(GuiManager)
 GuiManager.devVersion = true -- if true, the gui will reload every defined time
 
 GuiManager.guiClass = {}
+courseplay.guiScreens = {}
 
 function GuiManager:new(customMt)
 	local self = {}
@@ -73,6 +74,8 @@ end
 function GuiManager:update(dt)
 	if GuiManager.devVersion then
 		if self.devVersionTimeCurrent == nil or self.devVersionTimeCurrent <= 0 then
+			self.mainCpGui.pageFunctions.pages = {}
+			self.mainCpGui.pageFunctions.pagesById = {}
 			for _, fileName in pairs(self.devVersionTemplateFiles) do				
 				self:loadGuiTemplates(fileName)
 			end
@@ -184,7 +187,7 @@ function GuiManager:loadGui(class, name, isFullGui, canExit)
 	self.guis[name].canExit = Utils.getNoNil(canExit, true)
 
 	local classGui = class:new()
-	local newGui = GC_Gui:new(name)
+	local newGui = CpGui:new(name)
 	newGui:assignClass(classGui)
 	self.guis[name].gui = newGui
 	newGui:loadFromXML()

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<GUI>      
+    <GuiElement type="image" template="cpMainPage">
+
+      
+        <GuiElement type="text" template="cpMainTitle2" text="Drivers" /> 
+      
+    </GuiElement>
+</GUI>
