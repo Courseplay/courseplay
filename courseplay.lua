@@ -171,11 +171,24 @@ local function initialize()
 		'gui_new/elements/TableSort',
 		'gui_new/elements/GuiMover',
 		'gui_new/elements/Text',
+		'gui_new/elements/GuiPage',
 		
 		'gui_new/screens/Main',
 		'gui_new/screens/CourseManager',
+
+		'gui_new/screens/Page_drivers',
+		'gui_new/screens/Page_driversSearch',
+		'gui_new/screens/Page_settingsFilling',
+		'gui_new/screens/Page_settingsField',
+		'gui_new/screens/Page_settingsVehicle',
+		'gui_new/screens/Page_shovel',
+		'gui_new/screens/Page_siloCompaction',
+		'gui_new/screens/Page_speed',
+		'gui_new/screens/Page_steering',
 	};
 
+
+	
 	local numFiles, numFilesLoaded = #(fileList) + 2, 2; -- + 2 as 'register.lua', 'courseplay.lua' have already been loaded
 	for _,file in ipairs(fileList) do
 		local filePath = courseplay.path .. file .. '.lua';

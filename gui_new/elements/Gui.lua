@@ -91,9 +91,11 @@ function CpGui:loadFromXMLRec(xmlFile, key, actGui)
 		elseif t == "ingameMap" then
 			guiElement = CpGuiIngameMap:new(self.classGui)
 		elseif t == "tableSort" then
-			guiElement = CpGuiTableSort:new(self.classGui)	
+			guiElement = CpGuiTableSort:new(self.classGui)
 		elseif t == "guiMover" then
-			guiElement = CpGuiMover:new(self.classGui)		
+			guiElement = CpGuiMover:new(self.classGui)
+		elseif t == "pageLoad" then
+			guiElement = CpGuiPage:new(self.classGui, self)
 		else
 			guiElement = CpGuiElement:new(self.classGui, nil, true)
 		end

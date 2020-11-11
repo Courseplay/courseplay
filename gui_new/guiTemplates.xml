@@ -6,7 +6,7 @@
 		<color name="white" value="1 1 1 1" />
 		<color name="gray" value="0.03 0.03 0.03 0.98" />
 		<color name="black" value="0.01 0.01 0.01 0.98" />
-		<color name="grayLight" value="0.8 0 0 0" />
+		<color name="grayLight" value="0.8 0.8 0.8 0.03" />
 		<color name="cpOrange" value="1 0.7921 0 1" />
 
 
@@ -19,17 +19,28 @@
 		<uv name="icon_info" value="440px 290px 150px 75px" />
 		<uv name="icon_closeX" value="580px 365px 150px 75px" />
 		
-		<uv name="icon_catAbfahrer" value="0px 0px 128px 128px" />
-		<uv name="icon_castStartStop" value="128px 0px 128px 128px" />
-		<uv name="icon_castKursManager" value="256px 0px 128px 128px" />
+		<uv name="icon_catDrivers" value="0px 0px 128px 128px" />
+		<uv name="icon_castSteering" value="128px 0px 128px 128px" />
+		<uv name="icon_castCourseManager" value="256px 0px 128px 128px" />
 		<uv name="icon_castFillSettings" value="384px 0px 128px 128px" />
-		<uv name="icon_castDrescher" value="512px 0px 128px 128px" />
-		<uv name="icon_castTempo" value="640px 0px 128px 128px" />
+		<uv name="icon_castDriversSearch" value="512px 0px 128px 128px" />
+		<uv name="icon_castSpeed" value="640px 0px 128px 128px" />
 		<uv name="icon_castSettings" value="768px 0px 128px 128px" />
-		<uv name="icon_castVehicleSettings" value="896px 0px 128px 128px" />
-		<uv name="icon_castFieldSettings" value="0px 128px 128px 128px" />
+		<uv name="icon_castSettingsVehicle" value="896px 0px 128px 128px" />
+		<uv name="icon_castSettingsField" value="0px 128px 128px 128px" />
 		<uv name="icon_castFrontlader" value="128px 128px 128px 128px" />
 		<uv name="icon_castSilo" value="256px 128px 128px 128px" />
+		
+		<uv name="icon_mode1" value="0px 384px 128px 128px" />
+		<uv name="icon_mode2" value="128px 384px 128px 128px" />
+		<uv name="icon_mode3" value="256px 384px 128px 128px" />
+		<uv name="icon_mode4" value="512px 384px 128px 128px" />
+		<uv name="icon_mode5" value="640px 384px 128px 128px" />
+		<uv name="icon_mode6" value="768px 384px 128px 128px" />
+		<uv name="icon_mode7" value="0px 0px 128px 128px" />
+		<uv name="icon_mode8" value="384px 384px 128px 128px" />
+		<uv name="icon_mode9" value="128px 128px 128px 128px" />
+		<uv name="icon_mode10" value="256px 128px 128px 128px" />
 
     </uvs>
 	<templates>
@@ -128,77 +139,166 @@
 			<value name="position" value="0px -25px" />
 			<value name="size" value="350px 330px" />
 		</template>
-		<template name="cpMainLayout1" anchor="middleTop" extends="cpBase">
-			<value name="orientation" value="y" />
-			<value name="alignment" value="center" />
-			<value name="position" value="0px 0px" />
-			<value name="size" value="40px 330px" />
-		</template>
-		<template name="cpMainLayout2" anchor="middleTop" extends="cpBase">
+		<template name="cpMainLayout1" anchor="middleCenter" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="310px 330px" />
+			<value name="size" value="40px 320px" />
+		</template>
+		<template name="cpMainLayout2" anchor="middleTop" extends="cpBase">
+			<value name="orientation" value="y" />
+			<value name="alignment" value="center" />
+			<value name="position" value="0px 0px" />
+			<value name="size" value="310px 300px" />
+			<value name="margin" value="0px 30px 0px 0px" />
+		</template>
+		<template name="cpMainPagePosition" anchor="middleTop" extends="cpBase">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="310px 300px" />
+			<value name="margin" value="0px -35px 0px 0px" />
+		</template>
+		<template name="cpMainLayout3" anchor="middleTop" extends="cpBase">
+			<value name="orientation" value="x" />
+			<value name="alignment" value="left" />
+			<value name="position" value="0px 0px" />
+			<value name="size" value="310px 30px" />
 		</template>
 
 		<template name="cpMainCategorie" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
-			<value name="size" value="30px 30px" />
+			<value name="size" value="32px 32px" />
 			<value name="imageFilename" value="g_cpIcons" />
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 			<value name="hasOverlay" value="true" />
 		</template>
-		<template name="cpMainCategorie_Abfahrer" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_Abfahrer_overlay" extends="cpMainCategorie_Abfahrer">
-			<value name="imageUVs" value="icon_catAbfahrer" />
-			<value name="imageUVs_selected" value="icon_catAbfahrer" />
-		</template>
-		<template name="cpMainCategorie_StartStop" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_StartStop_overlay" extends="cpMainCategorie_StartStop">
-			<value name="imageUVs" value="icon_castStartStop" />
-			<value name="imageUVs_selected" value="icon_castStartStop" />
-		</template>
-		<template name="cpMainCategorie_KursManager" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
-		</template>
-		<template name="cpMainCategorie_KursManager_overlay" extends="cpMainCategorie_KursManager">
-			<value name="imageUVs" value="icon_castKursManager" />
-			<value name="imageUVs_selected" value="icon_castKursManager" />
+		<template name="cpMainCategorieActiveButton" anchor="middleTop" extends="cpBase">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="32px 32px" />
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+			<value name="hasOverlay" value="true" />
+			<value name="isActivable" value="true" />
+			<value name="checkParent" value="true" />
 		</template>
 
-		<template name="cpMainCategorie_FillSettings" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_FillSettings_overlay" extends="cpMainCategorie_FillSettings">
+		<template name="cpMainCategorie_Steering" anchor="middleTop" extends="cpMainCategorieActiveButton" />
+		<template name="cpMainCategorie_Steering_overlay" extends="cpMainCategorie_Steering">
+			<value name="imageUVs" value="icon_castSteering" />
+			<value name="imageUVs_selected" value="icon_castSteering" />
+		</template>
+		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="0px 12px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_CourseManager_overlay" extends="cpMainCategorie_CourseManager">
+			<value name="imageUVs" value="icon_castCourseManager" />
+			<value name="imageUVs_selected" value="icon_castCourseManager" />
+		</template>
+		<template name="cpMainCategorie_Drivers" anchor="middleTop" extends="cpMainCategorieActiveButton" />
+		<template name="cpMainCategorie_Drivers_overlay" extends="cpMainCategorie_Drivers">
+			<value name="imageUVs" value="icon_catDrivers" />
+			<value name="imageUVs_selected" value="icon_catDrivers" />
+		</template>
+		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+			<value name="margin" value="0px 12px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_DriversSearch_overlay" extends="cpMainCategorie_DriversSearch">
+			<value name="imageUVs" value="icon_castDriversSearch" />
+			<value name="imageUVs_selected" value="icon_castDriversSearch" />
+		</template>
+		<template name="cpMainCategorie_SettingsFilling" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_SettingsFilling_overlay" extends="cpMainCategorie_SettingsFilling">
 			<value name="imageUVs" value="icon_castFillSettings" />
 			<value name="imageUVs_selected" value="icon_castFillSettings" />
 		</template>
-		<template name="cpMainCategorie_Drescher" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_Drescher_overlay" extends="cpMainCategorie_Drescher">
-			<value name="imageUVs" value="icon_castDrescher" />
-			<value name="imageUVs_selected" value="icon_castDrescher" />
+		<template name="cpMainCategorie_Speed" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_Speed_overlay" extends="cpMainCategorie_Speed">
+			<value name="imageUVs" value="icon_castSpeed" />
+			<value name="imageUVs_selected" value="icon_castSpeed" />
 		</template>
-		<template name="cpMainCategorie_Tempo" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_Tempo_overlay" extends="cpMainCategorie_Tempo">
-			<value name="imageUVs" value="icon_castTempo" />
-			<value name="imageUVs_selected" value="icon_castTempo" />
+		<template name="cpMainCategorie_SettingsVehicle" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_SettingsVehicle_overlay" extends="cpMainCategorie_SettingsVehicle">
+			<value name="imageUVs" value="icon_castSettingsVehicle" />
+			<value name="imageUVs_selected" value="icon_castSettingsVehicle" />
 		</template>
-		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_Settings_overlay" extends="cpMainCategorie_Settings">
-			<value name="imageUVs" value="icon_castSettings" />
-			<value name="imageUVs_selected" value="icon_castSettings" />
+		<template name="cpMainCategorie_SettingsField" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_SettingsField_overlay" extends="cpMainCategorie_SettingsField">
+			<value name="imageUVs" value="icon_castSettingsField" />
+			<value name="imageUVs_selected" value="icon_castSettingsField" />
 		</template>
-		<template name="cpMainCategorie_VehicleSettings" anchor="middleTop" extends="cpMainCategorie" />
-		<template name="cpMainCategorie_VehicleSettings_overlay" extends="cpMainCategorie_VehicleSettings">
-			<value name="imageUVs" value="icon_castVehicleSettings" />
-			<value name="imageUVs_selected" value="icon_castVehicleSettings" />
+
+		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_mode1_overlay" extends="cpMainCategorie_mode1">
+			<value name="imageUVs" value="icon_mode1" />
+			<value name="imageUVs_selected" value="icon_mode1" />
 		</template>
-		<template name="cpMainCategorie_FieldSettings" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
+		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
-		<template name="cpMainCategorie_FieldSettings_overlay" extends="cpMainCategorie_FieldSettings">
-			<value name="imageUVs" value="icon_castFieldSettings" />
-			<value name="imageUVs_selected" value="icon_castFieldSettings" />
+		<template name="cpMainCategorie_mode2_overlay" extends="cpMainCategorie_mode2">
+			<value name="imageUVs" value="icon_mode2" />
+			<value name="imageUVs_selected" value="icon_mode2" />
 		</template>
+		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode3_overlay" extends="cpMainCategorie_mode3">
+			<value name="imageUVs" value="icon_mode3" />
+			<value name="imageUVs_selected" value="icon_mode3" />
+		</template>
+		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode4_overlay" extends="cpMainCategorie_mode4">
+			<value name="imageUVs" value="icon_mode4" />
+			<value name="imageUVs_selected" value="icon_mode4" />
+		</template>
+		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode5_overlay" extends="cpMainCategorie_mode5">
+			<value name="imageUVs" value="icon_mode5" />
+			<value name="imageUVs_selected" value="icon_mode5" />
+		</template>
+		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode6_overlay" extends="cpMainCategorie_mode6">
+			<value name="imageUVs" value="icon_mode6" />
+			<value name="imageUVs_selected" value="icon_mode6" />
+		</template>
+		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode7_overlay" extends="cpMainCategorie_mode7">
+			<value name="imageUVs" value="icon_mode7" />
+			<value name="imageUVs_selected" value="icon_mode7" />
+		</template>
+		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode8_overlay" extends="cpMainCategorie_mode8">
+			<value name="imageUVs" value="icon_mode8" />
+			<value name="imageUVs_selected" value="icon_mode8" />
+		</template>
+		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode9_overlay" extends="cpMainCategorie_mode9">
+			<value name="imageUVs" value="icon_mode9" />
+			<value name="imageUVs_selected" value="icon_mode9" />
+		</template>
+		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="2px 0px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_mode10_overlay" extends="cpMainCategorie_mode10">
+			<value name="imageUVs" value="icon_mode10" />
+			<value name="imageUVs_selected" value="icon_mode10" />
+		</template>
+
+
+
 		<template name="cpMainCategorie_Frontlader" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_Frontlader_overlay" extends="cpMainCategorie_Frontlader">
 			<value name="imageUVs" value="icon_castFrontlader" />
@@ -213,6 +313,11 @@
 		</template>
 
 
+        <template name="cpMainPage" anchor="middleCenter" extends="cpBase">
+			<value name="size" value="300px 290px" />
+			<value name="position" value="0px 0px" />
+			<value name="imageColor" value="grayLight" />
+		</template>
 
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->
