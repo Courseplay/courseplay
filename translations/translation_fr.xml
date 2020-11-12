@@ -387,7 +387,7 @@
     <text name="COURSEPLAY_MOUSE_BUTTON_LEFT" 						 	text="Bouton gauche de la souris" />
     <text name="COURSEPLAY_MOUSE_BUTTON_RIGHT" 						 	text="Bouton droit de la souris" />
     <text name="COURSEPLAY_MOUSE_BUTTON_MIDDLE"						 	text="Bouton central de la souris" />
-    <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la souris" />
+    <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
     <text name="COURSEPLAY_MODE10_MODE" 						    	text="Utilisation de la lame" />
     <text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivellement et tassement" />
