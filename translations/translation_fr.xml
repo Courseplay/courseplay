@@ -254,7 +254,7 @@
     <text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Convoi de véhicules" />
     <text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Distance maxi" />
     <text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distance mini" />
-    <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" />
+    <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" /> <!-- this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
     <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mod" />
     <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Réglages de direction" />
 		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "			text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
