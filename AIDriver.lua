@@ -418,7 +418,7 @@ function AIDriver:driveCourse(dt)
 	-- check if reversing
 	local lx, lz, moveForwards, isReverseActive = self:getReverseDrivingDirection()
 	-- stop for fuel if needed
-	if not self:checkFuel() then 
+	if not self:isFuelLevelOk() then 
 		self:hold()
 	end
 	if not self:getIsEngineReady() then
@@ -1865,27 +1865,33 @@ function AIDriver:isAutoDriveDriving()
 	return false
 end
 
-function AIDriver:checkFuel()
-	--override
-	local allowedToDrive = true
+function AIDriver:isFuelLevelOk()
+	local currentFuelPercentage = self:getFuelLevelPercentage()
+	if currentFuelPercentage < 5 then
+		CpManager:setGlobalInfoText(self.vehicle, 'FUEL_MUST');
+		return false
+	elseif currentFuelPercentage < 20 then
+		CpManager:setGlobalInfoText(self.vehicle, 'FUEL_SHOULD');
+	elseif currentFuelPercentage < 99.99 then
+	--	CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
+	end;
+	return true
+end
+
+function AIDriver:isValidFuelType(object,fillType)
+	return object.getConsumerFillUnitIndex and object:getConsumerFillUnitIndex(fillType)  
+end
+
+function AIDriver:getFuelLevelPercentage()
 	if self.vehicle.getConsumerFillUnitIndex ~= nil then
 		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
 		local electricIndex = self.vehicle:getConsumerFillUnitIndex(FillType.ELECTRICCHARGE)
 		local fuelIndex = dieselIndex or electricIndex
-		if fuelIndex == nil then 
-			return true
+		if fuelIndex ~= nil then 
+			return self.vehicle:getFillUnitFillLevelPercentage(fuelIndex) * 100;
 		end
-		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(fuelIndex) * 100;
-		if currentFuelPercentage < 5 then
-			allowedToDrive = false;
-			CpManager:setGlobalInfoText(self.vehicle, 'FUEL_MUST');
-		elseif currentFuelPercentage < 20 then
-			CpManager:setGlobalInfoText(self.vehicle, 'FUEL_SHOULD');
-		elseif currentFuelPercentage < 99.99 then
-		--	CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
-		end;
 	end
-	return allowedToDrive;
+	return 100
 end
 
 function AIDriver:getSiloSelectedFillTypeSetting()
