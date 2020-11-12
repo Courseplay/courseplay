@@ -407,7 +407,7 @@ function TriggerHandler:forceStopLoading()
 end
 
 function TriggerHandler:needsFuel()
-	local currentFuelPercentage = self.vehicle:getFuelLevelPercentage()
+	local currentFuelPercentage = self.driver:getFuelLevelPercentage()
 	local searchForFuel = self.allwaysSearchFuel:is(true) and currentFuelPercentage <99 or currentFuelPercentage < 20
 	if searchForFuel then 
 		return true
