@@ -30,6 +30,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	if mode == courseplay.MODE_TRANSPORT then
 		---@type AIDriver
 		status,driver,err,errDriverName = xpcall(AIDriver, function(err) printCallstack(); return self,err,"AIDriver" end, vehicle)
+	--local status, err = xpcall(self.cp.driver.update, function(err) printCallstack(); return err end, self.cp.driver, dt)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
 		status,driver,err,errDriverName = xpcall(GrainTransportAIDriver, function(err) printCallstack(); return self,err,"GrainTransportAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_COMBI then
@@ -1001,68 +1002,6 @@ function courseplay:validateCanSwitchMode(vehicle)
 		courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 	end;
 end;
-
-function courseplay:saveShovelPosition(vehicle, stage)
-	if stage == nil then return; end;
-
-	courseplay:debug(('%s: saveShovelPosition(..., %s)'):format(nameNum(vehicle), tostring(stage)), 10);
-	if stage >= 2 and stage <= 5 then
-		if vehicle.cp.shovelStatePositions[stage] ~= nil then
-			vehicle.cp.shovelStatePositions[stage] = nil;
-		else
-			local mt, secondary = courseplay:getMovingTools(vehicle);
-			local curRot, curTrans = courseplay:getCurrentMovingToolsPosition(vehicle, mt, secondary);
-			--courseplay:debug(tableShow(curRot, ('saveShovelPosition(%q, %d) curRot'):format(nameNum(vehicle), stage), 10), 10);
-			--courseplay:debug(tableShow(curTrans, ('saveShovelPosition(%q, %d) curTrans'):format(nameNum(vehicle), stage), 10), 10);
-			if curRot and next(curRot) ~= nil and curTrans and next(curTrans) ~= nil then
-				vehicle.cp.shovelStatePositions[stage] = {
-					rot = curRot,
-					trans = curTrans
-				};
-			end;
-		end;
-		vehicle.cp.hasShovelStatePositions[stage] = vehicle.cp.shovelStatePositions[stage] ~= nil;
-		courseplay:debug('    hasShovelStatePositions=' .. tostring(vehicle.cp.hasShovelStatePositions[stage]), 10);
-
-	end;
-	--courseplay.buttons:setActiveEnabled(vehicle, 'shovel');
-end;
-
-function courseplay:moveShovelToPosition(vehicle, stage)
-	courseplay:debug(('%s: moveShovelToPosition(..., %s)'):format(nameNum(vehicle), tostring(stage)), 10);
-	if not stage or not vehicle.cp.hasShovelStatePositions[stage] or not courseplay:getIsEngineReady(vehicle) then
-		courseplay:debug(('    return (hasShovelStatePositions=%s)'):format(tostring(vehicle.cp.hasShovelStatePositions[stage])), 10);
-		return;
-	end;
-
-	local mtPrimary, mtSecondary = courseplay:getMovingTools(vehicle);
-	if mtPrimary then
-		vehicle.cp.manualShovelPositionOrder = stage;
-		vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = mtPrimary, mtSecondary;
-		courseplay:setCustomTimer(vehicle, 'manualShovelPositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
-	else
-		courseplay:debug(('    movingToolsPrimary=%s, movingToolsSecondary=%s -> abort'):format(tostring(mtPrimary), tostring(mtSecondary)), 10);
-	end;
-end;
-
-function courseplay:resetManualShovelPositionOrder(vehicle)
-	courseplay:debug(('%s: resetManualShovelPositionOrder()'):format(nameNum(vehicle)), 10);
-	vehicle.cp.manualShovelPositionOrder = nil;
-	vehicle.cp.movingToolsPrimary, vehicle.cp.movingToolsSecondary = nil, nil;
-	courseplay:resetCustomTimer(vehicle, 'manualShovelPositionOrder');
-end;
-
-function courseplay:movePipeToPosition(vehicle,pos)
-	--print(string.format("%s: movePipeToPosition %s",tostring(vehicle.name),tostring(pos)))
-	vehicle.cp.manualPipePositionOrder = pos
-	courseplay:setCustomTimer(vehicle, 'manualPipePositionOrder', 12); -- backup timer: if position hasn't been set within time frame, abort
-end
-
-
-function courseplay:resetManualPipePositionOrder(vehicle)
-	vehicle.cp.manualPipePositionOrder = nil;
-	courseplay:resetCustomTimer(vehicle, 'manualPipePositionOrder');
-end
 
 function courseplay:toggleShovelStopAndGo(vehicle)
 	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
@@ -3763,6 +3702,325 @@ function OppositeTurnModeSetting:init(vehicle)
 	self:set(false)
 end
 
+---@class WorkingToolPositionsSetting : Setting
+---@param totalPositionsAmount number of possible postions
+---@param validSpecs allowed Specializations of objects that get saved, nil = every object
+WorkingToolPositionsSetting = CpObject(Setting)
+WorkingToolPositionsSetting.NetworkTypes = {}
+WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
+WorkingToolPositionsSetting.NetworkTypes.PLAY_POSITION = 1
+function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs)
+	Setting.init(self, name,label, toolTip, vehicle)
+	self.texts = {}
+	self.hasPosition = {}
+	self.totalPositions = totalPositionsAmount or 4
+	self.playTestPostion = nil
+	self.validSpecs = validSpecs
+	self.xmlAttribute = '#hasPositions'
+end
+
+function WorkingToolPositionsSetting:getTexts()
+	local texts = {}
+	for i=1,self.totalPositions do 
+		local text = ""
+		if self.hasPosition[i] then 
+			text = "ok"
+		end
+		texts[i] = text
+	end
+	return texts
+end
+
+--save or delete tool position x
+function WorkingToolPositionsSetting:setOrClearPostion(x,noEventSend) 
+	if self.hasPosition[x] then 
+		self.hasPosition[x] = nil
+		if g_server then 
+			self:clearPosition(self.vehicle,x)
+		end
+	else 
+		self.hasPosition[x] = true
+		if g_server then 
+			self:savePosition(self.vehicle,x)
+		end
+	end
+	if not noEventSend then
+		WorkingToolPositionsEvents.sendEvent(self.vehicle,self.name,self.NetworkTypes.SET_OR_CLEAR_POSITION,x)
+	end
+	self.vehicle.cp.driver:refreshHUD()
+end
+
+
+--save tool postions for all valid objects recursive
+function WorkingToolPositionsSetting:savePosition(object,posX)
+	local spec = object.spec_cylindered
+	if spec and self:isValidSpec(object) then 
+		if spec.cpWorkingToolPos == nil then 
+			spec.cpWorkingToolPos = {}
+		end
+		local objectPos = {}
+		for toolIndex, tool in ipairs(spec.movingTools) do
+			objectPos[toolIndex] = {}
+			objectPos[toolIndex].curRot = tool.curRot[tool.rotationAxis]
+			objectPos[toolIndex].curTrans = tool.curTrans[tool.translationAxis]
+		end
+		spec.cpWorkingToolPos[posX] = objectPos
+		if spec.cpWorkingToolPosMax == nil then 
+			spec.cpWorkingToolPosMax = self.totalPositions
+		end
+	end	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:savePosition(impl.object,posX)
+	end
+end
+
+function WorkingToolPositionsSetting:clearPosition(object,posX)
+	local spec = object.spec_cylindered
+	if spec and spec.cpWorkingToolPos then 
+		if spec.cpWorkingToolPos[posX] then 
+			spec.cpWorkingToolPos[posX] = nil
+		end
+	end	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:clearPosition(impl.object,posX)
+	end
+end
+
+-- play position manually
+function WorkingToolPositionsSetting:playPosition(x)
+	if g_server then
+		if self.hasPosition[x] then
+			self.playTestPostion = x
+		end
+	else 
+		WorkingToolPositionsEvents.sendEvent(self.vehicle,self.name,self.NetworkTypes.PLAY_POSITION,x)
+	end
+end
+
+--called every frame to update positions 
+--also gets called in base.lua for player manual postitions
+function WorkingToolPositionsSetting:updatePositions(dt,posX)
+	callback = {}
+	local nextPosX = self.hasPosition[posX] and posX or self.playTestPostion and self.hasPosition[self.playTestPostion] and self.playTestPostion
+	if nextPosX == nil then 
+		return
+	end
+	self:updateAndSetPosition(self.vehicle,dt,nextPosX,callback)
+	if not callback.isDirty then
+		self.playTestPostion = nil
+	end
+	return not callback.isDirty
+end
+
+--update tool postions for all valid objects recursive to position "pos"
+function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callback)
+	local spec = object.spec_cylindered 
+	if spec and spec.cpWorkingToolPos and spec.cpWorkingToolPos[posX] and self:isValidSpec(object) then 
+		local isDirty
+		for toolIndex, tool in ipairs(spec.movingTools) do
+			if self.checkToolRotation(object,tool,toolIndex,posX,dt) then
+				isDirty = true
+			end
+			if self.checkToolTranslation(object,tool,toolIndex,posX,dt) then
+				isDirty = true
+			end		
+			if isDirty then 
+				callback.isDirty = true
+			end
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:updateAndSetPosition(impl.object, dt,posX,callback)
+	end
+end
+
+--use tool.move as if we are a player using mouse/axis ..
+function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt)
+	local spec = self.spec_cylindered
+	if tool.rotSpeed == nil then
+		return
+	end
+	
+	local curRot = { getRotation(tool.node) }
+	local newRot = curRot[tool.rotationAxis]
+	-- speed for frontloader, shovel, etc achses
+	local rotSpeed = 0.7
+	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curRot - newRot
+	if math.abs(cpDiff) > 0.03 then
+		if cpDiff < 0 then
+			rotSpeed=rotSpeed*(-1)
+		end
+	else 
+		tool.move = 0
+		return false
+	end
+	tool.move = rotSpeed
+	if tool.move ~= tool.moveToSend then
+		tool.moveToSend = tool.move
+		self:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
+	end
+    return true
+end
+
+--use tool.move as if we are a player using mouse/axis ..
+function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt)	
+	local spec = self.spec_cylindered
+	if tool.transSpeed == nil then
+		return
+	end
+	
+	local curTrans = { getTranslation(tool.node) }
+	local newTrans = curTrans[tool.translationAxis]
+	-- speed for telescope arm
+	local transSpeed = 0.5
+	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curTrans - newTrans
+	if math.abs(cpDiff) > 0.05 then
+		if cpDiff < 0 then
+			transSpeed=transSpeed*(-1)
+		end
+	else 
+		tool.move = 0
+		return false
+	end
+	tool.move = transSpeed
+	if tool.move ~= tool.moveToSend then
+		tool.moveToSend = tool.move
+		self:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
+	end
+    return true
+end
+
+function WorkingToolPositionsSetting:isValidSpec(object)
+	if self.validSpecs == nil then 
+		return true
+	end	
+	for _,spec in pairs(self.validSpecs) do
+		if SpecializationUtil.hasSpecialization(spec, object.specializations)  then 
+			return true
+		end
+	end	
+end
+
+function WorkingToolPositionsSetting:hasValidToolPositions()
+	return #self.hasPosition == self.totalPositions
+end
+
+function WorkingToolPositionsSetting:getTotalPositions()
+	return self.totalPositions
+end
+
+function WorkingToolPositionsSetting:onWriteStream(streamId)
+	for i=1,self.totalPositions do 
+		streamWriteBool(streamId,self.hasPosition[i]==true)
+	end
+end
+
+function WorkingToolPositionsSetting:onReadStream(streamId)
+	for i=1,self.totalPositions do 
+		self.hasPosition[i] = streamReadBool(streamId)
+	end
+end
+
+function WorkingToolPositionsSetting:loadFromXml(xml, parentKey)
+	local value = getXMLBool(xml, self:getKey(parentKey))
+	if value then
+		for i=1,self.totalPositions do 
+			self.hasPosition[i] = true
+		end
+	end
+end
+
+function WorkingToolPositionsSetting:saveToXml(xml, parentKey)
+	setXMLBool(xml, self:getKey(parentKey), self:hasValidToolPositions())
+end
+
+function WorkingToolPositionsSetting:saveToXMLFile(xmlFile, key, usedModNames)
+	local spec = self.spec_cylindered
+	if spec.cpWorkingToolPos == nil or #spec.cpWorkingToolPos < spec.cpWorkingToolPosMax then 
+		return 
+	end
+	for positionIndex, movingTools in ipairs(spec.cpWorkingToolPos) do 
+		local positionKey = string.format("%s.cpWorkingToolPos(%d)", key, positionIndex)
+		for toolIndex, objectPos in ipairs(movingTools) do
+			local toolKey = string.format("%s.movingTool(%d)", positionKey, toolIndex)
+			if objectPos.curRot then
+				setXMLFloat(xmlFile, toolKey.."#rotation", objectPos.curRot)
+			end
+			if objectPos.curTrans then
+				setXMLFloat(xmlFile, toolKey.."#translation", objectPos.curTrans)
+			end
+		end
+	end
+end
+Cylindered.saveToXMLFile = Utils.appendedFunction(Cylindered.saveToXMLFile,WorkingToolPositionsSetting.saveToXMLFile)
+
+function WorkingToolPositionsSetting:onLoad(savegame)
+	local spec = self.spec_cylindered
+	local posIndex = 1
+	if savegame == nil then 
+		return
+	end
+	while true do
+		local baseKey = string.format("%s.cylindered.cpWorkingToolPos(%d)",savegame.key, posIndex)
+		if not hasXMLProperty(savegame.xmlFile, baseKey) then
+			break
+		end
+		if spec.cpWorkingToolPos == nil then 
+			spec.cpWorkingToolPos = {}
+		end
+		if spec.cpWorkingToolPos[posIndex] == nil then 
+			spec.cpWorkingToolPos[posIndex] = {}
+		end
+		local toolIndex=0
+		while true do
+			local toolKey = string.format("%s.movingTool(%d)", baseKey, toolIndex)
+			if not hasXMLProperty(savegame.xmlFile, toolKey) then
+				break
+			end
+			if spec.cpWorkingToolPos[posIndex][toolIndex] == nil then 
+				spec.cpWorkingToolPos[posIndex][toolIndex] = {}
+			end
+			local newCurRot = getXMLFloat(savegame.xmlFile, toolKey.."#rotation")
+			if newCurRot ~= nil then 
+				spec.cpWorkingToolPos[posIndex][toolIndex].curRot = newCurRot
+			end
+			local newTrans = getXMLFloat(savegame.xmlFile, toolKey.."#translation")
+			if newTrans ~= nil then
+				spec.cpWorkingToolPos[posIndex][toolIndex].curTrans = newTrans
+			end
+			toolIndex = toolIndex + 1
+		end
+		posIndex = posIndex + 1
+	end
+	if spec.cpWorkingToolPos then
+		spec.cpWorkingToolPosMax = posIndex-1
+	end	
+end
+Cylindered.onLoad = Utils.appendedFunction(Cylindered.onLoad,WorkingToolPositionsSetting.onLoad)
+
+---@class FrontloaderToolPositionsSetting : WorkingToolPositionsSetting
+FrontloaderToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function FrontloaderToolPositionsSetting:init(vehicle)
+	local label = "front"
+	local toolTip = "front"
+	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4)
+end
+
+---@class AugerPipeToolPositionsSetting : WorkingToolPositionsSetting
+AugerPipeToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function AugerPipeToolPositionsSetting:init(vehicle)
+	local label = "pipe"
+	local toolTip = "pipe"
+	local validSpecs = {Pipe}
+	WorkingToolPositionsSetting.init(self,"augerPipeToolPositions", label, toolTip, vehicle,1,validSpecs)
+end
+
+function AugerPipeToolPositionsSetting:getText()
+	if self.hasPosition[1] then 
+		return "ok"
+	end
+end
+
 
 --[[
 
@@ -3800,27 +4058,6 @@ Mode10_searchModeSetting = CpObject(BooleanSetting)
 function Mode10_searchModeSetting:init(vehicle)
 	BooleanSetting.init(self, 'mode10_searchMode','COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle, {'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'}) 
 	self:set(false)
-end
-
----@class ShovelStopAndGoSetting : BooleanSetting
-ShovelStopAndGoSetting = CpObject(BooleanSetting)
-function ShovelStopAndGoSetting:init(vehicle)
-	BooleanSetting.init(self, 'shovelStopAndGo','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
-	self:set(false)
-	self.shovelPositionTexts = {'COURSEPLAY_SHOVEL_LOADING_POSITION','COURSEPLAY_SHOVEL_TRANSPORT_POSITION','COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION','COURSEPLAY_SHOVEL_UNLOADING_POSITION'}
-	self.shovelPositionStates = {false,false,false,false}
-end
-
-function ShovelStopAndGoSetting:getShovelPositionText(shovelPosition)
-	return self.shovelPositionTexts[shovelPosition]
-end
-
-function ShovelStopAndGoSetting:getHasShovelPosition(shovelPosition)
-	return self.shovelPositionStates[shovelPosition]
-end
-
-function ShovelStopAndGoSetting:setHasShovelPositionState(shovelPosition,state)
-	self.shovelPositionStates[shovelPosition] = state
 end
 
 ---@class ShowSelectedFieldEdgePathSetting : SettingList

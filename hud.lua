@@ -1173,14 +1173,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
 					vehicle.cp.hud.content.pages[page][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
 
-					for state=2,5 do
-						local active = false
-						if vehicle.cp.hasShovelStatePositions[state] then
-							vehicle.cp.hud.content.pages[page][state-1][2].text = 'OK';
-							active = true
-						end;
-						self:updateSaveButtonActive(vehicle,state-1,active,page)
-					end;
+					local texts = vehicle.cp.settings.frontloaderToolPositions:getTexts()
+					for i=1,4 do 
+						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
+					end
 
 					vehicle.cp.hud.content.pages[page][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
 					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
@@ -1232,6 +1228,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
 				
 				
+				elseif entry.functionToCall == 'augerPipeToolPositions:setOrClearPostion' then
+					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
+					vehicle.cp.hud.content.pages[page][2][2].text = vehicle.cp.settings.augerPipeToolPositions:getText()
 				end
 			end		
 		end
@@ -1666,7 +1665,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	local closeX = self.visibleArea.x2 - marginMiddle - wMiddle;
 	local closeY = self.basePosY + self:pxToNormal(280, 'y');
-	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'close' }, 'openCloseHud', false, closeX, closeY, wMiddle, hMiddle);
+	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'close' }, 'openCloseHud', false, closeX, closeY, wMiddle, hMiddle):setOnlyCallLocal()
 
 	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 	vehicle.cp.hud.clearCurrentCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
@@ -1887,37 +1886,46 @@ function courseplay.hud:setupSetAutoToolOffsetXButton(vehicle,page,line)
 	courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'setAutoToolOffsetX', nil, self.buttonPosX[3], self.linesButtonPosY[line], self.buttonSize.small.w, self.buttonSize.small.h, line, nil, false);
 end
 
-function courseplay.hud:setupShovelModeButtons(vehicle, pg)
--- Page 9: Shovel settings
+function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 	local hSmall = self.buttonSize.small.h;
 	local wSmall = self.buttonSize.small.w;
 	local btnW = self:pxToNormal(22, 'x');
 	local btnH = self:pxToNormal(22, 'y');
-	local shovelX1 = self.col2posX[pg] - btnW * 2;
-	local shovelX2 = self.col2posX[pg] + btnW * 3;
+	local shovelX1 = self.col2posX[page] - btnW * 2;
+	local shovelX2 = self.col2posX[page] + btnW * 3;
 	local mouseWheelArea = {
 		x = self.contentMinX,
 		w = self.contentMaxWidth,
 		h = self.lineHeight
 	}
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelLoading'   }, 'saveShovelPosition', 2, shovelX1, self.linesButtonPosY[1], btnW, btnH, 1, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelTransport' }, 'saveShovelPosition', 3, shovelX1, self.linesButtonPosY[2], btnW, btnH, 2, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelPreUnload' }, 'saveShovelPosition', 4, shovelX1, self.linesButtonPosY[3], btnW, btnH, 3, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'shovelUnloading' }, 'saveShovelPosition', 5, shovelX1, self.linesButtonPosY[4], btnW, btnH, 4, nil, true, false, true, courseplay:loc('COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION'));
-
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 2, shovelX2, self.linesButtonPosY[1], wSmall, hSmall, 1, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 3, shovelX2, self.linesButtonPosY[2], wSmall, hSmall, 2, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 4, shovelX2, self.linesButtonPosY[3], wSmall, hSmall, 3, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION'));
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'recordingPlay' }, 'moveShovelToPosition', 5, shovelX2, self.linesButtonPosY[4], wSmall, hSmall, 4, nil, true, false, false, courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION'));
-
-	--courseplay.button:new(vehicle, pg, nil, 'toggleShovelStopAndGo', nil, self.col1posX, self.linesPosY[5], self.visibleArea.width, self.lineHeight, 5, nil, true);
+	btn_toolTips = {
+					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
+					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
+					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
+					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION')
+				}
+	btn_icons = {
+				'shovelLoading',
+				'shovelTransport',
+				'shovelPreUnload',
+				'shovelUnloading'
+			}
 	
-	
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'calculator' }, 'calculateWorkWidth', nil, self.buttonPosX[3], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navMinus' }, 'changeWorkWidth', -0.1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -0.5, false);
-	courseplay.button:new(vehicle, pg, { 'iconSprite.png', 'navPlus' },  'changeWorkWidth',  0.1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  0.5, false);
-	courseplay.button:new(vehicle, pg, nil, 'changeWorkWidth', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.5, true, true);
-	--END Page 9
+	if setting:getTotalPositions() == 4 then --FrontloaderToolPositionsSetting
+		for i=1,4 do 
+			courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_toolTips[i]):setSetting(setting)
+			courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_toolTips[i]):setSetting(setting)
+			line = line +1
+		end
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'calculator' }, 'calculateWorkWidth', nil, self.buttonPosX[3], self.linesButtonPosY[6], wSmall, hSmall, 6, nil, false);
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'navMinus' }, 'changeWorkWidth', -0.1, self.buttonPosX[2], self.linesButtonPosY[6], wSmall, hSmall, 6, -0.5, false);
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'navPlus' },  'changeWorkWidth',  0.1, self.buttonPosX[1], self.linesButtonPosY[6], wSmall, hSmall, 6,  0.5, false);
+		courseplay.button:new(vehicle, page, nil, 'changeWorkWidth', 0.1, mouseWheelArea.x, self.linesButtonPosY[6], mouseWheelArea.w, mouseWheelArea.h, 6, 0.5, true, true);
+	else --AugerPipeToolPositionsSetting
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'shovelLoading'   }, 'setOrClearPostion', 1, shovelX1, self.linesButtonPosY[line], btnW, btnH, 1, nil, true, false, true):setSetting(setting)
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', 1, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, 1, nil, true, false, false):setSetting(setting)
+	end
+	vehicle.cp.hud.content.pages[page][line][1].functionToCall = setting:getName()..":".."setOrClearPostion"
 end
 
 function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,startLine,stopLine, column,runCounterActive)
@@ -2082,14 +2090,6 @@ function courseplay.hud:updateCourseButtonsVisibilty(vehicle)
 	end; -- for buttons
 	
 end	
-
-function courseplay.hud:updateSaveButtonActive(vehicle,state,active,page)
-	for _,button in pairs (vehicle.cp.buttons[page]) do
-		if button.row == state and button.functionToCall == 'saveShovelPosition' then
-			button:setActive(active)
-		end
-	end
-end
 
 function courseplay.hud:updateSiloSelectedFillTypeList(vehicle,page,startLine,stopLine,mode,line)
 	--text 
@@ -2435,6 +2435,12 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	
 	self:setReloadPageOrder(vehicle, -1, true)
 end
+
+function courseplay.hud:setOverloaderAIDriverContent(vehicle)
+	-- page 3
+	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.augerPipeToolPositions,3,2)
+end
+
 function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 1, 1 )
@@ -2446,7 +2452,7 @@ end
 function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
 	self:enablePageButton(vehicle, 9)
-	self:setupShovelModeButtons(vehicle, 9)
+	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
 	self:addRowButton(vehicle,nil,'toggleShovelStopAndGo', 9, 5, 1 )
 end
 

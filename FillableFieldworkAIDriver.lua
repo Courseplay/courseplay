@@ -236,8 +236,7 @@ function FillableFieldworkAIDriver:helperBuysThisFillType(fillType)
 			return true
 		end
 	end
-	if g_currentMission.missionInfo.helperBuyFuel and
-		(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
+	if g_currentMission.missionInfo.helperBuyFuel and self:isValidFuelType(self.vehicle,fillType) then
 		return true
 	end
 	return false

@@ -880,7 +880,7 @@ function LevelCompactAIDriver:getWorkWidth()
 	self.workWidth = 3
 	self.leveler = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Leveler)
 	if not self.leveler then
-		self:debug('No leveler found, using default width %.1f', self.width)
+		self:debug('No leveler found, using default width %.1f', self.workWidth)
 		return
 	end
 	local spec = self.leveler.spec_leveler
