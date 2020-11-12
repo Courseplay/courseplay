@@ -162,18 +162,19 @@ function CpManager:deleteMap()
 	end;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	--delete globalInfoText overlays
-	for i,button in pairs(self.globalInfoText.buttons) do
-		button:deleteOverlay();
+	if self.globalInfoText and self.globalInfoText.buttons then
+		--delete globalInfoText overlays
+		for i,button in pairs(self.globalInfoText.buttons) do
+			button:deleteOverlay();
 
-		if self.globalInfoText.overlays[i] then
-			local ovl = self.globalInfoText.overlays[i];
-			if ovl.overlayId ~= nil and ovl.delete ~= nil then
-				ovl:delete();
+			if self.globalInfoText.overlays[i] then
+				local ovl = self.globalInfoText.overlays[i];
+				if ovl.overlayId ~= nil and ovl.delete ~= nil then
+					ovl:delete();
+				end;
 			end;
 		end;
-	end;
-
+	end
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete waypoint signs and protoTypes
 	for section,signDatas in pairs(courseplay.signs.buffer) do

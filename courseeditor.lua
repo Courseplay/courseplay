@@ -349,502 +349,673 @@ end
 
 -- draw the handles and perform actions caused by hotkeys and mouse
 function courseEditor:draw(vehicle)
-  if not self.enabled then return end
-  if vehicle ~= g_currentMission.controlledVehicle then return; end;
-  if #vehicle.Waypoints == 0 then  -- check if we just unloaded the course
-    self: reset()
-    return
-  end
-  local height = 4.5;
-  local isHit = false
-  local dist = 0
-  local guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadius
-  local sx,sy,sz
-  local abs = math.abs
-  local selectedColor = {r=1.0, g=1.0, b=1.0} -- selected waypoint handle color  
-  local unselectedColor = {r=0.0, g=1.0, b=1.0} -- unselected waypoint handle color
-  local savingColor = {r=1.0, g=1.0, b=1.0} -- waypoint handle color while saving
-  self.guiWpSelectedSpeed = 0  
+	if not self.enabled then return end
+	if vehicle ~= g_currentMission.controlledVehicle then return; end;
+	if #vehicle.Waypoints == 0 then  -- check if we just unloaded the course
+		self: reset()
+		return
+	end
+	local height = 4.5;
+	local isHit = false
+	local dist = 0
+	local guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadius
+	local sx,sy,sz
+	local abs = math.abs
+	local selectedColor = {r=1.0, g=1.0, b=1.0} -- selected waypoint handle color
+	local unselectedColor = {r=0.0, g=1.0, b=1.0} -- unselected waypoint handle color
+	local savingColor = {r=1.0, g=1.0, b=1.0} -- waypoint handle color while saving
+	self.guiWpSelectedSpeed = 0
 
-  -------------------------------------------------------------------------------  
+	-------------------------------------------------------------------------------
 
-  -- for adjusting brightness of handles when they are selected
-  local function adjustBrightness(color, factor)  -- 0 to 0.99 decrease brightness, 1.01 to 2 increase brightness
-    color.r = color.r * factor
-    color.g= color.g * factor
-    color.b = color.b * factor
-    return color
-  end
-  
-  -- calculate the waypoint type, which is useful to know when changing waypoint types
-  local function calcWaypointTypeIdx(wpid)
-    local tpidx = 1
-    --  {'normal', 'wait', 'unload', 'crossing', 'turnStart', 'turnEnd', 'reverse'}
-    if vehicle.Waypoints[wpid].wait then tpidx = 2
-      elseif vehicle.Waypoints[wpid].unload then tpidx = 3
-      elseif vehicle.Waypoints[wpid].crossing then tpidx = 4
-      elseif vehicle.Waypoints[wpid].turnStart then tpidx = 5
-      elseif vehicle.Waypoints[wpid].turnEnd then tpidx = 6
-      elseif vehicle.Waypoints[wpid].rev then tpidx = 7
-    end
-    return tpidx
-  end
-  
-   -------------------------------------------------------------------------------  
+	-- for adjusting brightness of handles when they are selected
+	local function adjustBrightness(color, factor)  -- 0 to 0.99 decrease brightness, 1.01 to 2 increase brightness
+		color.r = color.r * factor
+		color.g= color.g * factor
+		color.b = color.b * factor
+		return color
+	end
 
-  -- the visual representation of a waypoint that can be grabbed with the mouse
-  -- the color of the vertical lines gives an indication of what type of waypoint it is
-  local function drawHandle(wpMe, wpMeID, isSelected, isDragging, isSaving, signColor) 
-    local color 
-    local horizLinesColor
-    local vertLinesColor
-    -- calc color
-    if isSaving then 
-      color = savingColor
-      horizLinesColor = savingColor
-      signColor = savingColor
-      vertLinesColor = savingColor
-    else
-      if isSelected then 
-        color = selectedColor 
-        horizLinesColor = unselectedColor
-        vertLinesColor = signColor
-      else 
-        color = unselectedColor 
-        horizLinesColor = unselectedColor
-        vertLinesColor = signColor
-      end
-    end
-    local f
-    if isSelected then f = 1.5 else f = 1.0 end
-    signColor = adjustBrightness(vertLinesColor, f)
-    -- vertical line  
-    cpDebug:drawLine(wpMe.cx, wpMe.cy, wpMe.cz, vertLinesColor.r, vertLinesColor.g, vertLinesColor.b, wpMe.cx, wpMe.cy + height, wpMe.cz)
-    
-    -- Horizontal lines
-    -- Draw lower line connecting the waypoint to both the previous and next waypoint.
-    --   We do this to avoid lines disappearing at the edge of the screen due to the use of the function 'project'
-    --   which helps us not draw waypoint handles that we could not possibly see.  
-    --   Although we'll draw both the lines right on top of each other, this is worth it framerate-wise since we 
-    --   are showing far fewer lines than if we did not use project.      
-    local wpNext = vehicle.Waypoints[wpMeID + 1]
-    if  wpNext ~= nil then
-      if wpNext.cy == nil or wpNext.cy == 0 then
-        wpNext.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpNext.cx, 1, wpNext.cz)
-      end
-      cpDebug:drawLine(wpMe.cx, wpMe.cy + 0.20, wpMe.cz, horizLinesColor.r, horizLinesColor.g, horizLinesColor.b, wpNext.cx, wpNext.cy + 0.20, wpNext.cz)
-    end
-    -- horizontal ground line to previous handle
-    local wpPrev = vehicle.Waypoints[wpMeID - 1]
-    if wpPrev ~= nil then
-      if wpPrev.cy == nil or wpPrev.cy == 0 then
-        wpPrev.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpPrev.cx, 1, wpPrev.cz)
-      end
-      cpDebug:drawLine(wpMe.cx, wpMe.cy + 0.20, wpMe.cz, horizLinesColor.r, horizLinesColor.g, horizLinesColor.b, wpPrev.cx, wpPrev.cy + 0.20, wpPrev.cz)
-    end   
-    
-    -- upper sphere
-    if isSelected or isSaving then 
-      cpDebug:drawPoint(wpMe.cx, wpMe.cy + height, wpMe.cz, color.r, color.g, color.b)
-    end
-    
-    -- lower sphere
-    if not isDragging then
-      cpDebug:drawPoint(wpMe.cx, wpMe.cy, wpMe.cz, color.r, color.g, color.b)
-    end
-  end
-  
-  -------------------------------------------------------------------------------  
-  -- are we saving?  Adjust handle colors and reset the editor after save is done
-  if self.isSaving then
-    if courseplay:timerIsThrough(vehicle, 'courseEditorSaving') then
-      courseplay:resetCustomTimer(vehicle, "courseEditorSaving", true);
-     local cID = self:getCurrentCourseID(vehicle)
-      if cID ~= nil then
-        self.isSaving = false
-        -- save it
-        courseplay.courses:saveCourseToXml(cID, nil, true)
-        courseplay.settings.setReloadCourseItems()
-        courseplay.signs:updateWaypointSigns(vehicle)    
-        --save it again to guarantee the angles are recalculated
-        courseplay.courses:saveCourseToXml(cID, nil, true)
-        courseplay.settings.setReloadCourseItems()
-        self:reset()
-      end      
-      self.isSaving = false
-      return
-    end
-  end
-  
-  -------------------------------------------------------------------------------  
-  
-  -- are we dragging?
-  if self.isPressed.primary then
-    self.historyReverted = false
-    self.isDragging = (abs(self.dragOrigin.x - self.guiMouseX) > self.dragIgnoreDist) or (math.abs(self.dragOrigin.y - self.guiMouseY) >  self.dragIgnoreDist)
-  else
-    self.isDragging = false
-    self.guiWpSelected = 0
-  end  
-  
-  -------------------------------------------------------------------------------  
-  
-  -- find the world coords on the ground under the cursor
-  local activeCam = getCamera()
-  if activeCam ~= nil then
-    -- where is the camera world position and what direction is it from the camera to the ground that the cursor is over?
-    local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(self.guiMouseX, self.guiMouseY, activeCam)
-    -- now raycast the camera position and direction to find exactly where on the ground that the cursor is over
-    --raycastClosest(hx, hy, hz, px, py, pz, "groundRaycastCallback", self.maxWpDistVisible - 1, self, 63)    --63  
-    raycastClosest(hx, hy, hz, px, py, pz, "groundRaycastCallback", self.maxWpDistVisible - 1, self, 1)    --63  
-    -- iterate through all waypoints, but only allow editing of nearby visible waypoints to preserve framerate on large courses
-    for i,wp in pairs(vehicle.Waypoints) do
-      if wp.cy == nil or wp.cy == 0 then
-        wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 1, wp.cz)
-      end
-      -- project the waypoint onto the screen
-      sx,sy,sz = project(wp.cx, wp.cy, wp.cz)
-      -- only consider visible waypoints
-      if (sx ~= nil and sy ~= nil and sz ~= nil) and ((sx < 1 and sx > 0) and (sy < 1 and sy > 0)  and (sz < 1)) then
-        -- also only consider nearby waypoints
-        dist = courseplay:distance3D(hx, hy, hz, wp.cx, wp.cy, wp.cz) 
-        if dist < self.maxWpDistVisible then
-          -- if we have already have a 'hit' waypoint, increase the maxradius to prevent dragging lag and fails
-          if self.guiWpSelected == 0 then 
-            guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadius 
-          else 
-            guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadiusWhileDragging
-          end
-          -- calc the handle vertical line color
-          local sign = g_i18n:getText('COURSEPLAY_EDITOR_NORMAL');
-          local signColor = {r=1.0, g=0.212, b=0.0}  -- orange
-          if wp.wait then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_WAIT');
-            signColor = {r=1.0, g=0.212, b=0.0}  -- orange 
-          elseif wp.unload then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_UNLOAD');
-            signColor = {r=1.0, g=0.212, b=0.0}  -- orange
-          elseif wp.crossing then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_CROSSING');  
-            signColor = {r=0.0, g=0.212, b=0.212}  -- blueish
-          elseif wp.rev then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_REVERSE'); 
-            signColor = {r=0.44, g=0.00, b=0.41}  -- pinkish
-          elseif wp.turnStart then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_TURNSTART');
-            signColor = {r=0.00, g=0.8, b=0.0} -- green  
-          elseif wp.turnEnd then 
-            sign = g_i18n:getText('COURSEPLAY_EDITOR_TURNEND');
-            signColor = {r=0.8, g=0.0, b=0.00}  -- red
-          end
-          if i == 1 or i == #vehicle.Waypoints then
-            signColor = {r=1.0, g=0.212, b=0.0} -- orange
-          end
-          -- Are we close enough to the waypoint with the cursor so that we should hover?  
-          -- If we hover, that is known as 'selecting'.  
-          isHit = (abs(self.rayCastHitWorldPos.x - wp.cx) < guiAdjustedWpHitMaxRadius) and 
-                  (abs(self.rayCastHitWorldPos.z - wp.cz) < guiAdjustedWpHitMaxRadius) and
-                  ((self.guiWpSelected == 0) or (self.guiWpSelected == i)) and
-                  not vehicle:getIsCourseplayDriving()
-          if isHit then
-            self.waypointTypeIndex = calcWaypointTypeIdx(i)
-            -- is hotkey pressed to increase speed?
-            if self.queueIncreaseSpeed then
-              wp.speed = wp.speed + 1
-              self.queueIncreaseSpeed = false
-            end
-            -- is hotkey pressed to decrease speed?
-            if self.queueDecreaseSpeed then
-              wp.speed = wp.speed - 1
-              self.queueDecreaseSpeed = false
-            end
-            self.guiWpSelectedSpeed = wp.speed
-            -- draw the waypointnumber:speed:sign info panel
-            local saction = ''
-            if wp.generated and wp.speed == 0 then
-              saction = string.format("%d:auto:%s", i, sign)
-            else
-              local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
-              saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
-            end
-            if wp.lane then
-              saction = saction .. string.format(' (%s: %d)', g_i18n:getText('COURSEPLAY_HEADLAND'), -wp.lane)
-            end
-            local theight = 0.025
-            local overlayColor = {r = 0, g = 0, b = 0, a = 0.85}
-            local overlayWidth = getTextWidth(theight, saction) + 0.015
-            local overlayHeight = 0.045
-            -- render text background
-            setOverlayColor(self.overlayId, overlayColor.r, overlayColor.g, overlayColor.b, overlayColor.a )
-            renderOverlay(self.overlayId, (0.5 - (overlayWidth) / 2), 0.99 - overlayHeight, overlayWidth, overlayHeight)
-            -- render text
-            setTextAlignment(1)
-            setTextColor(1, 1, 1, 1)
-            renderText(0.5, 0.958, theight, saction)
-            -- dragging waypoint code goes here
-            if self.isDragging then
-              -- add the waypoint position to undo history only if we are just starting to drag
-              if not self.historyAdded then
-                table.insert(self.history, {action="dragto", wp = i, x = wp.cx, y = wp.cy, z = wp.cz})
-                self.historyAdded = true
-              end
-              wp.cx = self.rayCastHitWorldPos.x
-              wp.cy = self.rayCastHitWorldPos.y
-              wp.cz = self.rayCastHitWorldPos.z
-              -- move the signs
-              courseplay.signs:updateWaypointSigns(vehicle, 'all', i - 1)
-              courseplay.signs:updateWaypointSigns(vehicle, 'all', i)
-              -- update the 2D course plot
-              vehicle.cp.course2dUpdateDrawData = true;
-            end
-            self.guiWpSelected = i  -- this is the selected waypoint
-          end
-          -- draw handles
-          drawHandle(wp, i, (self.guiWpSelected == i), self.isDragging, self.isSaving, signColor) 
-        end
-      end
-    end
-  end
-  
-  -------------------------------------------------------------------------------  
-  
-  -- do we need to do an undo? (initiated by hotkey)
-  if self.queueUndo then  
-    if #self.history ~= 0 then
-      --if not self.historyAdded then
-        local action = self.history[#self.history].action
-        if action == 'dragto' then
-          local j = self.history[#self.history].wp
-          vehicle.Waypoints[self.history[#self.history].wp].cx = self.history[#self.history].x
-          vehicle.Waypoints[self.history[#self.history].wp].cy = self.history[#self.history].y
-          vehicle.Waypoints[self.history[#self.history].wp].cz = self.history[#self.history].z
-          courseplay.signs:updateWaypointSigns(vehicle, 'all', j - 1)
-          courseplay.signs:updateWaypointSigns(vehicle, 'all', j)
-          table.remove(self.history)  -- remove this from the history
-        elseif action == 'delete' then
-          local j = self.history[#self.history].wp 
-            table.insert(
-            vehicle.Waypoints, 
-              j,
-            { cx=self.history[#self.history].x, 
-              cy=self.history[#self.history].y,
-              cz=self.history[#self.history].z,
-              angle=self.history[#self.history].angle,
-              speed=self.history[#self.history].speed}
-            )
-          courseplay.signs:updateWaypointSigns(vehicle)
-          table.remove(self.history)  -- remove this from the history
-        elseif action == 'insert' then
-          local j = self.history[#self.history].wp 
-          table.remove(vehicle.Waypoints, j)
-          courseplay.signs:updateWaypointSigns(vehicle) 
-          table.remove(self.history)  -- remove this from the history
-        end
-        vehicle.cp.waypointIndex = 1
-        vehicle.cp.course2dUpdateDrawData = true;
-     --end
-    end
-    self.historyAdded = false
-    self.queueUndo = false  
-  end  
-  
-  -------------------------------------------------------------------------------  
+	-- calculate the waypoint type, which is useful to know when changing waypoint types
+	local function calcWaypointTypeIdx(wpid)
+		local tpidx = 1
+		--  {'normal', 'wait', 'unload', 'crossing', 'turnStart', 'turnEnd', 'reverse'}
+		if vehicle.Waypoints[wpid].wait then tpidx = 2
+			elseif vehicle.Waypoints[wpid].unload then tpidx = 3
+			elseif vehicle.Waypoints[wpid].crossing then tpidx = 4
+			elseif vehicle.Waypoints[wpid].turnStart then tpidx = 5
+			elseif vehicle.Waypoints[wpid].turnEnd then tpidx = 6
+			elseif vehicle.Waypoints[wpid].rev then tpidx = 7
+		end
+		return tpidx
+	end
 
-  -- do we need to save? (initiated by hotkey, not the disk icon on hud)
-  if self.queueSave and not self.isSaving then
-    local cID = self:getCurrentCourseID(vehicle)
-    if cID ~= nil then -- don't save an unsaved course
-      -- the timer will give it a chance to paint the handles in the saving color
-      -- before the actual potentially-lengthy saving begins
-      courseplay:setCustomTimer(vehicle, 'courseEditorSaving', 0.2);
-      self.isSaving = true
-    end
-    self.queueSave = false
-  end
-  
-  -------------------------------------------------------------------------------  
-  
-  -- do we need to delete a waypoint? (initiated by hotkey)
-  if self.queueDelete then
-    if self.guiWpSelected ~= 0 then
-      -- don't delete if it's the start or end waypoint
-      if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
-         --add to history
-        table.insert(self.history, {action="delete", 
-            wp = self.guiWpSelected, 
-            x = vehicle.Waypoints[self.guiWpSelected].cx,
-            y = vehicle.Waypoints[self.guiWpSelected].cy,
-            z = vehicle.Waypoints[self.guiWpSelected].cz,
-            angle = vehicle.Waypoints[self.guiWpSelected].angle,
-            speed = vehicle.Waypoints[self.guiWpSelected].speed,
-            lane = vehicle.Waypoints[self.guiWpSelected].lane}
-          )
-      table.remove(vehicle.Waypoints, self.guiWpSelected)
-      courseplay.signs:updateWaypointSigns(vehicle) 
-      vehicle.cp.waypointIndex = 1
-      end
-    end
-    self.queueDelete = false
-    vehicle.cp.course2dUpdateDrawData = true;
-  end  
-  
-    -------------------------------------------------------------------------------  
-  
-  -- do we need to delete the next waypoint? (initiated by hotkey)
-  if self.queueDeleteNext then
-    if self.guiWpSelected ~= 0 then
-      -- don't delete if it's the start or end waypoint
-      if self.guiWpSelected + 1 ~= #vehicle.Waypoints then
-        --add to history
-        table.insert(self.history, {action="delete", 
-            wp = self.guiWpSelected + 1, 
-            x = vehicle.Waypoints[self.guiWpSelected + 1].cx,
-            y = vehicle.Waypoints[self.guiWpSelected + 1].cy,
-            z = vehicle.Waypoints[self.guiWpSelected + 1].cz,
-            angle = vehicle.Waypoints[self.guiWpSelected + 1].angle,
-            speed = vehicle.Waypoints[self.guiWpSelected + 1].speed,
-            lane = vehicle.Waypoints[self.guiWpSelected + 1].lane}
-          )
-      table.remove(vehicle.Waypoints, self.guiWpSelected + 1)
-      courseplay.signs:updateWaypointSigns(vehicle) 
-      vehicle.cp.waypointIndex = 1
-      end
-    end
-    self.queueDeleteNext = false
-    vehicle.cp.course2dUpdateDrawData = true;
-  end 
-  
-  -------------------------------------------------------------------------------  
-  
-  -- do we need to delete to start? (initiated by hotkey)
-  if self.queueDeleteToStart then
-    if self.guiWpSelected ~= 0 then
-      -- don't delete if it's the start or end waypoint
-      if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
-        for _ = 1,self.guiWpSelected - 1 do
-          table.remove(vehicle.Waypoints, 1)
-        end
-        vehicle.Waypoints[1].speed = 1
-        vehicle.Waypoints[1].wait = false
-        vehicle.Waypoints[1].unload = false
-        vehicle.Waypoints[1].rev = false 
-        vehicle.Waypoints[1].crossing = true
-        vehicle.Waypoints[1].turnstart = false
-        vehicle.Waypoints[1].turnend = false  
-        courseplay.signs:updateWaypointSigns(vehicle) 
-        self:clearHistory() -- clear the history because we don't store these potentially huge changes
-      end
-    end
-    vehicle.cp.waypointIndex = 1
-    self.queueDeleteToStart = false
-    vehicle.cp.course2dUpdateDrawData = true;
-  end  
-  
-  -------------------------------------------------------------------------------  
-  
-  -- do we need to delete to end? (initiated by hotkey)
-  if self.queueDeleteToEnd then
-    if self.guiWpSelected ~= 0 then
-      -- don't delete if it's the start or end waypoint
-      if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
-        local num = #vehicle.Waypoints - self.guiWpSelected
-        for _ = 1,num do
-          table.remove(vehicle.Waypoints, self.guiWpSelected + 1)
-        end
-        vehicle.Waypoints[self.guiWpSelected].speed = 1
-        vehicle.Waypoints[self.guiWpSelected].wait = false
-        vehicle.Waypoints[self.guiWpSelected].unload = false
-        vehicle.Waypoints[self.guiWpSelected].rev = false 
-        vehicle.Waypoints[self.guiWpSelected].crossing = true
-        vehicle.Waypoints[self.guiWpSelected].turnstart = false
-        vehicle.Waypoints[self.guiWpSelected].turnend = false  
-        courseplay.signs:updateWaypointSigns(vehicle) 
-        self:clearHistory() -- clear the history because we don't store these potentially huge changes
-      end
-    end
-    vehicle.cp.waypointIndex = 1
-    self.queueDeleteToEnd = false
-    vehicle.cp.course2dUpdateDrawData = true;
-  end 
-  
-  -------------------------------------------------------------------------------  
-  
-  -- do we need to inert a waypoint? (initiated by hotkey)
-  if self.queueInsert then
-    if self.guiWpSelected ~= 0 and self.guiWpSelected ~= #vehicle.Waypoints then
-      local cp = {x=vehicle.Waypoints[self.guiWpSelected].cx, y=vehicle.Waypoints[self.guiWpSelected].cz}
-      local np = {x=vehicle.Waypoints[self.guiWpSelected + 1].cx, y=vehicle.Waypoints[self.guiWpSelected + 1].cz}
-      local midPNx, midPNz = getPointInTheMiddle(cp, np )
-      local midPNy=getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, midPNx, 1, midPNz)
-      -- add to history table
-      table.insert(self.history, {action="insert", 
-          wp = self.guiWpSelected + 1}
-        )      
-      -- insert into the waypoint table
-      table.insert(
-        vehicle.Waypoints, 
-        self.guiWpSelected + 1,
-        { cx=midPNx, 
-          cy=midPNy,
-          cz=midPNz,
-          angle=vehicle.Waypoints[self.guiWpSelected].angle,
-          speed=vehicle.Waypoints[self.guiWpSelected].speed,
-          lane=vehicle.Waypoints[self.guiWpSelected].lane}
-        )      
-      courseplay.signs:updateWaypointSigns(vehicle) 
-    end
-    vehicle.cp.waypointIndex = 1
-    self.queueInsert = false
-    vehicle.cp.course2dUpdateDrawData = true;
-  end 
-  
-  ------------------------------------------------------------------------------- 
-  
-  -- cycle through the waypoint types.  This is not added to undo history.
-  -- cycling is not smart.  It will allow you to change to a type that is not appropriate
-  if self.queueCycleType then
-    if self.guiWpSelected ~= 0 then
-      -- don't cycle if it's the start or end waypoint
-      if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
-        if self.waypointTypeIndex + 1 > #self.waypointTypes then
-          self.waypointTypeIndex = 1
-        else
-          self.waypointTypeIndex = self.waypointTypeIndex + 1
-        end
-        --  {'normal', 'wait', 'unload', 'crossing', 'turnStart', 'turnEnd', 'reverse'}
-        local tp = self.waypointTypes[self.waypointTypeIndex]
-        vehicle.Waypoints[self.guiWpSelected].wait = false
-        vehicle.Waypoints[self.guiWpSelected].unload = false
-        vehicle.Waypoints[self.guiWpSelected].rev = false 
-        vehicle.Waypoints[self.guiWpSelected].crossing = false
-        vehicle.Waypoints[self.guiWpSelected].turnStart = false
-        vehicle.Waypoints[self.guiWpSelected].turnEnd = false  
-        if self.waypointTypeIndex == 1 then
-          -- nothing
-        elseif self.waypointTypeIndex == 2 then
-          vehicle.Waypoints[self.guiWpSelected].wait = true
-          vehicle.Waypoints[self.guiWpSelected].speed = 0
-        elseif self.waypointTypeIndex == 3 then
-          vehicle.Waypoints[self.guiWpSelected].unload = true
-        elseif self.waypointTypeIndex == 4 then
-          vehicle.Waypoints[self.guiWpSelected].crossing = true
-        elseif self.waypointTypeIndex == 5 then
-          vehicle.Waypoints[self.guiWpSelected].turnStart = true
-        elseif self.waypointTypeIndex == 6 then
-          vehicle.Waypoints[self.guiWpSelected].turnEnd = true          
-        elseif self.waypointTypeIndex == 7 then
-          vehicle.Waypoints[self.guiWpSelected].rev = true
-        end
-        courseplay.signs:updateWaypointSigns(vehicle) 
-      end
-    end
-    vehicle.cp.waypointIndex = 1
-    self.queueCycleType = false
-  end   
+	-------------------------------------------------------------------------------
 
+	-- the visual representation of a waypoint that can be grabbed with the mouse
+	-- the color of the vertical lines gives an indication of what type of waypoint it is
+	local function drawHandle(wpMe, wpMeID, isSelected, isDragging, isSaving, signColor)
+		local color
+		local horizLinesColor
+		local vertLinesColor
+		-- calc color
+		if isSaving then
+			color = savingColor
+			horizLinesColor = savingColor
+			signColor = savingColor
+			vertLinesColor = savingColor
+		else
+			if isSelected then
+				color = selectedColor
+				horizLinesColor = unselectedColor
+				vertLinesColor = signColor
+			else
+				color = unselectedColor
+				horizLinesColor = unselectedColor
+				vertLinesColor = signColor
+			end
+		end
+		local f
+		if isSelected then f = 1.5 else f = 1.0 end
+		signColor = adjustBrightness(vertLinesColor, f)
+		-- vertical line
+		cpDebug:drawLine(wpMe.cx, wpMe.cy, wpMe.cz, vertLinesColor.r, vertLinesColor.g, vertLinesColor.b, wpMe.cx, wpMe.cy + height, wpMe.cz)
+
+		-- Horizontal lines
+		-- Draw lower line connecting the waypoint to both the previous and next waypoint.
+		--   We do this to avoid lines disappearing at the edge of the screen due to the use of the function 'project'
+		--   which helps us not draw waypoint handles that we could not possibly see.
+		--   Although we'll draw both the lines right on top of each other, this is worth it framerate-wise since we
+		--   are showing far fewer lines than if we did not use project.
+		local wpNext = vehicle.Waypoints[wpMeID + 1]
+		if  wpNext ~= nil then
+			if wpNext.cy == nil or wpNext.cy == 0 then
+				wpNext.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpNext.cx, 1, wpNext.cz)
+			end
+			cpDebug:drawLine(wpMe.cx, wpMe.cy + 0.20, wpMe.cz, horizLinesColor.r, horizLinesColor.g, horizLinesColor.b, wpNext.cx, wpNext.cy + 0.20, wpNext.cz)
+		end
+		-- horizontal ground line to previous handle
+		local wpPrev = vehicle.Waypoints[wpMeID - 1]
+		if wpPrev ~= nil then
+			if wpPrev.cy == nil or wpPrev.cy == 0 then
+				wpPrev.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpPrev.cx, 1, wpPrev.cz)
+			end
+			cpDebug:drawLine(wpMe.cx, wpMe.cy + 0.20, wpMe.cz, horizLinesColor.r, horizLinesColor.g, horizLinesColor.b, wpPrev.cx, wpPrev.cy + 0.20, wpPrev.cz)
+		end
+
+		-- upper sphere
+		if isSelected or isSaving then
+			cpDebug:drawPoint(wpMe.cx, wpMe.cy + height, wpMe.cz, color.r, color.g, color.b)
+		end
+
+		-- lower sphere
+		if not isDragging then
+			cpDebug:drawPoint(wpMe.cx, wpMe.cy, wpMe.cz, color.r, color.g, color.b)
+		end
+	end
+
+	-------------------------------------------------------------------------------
+	-- are we saving?  Adjust handle colors and reset the editor after save is done
+	if self.isSaving then
+		if courseplay:timerIsThrough(vehicle, 'courseEditorSaving') then
+			courseplay:resetCustomTimer(vehicle, "courseEditorSaving", true);
+			local cID = self:getCurrentCourseID(vehicle)
+			if cID ~= nil then
+				self.isSaving = false
+
+				-- save it
+				courseEditor:doSaveCourseAction(vehicle, cID);
+
+				self:reset()
+			end
+			self.isSaving = false
+			return
+		end
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- are we dragging?
+	if self.isPressed.primary then
+		self.historyReverted = false
+		self.isDragging = (abs(self.dragOrigin.x - self.guiMouseX) > self.dragIgnoreDist) or (math.abs(self.dragOrigin.y - self.guiMouseY) >  self.dragIgnoreDist)
+	else
+		self.isDragging = false
+		self.guiWpSelected = 0
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- find the world coords on the ground under the cursor
+	local activeCam = getCamera()
+	if activeCam ~= nil then
+		-- where is the camera world position and what direction is it from the camera to the ground that the cursor is over?
+		local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(self.guiMouseX, self.guiMouseY, activeCam)
+		-- now raycast the camera position and direction to find exactly where on the ground that the cursor is over
+		--raycastClosest(hx, hy, hz, px, py, pz, "groundRaycastCallback", self.maxWpDistVisible - 1, self, 63)    --63
+		raycastClosest(hx, hy, hz, px, py, pz, "groundRaycastCallback", self.maxWpDistVisible - 1, self, 1)    --63
+		-- iterate through all waypoints, but only allow editing of nearby visible waypoints to preserve framerate on large courses
+		for i,wp in pairs(vehicle.Waypoints) do
+			if wp.cy == nil or wp.cy == 0 then
+				wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 1, wp.cz)
+			end
+			-- project the waypoint onto the screen
+			sx,sy,sz = project(wp.cx, wp.cy, wp.cz)
+			-- only consider visible waypoints
+			if (sx ~= nil and sy ~= nil and sz ~= nil) and ((sx < 1 and sx > 0) and (sy < 1 and sy > 0)  and (sz < 1)) then
+				-- also only consider nearby waypoints
+				dist = courseplay:distance3D(hx, hy, hz, wp.cx, wp.cy, wp.cz)
+				if dist < self.maxWpDistVisible then
+					-- if we have already have a 'hit' waypoint, increase the maxradius to prevent dragging lag and fails
+					if self.guiWpSelected == 0 then
+						guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadius
+					else
+						guiAdjustedWpHitMaxRadius = self.guiWpHitMaxRadiusWhileDragging
+					end
+					-- calc the handle vertical line color
+					local sign = g_i18n:getText('COURSEPLAY_EDITOR_NORMAL');
+					local signColor = {r=1.0, g=0.212, b=0.0}  -- orange
+					if wp.wait then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_WAIT');
+						signColor = {r=1.0, g=0.212, b=0.0}  -- orange
+					elseif wp.unload then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_UNLOAD');
+						signColor = {r=1.0, g=0.212, b=0.0}  -- orange
+					elseif wp.crossing then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_CROSSING');
+						signColor = {r=0.0, g=0.212, b=0.212}  -- blueish
+					elseif wp.rev then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_REVERSE');
+						signColor = {r=0.44, g=0.00, b=0.41}  -- pinkish
+					elseif wp.turnStart then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_TURNSTART');
+						signColor = {r=0.00, g=0.8, b=0.0} -- green
+					elseif wp.turnEnd then
+						sign = g_i18n:getText('COURSEPLAY_EDITOR_TURNEND');
+						signColor = {r=0.8, g=0.0, b=0.00}  -- red
+					end
+					if i == 1 or i == #vehicle.Waypoints then
+						signColor = {r=1.0, g=0.212, b=0.0} -- orange
+					end
+					-- Are we close enough to the waypoint with the cursor so that we should hover?
+					-- If we hover, that is known as 'selecting'.
+					isHit = (abs(self.rayCastHitWorldPos.x - wp.cx) < guiAdjustedWpHitMaxRadius) and
+					        (abs(self.rayCastHitWorldPos.z - wp.cz) < guiAdjustedWpHitMaxRadius) and
+					        ((self.guiWpSelected == 0) or (self.guiWpSelected == i)) and
+					        not vehicle:getIsCourseplayDriving()
+					if isHit then
+						self.waypointTypeIndex = calcWaypointTypeIdx(i)
+						-- is hotkey pressed to increase speed?
+						if self.queueIncreaseSpeed then
+							courseEditor:doIncreaseSpeedAction(vehicle, i);
+							self.queueIncreaseSpeed = false
+						end
+						-- is hotkey pressed to decrease speed?
+						if self.queueDecreaseSpeed then
+							courseEditor:doDecreaseSpeedAction(vehicle, i);
+							self.queueDecreaseSpeed = false
+						end
+						self.guiWpSelectedSpeed = wp.speed
+						-- draw the waypointnumber:speed:sign info panel
+						local saction = ''
+						if wp.generated and wp.speed == 0 then
+							saction = string.format("%d:auto:%s", i, sign)
+						else
+							local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
+							saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
+						end
+						if wp.lane then
+							saction = saction .. string.format(' (%s: %d)', g_i18n:getText('COURSEPLAY_HEADLAND'), -wp.lane)
+						end
+						local theight = 0.025
+						local overlayColor = {r = 0, g = 0, b = 0, a = 0.85}
+						local overlayWidth = getTextWidth(theight, saction) + 0.015
+						local overlayHeight = 0.045
+						-- render text background
+						setOverlayColor(self.overlayId, overlayColor.r, overlayColor.g, overlayColor.b, overlayColor.a )
+						renderOverlay(self.overlayId, (0.5 - (overlayWidth) / 2), 0.99 - overlayHeight, overlayWidth, overlayHeight)
+						-- render text
+						setTextAlignment(1)
+						setTextColor(1, 1, 1, 1)
+						renderText(0.5, 0.958, theight, saction)
+						-- dragging waypoint code goes here
+						if self.isDragging then
+							-- add the waypoint position to undo history only if we are just starting to drag
+							if not self.historyAdded then
+								table.insert(self.history, {action="dragto", wp = i, x = wp.cx, y = wp.cy, z = wp.cz})
+								self.historyAdded = true
+							end
+
+							local wpInfo = {
+								cx=self.rayCastHitWorldPos.x,
+								cy=self.rayCastHitWorldPos.y,
+								cz=self.rayCastHitWorldPos.z
+							};
+							-- move the signs
+							courseEditor:doDragToAction(vehicle, i, wpInfo);
+
+							-- update the 2D course plot
+							vehicle.cp.course2dUpdateDrawData = true;
+						end
+						self.guiWpSelected = i  -- this is the selected waypoint
+					end
+					-- draw handles
+					drawHandle(wp, i, (self.guiWpSelected == i), self.isDragging, self.isSaving, signColor)
+				end
+			end
+		end
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to do an undo? (initiated by hotkey)
+	if self.queueUndo then
+		if #self.history ~= 0 then
+			--if not self.historyAdded then
+		    local action = self.history[#self.history].action
+			local wpIndex = self.history[#self.history].wp
+		    if action == 'dragto' then
+				local wpInfo = {
+					cx=self.history[#self.history].x,
+					cy=self.history[#self.history].y,
+					cz=self.history[#self.history].z
+				};
+				-- Undo dragto
+				courseEditor:doUndoDragToAction(vehicle, wpIndex, wpInfo);
+			elseif action == 'delete' then
+				local wpInfo = {
+					cx=self.history[#self.history].x,
+					cy=self.history[#self.history].y,
+					cz=self.history[#self.history].z,
+					angle=self.history[#self.history].angle,
+					speed=self.history[#self.history].speed
+				};
+				-- Undo delete
+				courseEditor:doUndoDeleteAction(vehicle, wpIndex, wpInfo);
+			elseif action == 'insert' then
+				-- Undo insert
+				courseEditor:doUndoInsertAction(vehicle,wpIndex);
+		    end
+
+			-- remove this from the history
+			table.remove(self.history)
+
+		    vehicle.cp.waypointIndex = 1
+		    vehicle.cp.course2dUpdateDrawData = true;
+			--end
+		end
+		self.historyAdded = false
+		self.queueUndo = false
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to save? (initiated by hotkey, not the disk icon on hud)
+	if self.queueSave and not self.isSaving then
+		local cID = self:getCurrentCourseID(vehicle)
+		if cID ~= nil then -- don't save an unsaved course
+			-- the timer will give it a chance to paint the handles in the saving color
+			-- before the actual potentially-lengthy saving begins
+			courseplay:setCustomTimer(vehicle, 'courseEditorSaving', 0.2);
+			self.isSaving = true
+		end
+		self.queueSave = false
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to delete a waypoint? (initiated by hotkey)
+	if self.queueDelete then
+		if self.guiWpSelected ~= 0 then
+			-- don't delete if it's the start or end waypoint
+			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
+				 --add to history
+				table.insert(self.history, {action="delete",
+					wp = self.guiWpSelected,
+					x = vehicle.Waypoints[self.guiWpSelected].cx,
+					y = vehicle.Waypoints[self.guiWpSelected].cy,
+					z = vehicle.Waypoints[self.guiWpSelected].cz,
+					angle = vehicle.Waypoints[self.guiWpSelected].angle,
+					speed = vehicle.Waypoints[self.guiWpSelected].speed,
+					lane = vehicle.Waypoints[self.guiWpSelected].lane}
+				)
+
+				-- Delete Selected WP
+				courseEditor:doDeleteSelectedAction(vehicle,self.guiWpSelected);
+			end
+		end
+		self.queueDelete = false
+		vehicle.cp.course2dUpdateDrawData = true;
+	end
+
+	  -------------------------------------------------------------------------------
+
+	-- do we need to delete the next waypoint? (initiated by hotkey)
+	if self.queueDeleteNext then
+		if self.guiWpSelected ~= 0 then
+			-- don't delete if it's the start or end waypoint
+			if self.guiWpSelected + 1 ~= #vehicle.Waypoints then
+				--add to history
+				table.insert(self.history, {action="delete",
+				    wp = self.guiWpSelected + 1,
+				    x = vehicle.Waypoints[self.guiWpSelected + 1].cx,
+				    y = vehicle.Waypoints[self.guiWpSelected + 1].cy,
+				    z = vehicle.Waypoints[self.guiWpSelected + 1].cz,
+				    angle = vehicle.Waypoints[self.guiWpSelected + 1].angle,
+				    speed = vehicle.Waypoints[self.guiWpSelected + 1].speed,
+				    lane = vehicle.Waypoints[self.guiWpSelected + 1].lane}
+				)
+
+				-- Delete Next
+				courseEditor:doDeleteNextAction(vehicle,self.guiWpSelected);
+			end
+		end
+		self.queueDeleteNext = false
+		vehicle.cp.course2dUpdateDrawData = true;
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to delete to start? (initiated by hotkey)
+	if self.queueDeleteToStart then
+		if self.guiWpSelected ~= 0 then
+			-- don't delete if it's the start or end waypoint
+			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
+				-- Delete from selected WP to Start
+				CourseEditorEvent.sendEvent(vehicle,"DeleteToStart", self.guiWpSelected);
+
+				-- clear the history because we don't store these potentially huge changes
+				self:clearHistory();
+			end
+		end
+		vehicle.cp.waypointIndex = 1
+		self.queueDeleteToStart = false
+		vehicle.cp.course2dUpdateDrawData = true;
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to delete to end? (initiated by hotkey)
+	if self.queueDeleteToEnd then
+		if self.guiWpSelected ~= 0 then
+			-- don't delete if it's the start or end waypoint
+			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
+				-- Delete from selected WP to End
+				courseEditor:doDeleteToEndAction(vehicle,self.guiWpSelected)
+
+				-- Clear the history because we don't store these potentially huge changes
+				self:clearHistory();
+			end
+		end
+		vehicle.cp.waypointIndex = 1
+		self.queueDeleteToEnd = false
+		vehicle.cp.course2dUpdateDrawData = true;
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- do we need to inert a waypoint? (initiated by hotkey)
+	if self.queueInsert then
+		if self.guiWpSelected ~= 0 and self.guiWpSelected ~= #vehicle.Waypoints then
+			local cp = {x=vehicle.Waypoints[self.guiWpSelected].cx, y=vehicle.Waypoints[self.guiWpSelected].cz}
+			local np = {x=vehicle.Waypoints[self.guiWpSelected + 1].cx, y=vehicle.Waypoints[self.guiWpSelected + 1].cz}
+			local midPNx, midPNz = getPointInTheMiddle(cp, np )
+			local midPNy=getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, midPNx, 1, midPNz)
+			-- add to history table
+			table.insert(self.history, {action="insert",
+			    wp = self.guiWpSelected + 1}
+			)
+			-- insert into the waypoint table
+			courseEditor:doInsertAction(vehicle,self.guiWpSelected,midPNx,midPNy,midPNz);
+		end
+		vehicle.cp.waypointIndex = 1
+		self.queueInsert = false
+		vehicle.cp.course2dUpdateDrawData = true;
+	end
+
+	-------------------------------------------------------------------------------
+
+	-- cycle through the waypoint types.  This is not added to undo history.
+	-- cycling is not smart.  It will allow you to change to a type that is not appropriate
+	if self.queueCycleType then
+		if self.guiWpSelected ~= 0 then
+			-- don't cycle if it's the start or end waypoint
+			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
+				if self.waypointTypeIndex + 1 > #self.waypointTypes then
+					self.waypointTypeIndex = 1
+				else
+					self.waypointTypeIndex = self.waypointTypeIndex + 1
+				end
+				--  {'normal', 'wait', 'unload', 'crossing', 'turnStart', 'turnEnd', 'reverse'}
+				local tp = self.waypointTypes[self.waypointTypeIndex] -- TODO: Is this needed ? it's not used anywhere inside this function
+
+				-- Change the selected waypoint
+				courseEditor:doChangeTypeAction(vehicle,self.guiWpSelected,self.waypointTypeIndex);
+			end
+		end
+		vehicle.cp.waypointIndex = 1
+		self.queueCycleType = false
+	end
 end
 
+-- Action: Save the course (overwrites the current course file)
+function courseEditor:doSaveCourseAction(vehicle, courseID, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"SaveCourse", courseID, noEventSend);
 
+	--- Update speed
+	courseplay.courses:saveCourseToXml(courseID, nil, true)
+	courseplay.settings.setReloadCourseItems()
+	courseplay.signs:updateWaypointSigns(vehicle)
+	--save it again to guarantee the angles are recalculated -- TODO: Is this really needed to save it twice?
+	courseplay.courses:saveCourseToXml(courseID, nil, true)
+	courseplay.settings.setReloadCourseItems()
+end
+
+-- Action: Increase the speed of the selected waypoint
+function courseEditor:doIncreaseSpeedAction(vehicle, guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"IncreaseSpeed", guiWpSelected, noEventSend);
+
+	--- Update speed
+	vehicle.Waypoints[guiWpSelected].speed = vehicle.Waypoints[guiWpSelected].speed + 1
+end
+
+-- Action: Decreases the speed of the selected waypoint
+function courseEditor:doDecreaseSpeedAction(vehicle, guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DecreaseSpeed", guiWpSelected, noEventSend);
+
+	--- Update speed
+	vehicle.Waypoints[guiWpSelected].speed = vehicle.Waypoints[guiWpSelected].speed - 1
+end
+
+-- Action: Update waypoint to where it's draged to
+function courseEditor:doDragToAction(vehicle, guiWpSelected, wpInfo, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DragTo", {wpSelected=guiWpSelected, wpInfo=wpInfo}, noEventSend);
+
+	--- Update waypoints
+	vehicle.Waypoints[guiWpSelected].cx = wpInfo.cx
+	vehicle.Waypoints[guiWpSelected].cy = wpInfo.cy
+	vehicle.Waypoints[guiWpSelected].cz = wpInfo.cz
+	-- move the signs
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle, 'all', guiWpSelected - 1)
+	courseplay.signs:updateWaypointSigns(vehicle, 'all', guiWpSelected)
+end
+
+-- Action: Undo dragto.
+function courseEditor:doUndoDragToAction(vehicle, guiWpSelected, wpInfo, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"UndoDragTo", {wpSelected=guiWpSelected, wpInfo=wpInfo}, noEventSend);
+
+	--- Undo dragto
+	vehicle.Waypoints[guiWpSelected].cx = wpInfo.cx
+	vehicle.Waypoints[guiWpSelected].cy = wpInfo.cy
+	vehicle.Waypoints[guiWpSelected].cz = wpInfo.cz
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle, 'all', guiWpSelected - 1)
+	courseplay.signs:updateWaypointSigns(vehicle, 'all', guiWpSelected)
+end
+
+-- Action: Undo delete wp.
+function courseEditor:doUndoDeleteAction(vehicle, guiWpSelected, wpInfo, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"UndoDelete", {wpSelected=guiWpSelected, wpInfo=wpInfo}, noEventSend);
+
+	--- Undo delete WP
+	table.insert(vehicle.Waypoints,	guiWpSelected, wpInfo);
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle)
+end
+
+-- Action: Undo insert wp.
+function courseEditor:doUndoInsertAction(vehicle, guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"UndoInsert", guiWpSelected, noEventSend);
+
+	--- Undo insert WP
+	table.remove(vehicle.Waypoints, guiWpSelected);
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle);
+end
+
+-- Action: Deletes the selected waypoint
+function courseEditor:doDeleteSelectedAction(vehicle,guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DeleteSelected", guiWpSelected, noEventSend);
+
+	--- Delete selected WP
+	table.remove(vehicle.Waypoints, guiWpSelected);
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle);
+
+	--- Reset waypointIndex to start
+	vehicle.cp.waypointIndex = 1
+end
+
+-- Action: Deletes the next waypaint after the selected waypoint
+function courseEditor:doDeleteNextAction(vehicle,guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DeleteNext", guiWpSelected, noEventSend);
+
+	--- Delete next WP from selected
+	table.remove(vehicle.Waypoints, guiWpSelected + 1);
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle)
+
+	--- Reset waypointIndex to start
+	vehicle.cp.waypointIndex = 1
+end
+
+-- Action: Deletes all waypoints from the selected waypoint to the start
+function courseEditor:doDeleteToStartAction(vehicle, guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DeleteToStart", guiWpSelected, noEventSend);
+
+	--- Delete from selected WP to Start
+	for _ = 1,guiWpSelected - 1 do
+		table.remove(vehicle.Waypoints, 1)
+	end
+	vehicle.Waypoints[1].speed = 1
+	vehicle.Waypoints[1].wait = false
+	vehicle.Waypoints[1].unload = false
+	vehicle.Waypoints[1].rev = false
+	vehicle.Waypoints[1].crossing = true
+	vehicle.Waypoints[1].turnstart = false
+	vehicle.Waypoints[1].turnend = false
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle);
+end
+
+-- Action: Deletes all waypoints from the selected waypoint to the end
+function courseEditor:doDeleteToEndAction(vehicle, guiWpSelected, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle,"DeleteToEnd", guiWpSelected, noEventSend);
+
+	--- Delete from selected WP to End
+	local num = #vehicle.Waypoints - guiWpSelected
+	for _ = 1,num do
+		table.remove(vehicle.Waypoints, guiWpSelected + 1)
+	end
+	vehicle.Waypoints[guiWpSelected].speed = 1
+	vehicle.Waypoints[guiWpSelected].wait = false
+	vehicle.Waypoints[guiWpSelected].unload = false
+	vehicle.Waypoints[guiWpSelected].rev = false
+	vehicle.Waypoints[guiWpSelected].crossing = true
+	vehicle.Waypoints[guiWpSelected].turnstart = false
+	vehicle.Waypoints[guiWpSelected].turnend = false
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle);
+end
+
+-- Action: Inserts the new waypoint
+function courseEditor:doInsertAction(vehicle, guiWpSelected, midPNx, midPNy, midPNz, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle, "InsertNewWP", {wpSelected=guiWpSelected, midPNx=midPNx,	midPNy=midPNy, midPNz=midPNz}, noEventSend);
+
+	--- Change the waypoint type
+	table.insert(
+		vehicle.Waypoints,
+		guiWpSelected + 1,
+		{
+			cx=midPNx,
+			cy=midPNy,
+			cz=midPNz,
+			angle=vehicle.Waypoints[guiWpSelected].angle,
+			speed=vehicle.Waypoints[guiWpSelected].speed,
+			lane=vehicle.Waypoints[guiWpSelected].lane
+		}
+	)
+
+	--- Update signs
+	courseplay.signs:updateWaypointSigns(vehicle);
+end
+
+-- Action: Update waypoint type of the selected waypoint
+function courseEditor:doChangeTypeAction(vehicle, guiWpSelected, waypointTypeIndex, noEventSend)
+	--- Send MP Event
+	CourseEditorEvent.sendEvent(vehicle, "ChangeType", {wpSelected=guiWpSelected, typeIndex=waypointTypeIndex}, noEventSend);
+
+	--- Change the waypoint type
+	vehicle.Waypoints[guiWpSelected].wait = false
+	vehicle.Waypoints[guiWpSelected].unload = false
+	vehicle.Waypoints[guiWpSelected].rev = false
+	vehicle.Waypoints[guiWpSelected].crossing = false
+	vehicle.Waypoints[guiWpSelected].turnStart = false
+	vehicle.Waypoints[guiWpSelected].turnEnd = false
+
+	local section = "current";
+	if waypointTypeIndex == 1 then
+		-- nothing
+	elseif waypointTypeIndex == 2 then
+		vehicle.Waypoints[guiWpSelected].wait = true
+		vehicle.Waypoints[guiWpSelected].speed = 0
+	elseif waypointTypeIndex == 3 then
+		vehicle.Waypoints[guiWpSelected].unload = true
+	elseif waypointTypeIndex == 4 then
+		vehicle.Waypoints[guiWpSelected].crossing = true
+		section = "crossing";
+	elseif waypointTypeIndex == 5 then
+		vehicle.Waypoints[guiWpSelected].turnStart = true
+	elseif waypointTypeIndex == 6 then
+		vehicle.Waypoints[guiWpSelected].turnEnd = true
+	elseif waypointTypeIndex == 7 then
+		vehicle.Waypoints[guiWpSelected].rev = true
+	end
+
+	--- Update selected sign
+	courseplay.signs:updateWaypointSigns(vehicle, section, guiWpSelected);
+end
 
 -----------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------

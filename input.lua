@@ -456,17 +456,13 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 
 		--Shovel:
 		if actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 2);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(1)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 3);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(2)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 4);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(3)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 5);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(4)
 		--Editor:
 		elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' then
 				courseEditor:setEnabled(not courseEditor.enabled, vehicle)

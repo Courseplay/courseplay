@@ -382,7 +382,6 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		self:manageConvoy()
 		self:checkWeather()
 		self:checkFillLevels()
-		self:checkFuelLevels()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
@@ -423,15 +422,11 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 	end
 end
 
-function FieldworkAIDriver:checkFuelLevels()
-	if self.vehicle.getConsumerFillUnitIndex ~= nil then
-		local dieselIndex = self.vehicle:getConsumerFillUnitIndex(FillType.DIESEL)
-		local currentFuelPercentage = self.vehicle:getFillUnitFillLevelPercentage(dieselIndex) * 100;
-		
-		if currentFuelPercentage < 15 then
-			self:stopAndRefuel()
-		end;
+function FieldworkAIDriver:isFuelLevelOk()
+	if self.fieldworkState == self.states.WORKING and self:getFuelLevelPercentage() < 15 then
+		self:stopAndRefuel()
 	end
+	return AIDriver.isFuelLevelOk(self)
 end
 
 function FieldworkAIDriver:stopAndRefuel()

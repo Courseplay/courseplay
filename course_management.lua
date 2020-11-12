@@ -577,7 +577,7 @@ end
 function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay because it's vehicle based
 	local id = vehicle.cp.hud.courses[index].id
 	local type = vehicle.cp.hud.courses[index].type
-	
+
 	if type == 'course' then
 		local slotId = self.courses:getFreeSaveSlot(id);
 		self.courses:removeFromManagerXml(type, slotId);
@@ -591,19 +591,24 @@ function courseplay:deleteSortedItem(vehicle, index) -- fn is in courseplay beca
 	else
 		--Error?!
 	end
-	
+
 	g_currentMission.cp_sorted = courseplay.courses:sort()
 	courseplay.settings.setReloadCourseItems()
 	courseplay.signs:updateWaypointSigns(vehicle);
 end
 
 function courseplay.courses:saveFolderToXml(folder_id, cpCManXml, append)
--- saves a folder to the courseplay xml file
---
--- append (bool,integer): append can be a bool or an integer
---		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
---		if append is true, the function will search for the next free position and save there
---		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
+	-- saves a folder to the courseplay xml file
+	--
+	-- append (bool,integer): append can be a bool or an integer
+	--		if it's false, the function will check if the id exists in the file. if it exists, it will overwrite it otherwise it will append
+	--		if append is true, the function will search for the next free position and save there
+	--		if append is an integer, the function will save at this position (without checking if it is the end or what there was before)
 	local deleteFile = false
 	if append == nil then
 		append = false  -- slow but secure
@@ -638,7 +643,12 @@ function courseplay.courses:saveFolderToXml(folder_id, cpCManXml, append)
 end
 
 function courseplay.courses:saveFoldersToXml(cpCManXml)
---	function to save all folders by once
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
+	--	function to save all folders by once
 	local deleteFile = false;
 
 	if cpCManXml == nil then
@@ -660,6 +670,11 @@ function courseplay.courses:saveFoldersToXml(cpCManXml)
 end
 
 function courseplay.courses:getFreeSaveSlot(course_id)
+	-- Only runs for server
+	if g_server == nil then
+		return nil, nil
+	end
+
 	local freeSlot = 1;
 	local isOwnSaveSlot = false;
 	-- Check if there is any saved data already. If not, we returns 1 as the firstSlot
@@ -822,7 +837,12 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSav
 end
 
 function courseplay.courses:saveCoursesToXml(cpCManXml)
---	function to save or update all courses by once
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
+	--	function to save or update all courses by once
 	local deleteFile = false;
 
 	if cpCManXml == nil then
@@ -860,6 +880,11 @@ function courseplay.courses:saveAllToXml(cpCManXml)
 end
 
 function courseplay.courses:removeFromManagerXml(type, type_id, cpCManXml)
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
 	local deleteFile = false;
 	if cpCManXml == nil then
 		cpCManXml = self:getCourseManagerXML();
@@ -898,15 +923,18 @@ function courseplay.courses:removeFromManagerXml(type, type_id, cpCManXml)
 		end;
 	end;
 
-	if g_server~= nil then
-		saveXMLFile(cpCManXml)
-		if deleteFile then
-			delete(cpCManXml)
-		end
+	saveXMLFile(cpCManXml)
+	if deleteFile then
+		delete(cpCManXml)
 	end
 end
 
 function courseplay.courses:updateCourseManagerSlotsXml(slot, cpCManXml)
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
 	local deleteFile = false;
 	if cpCManXml == nil then
 		cpCManXml = self:getCourseManagerXML();
@@ -933,7 +961,12 @@ function courseplay.courses:updateCourseManagerSlotsXml(slot, cpCManXml)
 end
 
 function courseplay.courses:getCourseManagerXML()
--- returns the file if success, nil else
+	-- Only runs for server
+	if g_server == nil then
+		return
+	end
+
+	-- returns the file if success, nil else
 	local cpCManXml;
 	local filePath = CpManager.cpCourseManagerXmlFilePath;
 	if filePath ~= nil then
@@ -1335,6 +1368,11 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 end
 
 function courseplay.courses:loadCoursesAndFoldersFromXml()
+	-- Only runs for server
+	if g_server == nil then
+		return nil
+	end
+
 	print('## Courseplay: loading courses and folders from "courseManager.xml"');
 	if courseplay.globalSettings.loadCoursesAtStartup:is(false) then
 		print('##             Skip loading courses not assigned to any vehicle to speed up start time.');

@@ -58,6 +58,7 @@ local function initialize()
 		'courseplay_event',
 		'course_management',
     	'courseeditor',
+    	'CourseEditorEvent',
     	'clicktoswitch',
 		'debug', 
 		'distance', 
@@ -132,6 +133,7 @@ local function initialize()
 		'Events/AssignedCombinesEvents',
 		'Events/CourseEvent',
 		'Events/InfoTextEvent',
+		'Events/WorkingToolPositionsEvents',
 		'Generic/LinkedList'
 	};
 

@@ -130,10 +130,6 @@ function ShovelModeAIDriver:start()
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
 
-	--get moving tools (only once after starting)
-	if self.vehicle.cp.movingToolsPrimary == nil then
-		self.vehicle.cp.movingToolsPrimary, self.vehicle.cp.movingToolsSecondary = courseplay:getMovingTools(self.vehicle);
-	end;
 	AIDriver.continue(self)
 end
 
@@ -346,8 +342,7 @@ function ShovelModeAIDriver:getCanGoWithStreetSpeed()
 end
 
 function ShovelModeAIDriver:setShovelToPositionFinshed(stage,dt)
-	local mt, secondary = self.vehicle.cp.movingToolsPrimary, self.vehicle.cp.movingToolsSecondary;
-	return courseplay:checkAndSetMovingToolsPosition(self.vehicle, mt, secondary, self.vehicle.cp.shovelStatePositions[stage], dt)
+	return self.vehicle.cp.settings.frontloaderToolPositions:updatePositions(dt,stage-1)
 end
 
 function ShovelModeAIDriver:getIsShovelFull()
@@ -443,11 +438,11 @@ function ShovelModeAIDriver:onWaypointPassed(ix)
 end
 
 function ShovelModeAIDriver:checkShovelPositionsValid()
-	if self.vehicle.cp.shovelStatePositions == nil or self.vehicle.cp.shovelStatePositions[2] == nil or self.vehicle.cp.shovelStatePositions[3] == nil or self.vehicle.cp.shovelStatePositions[4] == nil or self.vehicle.cp.shovelStatePositions[5] == nil then
-			courseplay:setInfoText(self.vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
-			return false;
+	local validToolPositions = self.vehicle.cp.settings.frontloaderToolPositions:hasValidToolPositions()
+	if not validToolPositions then 
+		courseplay:setInfoText(self.vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
 	end
-	return true
+	return validToolPositions
 end
 
 function ShovelModeAIDriver:checkWaypointsValid()

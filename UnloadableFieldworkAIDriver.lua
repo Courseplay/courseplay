@@ -211,7 +211,7 @@ function UnloadableFieldworkAIDriver:getFillType()
 end
 
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
-	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
+	return not self:isValidFuelType(self.vehicle,fillType) and fillType ~= FillType.DEF	and fillType ~= FillType.AIR 
 end
 
 function UnloadableFieldworkAIDriver:atUnloadWaypoint()
