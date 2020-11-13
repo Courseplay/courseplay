@@ -38,6 +38,7 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 	self.refillState = self.states.TO_BE_REFILLED
+	self.lastTotalFillLevel = 0
 end
 
 function FillableFieldworkAIDriver:setHudContent()
@@ -164,7 +165,7 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
 		return true
 	end
-	
+	local totalFillLevel = 0
 	for fillType, info in pairs(fillLevelInfo) do
 		if info.treePlanterSpec then -- is TreePlanter
 			--check fillLevel of pallet on top of treePlanter or if their is one pallet
@@ -178,13 +179,17 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 			else
 				if fillType == FillType.SEEDS then hasSeeds = true end
 			end		
-		end	
+		end
+		totalFillLevel = totalFillLevel + info.fillLevel
 	end
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
 		allOk = true
 	end
+	--check if fillLevel changed, refill on Field
+	allOk = allOk and self.lastTotalFillLevel >= totalFillLevel
+	self.lastTotalFillLevel = totalFillLevel
 	return allOk
 end
 

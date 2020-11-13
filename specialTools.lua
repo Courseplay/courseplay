@@ -792,7 +792,7 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 
 		return false ,allowedToDrive;
-	
+	--[[
 	elseif workTool.cp.isStrawHarvestAddonBaler then
 		local spec = workTool.spec_strawHarvestRefillSupplies
 		local supplyFillLevel = spec.isActive and workTool:getUnitFillLevel(spec.supplies[1].fillUnitIndex) or 100;
@@ -827,8 +827,8 @@ function courseplay:handleSpecialTools(self,workTool,unfold,lower,turnOn,allowed
 		end
 		
 		return false, allowedToDrive, stoppedForReason
+	]]--
 	end;
-
 	--Seed Kawk 980 Air Cart or Hatzenbichler TH1400. Theses are the fill tanks for the Big Bud DLC. Returns true for special tools so it is ingored in the folding sequence
 	if workTool.cp.isSeedHawk980AirCart or workTool.cp.isHatzenbichlerTH1400 then
 		return true ,allowedToDrive;

@@ -543,7 +543,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(ConvoyMaxDistanceSetting,self) -- do we need this one ?
 	self.cp.settings:addSetting(FrontloaderToolPositionsSetting,self)
 	self.cp.settings:addSetting(AugerPipeToolPositionsSetting,self)
-
+	self.cp.settings:addSetting(ShovelStopAndGoSetting,self)
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -894,10 +894,6 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)	
-	if g_server == nil and self.isPostSynced == nil then 
-		self.cp.driver:postSync()
-		self.isPostSynced=true
-	end
 
 	if self.cp.infoText ~= nil then
 		self.cp.infoText = nil
@@ -1218,8 +1214,16 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
 		
+	if streamReadBool(streamId) then 
+		self.cp.timeRemaining = streamReadFloat32(streamId)
+	end		
+	
+	if streamReadBool(streamId) then 
+		self.cp.infoText = streamReadString(streamId)
+	end
 	--Make sure every vehicle has same AIDriver as the Server
 	courseplay:setAIDriver(self, self.cp.mode)
+	self.cp.driver:onReadStream(streamId)
 	
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
 end
@@ -1284,6 +1288,22 @@ function courseplay:onWriteStream(streamId, connection)
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
 	streamDebugWriteString(streamId, debugChannelsString) 
 		
+	if self.cp.timeRemaining then 
+		streamWriteBool(streamId,true)
+		streamWriteFloat32(streamId,self.cp.timeRemaining)
+	else 
+		streamWriteBool(streamId,false)
+	end
+	
+	if self.cp.infoText then 
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.cp.infoText)
+	else 
+		streamWriteBool(streamId,false)
+	end
+	
+	self.cp.driver:onWriteStream(streamId)
+	
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
 end
 
@@ -1299,26 +1319,30 @@ function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 			if streamReadBool(streamId) then 
 				self.cp.waypointIndex = streamReadInt32(streamId)
 			else 
-				self.cp.waypointIndex = nil
+				self.cp.waypointIndex = 0
 			end
-			if streamReadBool(streamId) then 
-				self.cp.infoText = streamReadString(streamId)
+			if streamReadBool(streamId) then -- is infoText~=nil ?
+				if streamReadBool(streamId) then -- has infoText changed
+					self.cp.infoText = streamReadString(streamId)
+				end
 			else 
 				self.cp.infoText = nil
 			end
-			if streamReadBool(streamId) then 
-				self.cp.currentCourseName = streamReadString(streamId)
+			if streamReadBool(streamId) then -- is currentCourseName~=nil ?
+				if streamReadBool(streamId) then -- has currentCourseName changed
+					self.cp.currentCourseName = streamReadString(streamId)
+				end
 			else 
 				self.cp.currentCourseName = nil
 			end
-			
-		--	streamWriteInt32(streamId,self.cp.numWaypoints)
-		--	streamWriteBool(streamId,self.cp.isDriving)
-			--distanceCheck
-			--canDrive
-			--isRecording ??
-			--currentCourseName
-			--gitAdditionalText
+			if streamReadBool(streamId) then -- is timeRemaining~=nil ?
+				if streamReadBool(streamId) then -- has timeRemaining changed
+					self.cp.timeRemaining = streamReadFloat32(streamId)
+				end
+			else 
+				self.cp.timeRemaining = nil
+			end
+			--gitAdditionalText ?
 		end 
 	end
 end
@@ -1335,24 +1359,43 @@ function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
 			else 
 				streamWriteBool(streamId,false)
 			end
-			if self.cp.infoText then
+			if self.cp.infoText then --is infoText~=nil ?
 				streamWriteBool(streamId,true)
-				streamWriteString(streamId,self.cp.infoText)
+				if self.cp.infoText~=self.cp.infoTextSend then -- has infoText changed
+					streamWriteBool(streamId,true)
+					streamWriteString(streamId,self.cp.infoText)
+					self.cp.infoTextSend = self.cp.infoText
+				else 
+					streamWriteBool(streamId,false)
+				end
 			else 
 				streamWriteBool(streamId,false)
 			end
-			if self.cp.currentCourseName then
+			if self.cp.currentCourseName then -- is currentCourseName~=nil ?
 				streamWriteBool(streamId,true)
-				streamWriteString(streamId,self.cp.currentCourseName)
+				if self.cp.currentCourseName~=self.cp.currentCourseNameSend then -- has currentCourseName changed
+					streamWriteBool(streamId,true)
+					streamWriteString(streamId,self.cp.currentCourseName)
+					self.cp.currentCourseNameSend = self.cp.currentCourseName
+				else 
+					streamWriteBool(streamId,false)
+				end
 			else 
 				streamWriteBool(streamId,false)
 			end
-			--globalInfoText!!
-			--distanceCheck
-			--canDrive
-			--isRecording ??
-			--currentCourseName
-			--gitAdditionalText
+			if self.cp.timeRemaining then -- is timeRemaining~=nil ?
+				streamWriteBool(streamId,true)
+				if self.cp.timeRemaining~=self.cp.timeRemainingSend then -- has timeRemaining changed
+					streamWriteBool(streamId,true)
+					streamWriteFloat32(streamId,self.cp.timeRemaining)
+					self.cp.timeRemainingSend = self.cp.timeRemaining
+				else 
+					streamWriteBool(streamId,false)
+				end
+			else 
+				streamWriteBool(streamId,false)
+			end
+			--gitAdditionalText ?
 		end 
 	end
 end

@@ -69,9 +69,7 @@ end
 
 function TriggerHandler:onUpdate(dt)
 	if not self:isDriveNowActivated() and not self:isStopped() then
-		if self.validFillTypeLoading or self:isAllowedToLoadFuel() then
-			self:updateLoadingTriggers()
-		end
+		self:updateLoadingTriggers()
 	end
 	if not self:isStopped() then 
 		if self.validFillTypeUnloading then 
@@ -178,10 +176,27 @@ function TriggerHandler:onContinue()
 end
 
 function TriggerHandler:writeUpdateStream(streamId)
-	streamWriteString(streamId,self.loadingState.name)
+	if self.loadingState ~= self.loadingStateSend then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.loadingState.name)
+		self.loadingStateSend = self.loadingState
+	else 
+		streamWriteBool(streamId,false)
+	end
 end
 
 function TriggerHandler:readUpdateStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.loadingState = self.states[nameState]
+	end
+end
+
+function TriggerHandler:onWriteStream(streamId)
+	streamWriteString(streamId,self.loadingState.name)
+end
+
+function TriggerHandler:onReadStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.loadingState = self.states[nameState]
 end
@@ -198,8 +213,10 @@ function TriggerHandler:changeLoadingState(newState)
 end
 
 function TriggerHandler:updateLoadingTriggers()
-	self:activateLoadingTriggerWhenAvailable()
-	if self:isLoading() and not self:isLoadingFuel() then
+	if self.validFillTypeLoading or self:needsFuel() then
+		self:activateLoadingTriggerWhenAvailable()
+	end
+	if self:isLoading() or self:isLoadingFuel() then
 		self:disableFillingIfFull()
 	end
 end 
@@ -233,7 +250,7 @@ function TriggerHandler:isFilledUntilPercantageX()
 		local fillUnitIndex = self.fillableObject.fillUnitIndex
 		local object = self.fillableObject.object
 		local fillType = self.fillableObject.fillType
-		local maxFillLevelPercentage = self.siloSelectedFillTypeSetting:getMaxFillLevelByFillType(self.fillableObject.fillType)
+		local maxFillLevelPercentage = not self:isLoadingFuel() and self.siloSelectedFillTypeSetting:getMaxFillLevelByFillType(self.fillableObject.fillType) or 99
 		return not self:maxFillLevelNotReached(object,fillUnitIndex,maxFillLevelPercentage,fillType)
 	end
 end
@@ -1240,7 +1257,23 @@ function TriggerHandler:onUpdateTickFillUnit(dt, isActiveForInput, isActiveForIn
 	local spec = self.spec_fillUnit
 	if courseplay:isAIDriverActive(rootVehicle) and not spec.fillTrigger.isFilling then
 		local triggerHandler = rootVehicle.cp.driver.triggerHandler
-		if not triggerHandler.validFillTypeLoading or #spec.fillTrigger.triggers == 0 then
+		if #spec.fillTrigger.triggers == 0 then 
+			return
+		end
+		if triggerHandler:isAllowedToLoadFuel() then 
+			for _, trigger in ipairs(spec.fillTrigger.triggers) do
+				if trigger:getIsActivatable(self) then
+					local fillType = trigger:getCurrentFillType()
+					local fillUnitIndex = self:getFirstValidFillUnitToFill(fillType)
+					if rootVehicle.cp.driver:isValidFuelType(self,fillType) then 
+						self:setFillUnitIsFilling(true,nil,trigger)
+						triggerHandler:setFuelLoadingState(self,fillUnitIndex,fillType)
+						return
+					end
+				end
+			end
+		end
+		if not triggerHandler.validFillTypeLoading then
 			return
 		end
 		if self.spec_cover and self.spec_cover.isDirty then 
