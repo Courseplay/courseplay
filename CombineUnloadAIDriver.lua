@@ -1302,6 +1302,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
+	self:releaseUnloader()
+	self:startMovingBackFromCombine(self.states.MOVE_BACK_FULL)
 	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
 	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
 	courseplay:openCloseCover(self.vehicle, courseplay.CLOSE_COVERS)
