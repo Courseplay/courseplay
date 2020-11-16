@@ -27,7 +27,6 @@ OverloaderAIDriver.myStates = {
 }
 
 function OverloaderAIDriver:init(vehicle)
-    self:findPipeAndTrailer()
 	CombineUnloadAIDriver.init(self, vehicle)
     self:initStates(OverloaderAIDriver.myStates)
     self:debug('OverloaderAIDriver:init()')
