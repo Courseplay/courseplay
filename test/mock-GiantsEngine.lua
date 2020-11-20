@@ -36,6 +36,11 @@ function localToLocal() return 0, 0, 0 end
 localToWorld = worldToLocal
 function localDirectionToWorld() return 0, 0, 0 end
 
+Cylindered = {}
+
+Utils = {}
+Utils.appendedFunction = noOp
+
 MathUtil = {}
 function MathUtil.vector2Length(x, y)
 	return math.sqrt(x*x + y*y)
