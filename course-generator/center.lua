@@ -193,6 +193,28 @@ function findBestTrackAngle( polygon, islands, width, distanceFromBoundary, cent
 	return b.angle, b.nTracks, b.nBlocks, b.smallBlockScore == 0 or centerSettings.useBestAngle
 end
 
+local function addWaypointsToBlocks(blocks, width, extendTracks)
+	-- using a while loop as we'll remove blocks if they have no tracks
+	local nTotalTracks = 0
+	local i = 1
+	while blocks[i] do
+		local block = blocks[i]
+		nTotalTracks = nTotalTracks + #block
+		courseGenerator.debug( "Block %d has %d tracks", i, #block )
+		block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
+		block.covered = false
+		-- we may end up with blocks without tracks in case we did not find a single track
+		-- with at least two waypoints. Now remove those blocks
+		if #blocks[i].tracksWithWaypoints == 0 then
+			courseGenerator.debug( "Block %d removed as it has no tracks with waypoints", i)
+			table.remove(blocks, i)
+		else
+			i = i + 1
+		end
+	end
+	return nTotalTracks
+end
+
 --- Count the blocks with just a few tracks 
 function countSmallBlockScore( blocks )
 	local nResult = 0
@@ -210,14 +232,15 @@ end
 
 --- Generate up/down tracks covering a polygon at the optimum angle
 -- 
-function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasses, centerSettings )
-	local distanceFromBoundary
+function generateTracks( headlands, islands, width, nHeadlandPasses, centerSettings )
+	local distanceFromBoundary, extendTracks
 	if nHeadlandPasses == 0 then
 		-- ugly hack: if there are no headlands, our tracks go right up to the field boundary. So extend tracks
 		-- exactly width / 2
-		extendTracks = extendTracks + width / 2
+		extendTracks = width / 2
 		distanceFromBoundary = width / 2
 	else
+		extendTracks = 0
 		distanceFromBoundary = width
 	end
 
@@ -262,24 +285,7 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 
 	local blocks = splitCenterIntoBlocks( parallelTracks, width )
 
-	-- using a while loop as we'll remove blocks if they have no tracks
-	local nTotalTracks = 0
-	local i = 1
-	while blocks[i] do
-		local block = blocks[i]
-		nTotalTracks = nTotalTracks + #block
-		courseGenerator.debug( "Block %d has %d tracks", i, #block )
-		block.tracksWithWaypoints = addWaypointsToTracks( block, width, extendTracks )
-		block.covered = false
-		-- we may end up with blocks without tracks in case we did not find a single track
-		-- with at least two waypoints. Now remove those blocks
-		if #blocks[i].tracksWithWaypoints == 0 then
-			courseGenerator.debug( "Block %d removed as it has no tracks with waypoints", i)
-			table.remove(blocks, i)
-		else
-			i = i + 1
-		end
-	end
+	local nTotalTracks = addWaypointsToBlocks(blocks, width, extendTracks)
 
 	if #blocks > 30 or ( #blocks > 1 and ( nTotalTracks / #blocks ) < 2 ) then
 		-- don't waste time on unrealistic problems
@@ -315,14 +321,14 @@ function generateTracks( headlands, islands, width, extendTracks, nHeadlandPasse
 			end
 		end
 		courseGenerator.debug( '%d. block %d, entry corner %d, direction to next = %d, on the bottom = %s, on the left = %s', i, block.id, block.entryCorner,
-			block.directionToNextBlock or 0, tostring( isCornerOnTheBottom( block.entryCorner )), tostring( isCornerOnTheLeft( block.entryCorner )))
+				block.directionToNextBlock or 0, tostring( isCornerOnTheBottom( block.entryCorner )), tostring( isCornerOnTheLeft( block.entryCorner )))
 		local continueWithTurn = not block.trackToThisBlock
 		if continueWithTurn then
 			track[ #track ].turnStart = true
 		end
 		local linkedTracks = linkParallelTracks(block.tracksWithWaypoints,
-			isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings, continueWithTurn,
-			transformedHeadlands, rotatedIslands, width)
+				isCornerOnTheBottom( block.entryCorner ), isCornerOnTheLeft( block.entryCorner ), centerSettings, continueWithTurn,
+				transformedHeadlands, rotatedIslands, width)
 		-- remember where the up/down rows start (transition from headland to up/down rows)
 		if i == 1 then
 			linkedTracks[1].upDownRowStart = #track
@@ -1141,8 +1147,9 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 					if nHeadlandPasses > 0 then
 						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { circleStep } )
 					else
-						-- if ther's no headland, look for the closest point no matter what direction (as we can ignore the clockwise/ccw settings)
+						-- if there is no headland, look for the closest point no matter what direction (as we can ignore the clockwise/ccw settings)
 						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { -1, 1 } )
+						--print(currentBlockIx, chromosome.entryCorner[currentBlockIx], distance, dir, circleStart, currentBlockEntryPoint.index)
 					end
 					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
 				else

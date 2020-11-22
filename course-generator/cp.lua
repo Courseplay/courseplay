@@ -113,7 +113,6 @@ function courseGenerator.generate( vehicle )
 			vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos.z)
 	end
 
-	local extendTracks = 0
 	local minDistanceBetweenPoints = 0.5
 	local doSmooth = true
 	local roundCorners = false
@@ -173,7 +172,7 @@ function courseGenerator.generate( vehicle )
 	end
 	local status, ok = xpcall( generateCourseForField, function(err) printCallstack(); return err end,
 		field, workWidth, headlandSettings,
-		extendTracks, minDistanceBetweenPoints,
+		minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		courseGenerator.pointsToXy( islandNodes ),
