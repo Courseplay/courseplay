@@ -119,7 +119,7 @@ end
 function OverloaderAIDriver:isTrailerEmpty()
     if self.trailer and self.trailer.getFillUnits then
         for _, fillUnit in pairs(self.trailer:getFillUnits()) do
-            if fillUnit.fillLevel > 0 then
+            if fillUnit.fillLevel > 0.1 then
                 return false
             end
         end
