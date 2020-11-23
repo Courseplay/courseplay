@@ -2259,7 +2259,11 @@ function TurnContext:getTurnEndNodeAndOffsets()
 		-- on the work start node so by the time the implement reaches it, it is also aligned
 		turnEndNode = self.workStartNode
 		startOffset = 0
-		goalOffset = self.turnEndForwardOffset
+		-- vehicle is about frontMarkerDistance before the work end when finishing the turn, giving enough time
+		-- for the implement to align
+		-- TODO: this isn't exact science here, as the distance we need to straighten out the implement is rather
+		-- a function of the radius, the starting angle and probably the towbar length.
+		goalOffset = - self.turnEndForwardOffset
 	end
 	return turnEndNode, startOffset, goalOffset
 end

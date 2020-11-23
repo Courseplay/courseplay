@@ -1166,8 +1166,8 @@ end
 -- This will do a full circle, that is, roll over from 
 -- #polygon to 1 or 1 to #polygon if step < 0
 function Polygon:iterator( from, to, step )
-	local i = from or 1
-	local n = to or #self
+	local i = from and self:getIndex(from) or 1
+	local n = to and self:getIndex(to) or #self
 	local s = step or 1
 	local lastOne = false
 	return function()

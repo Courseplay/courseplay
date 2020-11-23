@@ -453,7 +453,7 @@ function calculateOneSide(boundary, innerBoundary, startIx, endIx, step, rightSi
 	return headlands
 end
 
-function generateTwoSideHeadlands( polygon, islands, implementWidth, extendTracks, headlandSettings, centerSettings,
+function generateTwoSideHeadlands( polygon, islands, implementWidth, headlandSettings, centerSettings,
 																	 minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle )
 	-- translate polygon so we can rotate it around its center. This way all points
 	-- will be approximately the same distance from the origin and the rotation calculation
