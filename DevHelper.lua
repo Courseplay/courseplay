@@ -50,17 +50,10 @@ function DevHelper:update()
         self.vehicle = g_currentMission.controlledVehicle
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
-        self.proximitySensorForward = nil
-        self.proximitySensorRight = nil
-        self.pack = nil
     else
         -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
-        if not self.pack then
-            self.pack = ForwardLookingProximitySensorPack(self.node, 10)
-        end
-        self.pack:update()
     end
 
     if self.vehicleData then

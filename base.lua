@@ -267,7 +267,6 @@ function courseplay:onLoad(savegame)
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
 	self.findFuelTriggerCallback = courseplay.findFuelTriggerCallback;
 	self.cp.hasRunRaycastThisLoop = {};
-	-- self.findTrafficCollisionCallback = courseplay.findTrafficCollisionCallback;		-- ??? not used anywhere
 	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
 	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
 	self.findVehicleHeights = courseplay.findVehicleHeights; 
@@ -290,8 +289,6 @@ function courseplay:onLoad(savegame)
 	end;
 
 	-- traffic collision
-	self.cpOnTrafficCollisionTrigger = courseplay.cpOnTrafficCollisionTrigger;
-	-- self.cp.tempCollis = {}								-- ??? not used anywhere
 	self.cpTrafficCollisionIgnoreList = {};
 	self.cp.TrafficBrake = false
 	self.cp.inTraffic = false
@@ -299,21 +296,6 @@ function courseplay:onLoad(savegame)
 	if self.trafficCollisionIgnoreList == nil then
 		self.trafficCollisionIgnoreList = {}
 	end
-	-- if self.numCollidingVehicles == nil then				-- ??? not used anywhere
-		-- self.numCollidingVehicles = {};
-	-- end
-
-	self.cp.collidingVehicleId = nil		-- on load game assume no colliding vehicle is detected
-	self.cp.numTrafficCollisionTriggers = 4;		-- single point of definition of the number of traffic collision boxes in front of a vehicle
-	self.cp.trafficCollisionTriggers = {};
-	self.cp.trafficCollisionTriggers[1] = nil;		-- LegacyCollisionTriggers not created
-	self.cp.trafficCollisionTriggerToTriggerIndex = {};
-	self.cp.collidingObjects = {
-		all = {};
-	};
-	-- self.cp.numCollidingObjects = {							-- ??? not used anywhere
-		-- all = 0;
-	-- };
 
 	--aiTrafficCollisionTrigger
 	self.aiTrafficCollisionTrigger = nil
@@ -1038,9 +1020,6 @@ function courseplay:onDelete()
 	if self.cp.driver and self.cp.driver.collisionDetector then
 		self.cp.driver.collisionDetector:deleteTriggers()
 	end
-
-	local ret_removeLegacyCollisionTriggers = false
-	ret_removeLegacyCollisionTriggers = courseplay:removeLegacyCollisionTriggers(self);
 
 	if self.cp ~= nil then
 		if self.cp.headland and self.cp.headland.tg then

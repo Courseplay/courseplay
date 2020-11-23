@@ -26,7 +26,7 @@ package.path = package.path .. ";../course-generator/?.lua"
 require("geo")
 require("CpObject")
 require("Waypoint")
-require("TrafficController")
+require("Conflict")
 require("test.mock-GiantsEngine")
 require("test.mock-courseplay")
 require("courseGenerator")

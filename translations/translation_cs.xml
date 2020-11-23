@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": 工具需要装载。" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="卸载。" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="卡住了!" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="已进入触发区" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="距离2卸载点" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="装载: %d of %d" />

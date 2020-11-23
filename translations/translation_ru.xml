@@ -483,7 +483,6 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"											text="Саморазгрузка комбайна при заполнении и наличии поблизости прицепа." />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"						text="Задний ход при развороте" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"				text="Разрешить искать траекторию поворота, для которой потребуется движения задним ходом (только с небуксируемыми орудиями)." />
-
 		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"										text="не выбран fillType!/не поддерживается курс пополнения!!" />
 		<text name="COURSEPLAY_ADD_FILLTYPE"												text="Добавить новый fillType" />
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"										text="достиг точки заправки." />

@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": priključek je potrebno napolniti." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="odlaganje bal." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="ima ovire." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="prišel na prožilec za odlaganje" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist to unload point" />   <!-- TODO: TRANSLATE its the distance to the unload point,where to tip while making heaps by reverse tipping -->
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Nalaganje: %d od %d" />

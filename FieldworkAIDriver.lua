@@ -27,18 +27,21 @@ add adjustment course if needed.
 FieldworkAIDriver = CpObject(AIDriver)
 
 FieldworkAIDriver.myStates = {
+	-- main states
 	ON_FIELDWORK_COURSE = {},
-	WORKING = {},
 	ON_UNLOAD_OR_REFILL_COURSE = {},
 	RETURNING_TO_FIRST_POINT = {},
+	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
+	-- ON_FIELDWORK_COURSE substates
+	WORKING = {},
 	UNLOAD_OR_REFILL_ON_FIELD = {},
 	WAITING_FOR_UNLOAD_OR_REFILL ={}, -- while on the field
 	ON_CONNECTING_TRACK = {},
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_LOWER_DELAYED = {},
 	WAITING_FOR_STOP = {},
-	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	TURNING = {},
+	TEMPORARY = {},
 }
 
 -- Our class implementation does not call the constructor of base classes
@@ -145,6 +148,18 @@ function FieldworkAIDriver.register()
 			if superFunc ~= nil and self.cp.settings.keepCurrentSteering:is(false) then superFunc(self) end
 	end)
 
+end
+
+--- Enable speed control and swerve on unload/refill course and when returning to the first point
+function FieldworkAIDriver:isProximitySpeedControlEnabled()
+	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+		self.state == self.states.RETURNING_TO_FIRST_POINT or
+		self.state == self.states.ON_FIELDWORK_COURSE
+end
+
+function FieldworkAIDriver:isProximitySwerveEnabled()
+	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+			self.state == self.states.RETURNING_TO_FIRST_POINT
 end
 
 --- Start the course and turn on all implements when needed
@@ -272,25 +287,14 @@ function FieldworkAIDriver:startCourseWithPathfinding(course, ix)
 	return AIDriver.startCourseWithPathfinding(self, course, ix, zOffset,0)
 end
 
-function FieldworkAIDriver:xonPathfindingDone(path)
-	if path and #path > 2 then
-		self:debug('(FieldworkAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
-		local tempCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
-		self:startCourse(tempCourse, 1, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
-		return true
-	else
-		self:debug('(FieldworkAIDriver) Pathfinding was not able to find a path in %d ms', self.vehicle.timer - (self.pathfindingStartedAt or 0))
-		self:startCourse(self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
-		return false
-	end
-end
-
 function FieldworkAIDriver:stop(msgReference)
 	self:stopWork()
-	
-	-- persist last fieldwork waypoint data (for 'start at current waypoint')
-	self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
-	self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
+
+	if self.fieldworkCourse then
+		-- persist last fieldwork waypoint data (for 'start at current waypoint')
+		self.aiDriverData.lastFieldworkCourseHash = self.fieldworkCourse:getHash()
+		self.aiDriverData.lastFieldworkWaypointIx = self.fieldworkCourse:getCurrentWaypointIx()
+	end
 
 	AIDriver.stop(self, msgReference)
 	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
@@ -392,6 +396,14 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		iAmDriving = self.aiTurn:drive(dt)
 	end
 	return iAmDriving
+end
+
+function FieldworkAIDriver:getNominalSpeed()
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		return self:getWorkSpeed()
+	else
+		return self:getRecordedSpeed()
+	end
 end
 
 function FieldworkAIDriver:checkFillLevels()
@@ -647,6 +659,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 			self:startTurn(ix)
 		end
 	end
+
 	-- update the legacy waypoint counter on the HUD
 	if self.state == self.states.ON_FIELDWORK_COURSE or self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())

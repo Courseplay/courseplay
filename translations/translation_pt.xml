@@ -71,6 +71,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 				        	text=": equipamento precisa de ser carregado" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 					 		text="a descarregar fardos" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="trânsito congestionado" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="chegou ao ponto de descarga" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distância do ponto para descarregar alcançado" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="A carregar: %d de %d" />

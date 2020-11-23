@@ -71,6 +71,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": A munkaeszközt újra kell tölteni." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="kirakja a bálákat." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="dugóban van (forgalomban)" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Elérte a triggert" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Távolság az ürítési pontig (tolatáskor)" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Töltés: %d -ból %d" />

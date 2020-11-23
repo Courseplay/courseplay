@@ -445,13 +445,9 @@ function courseplay:selectAssignedCombine(vehicle, changeBy)
 end;
 
 function courseplay:removeActiveCombineFromTractor(vehicle)
-	if vehicle.cp.driver.combineToUnload ~= nil then
-		local driver = vehicle.cp.driver
-		driver:releaseUnloader()
-		driver.combineToUnload = nil
-		driver:setNewOnFieldState(driver.states.WAITING_FOR_COMBINE_TO_CALL)
-	end;
-	--courseplay:removeFromVehicleLocalIgnoreList(vehicle, vehicle.cp.lastActiveCombine)
+	if vehicle.cp.driver and vehicle.cp.driver.onUserUnassignedActiveCombine then
+		vehicle.cp.driver:onUserUnassignedActiveCombine()
+	end
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -2232,7 +2228,7 @@ MaxDeltaAngleAtGoal = CpObject(FloatSetting)
 function MaxDeltaAngleAtGoal:init()
 	IntSetting.init(self, 'maxDeltaAngleAtGoal', 'MaxDeltaAngleAtGoal',
 			'Maximum angle difference allowed at goal')
-	self:set(math.pi / 2)
+	self:set(math.pi / 4)
 end
 
 --toggleHeadlandDirection
@@ -3631,6 +3627,22 @@ end
 
 function AssignedCombinesSetting:getData()
 	return self.table
+end
+
+function AssignedCombinesSetting:selectClosest()
+	local dMin = math.huge
+	local closestCombine
+	for _, combine in pairs(self:getPossibleCombines()) do
+		local d = calcDistanceFrom(self.vehicle.rootNode, combine.rootNode)
+		if d < dMin then
+			dMin = d
+			closestCombine = combine
+		end
+	end
+	if closestCombine then
+		self.table[closestCombine] = true
+	end
+	self.vehicle.cp.driver:refreshHUD()
 end
 
 ---@class ShowVisualWaypointsSetting : SettingList

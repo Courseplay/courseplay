@@ -63,10 +63,10 @@ end
 ---@return Polyline path if the path found or nil if none found.
 -- @return array of the points of the grid used for the pathfinding, for test purposes only
 function PathfinderInterface:resume(...)
-	local ok, done, path, grid = coroutine.resume(self.coroutine, self, ...)
+	local ok, done, path, goalNodeInvalid = coroutine.resume(self.coroutine, self, ...)
 	if not ok or done then
 		self.coroutine = nil
-		return true, path, grid
+		return true, path, goalNodeInvalid
 	end
 	return false
 end
@@ -438,6 +438,11 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 		self.analyticSolver = DubinsSolver()
 	end
 
+	if not self.isValidNodeFunc(goal, userData, true) then
+		self:debug('Goal node is invalid, abort pathfinding.')
+		return true, nil, true
+	end
+
 	if not self.isValidAnalyticPathNodeFunc(goal, userData) then
 		-- goal node is invalid (for example in fruit), does not make sense to try analytic solutions
 		self.goalNodeIsInvalid = true
@@ -563,7 +568,7 @@ function HybridAStar:findPath(start, goal, turnRadius, userData, allowReverse, g
 	end
 	--self:printOpenList(openList)
 	self.path = {}
-	self:debug('No path found: iterations %d, yields %d, cost %.1f - %.1f, eltaTheta %.1f', self.iterations, self.yields,
+	self:debug('No path found: iterations %d, yields %d, cost %.1f - %.1f, deltaTheta %.1f', self.iterations, self.yields,
             self.nodes.lowestCost, self.nodes.highestCost, math.deg(self.deltaThetaGoal))
     return true, nil
 end
@@ -682,15 +687,15 @@ end
 
 --- The resume() of this pathfinder is more complicated as it handles essentially three separate pathfinding runs
 function HybridAStarWithAStarInTheMiddle:resume(...)
-	local ok, done, path = coroutine.resume(self.coroutine, self.currentPathfinder, ...)
+	local ok, done, path, goalNodeInvalid = coroutine.resume(self.coroutine, self.currentPathfinder, ...)
 	if not ok then
 		self.coroutine = nil
 		print(done)
-		return true, nil
+		return true, nil, goalNodeInvalid
 	end
 	if done then
 		self.coroutine = nil
-		if not path then return true, nil end
+		if not path then return true, nil, goalNodeInvalid end
 		if self.phase == self.ALL_HYBRID then
 			-- start and goal near, just one phase, all hybrid, we are done
 			-- remove last waypoint as it is the approximate goal point and may not be aligned
@@ -840,17 +845,17 @@ end
 
 --- The resume() of this pathfinder is more complicated as it handles essentially three separate pathfinding runs
 function HybridAStarWithHeuristic:resume(...)
-	local ok, done, path = coroutine.resume(self.coroutine, self.currentPathfinder, ...)
+	local ok, done, path, goalNodeInvalid = coroutine.resume(self.coroutine, self.currentPathfinder, ...)
 	if not ok then
 		self.coroutine = nil
 		print(done)
-		return true, nil
+		return true, nil, goalNodeInvalid
 	end
 	if done then
 		self.coroutine = nil
-		if not path then return true, nil end
+		if not path then return true, nil, goalNodeInvalid end
 		if self.phase == self.PATHFINDING then
-			-- start and goal near, just one phase, all hybrid, we are done
+			-- start and gosal near, just one phase, all hybrid, we are done
 			-- remove last waypoint as it is the approximate goal point and may not be aligned
 			local result = Polygon:new(path)
 			result:calculateData()

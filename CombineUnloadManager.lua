@@ -65,6 +65,12 @@ function CombineUnloadManager:debug(...)
 	courseplay.debugFormat(self.debugChannel, 'CombineUnloadManager: ' .. string.format( ... ))
 end
 
+function CombineUnloadManager:debugSparse(...)
+	if g_updateLoopIndex % 110 == 0 then
+		self:debug(...)
+	end
+end
+
 function CombineUnloadManager:addCombineToList(vehicle, driver)
 	if vehicle:getPropertyState() == Vehicle.PROPERTY_STATE_SHOP_CONFIG then
 		return
@@ -91,7 +97,6 @@ function CombineUnloadManager:addCombineToList(vehicle, driver)
 		lastCheckedFillLevel = 0;
 		lastCheckedTime = 0;
 		unloaders = {};
-		secondsTill80Percent = 999
 	}
 end
 
@@ -119,10 +124,11 @@ function CombineUnloadManager:getUnloaderIndex(unloader, combine)
 	end
 end
 
-function CombineUnloadManager:releaseUnloaderFromCombine(unloader,combine,noEventSend)
+function CombineUnloadManager:releaseUnloaderFromCombine(unloader, combine, noEventSend)
 	if self.combines[combine] then
 		local ix = self:getUnloaderIndex(unloader, combine)
 		if ix then
+			self:debug('Released unloader %s from %s', nameNum(unloader), nameNum(combine))
 			table.remove(self.combines[combine].unloaders, ix)
 			if not noEventSend then 
 				UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
@@ -134,33 +140,47 @@ end
 function CombineUnloadManager:addUnloaderToCombine(unloader,combine,noEventSend)
 	if not self:getUnloaderIndex(unloader, combine) then
 		table.insert(self.combines[combine].unloaders, unloader)
-		self:debug('assigned %s to combine %s', nameNum(unloader), nameNum(combine))
+		self:debug('assigned %s to combine %s as #%d', nameNum(unloader), nameNum(combine), #self.combines[combine].unloaders)
 		if not noEventSend then
 			UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
 		end
 	else
-		self:debug('%s is already assigned to combine %s', nameNum(unloader), nameNum(combine))
+		self:debug('%s is already assigned to combine %s as	 #%d', nameNum(unloader), nameNum(combine), #self.combines[combine].unloaders)
 	end
-	
 end
 
 function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	--first try to find a chopper
 	local chopper = self:getChopperWithLeastUnloaders(unloader)
 	if chopper ~= nil and chopper.cp.driver:getFieldworkCourse() then
-		local unloaderNumber = self:getNumUnloaders(chopper)
-		if unloaderNumber == 0 then
-			self:addUnloaderToCombine(unloader,chopper)
+		local nUnloaders = self:getNumUnloaders(chopper)
+		if nUnloaders == 0 then
+			-- chopper has no unloader yet
+			self:addUnloaderToCombine(unloader, chopper)
 			return chopper
-		elseif unloaderNumber < 2 then
-			local prevTractor = self:getUnloaderByNumber(unloaderNumber, chopper)
-			if prevTractor == unloader then
+		else
+			local num = self:getUnloadersNumber(unloader, chopper)
+			if num then
 				-- awesome, we are on the list already.
+				self:debug('%s already assigned to %s as #%d', nameNum(unloader), nameNum(chopper), num)
 				return chopper
 			end
-			if prevTractor.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
-				self:addUnloaderToCombine(unloader,chopper)
-				return chopper
+			if nUnloaders == 1 then
+				local otherUnloader = self:getUnloaderByNumber(nUnloaders, chopper)
+				-- when unloading choppers, the 'start at fill level' settings for the second unloader is the fill
+				-- level of the currently active unloader must reach before we start driving to the chopper
+				if otherUnloader.cp.driver:getFillLevelPercent() > unloader.cp.driver:getFillLevelThreshold() then
+					-- other unloader has already reached the fill level needed
+					self:addUnloaderToCombine(unloader, chopper)
+					return chopper
+				else
+					self:debug('Other unloader %s fill level not reached, not assigning %s as second unloader to %s',
+							nameNum(otherUnloader), nameNum(unloader), nameNum(chopper))
+				end
+			else
+				-- we only allow 2 unloaders for a chopper, one actively unloading and a second one ready to take
+				-- over.
+				self:debug('%s has already 2 unloaders, not adding %s', nameNum(chopper), nameNum(unloader))
 			end
 		end
 	end
@@ -314,7 +334,6 @@ function CombineUnloadManager:updateCombinesAttributes()
 		attributes.pipeOffset = self:getPipeOffset(combine)
 		attributes.fillLevelPct = self:getCombinesFillLevelPercent(combine)
 		attributes.fillLevel = self:getCombinesFillLevel(combine)
-		attributes.secondsTill80Percent = self:getSecondsTill80Percent(combine) and self:getSecondsTill80Percent(combine) or attributes.secondsTill80Percent
 		self:updateFillSpeed(combine,attributes)
 		if courseplay.debugChannels[self.debugChannel] then
 			renderText(0.1,0.175+(0.02*number) ,0.015,
@@ -345,13 +364,6 @@ function CombineUnloadManager:getSecondsTillFull(combine)
 	local fillDiff = data.capacity -data.fillLevel
 	local time = fillDiff/ data.fillLitersPerSecond
 	return time >0 and time or 999
-end
-
-function CombineUnloadManager:getSecondsTill80Percent(combine)
-	local data = self.combines[combine]
-	local fillDiff = data.capacity*0.8 -data.fillLevel
-	local time = fillDiff/ data.fillLitersPerSecond
-	return data.fillLitersPerSecond > 0 and time or nil
 end
 
 function CombineUnloadManager:getIsChopper(chopper)
@@ -387,14 +399,11 @@ function CombineUnloadManager:getNumUnloaders(combine)
 end
 
 function CombineUnloadManager:getUnloadersNumber(unloader, combine)
-	local number = 0
-	for i=1,#self.combines[combine].unloaders do
+	for i = 1, #self.combines[combine].unloaders do
 		if self.combines[combine].unloaders[i] == unloader then
-			number = i
-			break
+			return i
 		end
 	end
-	return number
 end
 
 function CombineUnloadManager:getUnloaderByNumber(number, combine)

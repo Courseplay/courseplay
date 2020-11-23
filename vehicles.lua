@@ -1363,44 +1363,6 @@ function courseplay:isWheeledWorkTool(workTool)
 	return false;
 end;
 
-function courseplay:setPathVehiclesSpeed(vehicle,dt)
-	if vehicle.cp.collidingVehicleId == nil then return end;
-	local pathVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId];
-	--print("update speed")
-	if pathVehicle.speedDisplayDt == nil then
-		pathVehicle.speedDisplayDt = 0;
-		pathVehicle.lastSpeed = 0;
-		pathVehicle.lastSpeedReal = 0;
-		pathVehicle.movingDirection = 1;
-	end;
-	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
-	if pathVehicle.speedDisplayDt > 100 then
-		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
-		if pathVehicle.lastPosition == nil then
-		  pathVehicle.lastPosition = {
-			newX,
-			newY,
-			newZ
-		  };
-		end;
-		local lastMovingDirection = pathVehicle.movingDirection;
-		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3]);
-		if dz > 0.001 then
-		  pathVehicle.movingDirection = 1;
-		elseif dz < -0.001 then
-		  pathVehicle.movingDirection = -1;
-		else
-		  pathVehicle.movingDirection = 0;
-		end;
-		pathVehicle.lastMovedDistance = MathUtil.vector3Length(dx, dy, dz);
-		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
-		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
-		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;
-		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15;
-		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
-		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
-	end;
-end
 
 -- vim: set noexpandtab:
 
@@ -1432,6 +1394,7 @@ function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
 	return nz < 0
 end
 
+-- If the AI collision trigger object is found it is stored in vehicle.aiTrafficCollisionTrigger and returns true
 function courseplay:findAiCollisionTrigger(vehicle)
 	if vehicle == nil then
 		return false;
@@ -1788,4 +1751,28 @@ end
 --- wheels.
 function AIDriverUtil.isRealWheel(wheel)
 	return wheel.hasTireTracks and wheel.maxLatStiffnessLoad > 0.5
+end
+
+function AIDriverUtil.isBehindOtherVehicle(vehicle, otherVehicle)
+	local _, _, dz = localToLocal(AIDriverUtil.getDirectionNode(vehicle), AIDriverUtil.getDirectionNode(otherVehicle), 0, 0, 0)
+	return dz < 0
+end
+
+function AIDriverUtil.isStopped(vehicle)
+-- giants supplied last speed is in mm/s
+	return math.abs(vehicle.lastSpeedReal) < 0.0001
+end
+
+function AIDriverUtil.isReversing(vehicle)
+	return vehicle.movingDirection == -1 and vehicle.lastSpeedReal * 3600 > 0.1
+end
+
+--- Get the current normalized steering angle:
+---@return number between -1 and +1, -1 full right steering, +1 full left steering
+function AIDriverUtil.getCurrentNormalizedSteeringAngle(vehicle)
+	if vehicle.rotatedTime >= 0 then
+		return vehicle.rotatedTime / vehicle.maxRotTime
+	elseif vehicle.rotatedTime < 0 then
+		return -vehicle.rotatedTime / vehicle.minRotTime
+	end
 end
