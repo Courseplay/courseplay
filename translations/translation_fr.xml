@@ -18,8 +18,8 @@
     <text name="COURSEPLAY_RIGHT" 							 			text="Droite" />
     <text name="COURSEPLAY_CENTER" 										text="Centre" />
     <text name="COURSEPLAY_UNLOADING_DRIVER_SEND_HOME" 					text="Envoyer la remorque vider" />
-    <text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Demander une remorque" />
-    <text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Remorque demandée" />
+    <text name="COURSEPLAY_REQUEST_UNLOADING_DRIVER" 					text="Appeler une remorque" />
+    <text name="COURSEPLAY_UNLOADING_DRIVER_REQUESTED" 					text="Remorque appelée" />
     <text name="COURSEPLAY_START_COURSE" 						 		text="Démarrer la course" />
     <text name="COURSEPLAY_STOP_COURSE" 						 		text="Arrêter la course" />
     <text name="COURSEPLAY_MODE_1" 							 			text="Transport (Charger et livrer)" />
@@ -75,10 +75,11 @@
     <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être rechargé." />
     <text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
     <text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est bloqué par un véhicule." />
+	<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="ralentit pour laisser passer un véhicule." />
     <text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="le trigger est atteint" />
     <text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
     <text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
-	<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Dechargement: %d sur %d" />
+	<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Déchargement: %d sur %d" />
     <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher les points de passage" />
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
     <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
@@ -186,7 +187,7 @@
     <text name="COURSEPLAY_CLICK_MAP_TO_SET_STARTING_POSITION"	 		text="(Cliquez sur la carte pour sélectionner le point de départ)" />
     <text name="COURSEPLAY_START_WORKING_ON" 			            	text="Commencer le travail par" />
     <text name="COURSEPLAY_SKIP_ROWS"     			                	text="Sauter des rangs" />
-    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les Allers-retours" />
+    <text name="COURSEPLAY_UP_DOWN_ROWS"     			            	text="Les allers-retours" />
     <text name="COURSEPLAY_HEADLAND_PASSES" 				        	text="Les fourrières" />
     <text name="COURSEPLAY_HEADLAND_CORNERS" 				        	text="Coins de fourrières" />
     <text name="COURSEPLAY_HEADLAND_CLOCKWISE" 				        	text="Sens horaire" />
@@ -254,10 +255,10 @@
     <text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Convoi de véhicules" />
     <text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="Distance maxi" />
     <text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Distance mini" />
-    <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" /> <!-- this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-    <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mod" />
+    <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" />
+    <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mode" />
     <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Réglages de direction" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "			text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
+	<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "			text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
   	
     <!-- shovel stuff -->
     <text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet" />
@@ -465,7 +466,7 @@
 	<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Permet l'affichage du mini-HUD" />
 	<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Mettre la paille en andain" />
 	<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Allers-retours" />
-	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Permet de mettre la paille en andain dans toute la parcelle (Activé), uniquement lors des allers-retours avec broyage dans les fourrières (Allers-Retours), ou de la broyer dans toute la parcelle (Désactivé)" />
+	<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Permet de mettre la paille en andain dans toute la parcelle (Activé), uniquement lors des allers-retours avec broyage dans les fourrières (Allers-retours), ou de la broyer dans toute la parcelle (Désactivé)" />
 	<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Fertilisation au semis" />
     <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Permet d'activer la fonction fertilisation sur les semoirs équipés d'une trémie ou d'une cuve d'engrais" />
 
