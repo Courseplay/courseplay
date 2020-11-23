@@ -998,7 +998,7 @@ function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
 end
 
 function CombineAIDriver:isChopper()
-	return self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) > 10000000
+	return self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) >  10000000 or self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) == 10001
 end
 
 function CombineAIDriver:handlePipe()
