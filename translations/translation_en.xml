@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": work tool needs to be refilled." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="unloading bales." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="is in traffic." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="tip trigger reached" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Unload Point Distance" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Loading: %d of %d" />

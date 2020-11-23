@@ -71,6 +71,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": gereedschap vullen." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Balen lossen" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="oponthoud." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="uitlaad trigger bereikt" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Afstand tot uitlaad trigger" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Laden: %d of %d" />

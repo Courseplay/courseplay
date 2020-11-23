@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": l'attrezzo deve essere rifornito." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="sta scaricando le balle." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="è nel traffico." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="ha raggiunto il punto di scarico" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distanza dal punto di scarico" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Carico: %d di %d" />

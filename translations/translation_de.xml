@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": Gerät muss aufgefüllt werden" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Ballen werden entladen." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Steckt im Verkehr fest" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Abladestelle erreicht" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Abstand z. Abladepunkt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Wird beladen: %d von %d" />

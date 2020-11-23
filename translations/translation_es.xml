@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": el equipamiento necesita ser rellenado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Descargar pacas." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Atasco de trafico." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Punto de descarga alcanzado" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Distancia a punto descarga" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Carga: %d de %d" />

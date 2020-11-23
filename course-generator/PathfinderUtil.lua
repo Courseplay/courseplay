@@ -179,19 +179,23 @@ function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
         if ignore then
             courseplay.debugVehicle(14, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
         elseif vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
-            courseplay.debugVehicle(14, myVehicle, 'othervehicle %s, otherroot %s, myroot %s', vehicle:getName(), vehicle:getRootVehicle():getName(), myRootVehicle:getName())
+            local x, _, z = getWorldTranslation(vehicle.rootNode)
+            courseplay.debugVehicle(14, myVehicle, 'othervehicle %s at %.1f %.1f, otherroot %s, myroot %s',
+                    vehicle:getName(), x, z, vehicle:getRootVehicle():getName(), myRootVehicle:getName())
             table.insert(vehicleCollisionData, PathfinderUtil.getCollisionData(vehicle.rootNode, PathfinderUtil.VehicleData(vehicle)))
         end
     end
     return vehicleCollisionData
 end
 
-function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleData, otherVehiclesCollisionData)
+function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleData, otherVehiclesCollisionData, log)
     if not otherVehiclesCollisionData then return false end
     for _, collisionData in pairs(otherVehiclesCollisionData) do
         -- check for collision with the vehicle's bounding box
         if PathfinderUtil.doRectanglesOverlap(myCollisionData.corners, collisionData.corners) then
-            -- courseplay.debugFormat(7, 'x = %.1f, z = %.1f, %s', myCollisionData.center.x, myCollisionData.center.z, collisionData.name)
+            if log then
+                courseplay.debugFormat(7, 'pathfinder colliding vehicle x = %.1f, z = %.1f, %s', myCollisionData.center.x, myCollisionData.center.z, collisionData.name)
+            end
             -- check for collision of the individual parts
             for _, rectangle in ipairs(myVehicleData.rectangles) do
                 local partCollisionData = PathfinderUtil.getCollisionData(node, rectangle)
@@ -235,7 +239,7 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
     end
 end
 
-function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore)
+function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore, log)
     self.vehiclesToIgnore = vehiclesToIgnore or {}
     self.vehicleData = vehicleData
     -- the box for overlapBox() is symmetric, so if our direction node is not in the middle of the vehicle rectangle,
@@ -252,10 +256,10 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     self.collidingShapes = 0
 
     overlapBox(x, y + 1, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
-    --[[if self.collidingShapes > 0 then
-        courseplay.debugFormat(7, 'colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f)',
+    if log and self.collidingShapes > 0 then
+        courseplay.debugFormat(7, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f)',
                 vehicleData.name, x, z, width, length)
-    end]]--
+    end
     --DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
 
     return self.collidingShapes
@@ -414,7 +418,8 @@ end
 --- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
 ---@param userData PathfinderUtil.Context
-function PathfinderUtil.isValidNode(node, context)
+---@param log boolean log colliding shapes/vehicles
+function PathfinderUtil.isValidNode(node, context, log)
 
     -- If the pathfinding is constrained to a field, fieldData contains the limits
     if node.x < context.fieldData.minX or node.x > context.fieldData.maxX or node.y < context.fieldData.minY or node.y > context.fieldData.maxY then
@@ -432,12 +437,14 @@ function PathfinderUtil.isValidNode(node, context)
 
     local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
     -- for debug purposes only, store validity info on node
-    node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(PathfinderUtil.helperNode, context.vehicleData, context.vehiclesToIgnore)
+    node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
+            PathfinderUtil.helperNode, context.vehicleData, context.vehiclesToIgnore, log)
     node.isColliding, node.vehicle = PathfinderUtil.findCollidingVehicles(
             myCollisionData,
             PathfinderUtil.helperNode,
             context.vehicleData,
-            context.otherVehiclesCollisionData)
+            context.otherVehiclesCollisionData,
+            log)
     return (not node.isColliding and node.collidingShapes == 0)
 end
 
@@ -493,9 +500,9 @@ end
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
     local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000, mustBeAccurate)
-    local done, path = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
             PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
-    return pathfinder, done, path
+    return pathfinder, done, path, goalNodeInvalid
 end
 
 --- Interface function to start the pathfinder for a turn maneuver
@@ -540,8 +547,8 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
             parameters,
             vehiclesToIgnore,
             otherVehiclesCollisionData)
-    local done, path = pathfinder:start(start, goal, turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
-    return pathfinder, done, path
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
+    return pathfinder, done, path, goalNodeInvalid
 end
 
 --- Generate a Dubins path between the vehicle and the goal node

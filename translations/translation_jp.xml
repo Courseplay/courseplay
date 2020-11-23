@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": 補給してください" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="ベールをアンロード" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="トラフィックエラー" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="トリガーへ到着" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="アンロード位置までの距離" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="ローディング: %d of %d" />

@@ -154,6 +154,7 @@ function CombineAIDriver:init(vehicle)
 	-- register ourselves at our boss
 	g_combineUnloadManager:addCombineToList(self.vehicle, self)
 	self:measureBackDistance()
+	self.vehicleIgnoredByFrontProximitySensor = CpTemporaryObject()
 end
 
 --- Get the combine object, this can be different from the vehicle in case of tools towed or mounted on a tractor
@@ -169,6 +170,8 @@ function CombineAIDriver:start(startingPoint)
 	self:clearAllUnloaderInformation()
 	self:addBackwardProximitySensor()
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
+	-- we work with the traffic conflict detector and the proximity sensors instead
+	self:disableCollisionDetection()
 	self:fixMaxRotationLimit()
 	local total, pipeInFruit = self.fieldworkCourse:setPipeInFruitMap(self.pipeOffsetX, self.vehicle.cp.workWidth)
 	local ix = self.fieldworkCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
@@ -190,13 +193,6 @@ end
 function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
-	if self.isChopperWaitingForTrailer then
-		-- Give up all reservations while not moving (and do not reserve anything)
-		self:resetTrafficControl()
-	elseif not self:trafficControlOK() then
-		self:debugSparse('would be holding due to traffic')
-		--self:hold()
-	end
 	-- the rest is the same as the parent class
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
@@ -261,8 +257,7 @@ function CombineAIDriver:onWaypointPassed(ix)
 		self:debug('Waiting for unload in the pocket')
 		self:setInfoText(self:getFillLevelInfoText())
 		self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_IN_POCKET
-		-- reset offset to return to the original up/down row after we unloaded in the pocket
-		self.aiDriverOffsetX = 0
+
 	end
 	if self.returnedFromPocketIx and self.returnedFromPocketIx == ix then
 		-- back to normal look ahead distance for PPC, no tight turns are needed anymore
@@ -366,6 +361,8 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_IN_POCKET or
 			self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_PULLED_BACK then
 		if self:unloadFinished() then
+			-- reset offset to return to the original up/down row after we unloaded in the pocket
+			self.aiDriverOffsetX = 0
 			self:clearInfoText(self:getFillLevelInfoText())
 			-- wait a bit after the unload finished to give a chance to the unloader to move away
 			self.stateBeforeWaitingForUnloaderToLeave = self.fieldworkUnloadOrRefillState
@@ -907,9 +904,6 @@ function CombineAIDriver:startTurn(ix)
 		self.turnType = self.turnTypes.UP_DOWN_NORMAL
 		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
-
-	self:sendTurnStartEventToUnloaders(ix, self.turnType)
-
 end
 
 function CombineAIDriver:isTurning()
@@ -1342,12 +1336,6 @@ function CombineAIDriver:deregisterUnloader(driver,noEventSend)
 	end
 end
 
-function CombineAIDriver:sendTurnStartEventToUnloaders(ix, turnType)
-	for _, unloader in pairs(self.unloaders) do
-		if unloader then unloader:onCombineTurnStart(ix, turnType) end
-	end
-end
-
 --- Make life easier for unloaders, increase chopper discharge distance
 function CombineAIDriver:fixDischargeDistance(dischargeNode)
 	if self:isChopper() and dischargeNode and dischargeNode.maxDistance then
@@ -1432,6 +1420,15 @@ end
 
 function CombineAIDriver:isFieldworkUnloadOrRefillStateOneOf(states)
 	return self:isStateOneOf(self.fieldworkUnloadOrRefillState, states)
+end
+
+function CombineAIDriver:getClosestFieldworkWaypointIx()
+	if self.course:isTemporary() then
+		return self.fieldworkCourse:getLastPassedWaypointIx()
+	else
+		-- if currently on the fieldwork course, this is the best estimate
+		return self:getRelevantWaypointIx()
+	end
 end
 
 --- Maneuvering means turning or working on a pocket or pulling back due to the pipe in fruit
@@ -1563,4 +1560,25 @@ function CombineAIDriver:onDraw()
 	end
 
 	UnloadableFieldworkAIDriver.onDraw(self)
+end
+
+-- For combines, we use the collision trigger of the header to cover the whole vehicle width
+function CombineAIDriver:createTrafficConflictDetector()
+	for cutter, _ in pairs(self.combine.attachedCutters) do
+		-- attachedCutters is indexed by the cutter, not an integer
+		self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course, cutter)
+		-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
+		self.trafficConflictDetector:disableSpeedControl()
+		return
+	end
+	self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course)
+	-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
+	self.trafficConflictDetector:disableSpeedControl()
+end
+
+-- and our forward proximity sensor covers the entire working width
+function CombineAIDriver:addForwardProximitySensor()
+	self:setFrontMarkerNode(self.vehicle)
+	self.forwardLookingProximitySensorPack = WideForwardLookingProximitySensorPack(
+			self.vehicle, self.ppc, self:getFrontMarkerNode(self.vehicle), self.proximitySensorRange, 1, self.vehicle.cp.workWidth)
 end

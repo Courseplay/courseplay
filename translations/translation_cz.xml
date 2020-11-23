@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": pracovní stroj musí být doplněn." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="skládá balíky." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="stojí v dopravní zácpě." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Místo vysypání dosaženo" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Vzdálenost k bodu vykládky" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Bude naloženo: %d z %d" />

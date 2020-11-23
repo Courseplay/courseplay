@@ -257,6 +257,7 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	end
 	-- offset to apply to every position
 	self.offsetX, self.offsetZ = 0, 0
+	self.temporaryOffsetX, self.temporaryOffsetZ = CpSlowChangingObject(0, 0), CpSlowChangingObject(0, 0)
 	self.numberOfHeadlands = 0
 	self.workWidth = 0
 	-- only for logging purposes
@@ -307,7 +308,17 @@ function Course:getOffset()
 	return self.offsetX, self.offsetZ
 end
 
-	function Course:setWorkWidth(w)
+--- Temporary offset to apply. This is to use an offset temporarily without overwriting the normal offset of the course
+function Course:setTemporaryOffset(x, z, t)
+	self.temporaryOffsetX:set(x, t)
+	self.temporaryOffsetZ:set(z, t)
+end
+
+function Course:changeTemporaryOffsetX(dx, t)
+	self.temporaryOffsetX:set(self.temporaryOffsetX:get() + dx, t)
+end
+
+function Course:setWorkWidth(w)
 	self.workWidth = w
 end
 
@@ -567,13 +578,14 @@ function Course:getWaypointPosition(ix)
 		-- when calculating the offset for a turn start wp.
 		return self:getOffsetPositionWithOtherWaypointDirection(ix, ix - 1)
 	else
-		return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ)
+		return self.waypoints[ix]:getOffsetPosition(self.offsetX + self.temporaryOffsetX:get(), self.offsetZ + self.temporaryOffsetZ:get())
 	end
 end
 
 ---Return the offset coordinates of waypoint ix as if it was pointing to the same direction as waypoint ixDir
 function Course:getOffsetPositionWithOtherWaypointDirection(ix, ixDir)
-	return self.waypoints[ix]:getOffsetPosition(self.offsetX, self.offsetZ, self.waypoints[ixDir].dx, self.waypoints[ixDir].dz)
+	return self.waypoints[ix]:getOffsetPosition(self.offsetX + self.temporaryOffsetX:get(), self.offsetZ + self.temporaryOffsetZ:get(),
+			self.waypoints[ixDir].dx, self.waypoints[ixDir].dz)
 end
 
 -- distance between (px,pz) and the ix waypoint
@@ -849,6 +861,7 @@ end
 
 --- Get the index of the first waypoint from ix which is at least distance meters away
 ---@param backward boolean search backward if true
+---@return numer, number index and exact distance
 function Course:getNextWaypointIxWithinDistance(ix, distance, backward)
 	local d = 0
 	local from, to, step = ix, #self.waypoints - 1, 1
@@ -857,10 +870,10 @@ function Course:getNextWaypointIxWithinDistance(ix, distance, backward)
 	end
 	for i = from, to, step do
 		d = d + self.waypoints[i].dToNext
-		if d > distance then return i end
+		if d > distance then return i + 1, d end
 	end
 	-- at the end/start of course return last/first wp
-	return to
+	return to + 1, d
 end
 
 --- Get the index of the first waypoint from ix which is at least distance meters away (search backwards)
@@ -871,6 +884,66 @@ function Course:getPreviousWaypointIxWithinDistance(ix, distance)
 		if d > distance then return i end
 	end
 	return nil
+end
+
+--- Collect a nSteps number of positions on the course, starting at startIx, one position for every second,
+--- or every dStep meters, whichever is less
+---@param startIx number start at this waypoint
+---@param dStep number step in meters
+---@param nSteps number number of positions to collect
+function Course:getPositionsOnCourse(nominalSpeed, startIx, dStep, nSteps)
+
+	local function addPosition(positions, ix, x, y, z, dFromLastWp, speed)
+		table.insert(positions, {x = x + dFromLastWp * self.waypoints[ix].dx,
+								 y = y,
+								 z = z + dFromLastWp * self.waypoints[ix].dz,
+								 yRot = self.waypoints[ix].yRot,
+								 speed = speed,
+								 -- for debugging only
+								 dToNext = self.waypoints[ix].dToNext,
+								 dFromLastWp = dFromLastWp,
+								 ix = ix})
+	end
+
+	local positions = {}
+	local d = 0 -- distance from the last step
+	local dFromLastWp = 0
+	local ix = startIx
+	while #positions < nSteps and ix < #self.waypoints do
+		local speed = nominalSpeed
+		if self.waypoints[ix].speed then
+			speed = (self.waypoints[ix].speed > 0) and self.waypoints[ix].speed or nominalSpeed
+		end
+		-- speed / 3.6 is the speed in meter/sec, that's how many meters we travel in one sec
+		-- don't step more than 4 m as that would move the boxes too far away from each other creating a gap between them
+		-- so if we drive fast, our event horizon shrinks, which is probably not a good thing
+		local currentStep = math.min(speed / 3.6, dStep)
+		local x, y, z = self:getWaypointPosition(ix)
+		if dFromLastWp + currentStep < self.waypoints[ix].dToNext then
+			while dFromLastWp + currentStep < self.waypoints[ix].dToNext and #positions < nSteps and ix < #self.waypoints do
+				d = d + currentStep
+				dFromLastWp = dFromLastWp + currentStep
+				addPosition(positions, ix, x, y, z, dFromLastWp, speed)
+			end
+			-- this is before wp ix, so negative
+			dFromLastWp = - (self.waypoints[ix].dToNext - dFromLastWp)
+			d = 0
+            ix = ix + 1
+		else
+            d = - dFromLastWp
+			-- would step over the waypoint
+			while d < currentStep and ix < #self.waypoints do
+				d = d + self.waypoints[ix].dToNext
+				ix = ix + 1
+			end
+			-- this is before wp ix, so negative
+			dFromLastWp = - (d - currentStep)
+			d = 0
+            x, y, z = self:getWaypointPosition(ix)
+			addPosition(positions, ix, x, y, z, dFromLastWp, speed)
+		end
+	end
+	return positions
 end
 
 function Course:getLength()

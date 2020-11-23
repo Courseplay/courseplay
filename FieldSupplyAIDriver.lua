@@ -64,6 +64,12 @@ function FieldSupplyAIDriver:onEndCourse()
 	AIDriver.onEndCourse(self)
 end
 
+function FieldSupplyAIDriver:isProximitySwerveEnabled()
+	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+			self.state == self.states.RETURNING_TO_FIRST_POINT or
+			self.supplyState == self.states.ON_REFILL_COURSE
+end
+
 function FieldSupplyAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	if self.supplyState == self.states.ON_REFILL_COURSE  then
