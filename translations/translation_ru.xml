@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 											text="нуждается в заправке. " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 											text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 												text="застрял." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 									text="замедляется для трафика" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 											text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 										text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 												text="Заполнено: %d из %d" />
