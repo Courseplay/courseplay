@@ -33,6 +33,7 @@ function OverloaderAIDriver:init(vehicle)
     self.mode = courseplay.MODE_OVERLOADER
     self.unloadCourseState = self.states.ENROUTE
     self:findPipeAndTrailer()
+    self.nearOverloadPoint = false
 end
 
 function OverloaderAIDriver:findPipeAndTrailer()
@@ -103,7 +104,25 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
     AIDriver.drive(self, dt)
 end
 
+-- make sure we stay close to the trailer while overloading
+function OverloaderAIDriver:isProximitySwerveEnabled()
+    return CombineUnloadAIDriver.isProximitySwerveEnabled(self) and not self.nearOverloadPoint
+end
+
+function OverloaderAIDriver:isProximitySpeedControlEnabled()
+    return CombineUnloadAIDriver.isProximitySpeedControlEnabled(self) and not self.nearOverloadPoint
+end
+
+function OverloaderAIDriver:onWaypointChange(ix)
+    -- this is called when the next wp changes, that is well before we get there
+    -- save it in a variable to avoid the relatively expensive hasWaitPointWithinDistance to be called too often
+    self.nearOverloadPoint = self.course:hasWaitPointWithinDistance(ix, 30)
+    CombineUnloadAIDriver.onWaypointChange(self, ix)
+end
+
 function OverloaderAIDriver:onWaypointPassed(ix)
+    -- just in case...
+    self.nearOverloadPoint = self.course:hasWaitPointWithinDistance(ix, 30)
     if self.course:isWaitAt(ix) then
         if self:isTrailerEmpty() then
             self:debug('Wait point reached but my trailer is empty, continuing')
