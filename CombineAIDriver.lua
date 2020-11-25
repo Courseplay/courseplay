@@ -1188,7 +1188,8 @@ function CombineAIDriver:findBestTrailer()
 			self:debug('%s is a trailer on field %d, closest distance to %d is %.1f, attached to %s, root vehicle is %s, last speed %.1f', vehicle:getName(),
 					fieldNum, myFieldNum, closestDistance, attacherVehicle and attacherVehicle:getName() or 'none', rootVehicle:getName(), lastSpeed)
 			-- consider only trailer on my field or close to my field
-			if fieldNum == myFieldNum or myFieldNum == 0 or closestDistance < 20 and lastSpeed < 0.1 then
+			if rootVehicle ~= self.vehicle and fieldNum == myFieldNum or myFieldNum == 0 or
+					closestDistance < 20 and lastSpeed < 0.1 then
 				local d = courseplay:distanceToObject(self.vehicle, vehicle)
 				local canLoad, freeCapacity, fillUnitIndex = self:canLoadTrailer(vehicle)
 				if d < minDistance and canLoad then
