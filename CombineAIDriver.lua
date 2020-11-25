@@ -1564,12 +1564,15 @@ end
 
 -- For combines, we use the collision trigger of the header to cover the whole vehicle width
 function CombineAIDriver:createTrafficConflictDetector()
-	for cutter, _ in pairs(self.combine.attachedCutters) do
-		-- attachedCutters is indexed by the cutter, not an integer
-		self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course, cutter)
-		-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
-		self.trafficConflictDetector:disableSpeedControl()
-		return
+	-- (not everything running as combine has a cutter, for instance the Krone Premos)
+	if self.combine.attachedCutters then
+		for cutter, _ in pairs(self.combine.attachedCutters) do
+			-- attachedCutters is indexed by the cutter, not an integer
+			self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course, cutter)
+			-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
+			self.trafficConflictDetector:disableSpeedControl()
+			return
+		end
 	end
 	self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course)
 	-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)

@@ -690,7 +690,6 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 	local ok, done, path, goalNodeInvalid = coroutine.resume(self.coroutine, self.currentPathfinder, ...)
 	if not ok then
 		self.coroutine = nil
-		print(done)
 		return true, nil, goalNodeInvalid
 	end
 	if done then
