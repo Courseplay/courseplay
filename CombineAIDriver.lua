@@ -1250,7 +1250,8 @@ function CombineAIDriver:startSelfUnload()
 		local done, path
 		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true,
+				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ,
+				self:getAllowReversePathfinding(),
 				fieldNum, {}, nil, nil, true)
 		if done then
 			return self:onPathfindingDone(path)
@@ -1271,7 +1272,8 @@ function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
 		self.waypointIxAfterPathfinding = self.aiDriverData.continueFieldworkAtWaypoint
 		local done, path
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,0,true, nil)
+				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,0,
+				self:getAllowReversePathfinding(), nil)
 		if done then
 			return self:onPathfindingDone(path)
 		else
