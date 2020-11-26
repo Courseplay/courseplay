@@ -3748,6 +3748,10 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	self.playTestPostion = nil
 	self.validSpecs = validSpecs
 	self.xmlAttribute = '#hasPositions'
+	self.MAX_ROT_SPEED = 0.7
+	self.MIN_ROT_SPEED = 0.1
+	self.MAX_TRANS_SPEED = 0.7
+	self.MIN_TRANS_SPEED = 0.2
 end
 
 function WorkingToolPositionsSetting:getTexts()
@@ -3849,10 +3853,10 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 	if spec and spec.cpWorkingToolPos and spec.cpWorkingToolPos[posX] and self:isValidSpec(object) then 
 		local isDirty
 		for toolIndex, tool in ipairs(spec.movingTools) do
-			if self.checkToolRotation(object,tool,toolIndex,posX,dt) then
+			if self.checkToolRotation(object,tool,toolIndex,posX,dt,self) then
 				isDirty = true
 			end
-			if self.checkToolTranslation(object,tool,toolIndex,posX,dt) then
+			if self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) then
 				isDirty = true
 			end		
 			if isDirty then 
@@ -3866,7 +3870,7 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 end
 
 --use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt)
+function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt,setting)
 	local spec = self.spec_cylindered
 	if tool.rotSpeed == nil then
 		return
@@ -3875,9 +3879,9 @@ function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,
 	local curRot = { getRotation(tool.node) }
 	local newRot = curRot[tool.rotationAxis]
 	-- speed for frontloader, shovel, etc achses
-	local rotSpeed = 0.7
 	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curRot - newRot
-	if math.abs(cpDiff) > 0.03 then
+	local rotSpeed = math.min(math.max(setting.MIN_ROT_SPEED,math.abs(cpDiff*5)),setting.MAX_ROT_SPEED)--0.7
+	if math.abs(cpDiff) > 0.003 then
 		if cpDiff < 0 then
 			rotSpeed=rotSpeed*(-1)
 		end
@@ -3894,7 +3898,7 @@ function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,
 end
 
 --use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt)	
+function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt,setting)	
 	local spec = self.spec_cylindered
 	if tool.transSpeed == nil then
 		return
@@ -3903,9 +3907,9 @@ function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,po
 	local curTrans = { getTranslation(tool.node) }
 	local newTrans = curTrans[tool.translationAxis]
 	-- speed for telescope arm
-	local transSpeed = 0.5
 	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curTrans - newTrans
-	if math.abs(cpDiff) > 0.05 then
+	local transSpeed = math.min(math.max(setting.MIN_TRANS_SPEED,math.abs(cpDiff*5)),setting.MAX_TRANS_SPEED)--0.5
+	if math.abs(cpDiff) > 0.003 then
 		if cpDiff < 0 then
 			transSpeed=transSpeed*(-1)
 		end
@@ -3963,6 +3967,30 @@ end
 
 function WorkingToolPositionsSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:hasValidToolPositions())
+end
+
+function WorkingToolPositionsSetting:devSetMaxRotSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MAX_ROT_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMinRotSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MIN_ROT_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMaxTransSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MAX_TRANS_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMinTransSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MIN_TRANS_SPEED = x
+	end
 end
 
 function WorkingToolPositionsSetting:saveToXMLFile(xmlFile, key, usedModNames)

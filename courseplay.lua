@@ -81,6 +81,7 @@ local function initialize()
 		'vehicles',
 		'PurePursuitController',
 		'Waypoint',
+		'StateModule',
 		'TriggerHandler',
 		'AIDriver',
 		'CombineUnloadAIDriver',

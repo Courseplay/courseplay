@@ -89,7 +89,7 @@ function FieldSupplyAIDriver:drive(dt)
 		--if i'm empty or fillLevel is below threshold then drive to get new stuff
 		if self:isFillLevelToContinueReached() then
 			self:continue()
-			self.loadingState = self.states.NOTHING
+			self.triggerHandler:resetLoadingState()
 		end
 	end
 end

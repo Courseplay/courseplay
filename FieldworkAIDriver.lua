@@ -435,8 +435,8 @@ function FieldworkAIDriver:getNominalSpeed()
 	end
 end
 
-function FieldworkAIDriver:checkFillLevels()
-	if not self:allFillLevelsOk() or self.heldForUnloadRefill then
+function FieldworkAIDriver:checkFillLevels(isWaitingForRefill)
+	if not self:allFillLevelsOk(isWaitingForRefill) or self.heldForUnloadRefill then
 		self:stopAndChangeToUnload()
 	end
 end
@@ -521,7 +521,7 @@ function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 		end
 	elseif self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
 		if g_updateLoopIndex % 5 == 0 then --small delay, to make sure no more fillLevel change is happening
-			if self:allFillLevelsOk() and not self.heldForUnloadRefill then
+			if self:allFillLevelsOk(true) and not self.heldForUnloadRefill then
 				self:debug('unloaded, continue working')
 				-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
 				self:clearInfoText(self:getFillLevelInfoText())
@@ -1453,13 +1453,13 @@ function FieldworkAIDriver:isAutoDriveDriving()
 end
 
 --- Check if need to refill/unload anything
-function FieldworkAIDriver:allFillLevelsOk()
+function FieldworkAIDriver:allFillLevelsOk(isWaitingForRefill)
 	if not self.vehicle.cp.workTools then return false end
 	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
 	-- not the fillTypeToDisplay as this latter is different for each type of seed
 	local fillLevelInfo = {}
 	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	return self:areFillLevelsOk(fillLevelInfo)
+	return self:areFillLevelsOk(fillLevelInfo,isWaitingForRefill)
 end
 
 function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)

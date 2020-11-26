@@ -20,9 +20,9 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.validFillTypeUnloading = false
 	self.validFillTypeUnloadingAugerWagon = false
 	self.validFuelLoading = false
-	self.states = {}
-	self:initStates(TriggerHandler.myLoadingStates)
-	self.loadingState = self.states.STOPPED
+	self.loadingState = StateModule(self,"debug", self.vehicle)
+	self.loadingState:initStates(TriggerHandler.myLoadingStates)
+	self.loadingState.state = self.loadingState.states.STOPPED
 	self.triggers = {}
 	self.objectsInTrigger= {}
 	self.isInAugerWagonTrigger = false
@@ -39,12 +39,6 @@ function TriggerHandler:isDebugActive()
 	return courseplay.debugChannels[2]
 end
 
-function TriggerHandler:initStates(states)
-	for key, _ in pairs(states) do
-		self.states[key] = {name = tostring(key)}
-	end
-end
-
 function TriggerHandler:debugSparse(vehicle,...)
 	if g_updateLoopIndex % self.debugTicks == 0 then
 		courseplay.debugVehicle(self.debugChannel, vehicle, ...)
@@ -56,14 +50,14 @@ function TriggerHandler:debug(vehicle,...)
 end
 
 function TriggerHandler:onStart()
-	self:changeLoadingState(self.states.NOTHING)
+	self:changeLoadingState("NOTHING")
 	self.lastDistanceToTrigger = nil
 	self.triggers = {}
 	self.objectsInTrigger = {}
 end 
 
 function TriggerHandler:onStop()
-	self:changeLoadingState(self.states.STOPPED)
+	self:changeLoadingState("STOPPED")
 	self:forceStopLoading()
 end 
 
@@ -80,7 +74,7 @@ function TriggerHandler:onUpdate(dt)
 	local isNearWaitPoint, waitPointIx = (self.driver.ppc:getCurrentWaypointIx()-5)>1 and self.driver.course:hasWaitPointWithinDistance(self.driver.ppc:getCurrentWaypointIx()-5, 10)
 	if not self:isInTrigger() and not isNearWaitPoint then 
 		if self:isDriveNowActivated() then 
-			self:changeLoadingState(self.states.NOTHING)
+			self:changeLoadingState("NOTHING")
 		end
 	end
 end 
@@ -91,7 +85,7 @@ function TriggerHandler:onDraw()
 		local y = 0.5
 		y = self:renderText(y,"validFillTypeLoading: "..tostring(self.validFillTypeLoading))
 		y = self:renderText(y,"validFillTypeUnloading: "..tostring(self.validFillTypeUnloading))
-		y = self:renderText(y,"loadingState: "..tostring(self.loadingState.name))
+		y = self:renderText(y,"loadingState: "..tostring(self.loadingState:getName()))
 		y = self:renderText(y,"isInTrigger: "..tostring(self:isInTrigger()))
 		local yTable = {}
 		yTable.y = y
@@ -169,36 +163,26 @@ end
 function TriggerHandler:onContinue()
 	self:forceStopLoading()
 	if self:isStopped() then 
-		self:changeLoadingState(self.states.NOTHING)
+		self:changeLoadingState("NOTHING")
 	elseif self:isLoading() or self:isUnloading() then 
-		self:changeLoadingState(self.states.NOTHING)
+		self:changeLoadingState("NOTHING")
 	end
 end
 
 function TriggerHandler:writeUpdateStream(streamId)
-	if self.loadingState ~= self.loadingStateSend then
-		streamWriteBool(streamId,true)
-		streamWriteString(streamId,self.loadingState.name)
-		self.loadingStateSend = self.loadingState
-	else 
-		streamWriteBool(streamId,false)
-	end
+	self.loadingState:onWriteUpdateStream(streamId)
 end
 
 function TriggerHandler:readUpdateStream(streamId)
-	if streamReadBool(streamId) then
-		local nameState = streamReadString(streamId)
-		self.loadingState = self.states[nameState]
-	end
+	self.loadingState:onReadUpdateStream(streamId)
 end
 
 function TriggerHandler:onWriteStream(streamId)
-	streamWriteString(streamId,self.loadingState.name)
+	self.loadingState:onWriteStream(streamId)
 end
 
 function TriggerHandler:onReadStream(streamId)
-	local nameState = streamReadString(streamId)
-	self.loadingState = self.states[nameState]
+	self.loadingState:onReadStream(streamId)
 end
 
 function TriggerHandler:onDriveNow()
@@ -206,10 +190,7 @@ function TriggerHandler:onDriveNow()
 end
 
 function TriggerHandler:changeLoadingState(newState)
-	if newState ~= self.loadingState then 
-		self.loadingState = newState
-		courseplay.debugVehicle(2,self.vehicle,"new TriggerHandler state = %s!",self.loadingState.name)
-	end
+	self.loadingState:changeState(newState)
 end
 
 function TriggerHandler:updateLoadingTriggers()
@@ -307,7 +288,7 @@ function TriggerHandler:setLoadingState(object,fillUnitIndex,fillType,trigger)
 	self:setFillableObject(object,fillUnitIndex,fillType,trigger,true)
 	--saftey check for drive now
 	if not self:isDriveNowActivated() and not self:isLoading() then
-		self:changeLoadingState(self.states.IS_LOADING)
+		self:changeLoadingState("IS_LOADING")
 	end
 end
 
@@ -316,7 +297,7 @@ function TriggerHandler:setFuelLoadingState(object,fillUnitIndex,fillType,trigge
 	self:setFillableObject(object,fillUnitIndex,fillType,trigger,true)
 	--saftey check for drive now
 	if not self:isLoadingFuel() then
-		self:changeLoadingState(self.states.IS_LOADING_FUEL)
+		self:changeLoadingState("IS_LOADING_FUEL")
 	end
 end
 
@@ -337,21 +318,21 @@ function TriggerHandler:resetFillableObject()
 end
 
 function TriggerHandler:isLoading()
-	return self.loadingState == self.states.IS_LOADING or self:isLoadingFuel()
+	return self.loadingState:is("IS_LOADING") or self:isLoadingFuel()
 end
 
 function TriggerHandler:isLoadingFuel()
-	return self.loadingState == self.states.IS_LOADING_FUEL
+	return self.loadingState:is("IS_LOADING_FUEL")
 end
 
 function TriggerHandler:isUnloading()
-	return self.loadingState == self.states.IS_UNLOADING
+	return self.loadingState:is("IS_UNLOADING")
 end
 
 --Driver stops loading
 function TriggerHandler:resetLoadingState()
 	if not self:isDriveNowActivated() then
-		self:changeLoadingState(self.states.NOTHING)
+		self:changeLoadingState("NOTHING")
 	end
 	self.augerTriggerSpeed=nil
 	self:resetFillableObject()
@@ -361,7 +342,7 @@ end
 function TriggerHandler:setUnloadingState(object,fillUnitIndex,fillType)
 	self:setFillableObject(object,fillUnitIndex,fillType)
 	if not self:isDriveNowActivated() then
-		self:changeLoadingState(self.states.IS_UNLOADING)
+		self:changeLoadingState("IS_UNLOADING")
 	end
 	self.driver:refreshHUD()
 end
@@ -369,7 +350,7 @@ end
 --Driver stops unloading 
 function TriggerHandler:resetUnloadingState()
 	if not self:isDriveNowActivated() then
-		self:changeLoadingState(self.states.NOTHING)
+		self:changeLoadingState("NOTHING")
 	end
 	self:resetFillableObject()
 end
@@ -377,7 +358,7 @@ end
 function TriggerHandler:setDriveNow()
 	if self:isLoading() or self:isUnloading() then 
 		self:forceStopLoading()
-		self:changeLoadingState(self.states.DRIVE_NOW)
+		self:changeLoadingState("DRIVE_NOW")
 	end
 	if self:isUnloading() then 
 		courseplay:resetTipTrigger(self.vehicle, true);
@@ -396,11 +377,11 @@ function TriggerHandler:isInTrigger()
 end
 
 function TriggerHandler:isDriveNowActivated()
-	return self.loadingState == self.states.DRIVE_NOW
+	return self.loadingState:is("DRIVE_NOW")
 end
 
 function TriggerHandler:isStopped()
-	return self.loadingState == self.states.STOPPED
+	return self.loadingState:is("STOPPED")
 end
 
 --force stop loading/ unloading if "continue" or stop is pressed
@@ -455,62 +436,6 @@ function TriggerHandler:objectInTrigger(trigger,object)
 	for _,impl in pairs(object:getAttachedImplements()) do
 		if self:objectInTrigger(trigger,impl.object) then 
 			return true
-		end
-	end
-end
-
---this one needs a rework as the raycast dosn't get past the vehicle/trailer..
---TriggerRaycast for checking if we are in a unloading Trigger
-function TriggerHandler:updateExactFillRootNodeRaycast(object)
-	local spec = object.spec_fillUnit 
-	if spec then 
-		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
-			local node = object:getFillUnitExactFillRootNode(fillUnitIndex)
-			if node == nil then 
-				node = object.rootNode
-			end
-			if node then 
-				local x,y,z = getWorldTranslation(node)
-				dx,dy,dz = 0,-2,0
-			--	print(string.format("x:%s, y:%s, z:%s, dx:%s, dy:%s, dz:%s",tostring(x),tostring(y),tostring(z),tostring(dx),tostring(dy),tostring(dz)))
-				
-				local raycast = RaycastObject(self,object)
-				self.currentRaycastObject = object
-				self.currentRaycastFillUnitIndex = fillUnitIndex
-				if self:isDebugActive() then
-					cpDebug:drawLine(x, y, z, 0, 200, 0, dx, dy, dz);
-				end
-				raycastAll(x,y,z, dx,dy,dz, "raycastUnloadTriggerCallback", 5, raycast, nil, false)
-			end
-		end
-	end	
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:updateExactFillRootNodeRaycast(impl.object)
-	end
-end
-
-
-RaycastObject = CpObject()
-function RaycastObject:init(triggerHandler,object)
-	self.triggerHandler = triggerHandler
-	self.object = object
-end
-
-function RaycastObject:raycastUnloadTriggerCallback(hitActorId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
-	if hitActorId ~= nil then
-		local trigger = g_currentMission:getNodeObject(hitActorId)
-		local triggerHandler = self.triggerHandler
-		local object = self.object
-		if trigger and trigger~=object then 
-			DebugUtil.printTableRecursively(trigger, "   ", 1, 3)
-		end
-		if trigger  and trigger.getFillUnitIndexFromNode and trigger:getFillUnitIndexFromNode(hitShapeId) then
-		--	DebugUtil.drawDebugNode(hitActorId, tostring(nameNum(object)..": UnloadTriggerFound"), false)
-			if triggerHandler.objectsInTrigger[object] == nil then
-				triggerHandler.objectsInTrigger[object] = true 
-			end
-		else 
-			triggerHandler.objectsInTrigger[object] = nil
 		end
 	end
 end

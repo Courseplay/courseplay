@@ -28,9 +28,6 @@ OverloaderAIDriver.myStates = {
 
 function OverloaderAIDriver:init(vehicle)
     --there seems to be a bug, where "vehicle" is not always set once start is pressed
-	if vehicle and vehicle:isa(Vehicle) then
-		self:findPipeAndTrailer(vehicle)
-	end
 	CombineUnloadAIDriver.init(self, vehicle)
     self:initStates(OverloaderAIDriver.myStates)
     self:debug('OverloaderAIDriver:init()')
@@ -39,8 +36,8 @@ function OverloaderAIDriver:init(vehicle)
     self.nearOverloadPoint = false
 end
 
-function OverloaderAIDriver:findPipeAndTrailer(vehicle)
-    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(vehicle, Pipe)
+function OverloaderAIDriver:findPipeAndTrailer()
+    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
     if implementWithPipe then
         self.pipe = implementWithPipe.spec_pipe
 		self.objectWithPipe = implementWithPipe
@@ -52,11 +49,12 @@ function OverloaderAIDriver:findPipeAndTrailer(vehicle)
     else
         self:debug('Overloader has no implement with pipe')
     end
-    self.trailer = AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer)
+    self.trailer = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Trailer)
 end
 
 function OverloaderAIDriver:setHudContent()
 	CombineUnloadAIDriver.setHudContent(self)
+	self:findPipeAndTrailer()
 	if self.moveablePipe then
 		courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
 	end
