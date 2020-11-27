@@ -150,7 +150,7 @@ function UnloadableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
 	for fillType, info in pairs(fillLevelInfo) do
 		if self:isValidFillType(fillType) then 
 			local percentage =  info.fillLevel/info.capacity*100 
-			if info.fillLevel >= info.capacity or percentage > self.refillUntilPct:get() then
+			if info.fillLevel >= info.capacity or percentage > self.refillUntilPct:get() or percentage> self.fillLevelFullPercentage  then
 				self:debugSparse('Full or refillUntilPct reached: %.2f', percentage)
 				return false
 			end
