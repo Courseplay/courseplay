@@ -169,17 +169,23 @@ end
 
 --- Get the first valid (non-fuel) fill type
 function UnloadableFieldworkAIDriver:getFillType()
-	local implements  = self.vehicle:getAttachedImplements()
-	for _, implement in ipairs(implements) do
-		if implement.object.getFillUnits then 
-			for _, fillUnit in pairs(implement.object:getFillUnits()) do
+	local function getFillTypeForObject(object)
+		if object.getFillUnits then
+			for _, fillUnit in pairs(object:getFillUnits()) do
 				if self:isValidFillType(fillUnit.fillType) then
 					return fillUnit.fillType
 				end
 			end
 		end
 	end
-	return nil
+
+	local implements  = self.vehicle:getAttachedImplements()
+	local fillType = getFillTypeForObject(self.vehicle)
+	if fillType then return fillType end
+	for _, implement in ipairs(implements) do
+		fillType = getFillTypeForObject(implement.object)
+	end
+	return fillType
 end
 
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
