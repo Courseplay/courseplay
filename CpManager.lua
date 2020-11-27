@@ -835,46 +835,6 @@ function CpManager.drawMouseButtonHelp(self, posY, txt)
 	renderText(xLeft, posY, g_currentMission.helpBoxTextSize, courseplay.inputBindings.mouse.secondaryTextI18n);
 end;
 
-function CpManager:severCombineTractorConnection(vehicle, callDelete)
-	if vehicle.cp then
-		-- VEHICLE IS COMBINE
-		if vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader or courseplay:isSpecialChopper(vehicle) then
-			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS COMBINE]'):format(nameNum(vehicle), tostring(callDelete)), 4);
-			local combine = vehicle;
-			-- remove this combine as savedCombine from all tractors
-			for i,tractor in pairs(g_currentMission.enterables) do
-				if tractor.hasCourseplaySpec and tractor.cp.savedCombine and tractor.cp.savedCombine == combine then
-					courseplay:debug(('\ttractor %q: savedCombine=%q --> removeSavedCombineFromTractor()'):format(nameNum(tractor), nameNum(combine)), 4);
-					courseplay:removeSavedCombineFromTractor(tractor);
-				end;
-			end;
-
-			-- unregister all tractors from this combine (activeCombine)
-			if combine.courseplayers ~= nil then
-				courseplay:debug(('\t.courseplayers ~= nil (%d courseplayers)'):format(#combine.courseplayers), 4);
-				if #combine.courseplayers > 0 then
-					for i,tractor in pairs(combine.courseplayers) do
-						courseplay:debug(('\t\t%q: removeActiveCombineFromTractor(), removeSavedCombineFromTractor()'):format(nameNum(tractor)), 4);
-						courseplay:removeActiveCombineFromTractor(tractor);
-						courseplay:removeSavedCombineFromTractor(tractor); --TODO (Jakob): unnecessary, as done above in enterables table already?
-						tractor.cp.reachableCombines = nil;
-					end;
-					courseplay:debug(('\t-> now has %d courseplayers'):format(#combine.courseplayers), 4);
-				end;
-			end;
-
-		-- VEHICLE IS TRACTOR
-		elseif vehicle.cp.activeCombine ~= nil or vehicle.cp.lastActiveCombine ~= nil or vehicle.cp.savedCombine ~= nil then
-			courseplay:debug(('BaseMission:removeVehicle() -> severCombineTractorConnection(%q, %s) [VEHICLE IS TRACTOR]'):format(nameNum(vehicle), tostring(callDelete)), 4);
-			courseplay:debug(('\tactiveCombine=%q, lastActiveCombine=%q, savedCombine=%q -> removeActiveCombineFromTractor(), removeSavedCombineFromTractor()'):format(nameNum(vehicle.cp.activeCombine), nameNum(vehicle.cp.lastActiveCombine), nameNum(vehicle.cp.savedCombine)), 4);
-			courseplay:removeActiveCombineFromTractor(vehicle);
-			courseplay:removeSavedCombineFromTractor(vehicle);
-			courseplay:debug(('\t-> activeCombine=%q, lastActiveCombine=%q, savedCombine=%q'):format(nameNum(vehicle.cp.activeCombine), nameNum(vehicle.cp.lastActiveCombine), nameNum(vehicle.cp.savedCombine)), 4);
-		end;
-	end;
-end;
-BaseMission.removeVehicle = Utils.prependedFunction(BaseMission.removeVehicle, CpManager.severCombineTractorConnection);
-
 function CpManager:minuteChanged()
 end;
 

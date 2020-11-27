@@ -141,15 +141,7 @@ function courseplay.button:render()
 				hoverColor = 'closeRed';
 			end;
 
-			if fn == 'movePipeToPosition' then
-				if vehicle.cp.pipeWorkToolIndex ~= nil and vehicle.cp.manualPipePositionOrder then
-					targetColor = 'warningRed';
-				elseif vehicle.cp.pipeWorkToolIndex ~= nil then
-					targetColor = 'activeGreen';
-				end	
-			elseif fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
-				targetColor = 'warningRed';
-			elseif not self.isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
+			if not self.isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
 				targetColor = 'white';
 			elseif self.isDisabled then
 				targetColor = 'whiteDisabled';

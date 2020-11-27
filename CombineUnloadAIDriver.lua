@@ -318,7 +318,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
 				self:refreshHUD()
-				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
+				self:openCovers(self.vehicle)
 				self:startWorking()
 			else
 				if combineToWaitFor then
@@ -545,7 +545,7 @@ function CombineUnloadAIDriver:onEndCourse()
 		self:setNewState(self.states.ON_FIELD)
 		self:startWaitingForCombine()
 		self:setDriveUnloadNow(false)
-		courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
+		self:openCovers(self.vehicle)
 		self:disableCollisionDetection()
 	end
 end
@@ -554,7 +554,7 @@ function CombineUnloadAIDriver:onLastWaypoint()
 	if self.state == self.states.ON_FIELD then
 		if self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
 			self:setNewState(self.states.ON_UNLOAD_COURSE)
-			courseplay:openCloseCover(self.vehicle, courseplay.CLOSE_COVERS)
+			self:closeCovers(self.vehicle)
 			AIDriver.onLastWaypoint(self)
 			return
 		elseif self.onFieldState == self.states.DRIVE_TO_FIRST_UNLOADER then
@@ -1112,7 +1112,7 @@ function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
 	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
 	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
-	courseplay:openCloseCover(self.vehicle, courseplay.CLOSE_COVERS)
+	self:closeCovers(self.vehicle)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
