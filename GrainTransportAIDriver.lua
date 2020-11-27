@@ -69,7 +69,9 @@ function GrainTransportAIDriver:drive(dt)
 		--checking FillLevels, while loading at StartPoint 
 		if self.readyToLoadManualAtStart then 
 			self:setInfoText('REACHED_OVERLOADING_POINT')
-			self:checkFillUnits()
+			if g_updateLoopIndex % 5 == 0 then
+				self:checkFillUnits()
+			end
 			self:hold()
 		else
 			self:clearInfoText('REACHED_OVERLOADING_POINT')
@@ -173,13 +175,14 @@ function GrainTransportAIDriver:checkFillUnits()
 	local maxNeeded = self.vehicle.cp.settings.driveOnAtFillLevel:get()
 	local totalFillUnitsData = {}
 	local totalFillLevel = 0
+	local isFilling = false
 	self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
 	for object, objectData in pairs(totalFillUnitsData) do 
 		for fillUnitIndex, fillUnitData in pairs(objectData) do 
 			totalFillLevel = totalFillLevel + fillUnitData.fillLevel
 		end
 	end
-	if self:isFillLevelReached(totalFillLevel) then 
+	if self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
 		self.readyToLoadManualAtStart = false
 		local totalFillUnitsData = {}
 		self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
@@ -187,6 +190,7 @@ function GrainTransportAIDriver:checkFillUnits()
 			SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
 		end
 	end
+	self.lastTotalFillLevel = totalFillLevel
 end
 
 function GrainTransportAIDriver:getFillUnitInfo(object,totalFillUnitsData)

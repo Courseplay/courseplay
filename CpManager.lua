@@ -483,9 +483,12 @@ end;
 function CpManager:devAddMoney()
 	if g_server ~= nil then
 		g_currentMission:addMoney(5000000,1, MoneyType.OTHER,true);
-		return ('Added %s to your bank account'):format(g_i18n:formatMoney(5000000));
-	end;
+	else 
+		CommandEvents.sendEvent("devAddMoney")
+	end
+	return ('Added %s to your bank account'):format(g_i18n:formatMoney(5000000));
 end;
+
 function CpManager:devAddFillLevels()
 	--[[ Ryan TODO FillUtil.NUM_FILLTYPES doesn't have exist in g_fillTypeManager. Also the set and get functions might not exist there any more 
 	if g_server ~= nil then
@@ -500,14 +503,19 @@ function CpManager:devStopAll()
 		for _,vehicle in pairs (self.activeCoursePlayers) do
 			courseplay:stop(vehicle);
 		end
-		
-		return ('stopped all Courseplayers');
-	end;
+	else
+		CommandEvents.sendEvent("devStopAll")
+	end
+	return ('stopped all Courseplayers');
 end;
 
 function CpManager:devSaveAllFields()
-  courseplay.fields.saveAllFields()
-  return( 'All fields saved' )
+	if g_server then
+		courseplay.fields.saveAllFields()
+	else 
+		CommandEvents.sendEvent("devSaveAllFields")
+	end
+	return( 'All fields saved' )
 end
 
 --- Print a global variable
@@ -673,15 +681,25 @@ function CpManager:loadAIDriver()
 end
 
 function CpManager:saveVehiclePositions()
-	DevHelper.saveAllVehiclePositions()
+	if g_server then 
+		DevHelper.saveAllVehiclePositions()
+	else 
+		CommandEvents.sendEvent("saveVehiclePositions")
+	end
 end
 
 function CpManager:restoreVehiclePositions()
-	DevHelper.restoreAllVehiclePositions()
+	if g_server then 
+		DevHelper.restoreAllVehiclePositions()
+	else
+		CommandEvents.sendEvent("restoreVehiclePositions")
+	end
 end
 
 function CpManager:restartSaveGame(saveGameNumber)
-	restartApplication(" -autoStartSavegameId " .. saveGameNumber)
+	if g_server then
+		restartApplication(" -autoStartSavegameId " .. saveGameNumber)
+	end
 end
 
 function CpManager:showCombineUnloadManagerStatus()
@@ -689,12 +707,17 @@ function CpManager:showCombineUnloadManagerStatus()
 end
 
 function CpManager:setLookaheadDistance(d)
-	local vehicle = g_currentMission.controlledVehicle
-	if vehicle and vehicle.cp and vehicle.cp.ppc then
-		vehicle.cp.ppc:setLookaheadDistance(d)
-		print('Look ahead distance for ' .. vehicle.name .. ' changed to ' .. tostring(d))
-	else
-		print('No vehicle or has no PPC.')	
+	if g_server then
+		local vehicle = g_currentMission.controlledVehicle
+		if vehicle and vehicle.cp and vehicle.cp.ppc then
+			vehicle.cp.ppc:setLookaheadDistance(d)
+			print('Look ahead distance for ' .. vehicle.name .. ' changed to ' .. tostring(d))
+		else
+			print('No vehicle or has no PPC.')	
+		end
+	else 
+		CommandEvents.sendEvent("setLookaheadDistance",d)
+		print('trying to change LookaheadDistance.')
 	end
 end
 

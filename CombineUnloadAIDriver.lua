@@ -121,10 +121,6 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineToUnloadReversing = 0
 end
 
-function CombineUnloadAIDriver:postSync()
-	self.assignedCombinesSetting:sendPostSyncRequestEvent()
-end
-
 function CombineUnloadAIDriver:getAssignedCombines()
 	return self.assignedCombinesSetting:getData()
 end
@@ -136,6 +132,16 @@ end
 function CombineUnloadAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self.assignedCombinesSetting)
+end
+
+function CombineUnloadAIDriver:onWriteStream(streamId)
+	self.assignedCombinesSetting:onWriteStream(streamId)
+	AIDriver.onWriteStream(self,streamId)
+end
+
+function CombineUnloadAIDriver:onReadStream(streamId)
+	self.assignedCombinesSetting:onReadStream(streamId)
+	AIDriver.onReadStream(self,streamId)
 end
 
 function CombineUnloadAIDriver:debug(...)

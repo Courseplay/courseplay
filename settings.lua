@@ -1822,7 +1822,7 @@ end
 
 function SettingList:validateCurrentValue()
 	local new = self:checkAndSetValidValue(self.current)
-	self:setToIx(new)
+	self:setToIx(new,true)
 end
 
 function SettingList:getDebugString()
@@ -2802,7 +2802,12 @@ function ShowMapHotspotSetting:onWriteStream(stream)
 	SettingList.onWriteStream(self,stream)
 	if self.mapHotspot~=nil then 
 		streamWriteBool(stream,true)
-		streamWriteUInt8(streamId, self.vehicle.currentHelper.index)
+		if self.vehicle.currentHelper and self.vehicle.currentHelper.index ~= nil then 
+			streamWriteBool(stream,true)
+			streamWriteUInt8(stream, self.vehicle.currentHelper.index)
+		else 
+			streamWriteBool(stream,false)
+		end
 	else 
 		streamWriteBool(stream,false)
 	end
@@ -2811,8 +2816,10 @@ end
 function ShowMapHotspotSetting:onReadStream(stream)
 	SettingList.onReadStream(self,stream)
 	if streamReadBool(stream) then
-		local helperIndex = streamReadUInt8(streamId)
-		self.vehicle.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
+		if streamReadBool(stream) then
+			local helperIndex = streamReadUInt8(stream)
+			self.vehicle.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
+		end
 		--add to activeCoursePlayers
 		CpManager:addToActiveCoursePlayers(self.vehicle)	
 		-- add ingameMap icon
@@ -3525,21 +3532,67 @@ function AssignedCombinesSetting:getPossibleCombines()
 	return g_combineUnloadManager:getPossibleCombines(self.vehicle)
 end
 
+function AssignedCombinesSetting:onReadStream(streamId)
+	while streamReadBool(streamId) do 
+		if self.combineIDs == nil then
+			self.combineIDs = {}
+		end
+		local combineId = NetworkUtil.readNodeObjectId(streamId)
+		self.combineIDs[combineId] = true
+	end
+end
+
+-- while onReadStream not every vehicle is created,
+-- so assign them after every vehicle is init with the NetworkIds
+function AssignedCombinesSetting:fixOnReadStream()
+	if self.combineIDs and next(self.combineIDs) then 
+		for combineId,isAssigned in pairs(self.combineIDs) do
+			local combine = NetworkUtil.getObject(combineId)
+			self.table[combine] = true
+		end
+		self.combineIDs = nil
+	end
+end
+
+function AssignedCombinesSetting:onWriteStream(streamId)
+	for combine,isAssigned in pairs(self.table) do 
+		if isAssigned then 
+			streamWriteBool(streamId, true)
+			NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(combine))
+		end
+	end
+	streamWriteBool(streamId, false)
+end
+
 --enables/disables connection between combine/tractor
-function AssignedCombinesSetting:toggleAssignedCombine(index,noEventSend)
+function AssignedCombinesSetting:toggleAssignedCombine(index)
 	local newIndex = index-2+self.offsetHead
 	local possibleCombines = self:getPossibleCombines()
 	local combine =	possibleCombines[newIndex]
+	self:fixOnReadStream()
 	if combine then 
-		self:toggleDataByIndex(combine)
+		if self.table[combine] then 
+			self.table[combine] = nil
+		else
+			self.table[combine] = true
+		end
+		AssignedCombinesEvents.sendEvent(self.vehicle,combine)
+		self.vehicle.cp.driver:refreshHUD()
 	end
-	if not noEventSend then 
-		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.TOGGLE,index)
+end
+
+function AssignedCombinesSetting:toggleAssignedCombineFromNetwork(combine)
+	self:fixOnReadStream()
+	if self.table[combine] then 
+		self.table[combine] = nil
+	else
+		self.table[combine] = true
 	end
 	self.vehicle.cp.driver:refreshHUD()
 end
 
 function AssignedCombinesSetting:getTexts()
+	self:fixOnReadStream()
 	local x = 1+self.offsetHead
 	local line = 1
 	local texts = {}
@@ -3549,7 +3602,7 @@ function AssignedCombinesSetting:getTexts()
 		if possibleCombines[i] then
 			local combine = possibleCombines[i]
 			local fieldNumber = g_combineUnloadManager:getFieldNumber(combine)
-			local box = self:getDataByIndex(combine) and "[X]"or "[  ]"
+			local box = self.table[combine] and "[X]"or "[  ]"
 			local text = string.format("%s %s (Field %d)",box, combine.name , fieldNumber)
 			texts[line] = text
 		else
@@ -3588,41 +3641,7 @@ function AssignedCombinesSetting:changeListOffset(x,noEventSend)
 	elseif x<0 and self:allowedToChangeListOffsetDown() then 
 		self.offsetHead = self.offsetHead-1
 	end
-	if not noEventSend then 
-		AssignedCombinesEvents:sendEvent(self.vehicle,self.NetworkTypes.CHANGE_OFFSET,x)
-	end
 	self.vehicle.cp.driver:refreshHUD()
-end
-
-function AssignedCombinesSetting:sendPostSyncRequestEvent()
-	RequestAssignedCombinesPostSyncEvent:sendEvent(self.vehicle)
-end
-
-function AssignedCombinesSetting:sendPostSyncEvent(connection)
-	connection:sendEvent(AssignedCombinesPostSyncEvent:new(self.vehicle,self:getData(),self.offsetHead))
-end
-
-function AssignedCombinesSetting:setNetworkValues(assignedCombines,offsetHead)
-	for combine,bool in pairs(assignedCombines) do
-		self:addElementByIndex(combine,true)
-	end
-	self.offsetHead = offsetHead
-end
-
-function AssignedCombinesSetting:addElementByIndex(index,data)
-	self.table[index] = data
-end
-
-function AssignedCombinesSetting:toggleDataByIndex(index)
-	if self.table[index] then 
-		self.table[index] = nil
-	else
-		self.table[index] = true
-	end
-end
-
-function AssignedCombinesSetting:getDataByIndex(index)
-	return self.table[index]
 end
 
 function AssignedCombinesSetting:getData()
@@ -3729,6 +3748,10 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	self.playTestPostion = nil
 	self.validSpecs = validSpecs
 	self.xmlAttribute = '#hasPositions'
+	self.MAX_ROT_SPEED = 0.7
+	self.MIN_ROT_SPEED = 0.1
+	self.MAX_TRANS_SPEED = 0.7
+	self.MIN_TRANS_SPEED = 0.2
 end
 
 function WorkingToolPositionsSetting:getTexts()
@@ -3830,10 +3853,10 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 	if spec and spec.cpWorkingToolPos and spec.cpWorkingToolPos[posX] and self:isValidSpec(object) then 
 		local isDirty
 		for toolIndex, tool in ipairs(spec.movingTools) do
-			if self.checkToolRotation(object,tool,toolIndex,posX,dt) then
+			if self.checkToolRotation(object,tool,toolIndex,posX,dt,self) then
 				isDirty = true
 			end
-			if self.checkToolTranslation(object,tool,toolIndex,posX,dt) then
+			if self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) then
 				isDirty = true
 			end		
 			if isDirty then 
@@ -3847,7 +3870,7 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 end
 
 --use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt)
+function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt,setting)
 	local spec = self.spec_cylindered
 	if tool.rotSpeed == nil then
 		return
@@ -3856,9 +3879,9 @@ function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,
 	local curRot = { getRotation(tool.node) }
 	local newRot = curRot[tool.rotationAxis]
 	-- speed for frontloader, shovel, etc achses
-	local rotSpeed = 0.7
 	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curRot - newRot
-	if math.abs(cpDiff) > 0.03 then
+	local rotSpeed = math.min(math.max(setting.MIN_ROT_SPEED,math.abs(cpDiff*5)),setting.MAX_ROT_SPEED)--0.7
+	if math.abs(cpDiff) > 0.003 then
 		if cpDiff < 0 then
 			rotSpeed=rotSpeed*(-1)
 		end
@@ -3875,7 +3898,7 @@ function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,
 end
 
 --use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt)	
+function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt,setting)	
 	local spec = self.spec_cylindered
 	if tool.transSpeed == nil then
 		return
@@ -3884,9 +3907,9 @@ function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,po
 	local curTrans = { getTranslation(tool.node) }
 	local newTrans = curTrans[tool.translationAxis]
 	-- speed for telescope arm
-	local transSpeed = 0.5
 	cpDiff = spec.cpWorkingToolPos[posX][toolIndex].curTrans - newTrans
-	if math.abs(cpDiff) > 0.05 then
+	local transSpeed = math.min(math.max(setting.MIN_TRANS_SPEED,math.abs(cpDiff*5)),setting.MAX_TRANS_SPEED)--0.5
+	if math.abs(cpDiff) > 0.003 then
 		if cpDiff < 0 then
 			transSpeed=transSpeed*(-1)
 		end
@@ -3944,6 +3967,30 @@ end
 
 function WorkingToolPositionsSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:hasValidToolPositions())
+end
+
+function WorkingToolPositionsSetting:devSetMaxRotSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MAX_ROT_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMinRotSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MIN_ROT_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMaxTransSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MAX_TRANS_SPEED = x
+	end
+end
+
+function WorkingToolPositionsSetting:devSetMinTransSpeed(x)
+	if x ~= nil and type(x) == "number" then
+		self.MIN_TRANS_SPEED = x
+	end
 end
 
 function WorkingToolPositionsSetting:saveToXMLFile(xmlFile, key, usedModNames)
@@ -4033,9 +4080,14 @@ function AugerPipeToolPositionsSetting:getText()
 	end
 end
 
+---@class ShovelStopAndGoSetting : BooleanSetting
+ShovelStopAndGoSetting = CpObject(BooleanSetting)
+function ShovelStopAndGoSetting:init(vehicle)
+	BooleanSetting.init(self, 'shovelStopAndGo','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
+	self:set(true)
+end
 
 --[[
-
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
 function SearchCombineAutomaticallySetting:init(vehicle)

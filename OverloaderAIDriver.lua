@@ -27,12 +27,12 @@ OverloaderAIDriver.myStates = {
 }
 
 function OverloaderAIDriver:init(vehicle)
+    --there seems to be a bug, where "vehicle" is not always set once start is pressed
 	CombineUnloadAIDriver.init(self, vehicle)
     self:initStates(OverloaderAIDriver.myStates)
     self:debug('OverloaderAIDriver:init()')
     self.mode = courseplay.MODE_OVERLOADER
-    self.unloadCourseState = self.states.ENROUTE
-    self:findPipeAndTrailer()
+	self.unloadCourseState = self.states.ENROUTE
     self.nearOverloadPoint = false
 end
 
@@ -54,6 +54,7 @@ end
 
 function OverloaderAIDriver:setHudContent()
 	CombineUnloadAIDriver.setHudContent(self)
+	self:findPipeAndTrailer()
 	if self.moveablePipe then
 		courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
 	end

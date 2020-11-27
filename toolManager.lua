@@ -30,6 +30,9 @@ function courseplay:onPostDetachImplement(implementIndex)
 	if sAI[implementIndex].object == self.cp.attachedCombine then
 		self.cp.attachedCombine = nil;
 	end
+	if self.cp.driver then 
+		self.cp.driver:refreshHUD()
+	end
 end;
 
 function courseplay:resetTools(vehicle)

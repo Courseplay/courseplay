@@ -162,10 +162,6 @@ function CombineAIDriver:getCombine()
 	return self.combine
 end
 
-function CombineAIDriver:postSync()
-	--TODO: figure out if we need this or not for multiplayer ??
-end
-
 function CombineAIDriver:start(startingPoint)
 	self:clearAllUnloaderInformation()
 	self:addBackwardProximitySensor()

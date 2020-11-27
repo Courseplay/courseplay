@@ -109,7 +109,6 @@ function ShovelModeAIDriver:start()
 		end;
 	end;
 	
-	
 	local vAI = vehicle:getAttachedImplements()
 	for i,_ in pairs(vAI) do
 		local object = vAI[i].object
@@ -129,7 +128,6 @@ function ShovelModeAIDriver:start()
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
-
 	AIDriver.continue(self)
 end
 
@@ -240,10 +238,6 @@ function ShovelModeAIDriver:drive(dt)
 		elseif currentDischargeNode.dischargeObject or currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
 			self:setShovelToPositionFinshed(4,dt)
 			self:hold()
-		elseif not self:getIsShovelEmpty() then  --drive in straight line to waitPoint is UnloadStation(UnloadTrigger) or correct Trailer was found
-			notAllowedToDrive = true
-			local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
-			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
 		end
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY then
 		self:hold()
@@ -319,7 +313,7 @@ function ShovelModeAIDriver:driveIntoSilo(dt)
 		refSpeed = math.min(10,self.refSpeed)
 	end
 
-	if vehicle.cp.shovelStopAndGo and self:getFillLevelDoesChange() then
+	if vehicle.cp.settings.shovelStopAndGo:is(true) and self:getFillLevelDoesChange() then
 		allowedToDrive = false;
 	end
 
@@ -376,30 +370,37 @@ end
 
 function ShovelModeAIDriver:searchForUnloadingObjectRaycast()
 	local vehicle = self.vehicle
-	local rx, ry, rz = self.course:getWaypointPosition(self.shovelEmptyPoint)
-	local nx, nz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, rx, ry, rz);
-	local lx7,ly7,lz7 = localDirectionToWorld(vehicle.cp.directionNode, nx, -1, nz);
-	for i=6,12 do
+	local ix = self.shovelEmptyPoint
+	local node = WaypointNode('proxyNode')
+	node:setToWaypoint(self.course, ix, true)
+	setRotation(node.node, 0, self.course:getWaypointYRotation(ix-1), 0)
+	local lx, lz = MathUtil.getDirectionFromYRotation(self.course:getWaypointYRotation(ix-1))
+	local ly = -1
+	for i=1,6 do
 		if self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
-			local x,y,z = localToWorld(vehicle.cp.directionNode,0,4,i);
-			raycastAll(x, y, z, lx7, ly7, lz7, "searchForUnloadingObjectRaycastCallback", 10, self);
+			local x,y,z = localToWorld(node.node,0,4,i);
+			raycastAll(x, y, z, lx, ly, lz, "searchForUnloadingObjectRaycastCallback", 10, self);
 			if courseplay.debugChannels[10] then
-				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx7*10, y+ly7*10, z+lz7*10);
+				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx*10, y+ly*10, z+lz*10);
 			end;
 		end
 	end;
+	node:destroy()
 end
 
-function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, y, z, distance)
-	local trailer = g_currentMission.nodeToObject[transformId]
-	if trailer then
-		if trailer:isa(Vehicle) then 
-			if trailer.getFillUnitSupportsToolType then
-				for fillUnitIndex,fillUnit in pairs(trailer:getFillUnits()) do
-					local allowedToFillByShovel = trailer:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE)
+function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
+	local object = g_currentMission:getNodeObject(transformId)
+	if self.shovelState ~= self.states.STATE_WAIT_FOR_TARGET then
+		return
+	end
+	if object then
+		if object:isa(Vehicle) then 
+			if object.getFillUnitSupportsToolType then
+				for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do
+					local allowedToFillByShovel = object:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE)
 					local dischargeNode = self.shovel:getCurrentDischargeNode()		
 					local fillType = self.shovel:getDischargeFillType(dischargeNode)
-					local supportedFillType = trailer:getFillUnitSupportsFillType(fillUnitIndex,fillType)
+					local supportedFillType = object:getFillUnitSupportsFillType(fillUnitIndex,fillType)
 					if allowedToFillByShovel then 
 						self:debug("allowedToFillByShovel")
 						if supportedFillType then 
@@ -409,22 +410,39 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 							self.foundTrailer = true
 							return
 						else
-							self:debug("not  supportedFillType")
+							self:debugSparse("not  supportedFillType")
 						end
 					else
-						self:debug("not  allowedToFillByShovel")
+						self:debugSparse("not  allowedToFillByShovel")
 					end
 				end
 			else
-				self:debug("FillUnit not found!")
+				self:debugSparse("FillUnit not found!")
 			end
 			return
-		elseif trailer:isa(UnloadTrigger) then 
+		elseif object:isa(UnloadTrigger) then 
 			self:debug("UnloadTrigger found!")
 			self:setShovelState(self.states.STATE_START_UNLOAD)
 			return
+		elseif object.getFillUnitIndexFromNode ~= nil then
+			local fillUnitIndex = object:getFillUnitIndexFromNode(hitShapeId)
+			if fillUnitIndex ~= nil then
+				local dischargeNode = self.shovel:getCurrentDischargeNode()		
+				local fillType = self.shovel:getDischargeFillType(dischargeNode)
+				if object:getFillUnitSupportsFillType(fillUnitIndex, fillType) then
+					self:debug("Trigger found!")
+					self:setShovelState(self.states.STATE_START_UNLOAD)
+				else 
+					self:debugSparse("fillType not supported!")
+				end
+			else 
+				self:debugSparse("no fillUnitIndex found!")
+			end
+		else 
+			self:debugSparse("object found, but no UnloadTrigger or trailer!")
 		end
 	else
+		self:debugSparse("Nothing found!")
 		return
 	end
 end
@@ -489,7 +507,7 @@ function ShovelModeAIDriver:setShovelState(state, extraText)
 	end
 	if self.shovelState ~= state then
 		self.shovelState = state;
-		self:debug("called setShovelState to "..nameString)
+		self:debugSparse("called setShovelState to "..nameString)
 	end
 end;
 
