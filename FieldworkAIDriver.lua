@@ -685,6 +685,9 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.frontMarkerDistance)
 				self.aiDriverOffsetZ = -self.frontMarkerDistance
 			end
+		elseif not self.course:isOnHeadland(ix) and self.course:isOnHeadland(ix + 1) then
+			self:debug('last row waypoint before switching to the headland')
+			self:finishRow(ix)
 		end
 		if self.fieldworkState ~= self.states.TURNING and self.course:isTurnStartAtIx(ix) then
 			self:startTurn(ix)
@@ -698,7 +701,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 end
 
 function FieldworkAIDriver:onTowedImplementPassedWaypoint(ix)
-	self:debug('Implement passsed waypoint %d', ix)
+	self:debug('Implement passed waypoint %d', ix)
 end
 
 --- Should we return to the first point of the course after we are done?
@@ -1103,6 +1106,14 @@ end
 
 function FieldworkAIDriver:getTurnEndForwardOffset()
 	return 0
+end
+
+function FieldworkAIDriver:finishRow(ix)
+	self:setMarkers()
+	self.turnContext = RowFinishingContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+			self.frontMarkerDistance, self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
+	self.aiTurn = FinishRowOnly(self.vehicle, self, self.turnContext)
+	self.fieldworkState = self.states.TURNING
 end
 
 function FieldworkAIDriver:startTurn(ix)
