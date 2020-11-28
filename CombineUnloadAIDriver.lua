@@ -119,6 +119,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
 	self.combineToUnloadReversing = 0
+	self.doNotSwerveForVehicle = CpTemporaryObject()
 end
 
 function CombineUnloadAIDriver:getAssignedCombines()
@@ -259,7 +260,8 @@ function CombineUnloadAIDriver:isTrafficConflictDetectionEnabled()
 			(self.state == self.states.ON_FIELD and self.onFieldState.properties.checkForTrafficConflict)
 end
 
-function CombineUnloadAIDriver:isProximitySwerveEnabled()
+function CombineUnloadAIDriver:isProximitySwerveEnabled(vehicle)
+	if vehicle == self.doNotSwerveForVehicle:get() then return false end
 	return (self.state == self.states.ON_UNLOAD_COURSE and self.state.properties.enableProximitySwerve) or
 			(self.state == self.states.ON_FIELD and self.onFieldState.properties.enableProximitySwerve)
 end
@@ -360,6 +362,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_TO_COMBINE then
+
+		-- do not swerve for our combine, otherwise we won't be able to align with it when coming from
+		-- the wrong angle
+		self.doNotSwerveForVehicle:set(self.combineToUnload, 2000)
 
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_TO_COMBINE");
 

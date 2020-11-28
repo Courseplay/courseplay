@@ -1958,7 +1958,7 @@ function AIDriver:disableProximitySwerve()
 	self.proximitySwerveEnabled = false
 end
 
-function AIDriver:isProximitySwerveEnabled()
+function AIDriver:isProximitySwerveEnabled(vehicle)
 	return self.proximitySwerveEnabled
 end
 
@@ -2062,7 +2062,7 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	local sameDirection = TurnContext.isSameDirection(
 			AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(vehicle), 45)
 	-- check for nil and NaN
-	if deg and deg == deg and self:isProximitySwerveEnabled() and
+	if deg and deg == deg and self:isProximitySwerveEnabled(vehicle) and
 			(not sameDirection or not vehicle:getIsCourseplayDriving())then
 		local dx = dAvg * math.sin(math.rad(deg))
 		-- which direction to swerve (have a little bias for right, sorry UK folks :)
