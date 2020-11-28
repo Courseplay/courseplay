@@ -2013,6 +2013,7 @@ end
 -- We are blocking another vehicle who wants us to move out of way
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
+	if not self:isActive() then return end
 	self:debugSparse('%s wants me to move out of way', blockedVehicle:getName())
 	if blockedVehicle.cp.driver:isChopper() then
 		-- TODO: think about how to best handle choppers, since they always stop when no trailer
@@ -2048,7 +2049,7 @@ function CombineUnloadAIDriver:moveOutOfWay()
 	-- d may be big enough but parts of the combine still close
 	local d = self:getDistanceFromCombine(self.blockedVehicle)
 	local dProximity = self.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
-	local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
+	local combineSpeed = (self.blockedVehicle.lastSpeedReal * 3600)
 	local speed = combineSpeed +
 			MathUtil.clamp(self.minDistanceWhenMovingOutOfWay - math.min(d, dProximity), -combineSpeed, self.vehicle.cp.speeds.reverse * 1.2)
 
