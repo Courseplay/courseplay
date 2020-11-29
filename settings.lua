@@ -168,9 +168,6 @@ function courseplay:cancelWait(vehicle, cancelStopAtEnd)
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
 	end;
-	if vehicle.cp.mode == 1 or vehicle.cp.mode == 3 then
-		vehicle.cp.isUnloaded = true;
-	end;
 	if cancelStopAtEnd then
 		vehicle.cp.settings.stopAtEnd:set(false)
 	end;
@@ -448,12 +445,6 @@ function courseplay:removeActiveCombineFromTractor(vehicle)
 	if vehicle.cp.driver and vehicle.cp.driver.onUserUnassignedActiveCombine then
 		vehicle.cp.driver:onUserUnassignedActiveCombine()
 	end
-	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
-end;
-
-function courseplay:removeSavedCombineFromTractor(vehicle)
-	vehicle.cp.savedCombine = nil;
-	vehicle.cp.selectedCombineNumber = 0;
 	courseplay.hud:setReloadPageOrder(vehicle, 4, true);
 end;
 
@@ -811,19 +802,6 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
---old code ???
---Course generation
-function courseplay:switchStartingCorner(vehicle)
-	local newStartingCorner = vehicle.cp.startingCorner + 1
-	if newStartingCorner == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION and not vehicle.cp.generationPosition.hasSavedPosition then
-		-- must have saved position for this, if not, skip it
-		newStartingCorner = newStartingCorner + 1
-	end
-	if newStartingCorner > courseGenerator.STARTING_LOCATION_MAX then
-		newStartingCorner = courseGenerator.STARTING_LOCATION_MIN
-	end;
-	self:setStartingCorner( vehicle, newStartingCorner )
-end
 
 --still used in CourseGeneratorScreen.lua ??
 function courseplay:setStartingCorner( vehicle, newStartingCorner )
@@ -853,55 +831,6 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 	end 
 end
 	
---old code ???
-function courseplay:changeStartingDirection(vehicle)
-	-- corners: 1 = SW, 2 = NW, 3 = NE, 4 = SE, 5 = Vehicle location, 6 = Last vehicle location
-	-- directions: 1 = North, 2 = East, 3 = South, 4 = West, 5 = auto generated, see courseGenerator.ROW_DIRECTION*
-	local clockwise = true
-	if vehicle.cp.hasStartingCorner then
-		if vehicle.cp.isNewCourseGenSelected() then -- Vehicle location
-			if vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC then
-				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_LONGEST_EDGE, courseplay.isClient);
-			elseif vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE then
-				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_MANUAL, courseplay.isClient);
-			else  
-				vehicle:setCpVar('rowDirectionMode', courseGenerator.ROW_DIRECTION_AUTOMATIC, courseplay.isClient);
-			end
-			vehicle:setCpVar('startingDirection', vehicle.cp.rowDirectionMode, courseplay.isClient);
-		else
-			-- legacy course generator
-			local validDirections = {};
-			if vehicle.cp.startingCorner == 1 then --SW
-				validDirections[1] = 1; --N
-				validDirections[2] = 2; --E
-			elseif vehicle.cp.startingCorner == 2 then --NW
-				validDirections[1] = 2; --E
-				validDirections[2] = 3; --S
-			elseif vehicle.cp.startingCorner == 3 then --NE
-				validDirections[1] = 3; --S
-				validDirections[2] = 4; --W
-			elseif vehicle.cp.startingCorner == 4 then --SE
-				validDirections[1] = 4; --W
-				validDirections[2] = 1; --N
-			end;
-			--would be easier with i=i+1, but more stored variables would be needed
-			if vehicle.cp.startingDirection == 0 then
-				vehicle:setCpVar('startingDirection',validDirections[1],courseplay.isClient);
-			elseif vehicle.cp.startingDirection == validDirections[1] then
-				vehicle:setCpVar('startingDirection',validDirections[2],courseplay.isClient);
-				clockwise = false
-			elseif vehicle.cp.startingDirection == validDirections[2] then
-				vehicle:setCpVar('startingDirection',validDirections[1],courseplay.isClient);
-			end;
-		end
-		vehicle:setCpVar('hasStartingDirection',true,courseplay.isClient);
-	end;
-	if vehicle.cp.headland.userDirClockwise ~= clockwise then
-		courseplay:toggleHeadlandDirection(vehicle)
-	end
-	courseplay:validateCourseGenerationData(vehicle);
-end;
-
 function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
 	vehicle.cp.headland.numLanes = MathUtil.clamp(vehicle.cp.headland.numLanes + changeBy,
 		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
@@ -997,10 +926,6 @@ function courseplay:validateCanSwitchMode(vehicle)
 	if courseplay.debugChannels[12] then
 		courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
 	end;
-end;
-
-function courseplay:toggleShovelStopAndGo(vehicle)
-	vehicle.cp.shovelStopAndGo = not vehicle.cp.shovelStopAndGo;
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
@@ -1257,42 +1182,6 @@ function courseplay:setEngineState(vehicle, on)
 	end;
 end;
 
-function courseplay:setCurrentTargetFromList(vehicle, index)
-	if #vehicle.cp.nextTargets == 0 then return; end;
-	index = index or 1;
-
-	vehicle.cp.curTarget = vehicle.cp.nextTargets[index];
-	if index == 1 then
-		table.remove(vehicle.cp.nextTargets, 1);
-		return;
-	end;
-
-	for i=index,1,-1 do
-		table.remove(vehicle.cp.nextTargets, i);
-	end;
-end;
-
-function courseplay:addNewTargetVector(vehicle, x, z, trailer,node,rev)
-	local tx, ty, tz = 0,0,0
-	local pointReverse = false
-	if node ~= nil then
-		tx, ty, tz = localToWorld(node, x, 0, z);
-	elseif trailer ~= nil then
-		tx, ty, tz = localToWorld(trailer.rootNode, x, 0, z);
-	else
-		tx, ty, tz = localToWorld(vehicle.cp.directionNode or vehicle.rootNode, x, 0, z);
-	end
-	if rev then
-		pointReverse = true
-	end
-	table.insert(vehicle.cp.nextTargets, { x = tx, y = ty, z = tz,rev = pointReverse });
-end;
-
-
-function courseplay:changeLastValidTipDistance(vehicle, changeBy)
-	vehicle.cp.lastValidTipDistance = MathUtil.clamp(vehicle.cp.lastValidTipDistance + changeBy, -500, 0);
-end;
-
 function courseplay:toggleSucHud(vehicle)
 	vehicle.cp.suc.active = not vehicle.cp.suc.active;
 	---courseplay.buttons:setActiveEnabled(vehicle, 'suc');
@@ -1325,19 +1214,6 @@ function courseplay:canUseWeightStation(vehicle)
 	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 8;
 end;
 
-function courseplay:canScanForWeightStation(vehicle)
-	local scan = false;
-	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		scan = vehicle.cp.waypointIndex > 2;
-	elseif vehicle.cp.mode == 4 or vehicle.cp.mode == 6 then
-		scan = vehicle.cp.stopWork ~= nil and vehicle.cp.waypointIndex > vehicle.cp.stopWork;
-	elseif vehicle.cp.mode == 8 then
-		scan = true;
-	end;
-
-	return scan;
-end;
-
 function courseplay:setSlippingStage(vehicle, stage)
 	if vehicle.cp.slippingStage ~= stage then
 		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), 14);
@@ -1345,39 +1221,7 @@ function courseplay:setSlippingStage(vehicle, stage)
 	end;
 end;
 
-
-
-
-function courseplay:changeDriveControlMode(vehicle, changeBy)
-	vehicle.cp.driveControl.mode = MathUtil.clamp(vehicle.cp.driveControl.mode + changeBy, vehicle.cp.driveControl.OFF, vehicle.cp.driveControl.AWD_BOTH_DIFF);
-end;
-
-function courseplay:getAndSetFixedWorldPosition(object, recursive)
-	if object.cp.fixedWorldPosition == nil then
-		object.cp.fixedWorldPosition = {};
-		object.cp.fixedWorldPosition.px, object.cp.fixedWorldPosition.py, object.cp.fixedWorldPosition.pz = getWorldTranslation(object.components[1].node);
-		object.cp.fixedWorldPosition.rx, object.cp.fixedWorldPosition.ry, object.cp.fixedWorldPosition.rz = getWorldRotation(object.components[1].node);
-	end;
-	local fwp = object.cp.fixedWorldPosition;
-	object:setWorldPosition(fwp.px,fwp.py,fwp.pz, fwp.rx,fwp.ry,fwp.rz, 1);
-
-	if recursive and object.getAttachedImplements then
-		for _,impl in pairs(object:getAttachedImplements()) do
-			courseplay:getAndSetFixedWorldPosition(impl.object);
-		end;
-	end;
-end;
-
-function courseplay:deleteFixedWorldPosition(object, recursive)
-	object.cp.fixedWorldPosition = nil;
-
-	if recursive and object.getAttachedImplements then
-		for _,impl in pairs(object:getAttachedImplements()) do
-			courseplay:deleteFixedWorldPosition(impl.object);
-		end;
-	end;
-end;
-
+--old code ????
 function courseplay:setAttachedCombine(vehicle)
 	--- If vehicle do not have courseplay spec, then skip it.
 	if not vehicle.hasCourseplaySpec then

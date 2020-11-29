@@ -348,9 +348,6 @@ function courseplay:copyCourse(vehicle)
 		
 		vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z ,vehicle.cp.curTarget.rev = nil, nil, nil, nil;
 		vehicle.cp.nextTargets = {};
-		if vehicle.cp.activeCombine ~= nil then
-			courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine);
-		end
 
 		vehicle.cp.recordingTimer = 1;
 
@@ -393,9 +390,6 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	courseplay:setWaypointIndex(vehicle, 1,true);
 	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
 	vehicle.cp.nextTargets = {};
-	if vehicle.cp.activeCombine ~= nil then
-		courseplay:unregisterFromCombine(vehicle, vehicle.cp.activeCombine)
-	end
 	vehicle.cp.loadedCourses = {}
 --	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
 	vehicle.cp.currentCourseName = nil

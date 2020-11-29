@@ -167,27 +167,6 @@ function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
 	return false
 end
 
---- Get the first valid (non-fuel) fill type
-function UnloadableFieldworkAIDriver:getFillType()
-	local function getFillTypeForObject(object)
-		if object.getFillUnits then
-			for _, fillUnit in pairs(object:getFillUnits()) do
-				if self:isValidFillType(fillUnit.fillType) then
-					return fillUnit.fillType
-				end
-			end
-		end
-	end
-
-	local implements  = self.vehicle:getAttachedImplements()
-	local fillType = getFillTypeForObject(self.vehicle)
-	if fillType then return fillType end
-	for _, implement in ipairs(implements) do
-		fillType = getFillTypeForObject(implement.object)
-	end
-	return fillType
-end
-
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
 	return not self:isValidFuelType(self.vehicle,fillType) and fillType ~= FillType.DEF	and fillType ~= FillType.AIR 
 end

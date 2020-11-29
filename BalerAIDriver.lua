@@ -23,7 +23,9 @@ function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
-	self.balerSpec = self.baler.spec_baler
+	if self.baler then
+		self.balerSpec = self.baler.spec_baler
+	end
 	self.slowDownFillLevel = 200
     self.slowDownStartSpeed = 20
 end
@@ -40,14 +42,18 @@ end
 function BalerAIDriver:start(startingPoint)
 	UnloadableFieldworkAIDriver.start(self,startingPoint)
 	--use giants automaticDrop, so we don't have to do it 
-	self.oldAutomaticDrop = self.balerSpec.automaticDrop
-	self.balerSpec.automaticDrop = true
+	if self.balerSpec then
+		self.oldAutomaticDrop = self.balerSpec.automaticDrop
+		self.balerSpec.automaticDrop = true
+	end
 end
 
 function BalerAIDriver:dismiss()
 	UnloadableFieldworkAIDriver.dismiss(self)
 	--revert possible change for the player to default 
-	self.balerSpec.automaticDrop = self.oldAutomaticDrop
+	if self.balerSpec then
+		self.balerSpec.automaticDrop = self.oldAutomaticDrop
+	end
 end
 
 function BalerAIDriver:allFillLevelsOk()

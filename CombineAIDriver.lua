@@ -1135,6 +1135,14 @@ function CombineAIDriver:canLoadTrailer(trailer)
 	return false, 0
 end
 
+function CombineAIDriver:getFillType()
+	local dischargeNode = self.vehicle:getDischargeNodeByIndex(self.vehicle:getPipeDischargeNodeIndex())
+	if dischargeNode then
+		return self.vehicle:getFillUnitFillType(dischargeNode.fillUnitIndex)
+	end
+	return nil
+end
+
 -- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
 -- trailer and can start discharging. This returning true does not mean there's a trailer under the pipe,
 -- this seems more like for choppers to check if there's a potential target around
