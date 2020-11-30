@@ -2074,8 +2074,14 @@ function AIDriver:isFuelLevelOk()
 	return true
 end
 
-function AIDriver:isValidFuelType(object,fillType)
-	return object.getConsumerFillUnitIndex and object:getConsumerFillUnitIndex(fillType)  
+function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
+	if object.getConsumerFillUnitIndex then 
+		local index = object:getConsumerFillUnitIndex(fillType)
+		if fillUnitIndex ~= nil then 
+			return fillUnitIndex and fillUnitIndex == index
+		end		
+		return index 
+	end
 end
 
 function AIDriver:getFuelLevelPercentage()
@@ -2127,7 +2133,7 @@ function AIDriver:openCovers(object,validFillType)
 end
 
 --close all covers
-function AIDriver:closeCovers(object,fillType)
+function AIDriver:closeCovers(object)
 	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
 		return
 	end
@@ -2135,7 +2141,7 @@ function AIDriver:closeCovers(object,fillType)
 		SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
 	end
 	for _,impl in pairs(object:getAttachedImplements()) do
-		self:closeCovers(impl.object,fillType)
+		self:closeCovers(impl.object)
 	end
 end
 

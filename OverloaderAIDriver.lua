@@ -90,10 +90,14 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
         self:setSpeed(0)
-        if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OBJECT then
+		local augerPipeToolPositionsSetting = self.vehicle.cp.settings.augerPipeToolPositions
+		--can discharge and not pipe is moving 
+		if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OBJECT then
             self:debug('Overloading started')
-            self.unloadCourseState = self.states.OVERLOADING
-        end
+            if not self.moveablePipe or (augerPipeToolPositionsSetting:hasValidToolPositions() and not augerPipeToolPositionsSetting:updatePositions(dt,1)) then 
+				self.unloadCourseState = self.states.OVERLOADING
+			end
+		end
     elseif self.unloadCourseState == self.states.OVERLOADING then
         self:setSpeed(0)
         if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OFF then
