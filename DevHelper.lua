@@ -57,7 +57,7 @@ function DevHelper:update()
     end
 
     if self.vehicleData then
-        self.collisionData = PathfinderUtil.getCollisionData(self.node, self.vehicleData, 'me')
+        self.collisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(self.node, self.vehicleData, 'me')
         hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(
                 self.collisionData,
                 self.node,
@@ -210,6 +210,7 @@ function DevHelper:draw()
         end
     end
     PathfinderUtil.showNodes(self.pathfinder)
+    PathfinderUtil.showOverlapBoxes()
 end
 
 ---@param path State3D[]
@@ -272,6 +273,20 @@ function DevHelper:showVehicleSize()
             drawDebugLine(x1,y1,z1,0,0,1,x3,y3,z3,0,0,1);
             drawDebugLine(x2,y2,z2,0,0,1,x4,y4,z4,0,0,1);
             drawDebugLine(x3,y3,z3,0,0,1,x4,y4,z4,0,0,1);
+        end
+        if self.vehicleData.trailerRectangle then
+            local x, y, z = localToWorld(g_devHelper.helperNode, 0, 0, self.vehicleData.trailerHitchOffset)
+            setTranslation(g_devHelper.helperNode, x, y, z)
+            setRotation(g_devHelper.helperNode, 0, courseGenerator.toCpAngle(node.tTrailer), 0)
+            local x1,y1,z1 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dRight, 2, self.vehicleData.trailerRectangle.dFront);
+            local x2,y2,z2 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dLeft, 2, self.vehicleData.trailerRectangle.dFront);
+            local x3,y3,z3 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dRight, 2, self.vehicleData.trailerRectangle.dRear);
+            local x4,y4,z4 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dLeft, 2, self.vehicleData.trailerRectangle.dRear);
+
+            drawDebugLine(x1,y1,z1,0,1,0,x2,y2,z2,0,1,0);
+            drawDebugLine(x1,y1,z1,0,1,0,x3,y3,z3,0,1,0);
+            drawDebugLine(x2,y2,z2,0,1,0,x4,y4,z4,0,1,0);
+            drawDebugLine(x3,y3,z3,0,1,0,x4,y4,z4,0,1,0);
         end
     end
     if self.collisionData then

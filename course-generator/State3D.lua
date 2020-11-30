@@ -27,8 +27,8 @@ State3D = CpObject(Vector)
 ---@param pred State3D predecessor node
 ---@param gear HybridAstar.Gear straight/left/right
 ---@param steer HybridAstar.Steer forward/backward
----@param userData table any data the user wants to associate with this state
-function State3D:init(x, y, t, g, pred, gear, steer, userData)
+---@param tTrailer number heading (theta) of the attached trailer in radians
+function State3D:init(x, y, t, g, pred, gear, steer, tTrailer)
     self.x = x
     self.y = y
     self.t = self:normalizeHeadingRad(t)
@@ -40,7 +40,7 @@ function State3D:init(x, y, t, g, pred, gear, steer, userData)
     self.onOpenList = false
     self.open = false
     self.closed = false
-    self.userData = userData
+    self.tTrailer = tTrailer and self:normalizeHeadingRad(tTrailer) or 0
     self.gear = gear or HybridAStar.Gear.Forward
     self.steer = steer
     -- penalty for using this node, to avoid obstacles, stay in an area, etc.
@@ -48,17 +48,8 @@ function State3D:init(x, y, t, g, pred, gear, steer, userData)
 end
 
 function State3D:copy(other)
-    local this = State3D(other.x, other.y, other.t, other.g, other.pred, other.gear, other.steer, other.userData)
-    this.h = other.h
-    this.cost = other.cost
-    this.goal = other.goal
-    this.onOpenList = other.onOpenList
-    this.closed = other.closed
-    this.nodePenalty = other.nodePenalty
-    this.gear = other.gear
-    this.steer = other.steer
-    this.userData = other.userData
-    return this
+    -- don't copy the predecessor since it will screw up the path roll up
+    return State3D(other.x, other.y, other.t, other.g, nil, other.gear, other.steer, other.tTrailer)
 end
 
 
@@ -153,6 +144,14 @@ function State3D:setNodePenalty(nodePenalty)
     self.nodePenalty = nodePenalty
 end
 
+function State3D:getTrailerHeading()
+    return self.tTrailer
+end
+
+function State3D:setTrailerHeading(t)
+    self.tTrailer = self:normalizeHeadingRad(t)
+end
+
 ---@param node State3D
 function State3D:updateH(goal, analyticPathLength, heuristicPathLength)
     -- simple Eucledian heuristics
@@ -180,6 +179,14 @@ function State3D:reverseHeading()
     self.t = self:getReverseHeading()
 end
 
+function State3D:getNextTrailerHeading(d, hitchLength)
+    if hitchLength then
+        return (self.tTrailer + d / hitchLength * math.sin(self.t - self.tTrailer))
+    else
+        return 0
+    end
+end
+
 local twoPi = 2 * math.pi
 
 function State3D:normalizeHeadingRad(t)
@@ -202,8 +209,9 @@ function State3D:__tostring()
         steer = 'Straight'
     end
     local gear = self.gear == HybridAStar.Gear.Forward and 'Forward' or 'Backward'
-    result = string.format('x: %.2f y:%.2f t:%d(%.2f) gear:%s steer:%s g:%.4f h:%.4f c:%.4f closed:%s open:%s',
-            self.x, self.y, math.deg(self.t), self.t, gear, steer,
+    local tTrailer = self.tTrailer and string.format(' (%d)', math.deg(self.tTrailer)) or ''
+    result = string.format('x: %.2f y:%.2f t:%d%s gear:%s steer:%s g:%.4f h:%.4f c:%.4f closed:%s open:%s',
+            self.x, self.y, math.deg(self.t), tTrailer, gear, steer,
             self.g, self.h, self.cost, tostring(self.closed), tostring(self.onOpenList))
     return result
 end
@@ -227,4 +235,43 @@ function State3D.setHeading(path)
         path[i - 1].t = delta:heading()
     end
     path[#path].t = path[#path - 1].t
+end
+
+--- Smooth the path
+---@param path State3D[]
+function State3D.smooth(path)
+    local function isNearCusp(i)
+        if path[i - 2].gear ~= path[i - 1].gear or
+                path[i - 1].gear ~= path[i].gear or
+                path[i + 1].gear ~= path[i].gear or
+                path[i + 2].gear ~= path[i + 1].gear then
+            return true
+        end
+    end
+    for j = 1, 3 do
+        for i = 3, #path - 2  do
+            -- leave points around a cusp alone
+            if not isNearCusp(i) then
+                local currentPoint = Vector(path[i].x, path[i].y)
+                local correction = - (path[i - 2] - 4 * path[i - 1] + 6 * currentPoint - 4 * path[i + 1] + path[i + 2]) / 16
+                path[i]:add(correction)
+            end
+        end
+    end
+end
+
+---@param path State3D[]
+---@param hitchLength number, can be nil
+---@param startWithSameHeading boolean for the first waypoint set the trailer heading to the vehicle heading
+function State3D.calculateTrailerHeadings(path, hitchLength, startWithSameHeading)
+    if hitchLength then
+        if startWithSameHeading then
+            path[1].tTrailer = path[1].t
+        end
+        for i = 1, #path - 1 do
+            path[i + 1].tTrailer = path[i]:getNextTrailerHeading((path[i + 1] - path[i]):length(), hitchLength)
+            --print(math.deg(path[i].t), math.deg(path[i].tTrailer), math.deg(path[i].t - path[i].tTrailer), path[i]:length())
+            --print(path[i + 1])
+        end
+    end
 end
