@@ -1136,9 +1136,9 @@ function CombineAIDriver:canLoadTrailer(trailer)
 end
 
 function CombineAIDriver:getFillType()
-	local dischargeNode = self.vehicle:getDischargeNodeByIndex(self.vehicle:getPipeDischargeNodeIndex())
+	local dischargeNode = self.objectWithPipe:getDischargeNodeByIndex(self.objectWithPipe:getPipeDischargeNodeIndex())
 	if dischargeNode then
-		return self.vehicle:getFillUnitFillType(dischargeNode.fillUnitIndex)
+		return self.objectWithPipe:getFillUnitFillType(dischargeNode.fillUnitIndex)
 	end
 	return nil
 end
