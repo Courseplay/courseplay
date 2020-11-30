@@ -349,7 +349,7 @@ function PathfinderUtil.doRectanglesOverlap(a, b)
 end
 
 --[[
-Pathfinding is controlled by the validity and penalty functions below. The pathfinder will call these functions
+Pathfinding is controlled by the constraints (validity and penalty) below. The pathfinder will call these functions
 for each node to determine their validity and penalty.
 
 A node (also called a pose) has a position and a heading, as we don't just want to get to position x, z but
@@ -381,10 +381,18 @@ field or driving to/from the field edge on an unload/refill course.
 
 ]]--
 
+---@class PathfinderConstraints : PathfinderConstraintInterface
+PathfinderConstraints = CpObject(PathfinderConstraintInterface)
+
+function PathfinderConstraints:init(context)
+    self.context = context
+    self.normalMaxFruitPercent = self.context.parameters.maxFruitPercent
+end
+
 --- Calculate penalty for this node. The penalty will be added to the cost of the node. This allows for
 --- obstacle avoidance or forcing the search to remain in certain areas.
 ---@param node State3D
-function PathfinderUtil.getNodePenalty(node, context)
+function PathfinderConstraints:getNodePenalty(node)
     -- tweak these two parameters to set up how far the path will be from the field or fruit boundary
     -- size of the area to check for field/fruit
     local areaSize = 3
@@ -393,12 +401,12 @@ function PathfinderUtil.getNodePenalty(node, context)
     local penalty = 0
     local isField, area, totalArea = courseplay:isField(node.x, -node.y, areaSize, areaSize)
     if area / totalArea < minRequiredAreaRatio then
-        penalty = penalty + context.parameters.offFieldPenalty
+        penalty = penalty + self.context.parameters.offFieldPenalty
     end
     --local fieldId = PathfinderUtil.getFieldIdAtWorldPosition(node.x, -node.y)
     if isField then
         local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, areaSize, areaSize)
-        if hasFruit and fruitValue > context.parameters.maxFruitPercent then
+        if hasFruit and fruitValue > self.context.parameters.maxFruitPercent then
             penalty = penalty + fruitValue / 2
         end
     end
@@ -409,20 +417,20 @@ end
 --- to find the optimum path, avoiding fruit. Instead, we just check for collisions with vehicles and objects as
 --- usual and also mark anything overlapping fruit as invalid. This way a path will only be considered if it is not
 --- in the fruit.
-function PathfinderUtil.isValidAnalyticSolutionNode(node, context)
+function PathfinderConstraints:isValidAnalyticSolutionNode(node)
     local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, 3, 3)
-    if hasFruit and fruitValue > context.parameters.maxFruitPercent then return false end
-    return PathfinderUtil.isValidNode(node, context)
+    if hasFruit and fruitValue > self.context.parameters.maxFruitPercent then return false end
+    return self:isValidNode(node)
 end
 
 --- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
----@param userData PathfinderUtil.Context
 ---@param log boolean log colliding shapes/vehicles
-function PathfinderUtil.isValidNode(node, context, log)
+function PathfinderConstraints:isValidNode(node, log)
 
     -- If the pathfinding is constrained to a field, fieldData contains the limits
-    if node.x < context.fieldData.minX or node.x > context.fieldData.maxX or node.y < context.fieldData.minY or node.y > context.fieldData.maxY then
+    if node.x < self.context.fieldData.minX or node.x > self.context.fieldData.maxX or
+            node.y < self.context.fieldData.minY or node.y > self.context.fieldData.maxY then
         -- not on field
         return false
     end
@@ -435,17 +443,28 @@ function PathfinderUtil.isValidNode(node, context, log)
     setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
     setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
 
-    local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, context.vehicleData, 'me')
+    local myCollisionData = PathfinderUtil.getCollisionData(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
     -- for debug purposes only, store validity info on node
     node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
-            PathfinderUtil.helperNode, context.vehicleData, context.vehiclesToIgnore, log)
+            PathfinderUtil.helperNode, self.context.vehicleData, self.context.vehiclesToIgnore, log)
     node.isColliding, node.vehicle = PathfinderUtil.findCollidingVehicles(
             myCollisionData,
             PathfinderUtil.helperNode,
-            context.vehicleData,
-            context.otherVehiclesCollisionData,
+            self.context.vehicleData,
+            self.context.otherVehiclesCollisionData,
             log)
     return (not node.isColliding and node.collidingShapes == 0)
+end
+
+function PathfinderConstraints:relaxConstraints()
+    courseplay.debugFormat(7, 'relaxing pathfinder constraints: allow driving through fruit')
+    self.context.parameters.maxFruitPercent = math.huge
+end
+
+function PathfinderConstraints:resetConstraints()
+    courseplay.debugFormat(7, 'resetting pathfinder constraints: maximum fruit percent allowed is now %d',
+            self.normalMaxFruitPercent)
+    self.context.parameters.maxFruitPercent = self.normalMaxFruitPercent
 end
 
 ---@param course Course
@@ -500,8 +519,8 @@ end
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
     local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000, mustBeAccurate)
-    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, context, allowReverse,
-            PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, allowReverse,
+            PathfinderConstraints(context))
     return pathfinder, done, path, goalNodeInvalid
 end
 
@@ -547,7 +566,7 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
             parameters,
             vehiclesToIgnore,
             otherVehiclesCollisionData)
-    local done, path, goalNodeInvalid = pathfinder:start(start, goal, turnRadius, context, allowReverse, PathfinderUtil.getNodePenalty, PathfinderUtil.isValidNode, PathfinderUtil.isValidAnalyticSolutionNode)
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, turnRadius, allowReverse, PathfinderConstraints(context))
     return pathfinder, done, path, goalNodeInvalid
 end
 

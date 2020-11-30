@@ -39,36 +39,6 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 end;
 
 
-
-function courseplay:disableCropDestruction(vehicle)
-	-- Make sure we have the cp table
-	if vehicle.cp == nil then vehicle.cp = {}; end;
-
-	-- Disable crop destruction if enabled
-	if vehicle.cropDestruction then
-		vehicle.cp.cropDestructionIsActiveBackup = vehicle.cropDestruction.isActive;
-		vehicle.cropDestruction.isActive = false;
-	end;
-
-	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle:getAttachedImplements()) do
-		courseplay:disableCropDestruction(impl.object);
-	end;
-end;
-
-function courseplay:enableCropDestruction(vehicle)
-	-- Enable crop destruction if backup is set
-	if vehicle.cropDestruction and vehicle.cp and vehicle.cp.cropDestructionIsActiveBackup ~= nil then
-		vehicle.cropDestruction.isActive = vehicle.cp.cropDestructionIsActiveBackup;
-		vehicle.cp.cropDestructionIsActiveBackup = nil;
-	end;
-
-	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle:getAttachedImplements()) do
-		courseplay:enableCropDestruction(impl.object);
-	end;
-end;
-
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode, doReverse)
 --	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,
@@ -1366,15 +1336,6 @@ end;
 
 -- vim: set noexpandtab:
 
-function courseplay:getFreeCapacity(vehicle,fillType)
-    local freeCapacity = 0;
-    for i,fillUnit in pairs(vehicle:getFillUnits()) do
-        --if fillType == nil or fillType == FillType.UNKNOWN or fillUnit.fillTypes[fillType] then
-            freeCapacity = freeCapacity + vehicle:getFillUnitFreeCapacity(i)
-       -- end
-    end
-    return freeCapacity;
-end
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z

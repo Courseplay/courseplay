@@ -5,10 +5,7 @@ function courseplay:start(self)
 	if g_server == nil then 
 		return
 	end
-	
-	self.cp.TrafficBrake = false
-	self.cp.inTraffic = false
-	
+		
 	if not CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then			-- ???
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
@@ -42,7 +39,6 @@ function courseplay:start(self)
 	self:setIsCourseplayDriving(false);
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
-	self.cp.calculatedCourseToCombine = false
 
 	courseplay:resetTools(self)
 
@@ -113,8 +109,6 @@ function courseplay:start(self)
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};
-	self.cp.workDistance = 0
-	self.cp.mediumWpDistance = 0
 	self.cp.mode10.alphaList = {}
 
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
@@ -182,7 +176,6 @@ function courseplay:start(self)
 	-- ok i am near the waypoint, let's go
 	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
-	self.cp.runOnceStartCourse = true;
 	self:setIsCourseplayDriving(true);
 	courseplay:setIsRecording(self, false);
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
@@ -191,10 +184,7 @@ function courseplay:start(self)
 
 	courseplay:validateCanSwitchMode(self);
 
-	-- Disable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
-	if self.cropDestruction then
-		courseplay:disableCropDestruction(self);
-	end;
+
 
 	-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
 	-- attached and I don't have the motivation do dig through the legacy code to find out why
@@ -323,9 +313,6 @@ function courseplay:getCanUseCpMode(vehicle)
 		elseif vehicle.cp.numWaitPoints > maxWait then
 			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
 			return false;
-		elseif vehicle.cp.shovelStatePositions == nil or vehicle.cp.shovelStatePositions[2] == nil or vehicle.cp.shovelStatePositions[3] == nil or vehicle.cp.shovelStatePositions[4] == nil or vehicle.cp.shovelStatePositions[5] == nil then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING');
-			return false;
 		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
 			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_VALID_COURSE');
 			return false;
@@ -364,7 +351,6 @@ function courseplay:stop(self)
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
-		courseplay:handleSpecialTools(self, tool, false,   false,  false,   false, false, nil,nil,0);
 		if tool.cp.originalCapacities then
 			for index,fillUnit in pairs(tool:getFillUnits()) do
 				fillUnit.capacity =  tool.cp.originalCapacities[index]
@@ -387,13 +373,6 @@ function courseplay:stop(self)
 		self.cp.mode10.OrigCompactScale = nil
 	end
 	
-	
-	-- Enable crop destruction if 4Real Module 01 - Crop Destruction mod is installed
-	if self.cropDestruction then
-		courseplay:enableCropDestruction(self);
-	end;
-
-
 	if self.cp.cruiseControlSpeedBackup then
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
@@ -401,12 +380,6 @@ function courseplay:stop(self)
 
 	self.spec_lights.aiLightsTypesMask = self.cp.aiLightsTypesMaskBackup
 	
-	if self.cp.takeOverSteering then
-		self.cp.takeOverSteering = false
-	end
-
-	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.activeCombine)
-	courseplay:removeFromVehicleLocalIgnoreList(vehicle, self.cp.lastActiveCombine)
 	self.cp.BunkerSiloMap = nil
 	self.cp.mode9TargetSilo = nil
 	self.cp.mode10.lowestAlpha = 99
@@ -423,13 +396,7 @@ function courseplay:stop(self)
 	self.cp.aiTurnNoBackward = false
 	self.cp.noStopOnEdge = false
 	self.cp.fillTrigger = nil;
-	self.cp.factoryScriptTrigger = nil;
-	self.cp.tipperLoadMode = 0;
 	self.cp.hasMachineToFill = false;
-	self.cp.unloadOrder = false
-	self.cp.isUnloadingStopped = false
-	self.cp.TrafficBrake = false
-	self.cp.inTraffic = false
 	-- deactivate beacon and hazard lights
 	if self.beaconLightsActive then
 		self:setBeaconLightsVisibility(false);
@@ -448,13 +415,10 @@ function courseplay:stop(self)
 		self.cp.checkReverseValdityPrinted = false
 
 	end
-	self.cp.lastMode8UnloadTriggerId = nil
-
+	
 	self.cp.curSpeed = 0;
 
 	self.spec_motorized.motor.maxRpmOverride = nil;
-	self.cp.heapStart = nil
-	self.cp.heapStop = nil
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
 	self.cp.hasFinishedWork = nil
@@ -462,12 +426,7 @@ function courseplay:stop(self)
 	self.cp.hasUnloadingRefillingCourse = false;
 	self.cp.hasTransferCourse = false
 	self.cp.settings.stopAtEnd:set(false)
-	self.cp.stopAtEndMode1 = false;
-	self.cp.isTipping = false;
-	self.cp.isUnloaded = false;
 	self.cp.prevFillLevelPct = nil;
-	self.cp.isInRepairTrigger = nil;
-	self.cp.curMapWeightStation = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');
@@ -475,11 +434,7 @@ function courseplay:stop(self)
 	courseplay:resetCustomTimer(self, 'foldBaleLoader', true);
 
 	self.cp.hasBaleLoader = false;
-	self.cp.hasPlow = false;
-	self.cp.rotateablePlow = nil;
-	self.cp.hasSowingMachine = false;
-	self.cp.hasSprayer = false;
-
+	
 	if self.cp.manualWorkWidth ~= nil then
 		courseplay:changeWorkWidth(self, nil, self.cp.manualWorkWidth, true)
 		if self.cp.hud.currentPage == courseplay.hud.PAGE_COURSE_GENERATION then
@@ -489,11 +444,6 @@ function courseplay:stop(self)
 	
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
-
-	self.cp.movingToolsPrimary, self.cp.movingToolsSecondary = nil, nil;
-	self.cp.attachedFrontLoader = nil
-
-	courseplay:deleteFixedWorldPosition(self);
 
 	--remove any local and global info texts
 	if g_server ~= nil then

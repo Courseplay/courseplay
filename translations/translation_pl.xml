@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING"							 	text=": Narzędzie pracy musi zostać załadowane." />
 		<text name="COURSEPLAY_UNLOADING_BALES"							 	text="rozładunek bel." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC"							 	text="jest zablokowany." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="został spowolniony" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED"				 		 	text="dotarł do punktu kiprowania" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 	text="Odległość do punktu rozładunku" />
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 	text="Ładowanie: %d z %d" />

@@ -119,10 +119,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.distanceToCombine = math.huge
 	self.distanceToFront = 0
 	self.combineToUnloadReversing = 0
-end
-
-function CombineUnloadAIDriver:postSync()
-	self.assignedCombinesSetting:sendPostSyncRequestEvent()
+	self.doNotSwerveForVehicle = CpTemporaryObject()
 end
 
 function CombineUnloadAIDriver:getAssignedCombines()
@@ -136,6 +133,16 @@ end
 function CombineUnloadAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self.assignedCombinesSetting)
+end
+
+function CombineUnloadAIDriver:onWriteStream(streamId)
+	self.assignedCombinesSetting:onWriteStream(streamId)
+	AIDriver.onWriteStream(self,streamId)
+end
+
+function CombineUnloadAIDriver:onReadStream(streamId)
+	self.assignedCombinesSetting:onReadStream(streamId)
+	AIDriver.onReadStream(self,streamId)
 end
 
 function CombineUnloadAIDriver:debug(...)
@@ -253,7 +260,8 @@ function CombineUnloadAIDriver:isTrafficConflictDetectionEnabled()
 			(self.state == self.states.ON_FIELD and self.onFieldState.properties.checkForTrafficConflict)
 end
 
-function CombineUnloadAIDriver:isProximitySwerveEnabled()
+function CombineUnloadAIDriver:isProximitySwerveEnabled(vehicle)
+	if vehicle == self.doNotSwerveForVehicle:get() then return false end
 	return (self.state == self.states.ON_UNLOAD_COURSE and self.state.properties.enableProximitySwerve) or
 			(self.state == self.states.ON_FIELD and self.onFieldState.properties.enableProximitySwerve)
 end
@@ -310,7 +318,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 			self.combineToUnload, combineToWaitFor = g_combineUnloadManager:giveMeACombineToUnload(self.vehicle)
 			if self.combineToUnload ~= nil then
 				self:refreshHUD()
-				courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
+				self:openCovers(self.vehicle)
 				self:startWorking()
 			else
 				if combineToWaitFor then
@@ -354,6 +362,10 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.DRIVE_TO_COMBINE then
+
+		-- do not swerve for our combine, otherwise we won't be able to align with it when coming from
+		-- the wrong angle
+		self.doNotSwerveForVehicle:set(self.combineToUnload, 2000)
 
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_TO_COMBINE");
 
@@ -535,7 +547,7 @@ function CombineUnloadAIDriver:onEndCourse()
 		self:setNewState(self.states.ON_FIELD)
 		self:startWaitingForCombine()
 		self:setDriveUnloadNow(false)
-		courseplay:openCloseCover(self.vehicle, courseplay.OPEN_COVERS)
+		self:openCovers(self.vehicle)
 		self:disableCollisionDetection()
 	end
 end
@@ -544,7 +556,7 @@ function CombineUnloadAIDriver:onLastWaypoint()
 	if self.state == self.states.ON_FIELD then
 		if self.onFieldState == self.states.DRIVE_TO_UNLOAD_COURSE then
 			self:setNewState(self.states.ON_UNLOAD_COURSE)
-			courseplay:openCloseCover(self.vehicle, courseplay.CLOSE_COVERS)
+			self:closeCovers(self.vehicle)
 			AIDriver.onLastWaypoint(self)
 			return
 		elseif self.onFieldState == self.states.DRIVE_TO_FIRST_UNLOADER then
@@ -1104,7 +1116,7 @@ function CombineUnloadAIDriver:startUnloadCourse()
 	self:startMovingBackFromCombine(self.states.MOVE_BACK_FULL)
 	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
 	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
-	courseplay:openCloseCover(self.vehicle, courseplay.CLOSE_COVERS)
+	self:closeCovers(self.vehicle)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -2010,6 +2022,7 @@ end
 -- We are blocking another vehicle who wants us to move out of way
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:onBlockingOtherVehicle(blockedVehicle)
+	if not self:isActive() then return end
 	self:debugSparse('%s wants me to move out of way', blockedVehicle:getName())
 	if blockedVehicle.cp.driver:isChopper() then
 		-- TODO: think about how to best handle choppers, since they always stop when no trailer
@@ -2045,7 +2058,7 @@ function CombineUnloadAIDriver:moveOutOfWay()
 	-- d may be big enough but parts of the combine still close
 	local d = self:getDistanceFromCombine(self.blockedVehicle)
 	local dProximity = self.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
-	local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
+	local combineSpeed = (self.blockedVehicle.lastSpeedReal * 3600)
 	local speed = combineSpeed +
 			MathUtil.clamp(self.minDistanceWhenMovingOutOfWay - math.min(d, dProximity), -combineSpeed, self.vehicle.cp.speeds.reverse * 1.2)
 

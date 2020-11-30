@@ -307,6 +307,13 @@ function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 		streamWriteIntN(streamId,self.convoyCurrentPosition,5)
 		streamWriteIntN(streamId,self.convoyTotalMembers,5)
 	end
+	if self.fieldworkState and self.fieldworkState ~= self.fieldworkStateSend then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.fieldworkState.name)
+		self.fieldworkStateSend = self.fieldworkState
+	else 
+		streamWriteBool(streamId,false)
+	end
 	AIDriver.writeUpdateStream(self,streamId, connection, dirtyMask)
 end 
 
@@ -316,7 +323,29 @@ function FieldworkAIDriver:readUpdateStream(streamId, timestamp, connection)
 		self.convoyCurrentPosition=streamReadIntN(streamId,5)
 		self.convoyTotalMembers=streamReadIntN(streamId,5)
 	end
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.fieldworkState = self.states[nameState]
+	end	
 	AIDriver.readUpdateStream(self,streamId, timestamp, connection)
+end
+
+function FieldworkAIDriver:onWriteStream(streamId)
+	if self.fieldworkState then
+		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.fieldworkState.name)
+	else 
+		streamWriteBool(streamId,false)
+	end
+	AIDriver.onWriteStream(self,streamId)
+end
+
+function FieldworkAIDriver:onReadStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.fieldworkState = self.states[nameState]
+	end
+	AIDriver.onReadStream(self,streamId)
 end
 
 function FieldworkAIDriver:drive(dt)
@@ -406,8 +435,8 @@ function FieldworkAIDriver:getNominalSpeed()
 	end
 end
 
-function FieldworkAIDriver:checkFillLevels()
-	if not self:allFillLevelsOk() or self.heldForUnloadRefill then
+function FieldworkAIDriver:checkFillLevels(isWaitingForRefill)
+	if not self:allFillLevelsOk(isWaitingForRefill) or self.heldForUnloadRefill then
 		self:stopAndChangeToUnload()
 	end
 end
@@ -491,11 +520,13 @@ function FieldworkAIDriver:driveFieldworkUnloadOrRefill()
 			self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_UNLOAD_OR_REFILL
 		end
 	elseif self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL then
-		if self:allFillLevelsOk() and not self.heldForUnloadRefill then
-			self:debug('unloaded, continue working')
-			-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
-			self:clearInfoText(self:getFillLevelInfoText())
-			self:changeToFieldwork()
+		if g_updateLoopIndex % 5 == 0 then --small delay, to make sure no more fillLevel change is happening
+			if self:allFillLevelsOk(true) and not self.heldForUnloadRefill then
+				self:debug('unloaded, continue working')
+				-- not full/empty anymore, maybe because Refilling to a trailer, go back to work
+				self:clearInfoText(self:getFillLevelInfoText())
+				self:changeToFieldwork()
+			end
 		end
 	end
 end
@@ -654,6 +685,9 @@ function FieldworkAIDriver:onWaypointChange(ix)
 				self:debug('adding offset (%.1f front marker) to make sure we do not miss anything when the course ends', self.frontMarkerDistance)
 				self.aiDriverOffsetZ = -self.frontMarkerDistance
 			end
+		elseif not self.course:isOnHeadland(ix) and self.course:isOnHeadland(ix + 1) then
+			self:debug('last row waypoint before switching to the headland')
+			self:finishRow(ix)
 		end
 		if self.fieldworkState ~= self.states.TURNING and self.course:isTurnStartAtIx(ix) then
 			self:startTurn(ix)
@@ -667,7 +701,7 @@ function FieldworkAIDriver:onWaypointChange(ix)
 end
 
 function FieldworkAIDriver:onTowedImplementPassedWaypoint(ix)
-	self:debug('Implement passsed waypoint %d', ix)
+	self:debug('Implement passed waypoint %d', ix)
 end
 
 --- Should we return to the first point of the course after we are done?
@@ -1074,6 +1108,14 @@ function FieldworkAIDriver:getTurnEndForwardOffset()
 	return 0
 end
 
+function FieldworkAIDriver:finishRow(ix)
+	self:setMarkers()
+	self.turnContext = RowFinishingContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+			self.frontMarkerDistance, self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
+	self.aiTurn = FinishRowOnly(self.vehicle, self, self.turnContext)
+	self.fieldworkState = self.states.TURNING
+end
+
 function FieldworkAIDriver:startTurn(ix)
 	-- set a short lookahead distance for PPC to increase accuracy, especially after switching back from
 	-- turn.lua. That often happens too early (when lowering the implement) when we still have a cross track error,
@@ -1422,13 +1464,13 @@ function FieldworkAIDriver:isAutoDriveDriving()
 end
 
 --- Check if need to refill/unload anything
-function FieldworkAIDriver:allFillLevelsOk()
+function FieldworkAIDriver:allFillLevelsOk(isWaitingForRefill)
 	if not self.vehicle.cp.workTools then return false end
 	-- what here comes is basically what Giants' getFillLevelInformation() does but this returns the real fillType,
 	-- not the fillTypeToDisplay as this latter is different for each type of seed
 	local fillLevelInfo = {}
 	self:getAllFillLevels(self.vehicle, fillLevelInfo)
-	return self:areFillLevelsOk(fillLevelInfo)
+	return self:areFillLevelsOk(fillLevelInfo,isWaitingForRefill)
 end
 
 function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)

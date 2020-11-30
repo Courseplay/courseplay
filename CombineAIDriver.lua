@@ -162,10 +162,6 @@ function CombineAIDriver:getCombine()
 	return self.combine
 end
 
-function CombineAIDriver:postSync()
-	--TODO: figure out if we need this or not for multiplayer ??
-end
-
 function CombineAIDriver:start(startingPoint)
 	self:clearAllUnloaderInformation()
 	self:addBackwardProximitySensor()
@@ -1139,6 +1135,14 @@ function CombineAIDriver:canLoadTrailer(trailer)
 	return false, 0
 end
 
+function CombineAIDriver:getFillType()
+	local dischargeNode = self.vehicle:getDischargeNodeByIndex(self.vehicle:getPipeDischargeNodeIndex())
+	if dischargeNode then
+		return self.vehicle:getFillUnitFillType(dischargeNode.fillUnitIndex)
+	end
+	return nil
+end
+
 -- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
 -- trailer and can start discharging. This returning true does not mean there's a trailer under the pipe,
 -- this seems more like for choppers to check if there's a potential target around
@@ -1188,7 +1192,8 @@ function CombineAIDriver:findBestTrailer()
 			self:debug('%s is a trailer on field %d, closest distance to %d is %.1f, attached to %s, root vehicle is %s, last speed %.1f', vehicle:getName(),
 					fieldNum, myFieldNum, closestDistance, attacherVehicle and attacherVehicle:getName() or 'none', rootVehicle:getName(), lastSpeed)
 			-- consider only trailer on my field or close to my field
-			if fieldNum == myFieldNum or myFieldNum == 0 or closestDistance < 20 and lastSpeed < 0.1 then
+			if rootVehicle ~= self.vehicle and fieldNum == myFieldNum or myFieldNum == 0 or
+					closestDistance < 20 and lastSpeed < 0.1 then
 				local d = courseplay:distanceToObject(self.vehicle, vehicle)
 				local canLoad, freeCapacity, fillUnitIndex = self:canLoadTrailer(vehicle)
 				if d < minDistance and canLoad then
@@ -1250,7 +1255,8 @@ function CombineAIDriver:startSelfUnload()
 		local done, path
 		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ, true,
+				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ,
+				self:getAllowReversePathfinding(),
 				fieldNum, {}, nil, nil, true)
 		if done then
 			return self:onPathfindingDone(path)
@@ -1271,7 +1277,8 @@ function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
 		self.waypointIxAfterPathfinding = self.aiDriverData.continueFieldworkAtWaypoint
 		local done, path
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,0,true, nil)
+				self.vehicle, self.fieldworkCourse:getWaypoint(self.waypointIxAfterPathfinding), 0,0,
+				self:getAllowReversePathfinding(), nil)
 		if done then
 			return self:onPathfindingDone(path)
 		else
@@ -1564,12 +1571,15 @@ end
 
 -- For combines, we use the collision trigger of the header to cover the whole vehicle width
 function CombineAIDriver:createTrafficConflictDetector()
-	for cutter, _ in pairs(self.combine.attachedCutters) do
-		-- attachedCutters is indexed by the cutter, not an integer
-		self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course, cutter)
-		-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
-		self.trafficConflictDetector:disableSpeedControl()
-		return
+	-- (not everything running as combine has a cutter, for instance the Krone Premos)
+	if self.combine.attachedCutters then
+		for cutter, _ in pairs(self.combine.attachedCutters) do
+			-- attachedCutters is indexed by the cutter, not an integer
+			self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course, cutter)
+			-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)
+			self.trafficConflictDetector:disableSpeedControl()
+			return
+		end
 	end
 	self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course)
 	-- for now, combines ignore traffic conflicts (but still provide the detector boxes for other vehicles)

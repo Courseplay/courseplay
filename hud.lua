@@ -424,7 +424,7 @@ function courseplay.hud:setContent(vehicle)
 
 	if vehicle.Waypoints[vehicle.cp.waypointIndex] ~= nil or vehicle.cp.isRecording or vehicle.cp.recordingIsPaused or g_server == nil then
 		-- waypoints
-		if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
+		if not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and vehicle.cp.waypointIndex then
 			local str = ('%d/%d'):format(vehicle.cp.waypointIndex, vehicle.cp.numWaypoints);
 			if str:len() > 7 then
 				vehicle.cp.hud.content.bottomInfo.waypointTextSmall = str;
@@ -1167,7 +1167,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page,'toggle',vehicle.cp.settings.automaticUnloadingOnField)
 					end
-				elseif entry.functionToCall == 'toggleShovelStopAndGo' then
+				elseif entry.functionToCall == 'shovelStopAndGo:toggle' then
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
 					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
 					vehicle.cp.hud.content.pages[page][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
@@ -1178,8 +1178,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
 					end
 
-					vehicle.cp.hud.content.pages[page][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_STOP_AND_GO');
-					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.shovelStopAndGo and courseplay:loc('COURSEPLAY_ACTIVATED') or courseplay:loc('COURSEPLAY_DEACTIVATED');
+					vehicle.cp.hud.content.pages[page][5][1].text = vehicle.cp.settings.shovelStopAndGo:getLabel()
+					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.settings.shovelStopAndGo:getText()
 					
 					vehicle.cp.hud.content.pages[page][6][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
 					vehicle.cp.hud.content.pages[page][6][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
@@ -2453,7 +2453,7 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
-	self:addRowButton(vehicle,nil,'toggleShovelStopAndGo', 9, 5, 1 )
+	self:addRowButton(vehicle,vehicle.cp.settings.shovelStopAndGo,'toggle', 9, 5, 1 )
 end
 
 function courseplay.hud:setLevelCompactAIDriverContent(vehicle)

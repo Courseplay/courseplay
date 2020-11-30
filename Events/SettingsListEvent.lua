@@ -74,7 +74,7 @@ function SettingsListEvent.sendEvent(vehicle,parentName, name, value)
 	if g_server ~= nil then
 		courseplay:debug("broadcast settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);
-		g_server:broadcastEvent(SettingsListEvent:new(vehicle,parentName, name, value), nil, nil, self);
+		g_server:broadcastEvent(SettingsListEvent:new(vehicle,parentName, name, value), nil, nil, vehicle);
 	else
 		courseplay:debug("send settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s, value=%s'):format(tostring(vehicle), tostring(name), tostring(value)), 5);

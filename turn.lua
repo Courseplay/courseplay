@@ -2304,5 +2304,16 @@ function TurnContext:drawDebug()
 	end
 end
 
+--- A special turn context for the RowFinishOnly turn (up/down -> headland transition).
+---@class RowFinishingContext : TurnContext
+RowFinishingContext = CpObject(TurnContext)
+
+--- Force the 180 turn behavior so the row finishing straight course is created properly. Without this
+--- it would calculate a transition to the headland as a headland turn as such transitions are always
+--- less then 180 and then the row finishing course would be offset
+function RowFinishingContext:isHeadlandCorner()
+	return false
+end
+
 -- do not delete this line
 -- vim: set noexpandtab:

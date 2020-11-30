@@ -146,68 +146,25 @@ function UnloadableFieldworkAIDriver:isWaitingForUnload()
 		self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL
 end
 
-
---- Check if need to unload anything
--- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
-function UnloadableFieldworkAIDriver:allFillLevelsOk()
-	if not self.vehicle.cp.workTools then return false end
-	local allOk = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		allOk = self:fillLevelsOk(workTool) and allOk
-	end
-	return allOk
-end
-
---- Check fill levels in all tools and stop when one of them isn't ok
-function UnloadableFieldworkAIDriver:fillLevelsOk(workTool)
-	if workTool.getFillUnits then
-		for index, fillUnit in pairs(workTool:getFillUnits()) do
-			-- let's see if we can get by this abstraction for all kinds of tools
-			local ok = self:isLevelOk(workTool, index, fillUnit)
-			if not ok then
+function UnloadableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)	
+	for fillType, info in pairs(fillLevelInfo) do
+		if self:isValidFillType(fillType) then 
+			local percentage =  info.fillLevel/info.capacity*100 
+			if info.fillLevel >= info.capacity or percentage > self.refillUntilPct:get() or percentage> self.fillLevelFullPercentage  then
+				self:debugSparse('Full or refillUntilPct reached: %.2f', percentage)
+				return false
+			end
+			if self:shouldStopForUnloading(percentage) then
+				self:debugSparse('Stop for unloading: %.2f', percentage)
 				return false
 			end
 		end
 	end
-	-- all fill levels ok
-	return true
-end
-
--- is the fill level ok to continue? With unloadable tools we need to stop working when the tool is full
--- with fruit
-function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
-	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self:shouldStopForUnloading(pc) then
-		self:debugSparse('Stop for unloading: %s: %.2f', fillTypeName, pc )
-		return false
-	end
-	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage or pc>self.refillUntilPct:get() then
-		self:debugSparse('Full: %s: %.2f', fillTypeName, pc )
-		return false
-	end
-	self:debugSparse('Fill levels: %s: %.2f', fillTypeName, pc )
 	return true
 end
 
 function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
 	return false
-end
-
-
---- Get the first valid (non-fuel) fill type
-function UnloadableFieldworkAIDriver:getFillType()
-	if not self.vehicle.cp.workTools then return end
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		if workTool.getFillUnits then
-			for _, fillUnit in pairs(workTool:getFillUnits()) do
-				if self:isValidFillType(fillUnit.fillType) then
-					return fillUnit.fillType
-				end
-			end
-		end
-	end
-	return nil
 end
 
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)

@@ -651,3 +651,24 @@ function CombinePocketHeadlandTurn:turn(dt)
 		self.implementsLowered = true
 	end
 end
+
+--- A turn type which isn't really a turn, we only use this to finish a row (drive straight until the implement
+--- reaches the end of the row, don't drive towards the next waypoint until then)
+--- This is to make sure the last row before transitioning to the headland is properly finished, otherwise
+--- we'd start driving towards the next headland waypoint, turning towards it before the implement reaching the
+--- end of the row and leaving unworked patches.
+---@class FinishRowOnly : AITurn
+FinishRowOnly = CpObject(AITurn)
+
+function FinishRowOnly:init(vehicle, driver, turnContext)
+	AITurn.init(self, vehicle, driver, turnContext, 'FinishRowOnly')
+end
+
+function FinishRowOnly:finishRow()
+	-- keep driving straight until we need to raise our implements
+	if self.driver:shouldRaiseImplements(self:getRaiseImplementNode()) then
+		self:debug('Row finished, returning to fieldwork.')
+		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
+	end
+	return false
+end

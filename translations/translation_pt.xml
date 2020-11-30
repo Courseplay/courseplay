@@ -441,55 +441,55 @@
 		<text name="COURSEPLAY_EARN_WAGES"					   				text="Trabalhadores do Courseplay ganham salários" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click para mudar" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Clique no veículo para mudar para ele" />
-		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Always unfold pipe" />
-		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Pipe always out when Combine waits for unload" />
-		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Show Mini-HUD" />
-		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Toggle show Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Harvester Straw discharge" />
-		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="only Center" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Straw discharge on/off/only Center" />
-		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizer of seeder" />
-        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Activate or deactivate the fertilizer function of the seeder" />
+		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="desdobre o tubo" />
+		<text name="COURSEPLAY_YES_NO_PIPE_ALWAYS_UNFOLD"					text="Tubo sempre para fora quando a ceifeira espera para ser descarregada" />
+		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Mostrar Mini-HUD" />
+		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Alternar mostrar Mini-HUD" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Descarga de palha da ceifeira" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="apenas centro" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Descarga de palha ligado / desligado / apenas centro" />
+		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Use fertilizante da semeadora" />
+        <text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Ative ou desative a função fertilizante da semeadora" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Enable/Disable right mouse click to open the HUD (Global)" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Habilite / desabilite o clique direito do mouse para abrir o HUD (Global)" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Right click HUD" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Enable/Disable right mouse click to open the HUD (current vehicle)" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Habilite / desabilite o botão direito do mouse para abrir o HUD (veículo atual)" />
 
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Show temporary waypoints" />
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Show temporary courses (like pathfinding or turns)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Headland overlap" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Overlap between headland passes in percent" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Mostrar Pontos Temporarios" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Mostrar cursos temporários (como localização ou curvas)" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Sobreposição da cabeceira do campo" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Sobreposição entre passagens de cabeceira em percentagem" />
 
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Cedo" />
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Tarde" />
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="When to raise implements" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="When to raise implements when ending a row or starting a headland turn" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="When to lower implements" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="When to lower implements when starting a row or ending a headland turn" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Fold Implement" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Turn on/off if the Implement should be folded when work is done" />
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME"					   	text="Quando levantar implementos" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Quando levantar implementos ao terminar uma linha ou iniciar uma curva em cabeceira" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Quando abaixar implementos" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Quando abaixar implementos ao iniciar uma linha ou terminar uma curva de cabeceira" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Implemento Dobrável" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Ligar / desligar, se o implemento, deve ser dobrado quando o trabalho é feito." />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Usar caminhos alternativos nas curvas" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Usar caminhos alternativos em lavouras com bordas irregulares, por exemplo, para dirigir na beirada até a próxima linha" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Salário dos trabalhadores do Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salário dos trabalhadores do Courseplay como porcentagem do salário dos trabalhadores normais" />
-		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combine self unload" /> <!-- TODO TRANSLATE: -->
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira se descarrega automaticamente quando estiver cheia e um carreto estiver próximo" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Reversing for pathfinding in turns" />
-		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Allow finding a turn path which needs reverse driving (with non-towed implements only)" />
+		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Combinar auto-descarregamento" /> <!-- TODO TRANSLATE: -->
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Ceifadeira se descarrega automaticamente quando estiver cheia e um reboque estiver próximo" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Invertendo para encontrar caminhos em retorno" />
+		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permite encontrar um caminho de conversão que precisa de direção reversa (apenas com implementos não rebocados)" />
 
-		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="no fillType selected!/no Refillcourse supported!!" />
-		<text name="COURSEPLAY_ADD_FILLTYPE"								text="add new fillType" />
-		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="has reached refill point." />
-		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="has wrong fillType for Trigger." />
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="nenhum cultura selecionada! / abastecedor não suportado!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Adicionar Cultura" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="Atingiu o ponto de recarga." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Cultura errada para o implemento." />
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Unload harvester on first headland" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Allow unloading a moving harvester on the first headland, unloader drives off the field." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="last runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Loading seperate FillTypes" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
-		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Descarregue a ceifeira na primeira cabeceira do campo" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permitir o descarregamento da ceifeira em movimento na  primeira cabeceira do campo, o descarregador sai do campo." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Último Correr do ponto = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Carregamento Separado De Culturas" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Escolha Do Reboque:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Descarregar a %d até %d" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Carregamento Manual;" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

@@ -21,11 +21,7 @@ function SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value)
 end
 
 function SiloSelectedFillTypeEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	if streamReadBool(streamId) then
-		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
-	else
-		self.vehicle = nil
-	end
+	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 	self.settingType = streamReadUIntN(streamId,3)
 	local messageNumber = streamReadFloat32(streamId)
 	self.name = streamReadString(streamId)
@@ -44,13 +40,7 @@ end
 function SiloSelectedFillTypeEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	courseplay:debug("		writeStream",5)
 	courseplay:debug("			id: "..tostring(self.vehicle).."/"..tostring(self.messageNumber).."  self.name: "..tostring(self.name).."  value: "..tostring(self.value),5)
-
-	if self.vehicle ~= nil then
-		streamWriteBool(streamId, true)
-		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
-	else
-		streamWriteBool(streamId, false)
-	end
+	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
 	streamWriteUIntN(streamId,self.settingType,3)
 	streamWriteFloat32(streamId, self.messageNumber)
 	streamWriteString(streamId, self.name)
@@ -108,7 +98,7 @@ function SiloSelectedFillTypeEvent.sendEvent(vehicle, name,settingType, index, v
 	if g_server ~= nil then
 		courseplay:debug("broadcast settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s'):format(tostring(vehicle), tostring(name)), 5)
-		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value), nil, nil, self)
+		g_server:broadcastEvent(SiloSelectedFillTypeEvent:new(vehicle, name,settingType, index, value), nil, nil, vehicle)
 	else
 		courseplay:debug("send settings event", 5)
 		courseplay:debug(('\tid=%s, name=%s'):format(tostring(vehicle), tostring(name)), 5)

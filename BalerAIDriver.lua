@@ -23,6 +23,11 @@ function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
+	if self.baler then
+		self.balerSpec = self.baler.spec_baler
+	end
+	self.slowDownFillLevel = 200
+    self.slowDownStartSpeed = 20
 end
 
 function BalerAIDriver:driveFieldwork(dt)
@@ -32,6 +37,23 @@ function BalerAIDriver:driveFieldwork(dt)
 		self:handleBaler()
 	end
 	return UnloadableFieldworkAIDriver.driveFieldwork(self, dt)
+end
+
+function BalerAIDriver:start(startingPoint)
+	UnloadableFieldworkAIDriver.start(self,startingPoint)
+	--use giants automaticDrop, so we don't have to do it 
+	if self.balerSpec then
+		self.oldAutomaticDrop = self.balerSpec.automaticDrop
+		self.balerSpec.automaticDrop = true
+	end
+end
+
+function BalerAIDriver:dismiss()
+	UnloadableFieldworkAIDriver.dismiss(self)
+	--revert possible change for the player to default 
+	if self.balerSpec then
+		self.balerSpec.automaticDrop = self.oldAutomaticDrop
+	end
 end
 
 function BalerAIDriver:allFillLevelsOk()
@@ -50,48 +72,42 @@ end
 function BalerAIDriver:handleBaler()
 	-- turn.lua will raise/lower as needed, don't touch the balers while the turn maneuver is executed or while on temporary alignment / connecting track
 	if not self:isHandlingAllowed() then return end
-	--if vehicle.cp.waypointIndex >= vehicle.cp.startWork + 1 and vehicle.cp.waypointIndex < vehicle.cp.stopWork and vehicle.cp.turnStage == 0 then
-	--  vehicle, self.baler, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit,workSpeed)
-	local specialTool, allowedToDrive, stoppedForReason = courseplay:handleSpecialTools(self.vehicle, self.baler, true, true, true, true, nil, nil, nil);
-	if not specialTool then
-		-- automatic opening for balers
-		local capacity = self.baler.cp.capacity
-		local fillLevel = self.baler.cp.fillLevel
-		if self.baler.spec_baler ~= nil then
-			--print(string.format("if courseplay:isRoundbaler(self.baler)(%s) and fillLevel(%s) > capacity(%s) * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState(%s) == Baler.UNLOADING_CLOSED(%s) then",
-			--tostring(courseplay:isRoundbaler(self.baler)),tostring(fillLevel),tostring(capacity),tostring(self.baler.spec_baler.unloadingState),tostring(Baler.UNLOADING_CLOSED)))
-			if courseplay:isRoundbaler(self.baler) and fillLevel > capacity * 0.9 and fillLevel < capacity and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
-				if not self.baler.spec_turnOnVehicle.isTurnedOn and not stoppedForReason then
-					self.baler:setIsTurnedOn(true, false)
-				end
-				self:setSpeed(self.vehicle.cp.speeds.turn)
-			elseif fillLevel >= capacity and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
-				allowedToDrive = false;
-				if #(self.baler.spec_baler.bales) > 0 and self.baler.spec_baleWrapper == nil then --Ensures the baler wrapper combo is empty before unloading
-					self.baler:setIsUnloadingBale(true, false)
-				end
-			elseif self.baler.spec_baler.unloadingState ~= Baler.UNLOADING_CLOSED then
-				if fillLevel >= capacity then -- Only stop if capacity is full. Allowing for continuous balers such as the ViconFastBale
-					allowedToDrive = false
-				elseif fillLevel == 0 and (self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSING or self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPENING) then
-					allowedToDrive = false
-				elseif self.baler.spec_baler.unloadingState == Baler.UNLOADING_OPEN then
-					self.baler:setIsUnloadingBale(false)
-				end
-			elseif fillLevel >= 0 and not self.baler:getIsTurnedOn() and self.baler.spec_baler.unloadingState == Baler.UNLOADING_CLOSED then
-				self.baler:setIsTurnedOn(true, false);
+	
+	if not self.baler:getIsTurnedOn() then 
+		if self.baler:getCanBeTurnedOn() then
+			self.baler:setIsTurnedOn(true, false); 
+		else --maybe this line is enough to handle bale dropping and waiting ?
+			self:setSpeed(0)
+			--baler needs refilling of some sort (net,...)
+			if self.balerSpec.unloadingState == Baler.UNLOADING_CLOSED then 
+				CpManager:setGlobalInfoText(self.vehicle, 'NEEDS_REFILLING');
 			end
 		end
-		if self.baler.setPickupState ~= nil then
-			if self.baler.spec_pickup ~= nil and not self.baler.spec_pickup.isLowered then
-				self.baler:setPickupState(true, false)
-				courseplay:debug('lowering baler pickup')
-			end
-		end
-	end
-	if not allowedToDrive then
-		self:setSpeed(0)
 	end
 
+	if self.baler.setPickupState ~= nil then -- lower pickup after unloading
+		if self.baler.spec_pickup ~= nil and not self.baler.spec_pickup.isLowered then
+			self.baler:setPickupState(true, false)
+			self:debug('lowering baler pickup')
+		end
+	end
+	
+	local fillLevel = self.baler:getFillUnitFillLevel(self.balerSpec.fillUnitIndex)
+	local capacity = self.baler:getFillUnitCapacity(self.balerSpec.fillUnitIndex)
+	
+	if not self.balerSpec.nonStopBaling and (self.balerSpec.baleUnloadAnimationName ~= nil or self.balerSpec.allowsBaleUnloading) then	
+		self:debugSparse("baleUnloadAnimationName: %s, allowsBaleUnloading: %s, nonStopBaling:%s",tostring(self.balerSpec.baleUnloadAnimationName),tostring(self.balerSpec.allowsBaleUnloading),tostring(self.balerSpec.nonStopBaling))
+		--copy of giants code:  AIDriveStrategyBaler:getDriveData(dt, vX,vY,vZ) to avoid leftover when full
+		local freeFillLevel = capacity - fillLevel
+		if freeFillLevel < self.slowDownFillLevel then
+			maxSpeed = 2 + (freeFillLevel / self.slowDownFillLevel) * self.slowDownStartSpeed
+			self:setSpeed(maxSpeed)
+		end
+		
+		--baler is full or is unloading so wait!
+		if fillLevel == capacity or self.balerSpec.unloadingState ~= Baler.UNLOADING_CLOSED then
+			self:setSpeed(0)
+		end
+	end
 	return true
 end

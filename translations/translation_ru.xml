@@ -75,6 +75,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 											text="нуждается в заправке. " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 											text="выгрузка тюков." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 												text="застрял." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 									text="замедляется для трафика" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 											text="Достигнут пункт разгрузки" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 										text="Расстояние до точки разгрузки" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 												text="Заполнено: %d из %d" />
@@ -424,12 +425,12 @@
 		<text name="COURSEPLAY_FillType_WrappingFoil" 										text="оберточная фольга" />
 		<text name="COURSEPLAY_FillType_Molasses"											text="меласса" />
 				
-		<text name="COURSEPLAY_AUTODRIVE_MODE"												text="AutoDrive" />
-		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"										text="Не установлен" />
-		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"											text="Не использовать" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"									text="Для разгрузки/наполнения" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"												text="Для парковки" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"								text="Для разгрузки/наполнения/парковки" />
+		<text name="COURSEPLAY_AUTODRIVE_MODE"												text="Использовать AutoDrive" />
+		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"										text="не установлен" />
+		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"											text="не использовать" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"									text="разгрузки/наполнения" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"												text="парковки" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"								text="разгр./наполн./парковки" />
 				
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"											text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"										text="(и обратно)" />

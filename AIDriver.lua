@@ -201,25 +201,42 @@ end
 
 function AIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 	self.triggerHandler:writeUpdateStream(streamId)
-	streamWriteString(streamId,self.state.name)
-	if self.active then 
+	if self.state ~= self.stateSend then 
 		streamWriteBool(streamId,true)
+		streamWriteString(streamId,self.state.name)
+		self.stateSend = self.state
 	else 
 		streamWriteBool(streamId,false)
 	end
---	streamWriteBool(streamId,self.vehicle.cp.isDriving)
+	if self.active ~= self.activeSend then 
+		streamWriteBool(streamId,true)
+		streamWriteBool(streamId,self.active or false)
+		self.activeSend = self.active
+	else
+		streamWriteBool(streamId,false)
+	end
 end 
 
 function AIDriver:readUpdateStream(streamId, timestamp, connection)
 	self.triggerHandler:readUpdateStream(streamId)
+	if streamReadBool(streamId) then
+		local nameState = streamReadString(streamId)
+		self.state = self.states[nameState]
+	end
+	if streamReadBool(streamId) then
+		self.active = streamReadBool(streamId)
+	end
+end
+
+function AIDriver:onWriteStream(streamId)
+	streamWriteString(streamId,self.state.name)
+	streamWriteBool(streamId,self.active or false)
+end
+
+function AIDriver:onReadStream(streamId)
 	local nameState = streamReadString(streamId)
 	self.state = self.states[nameState]
 	self.active = streamReadBool(streamId)
---	self.vehicle.cp.isDriving = streamReadBool(streamId)
-end
-
-function AIDriver:postSync()
-
 end
 
 function AIDriver:setHudContent()
@@ -517,6 +534,13 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 	end
 	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
 end
+
+--[[ emergency brake, maybe for mode 4/8 refill at trigger ??
+	local oldFunc = self.vehicle.getBrakeForce
+	self.vehicle.getBrakeForce = function () return 10000000 end
+	AIVehicleUtil.driveToPoint(self.vehicle, dt, self.acceleration, allowedToDrive, moveForwards, ax, az, maxSpeed, false)
+	self.vehicle.getBrakeForce = oldFunc
+]]--
 
 -- many courseplay modes control the vehicle through the lx/lz normalized local directions.
 -- this is an interface for those modes to drive the vehicle.
@@ -1179,6 +1203,7 @@ function AIDriver:checkForHeapBehindMe(tipper)
 	end
 end
 
+--only bga, else triggerHandler handles discharge!
 function AIDriver:dischargeAtTipTrigger(dt)
 	local trigger = self.vehicle.cp.currentTipTrigger
 	local allowedToDrive, takeOverSteering = true
@@ -1193,40 +1218,9 @@ function AIDriver:dischargeAtTipTrigger(dt)
 				allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,self.course:getLastReverseAt(self.ppc:getCurrentWaypointIx()))     
 			end
 			courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-		else
-			--dischargeAtObjects is handled by the new TriggerHandler
-		--	allowedToDrive = self:tipIntoStandardTipTrigger()
-		end;
-	end
-	return allowedToDrive, takeOverSteering
-end
-
-function AIDriver:tipIntoStandardTipTrigger()
-	local stopForTipping = false
-	local siloIsFull = false
-	for _, tipper in pairs(self.vehicle.cp.workTools) do
-		if tipper.spec_dischargeable ~= nil then
-			if self:tipTriggerIsFull(trigger,tipper) then
-				siloIsFull = true
-				stopForTipping = true
-			else
-				for i=1,#tipper.spec_dischargeable.dischargeNodes do
-					if tipper:getCanDischargeToObject(tipper.spec_dischargeable.dischargeNodes[i])then
-						tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)
-						stopForTipping = true
-					end
-				end
-			end
 		end
 	end
-	if not self:getHasAllTippersClosed() then
-		stopForTipping = true
-	end
-	if siloIsFull then
-		self:setInfoText('FARM_SILO_IS_FULL')
-	end
-	
-	return not stopForTipping
+	return allowedToDrive, takeOverSteering
 end
 
 function AIDriver:tipIntoBGASiloTipTrigger(dt)
@@ -1300,7 +1294,7 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	self:setSpeed(self:getRecordedSpeed())
 	--handle cover
 	if self:hasTipTrigger() or isNearUnloadPoint then
-		courseplay:openCloseCover(self.vehicle, not courseplay.SHOW_COVERS)
+		self:openCovers(self.vehicle)
 	end
 	-- done tipping?
 	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
@@ -1657,10 +1651,6 @@ function AIDriver:setDriveNow()
 	if self:isWaiting() then 
 		self:continue()
 		self.vehicle.cp.wait = false
-		--is this one needed ??
-		if self.vehicle.cp.mode == 1 or self.vehicle.cp.mode == 3 then
-			self.vehicle.cp.isUnloaded = true;
-		end;
 	end
 	self.triggerHandler:onDriveNow()
 end
@@ -1934,7 +1924,7 @@ function AIDriver:disableProximitySwerve()
 	self.proximitySwerveEnabled = false
 end
 
-function AIDriver:isProximitySwerveEnabled()
+function AIDriver:isProximitySwerveEnabled(vehicle)
 	return self.proximitySwerveEnabled
 end
 
@@ -2038,7 +2028,7 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	local sameDirection = TurnContext.isSameDirection(
 			AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(vehicle), 45)
 	-- check for nil and NaN
-	if deg and deg == deg and self:isProximitySwerveEnabled() and
+	if deg and deg == deg and self:isProximitySwerveEnabled(vehicle) and
 			(not sameDirection or not vehicle:getIsCourseplayDriving())then
 		local dx = dAvg * math.sin(math.rad(deg))
 		-- which direction to swerve (have a little bias for right, sorry UK folks :)
@@ -2111,6 +2101,47 @@ function AIDriver:getCanShowDriveOnButton()
 	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaiting()
 end
 
-function AIDriver:isOverloadingTriggerCallbackEnabled()
-	return false
+
+--if validFillType ~= nil, then only open the first valid fillUnit for this fillType,
+--else open all possible covers
+function AIDriver:openCovers(object,validFillType)	
+	if object.spec_cover then
+		if not validFillType then
+			if object.getFillUnits then
+				for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+					SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",nil,fillUnitIndex,1)
+				end
+			end
+		else
+			local validFillUnitIndex = object:getFirstValidFillUnitToFill(validFillType)
+			SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",validFillType,validFillUnitIndex,1)
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:openCovers(impl.object,validFillType)
+	end
 end
+
+--close all covers
+function AIDriver:closeCovers(object,fillType)
+	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
+		return
+	end
+	if object.spec_cover then
+		SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:closeCovers(impl.object,fillType)
+	end
+end
+
+--disable detaching, while CP is driving
+function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
+	local rootVehicle = self:getRootVehicle()
+	if courseplay:isAIDriverActive(rootVehicle) then
+		return false
+	end	
+	return superFunc(self,preSuperFunc)
+end
+AttacherJoints.isDetachAllowed = Utils.overwrittenFunction(AttacherJoints.isDetachAllowed, AIDriver.isDetachAllowed)
+
