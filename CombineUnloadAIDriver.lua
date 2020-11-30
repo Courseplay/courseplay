@@ -524,11 +524,13 @@ function CombineUnloadAIDriver:driveBesideCombine()
 	self:setSpeed(math.max(0, speed))
 end
 
+
 function CombineUnloadAIDriver:driveBesideChopper()
 	local targetNode = self:getTrailersTargetNode()
+	local _, offsetZ = self:getPipeOffset(self.combineToUnload)
 	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
 	self:releaseAutoAimNode()
-	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5)
+	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5+offsetZ)
 	self:setSpeed(math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))))
 end
 
@@ -759,7 +761,7 @@ function CombineUnloadAIDriver:getPipeOffset(combine)
 end
 
 function CombineUnloadAIDriver:getChopperOffset(combine)
-	local pipeOffset = g_combineUnloadManager:getCombinesPipeOffset(combine)
+	local pipeOffset = g_combineUnloadManager:getPipeOffset(combine)
 	local leftOk, rightOk = g_combineUnloadManager:getPossibleSidesToDrive(combine)
 	local currentOffset = self.combineOffset
 	local newOffset = currentOffset
@@ -771,7 +773,7 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 		-- no fruit to the left
 		if currentOffset >= 0 then
 			-- we are already on the left or middle, go to left
-			newOffset = pipeOffset
+			newOffset = pipeOffset+self.vehicle.cp.combineOffset
 		else
 			-- we are on the right, move to the middle
 			newOffset = 0
@@ -780,7 +782,7 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 		-- no fruit to the right
 		if currentOffset <= 0 then
 			-- we are already on the right or in the middle, move to the right
-			newOffset = -pipeOffset
+			newOffset = -pipeOffset-self.vehicle.cp.combineOffset
 		else
 			-- we are on the left, move to the middle
 			newOffset = 0
@@ -1110,6 +1112,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
+	self:releaseUnloader()
+	self:startMovingBackFromCombine(self.states.MOVE_BACK_FULL)
 	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
 	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
 	self:closeCovers(self.vehicle)
@@ -1729,10 +1733,14 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 			self:startMovingBackFromCombine(self.states.MOVE_BACK_FROM_EMPTY_COMBINE)
 			return
 		else
-			self:debug('combine empty and moving forward')
-			self:releaseUnloader()
-			self:startWaitingForCombine()
-			return
+
+				if	self:getFillLevelThreshold() >1 then
+					self:debug('combine empty and moving forward')
+					self:releaseUnloader()
+					self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+					return
+				end
+
 		end
 	end
 
@@ -1831,14 +1839,13 @@ end
 -- our speed to stay in the range of the pipe.
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:followChopper()
-
 	--when trailer is full then go to unload
 	if self:getDriveUnloadNow() or self:getAllTrailersFull() then
 		self:startMovingBackFromCombine(self.states.MOVE_BACK_FULL)
 		return
 	end
 
-	if self.course:isTemporary() and self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) > 5 then
+	if self.course:isTemporary() and self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) > 10 then
 		-- have not started on the combine's fieldwork course yet (still on the temporary alignment course)
 		-- just drive the course
 	else
@@ -1849,6 +1856,7 @@ function CombineUnloadAIDriver:followChopper()
 		self.combineToUnload.cp.driver:ignoreVehicleProximity(self.vehicle, 3000)
 		-- when on the fieldwork course, drive behind or beside the chopper, staying in the range of the pipe
 		self.combineOffset = self:getChopperOffset(self.combineToUnload)
+
 
 		local dx = self:findOtherUnloaderAroundCombine(self.combineToUnload, self.combineOffset)
 		if dx then
@@ -1861,6 +1869,7 @@ function CombineUnloadAIDriver:followChopper()
 		else
 			self.followCourse:setOffset(-self.combineOffset, 0)
 		end
+
 
 
 		if self.combineOffset ~= 0 then

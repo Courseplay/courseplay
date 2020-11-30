@@ -29,9 +29,11 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
 		courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (passed in)', bunkerWidth, width)
 		widthCount =math.ceil(bunkerWidth/width)
 	else
+
 		courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (calculated)', bunkerWidth, vehicle.cp.workWidth)
-		widthCount =math.ceil(bunkerWidth/vehicle.cp.workWidth)
+		widthCount =math.ceil(bunkerWidth/(vehicle.cp.workWidth*0.7))
 		width = vehicle.cp.workWidth
+
 	end
 
 	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
@@ -45,7 +47,7 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
 	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
 	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
 	local widthLengthZ = (Silo.bunkerSiloArea.wz-Silo.bunkerSiloArea.sz)/widthCount
-	local getOffTheWall = 0.5;
+	local getOffTheWall = vehicle.cp.workWidth*0.4;--distens from wall is 40% of the working distens
 
 	local lastValidfillType = 0
 	local map = {}

@@ -84,8 +84,8 @@ function CombineUnloadManager:addCombineToList(vehicle, driver)
 	self.combines[vehicle]= {
 		driver = driver,
 		combineObject = combineObject,
-		isChopper = courseplay:isChopper(combineObject),
-		isCombine = (courseplay:isCombine(combineObject) or combineObject.isPremos) and not courseplay:isChopper(combineObject),
+		isChopper = courseplay:isChopper(combineObject) or combineObject:getFillUnitCapacity(1)==10001,
+		isCombine = (courseplay:isCombine(combineObject) or combineObject.isPremos) and not (courseplay:isChopper(combineObject) or combineObject:getFillUnitCapacity(1)==10001), 
 		isOnFieldNumber = 0;
 		fillLevel = 0;
 		fillLevelPct = 0;
@@ -443,6 +443,7 @@ function CombineUnloadManager:getPipesBaseNode(combine)
 			local node = combine.spec_pipe.nodes[i]
 			if node.autoAimYRotation then
 				return node.node
+			
 			end
 		end
 	elseif self:getIsCombine(combine) then
