@@ -1879,6 +1879,12 @@ function AIDriver:setFrontMarkerNode(vehicle)
 		link(firstImplement.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
 	end
 	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, frontMarkerOffset)
+	-- Make sure the front marker node does not point up or down, for example in case of
+	-- a pallet fork can be moved up/down, we don't want the node pointing up/down, we want it
+	-- pointing forward, having the same x rotation as the vehicle itself
+	local wrx, _, _ = getWorldRotation(vehicle.rootNode)
+	local _, ry, rz = getWorldRotation(vehicle.cp.driver.aiDriverData.frontMarkerNode)
+	setWorldRotation(vehicle.cp.driver.aiDriverData.frontMarkerNode, wrx, ry, rz)
 end
 
 function AIDriver:getFrontMarkerNode(vehicle)

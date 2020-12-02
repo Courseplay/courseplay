@@ -1640,6 +1640,15 @@ function AIDriverUtil.hasImplementsOnTheBack(vehicle)
 	return false
 end
 
+function AIDriverUtil.getAllAttachedImplements(object, implements)
+	if not implements then implements = {} end
+	for _, implement in ipairs(object:getAttachedImplements()) do
+		table.insert(implements, implement)
+		AIDriverUtil.getAllAttachedImplements(implement.object, implements)
+	end
+	return implements
+end
+
 ---@return table, number frontmost object and the distance between the front of that object and the root node of the object
 function AIDriverUtil.getFirstAttachedImplement(vehicle)
 	-- by default, it is the vehicle's front, negative as the vehicle's root node is behind the front implement's root node
@@ -1647,7 +1656,7 @@ function AIDriverUtil.getFirstAttachedImplement(vehicle)
 	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
 	local frontOffset = vehicle.sizeLength / 2 + vehicle.lengthOffset
 	local firstImplement = vehicle
-	for _, implement in pairs(vehicle:getAttachedImplements()) do
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
 			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s front distance %d', implement.object:getName(), d)
@@ -1656,7 +1665,6 @@ function AIDriverUtil.getFirstAttachedImplement(vehicle)
 				frontOffset = implement.object.sizeLength / 2 + implement.object.lengthOffset
 				firstImplement = implement.object
 			end
-			-- TODO: recursively search implements attached to other implements
 		end
 	end
 	return firstImplement, frontOffset
@@ -1669,7 +1677,7 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
 	local backOffset = vehicle.sizeLength / 2 - vehicle.lengthOffset
 	local lastImplement = vehicle
-	for _, implement in pairs(vehicle:getAttachedImplements()) do
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
 			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, - implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
@@ -1678,7 +1686,6 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 				backOffset = implement.object.sizeLength / 2 - implement.object.lengthOffset
 				lastImplement = implement.object
 			end
-			-- TODO: recursively search implements attached to other implements
 		end
 	end
 	return lastImplement, -backOffset
