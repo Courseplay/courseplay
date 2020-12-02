@@ -668,7 +668,7 @@ function FinishRowOnly:finishRow()
 	-- keep driving straight until we need to raise our implements
 	if self.driver:shouldRaiseImplements(self:getRaiseImplementNode()) then
 		self:debug('Row finished, returning to fieldwork.')
-		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx)
+		self.driver:resumeFieldworkAfterTurn(self.turnContext.turnEndWpIx, true)
 	end
 	return false
 end

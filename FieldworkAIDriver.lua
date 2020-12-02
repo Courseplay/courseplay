@@ -1426,13 +1426,18 @@ function FieldworkAIDriver:startFieldworkCourseWithTemporaryCourse(temporaryCour
 end
 
 -- switch back to fieldwork after the turn ended.
-function FieldworkAIDriver:resumeFieldworkAfterTurn(ix)
+---@param ix number waypoint to resume fieldwork after
+---@param forceIx boolean if true, fieldwork will resume exactly at ix. If false, we'll look for the next waypoint
+--- in front of us.
+function FieldworkAIDriver:resumeFieldworkAfterTurn(ix, forceIx)
 	self.ppc:setNormalLookaheadDistance()
 	self.fieldworkState = self.states.WORKING
 	self:lowerImplements()
 	-- restore our own listeners for waypoint changes
 	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
-	self:startCourse( self.fieldworkCourse, self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(ix, AIDriverUtil.getDirectionNode(self.vehicle), 0))
+	local startIx = forceIx and ix or self.fieldworkCourse:getNextFwdWaypointIxFromVehiclePosition(
+			ix, AIDriverUtil.getDirectionNode(self.vehicle), 0)
+	self:startCourse( self.fieldworkCourse, startIx)
 end
 
 --- Don't pay worker double when AutoDrive is driving
