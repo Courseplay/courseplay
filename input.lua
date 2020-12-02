@@ -17,7 +17,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
+	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1,  hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
 	-- should we switch vehicles? Removed condition: vehicle.cp.mouseCursorActive <- is it important that it have to be CP mouseCursor ?
@@ -29,15 +29,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
 		local buttonToHandle;
-
-		if vehicle.cp.suc.active then
-			for _,button in pairs(vehicle.cp.buttons.suc) do
-				if button.show and button:getHasMouse(posX, posY) then
-					buttonToHandle = button;
-					break;
-				end;
-			end;
-		end;
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons.global) do
@@ -84,14 +75,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--HOVER
 	elseif vehicle.cp.mouseCursorActive and not isDown and vehicle.cp.hud.show and vehicle:getIsEntered() then
 		-- local currentHoveredButton;
-		if vehicle.cp.suc.active then
-			for _,button in pairs(vehicle.cp.buttons.suc) do
-				if button.show and not button.isHidden then
-					button:setClicked(false);
-					button:setHovered(button:getHasMouse(posX, posY));
-				end;
-			end;
-		end;
 		vehicle.cp.hud.mouseWheel.render = false;
 		
 		for _,button in pairs(vehicle.cp.buttons.global) do

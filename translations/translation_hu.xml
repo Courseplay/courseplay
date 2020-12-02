@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Útvonalat alaphelyzetbe" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Indítás azonnal (Nem vár a töltésre)" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Elszállítás:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
 		<text name="UNKNOWN" 												text="Ismeretlen" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Fordulósáv irány"/>
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Fordulósáv útvonal elején/végén" />

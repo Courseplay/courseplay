@@ -261,6 +261,7 @@ function TriggerHandler:isNearDischargeNode(object,fillUnitIndex,trigger)
 				self:debugSparse(object,"dischargeNode and TriggerNode distance okay !")
 				return true
 			else 
+				self.driver:setSpeed(math.min(1,distance))
 				self:debugSparse(object,"dischargeNode and TriggerNode distance not okay, continue..!")
 				self.lastDistanceToTrigger = distance
 			end
@@ -680,7 +681,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 			local node = fillableObject:getFillUnitExactFillRootNode(fillUnitIndex)
 	--		DebugUtil.drawDebugNode(node, "ExactFillRootNode", false)
 			--checks if we are in the fillPlane, bugged with mode 4 as driver dosen't stop fast enough..
-			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) and not vehicle.cp.driver:is_a(FillableFieldworkAIDriver) then 
+			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) then 
 				triggerHandler:resetLoadingState()
 				return 
 			elseif not triggerHandler:isDriveNowActivated() then

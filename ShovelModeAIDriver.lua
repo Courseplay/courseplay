@@ -211,6 +211,7 @@ function ShovelModeAIDriver:drive(dt)
 			and self:iAmBeforeEmptyPoint()
 			and self:iAmBehindFillEndPoint() then
 				self:setShovelState(self.states.STATE_WAIT_FOR_TARGET)
+				self:disableTrafficConflictDetection()
 		end
 		--backup for starting somewhere in between
 		if not self:setShovelToPositionFinshed(3,dt) then
@@ -414,7 +415,6 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 							self:debug("supportedFillType")
 							self:debug("Trailer found!")
 							self:setShovelState(self.states.STATE_START_UNLOAD)
-							self:disableTrafficConflictDetection()
 							self.foundTrailer = true
 							return
 						else
@@ -440,7 +440,6 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 				if object:getFillUnitSupportsFillType(fillUnitIndex, fillType) then
 					self:debug("Trigger found!")
 					self:setShovelState(self.states.STATE_START_UNLOAD)
-					self:disableTrafficConflictDetection()
 				else 
 					self:debugSparse("fillType not supported!")
 				end

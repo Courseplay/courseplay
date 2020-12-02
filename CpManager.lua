@@ -194,15 +194,6 @@ function CpManager:deleteMap()
 	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;
 	courseplay.fields.ingameDataSetUp = false;
-	if courseplay.fields.seedUsageCalculator.fruitTypes then
-		for i,fruitData in pairs(courseplay.fields.seedUsageCalculator.fruitTypes) do
-			if fruitData.overlay then
-				fruitData.overlay:delete();
-			end;
-		end;
-	end
-	courseplay.fields.seedUsageCalculator = {};
-	courseplay.fields.seedUsageCalculator.fieldsWithoutSeedData = {};
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete help menu mouse overlay

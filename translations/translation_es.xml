@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Quitar ruta" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Conducir ahora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Ir a ruta al:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
 		<text name="UNKNOWN" 												text="Desconocido" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sentido de la cabecera" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Cabecera antes/después de ruta del campo" />
