@@ -25,7 +25,6 @@ function GrainTransportAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.totalFillCapacity = 0
-	-- just for backwards compatibility
 end
 
 function GrainTransportAIDriver:setHudContent()
@@ -35,15 +34,18 @@ end
 
 function GrainTransportAIDriver:start(startingPoint)
 	self.readyToLoadManualAtStart = false
+	self.nextClosestExactFillRootNode = nil
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
-	self:setDriveUnloadNow(false);
+	self.firstWaypointNode = WaypointNode('firstWaypoint')
+	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
 	-- never use alignment course for grain transport mode
 	return false
 end
+
 
 --TODO: consolidate this with AIDriver:drive() 
 function GrainTransportAIDriver:drive(dt)
@@ -68,11 +70,23 @@ function GrainTransportAIDriver:drive(dt)
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_MANUAL_LOADING")
 		--checking FillLevels, while loading at StartPoint 
 		if self.readyToLoadManualAtStart then 
-			self:setInfoText('REACHED_OVERLOADING_POINT')
-			if g_updateLoopIndex % 5 == 0 then
-				self:checkFillUnits()
+			self:setInfoText('REACHED_OVERLOADING_POINT')			
+			self:checkFillUnits()
+			if self.nextClosestExactFillRootNode then 
+				--drive until the closest exactFillRootNode/fillUnit is at the first Waypoint
+				self:setSpeed(3)
+				if self.nextClosestExactFillRootNodeDistance == nil then
+					 self.nextClosestExactFillRootNodeDistance = math.huge
+				end
+				local d = calcDistanceFrom(self.firstWaypointNode.node, self.nextClosestExactFillRootNode)
+				if d < self.nextClosestExactFillRootNodeDistance then 
+					self.nextClosestExactFillRootNodeDistance = d
+				else 
+					self:hold()
+				end
+			else
+				self:hold()
 			end
-			self:hold()
 		else
 			self:clearInfoText('REACHED_OVERLOADING_POINT')
 		end	
@@ -135,11 +149,7 @@ function GrainTransportAIDriver:onWaypointPassed(ix)
 			end
 			if not self:isFillLevelReached(totalFillLevel) then 
 				self.readyToLoadManualAtStart = true
-				for object, objectData in pairs(totalFillUnitsData) do 
-					for fillUnitIndex, fillUnitData in pairs(objectData) do 
-						SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillUnitData.fillType,fillUnitIndex,1)
-					end
-				end
+				self:openCovers(self.vehicle)			
 			end
 		end
 	elseif ix>1 then 
@@ -175,20 +185,32 @@ function GrainTransportAIDriver:checkFillUnits()
 	local maxNeeded = self.vehicle.cp.settings.driveOnAtFillLevel:get()
 	local totalFillUnitsData = {}
 	local totalFillLevel = 0
-	local isFilling = false
+	local distance = math.huge
+	local nextClosestExactFillRootNode
 	self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
 	for object, objectData in pairs(totalFillUnitsData) do 
 		for fillUnitIndex, fillUnitData in pairs(objectData) do 
 			totalFillLevel = totalFillLevel + fillUnitData.fillLevel
+			--get the closest exactFillRootNode/fillUnit 
+			if fillUnitData.exactFillRootNode and fillUnitData.fillLevel/fillUnitData.capacity*100 < 99 then 
+				local d = calcDistanceFrom(self.firstWaypointNode.node, fillUnitData.exactFillRootNode)
+				if d < distance then
+					distance = d
+					nextClosestExactFillRootNode = fillUnitData.exactFillRootNode
+				end
+			end
 		end
 	end
-	if self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
+	if nextClosestExactFillRootNode ~= self.nextClosestExactFillRootNode then 
+		self.nextClosestExactFillRootNodeDistance = nil
+		self.nextClosestExactFillRootNode = nextClosestExactFillRootNode
+	end		
+	if g_updateLoopIndex % 2 == 0 and self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
 		self.readyToLoadManualAtStart = false
+		self.nextClosestExactFillRootNode = nil
 		local totalFillUnitsData = {}
 		self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
-		for object, objectData in pairs(totalFillUnitsData) do 
-			SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
-		end
+		self:closeCovers(self.vehicle)
 	end
 	self.lastTotalFillLevel = totalFillLevel
 end
@@ -198,13 +220,16 @@ function GrainTransportAIDriver:getFillUnitInfo(object,totalFillUnitsData)
 	if spec and object.spec_trailer then 
 		totalFillUnitsData[object] = {}
 		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
-			totalFillUnitsData[object][fillUnitIndex] = {}
-			local capacity = object:getFillUnitCapacity(fillUnitIndex)
-			local fillLevel = object:getFillUnitFillLevel(fillUnitIndex)
 			local fillType = object:getFillUnitFillType(fillUnitIndex)
-			totalFillUnitsData[object][fillUnitIndex].capacity = capacity
-			totalFillUnitsData[object][fillUnitIndex].fillLevel = fillLevel
-			totalFillUnitsData[object][fillUnitIndex].fillType = fillType
+			if not self:isValidFuelType(object,fillType,fillUnitIndex) then 
+				totalFillUnitsData[object][fillUnitIndex] = {}
+				local capacity = object:getFillUnitCapacity(fillUnitIndex)
+				local fillLevel = object:getFillUnitFillLevel(fillUnitIndex)
+				totalFillUnitsData[object][fillUnitIndex].capacity = capacity
+				totalFillUnitsData[object][fillUnitIndex].fillLevel = fillLevel
+				totalFillUnitsData[object][fillUnitIndex].fillType = fillType
+				totalFillUnitsData[object][fillUnitIndex].exactFillRootNode = object:getFillUnitExactFillRootNode(fillUnitIndex)
+			end
 		end
 	end
 	-- get all attached implements recursively
@@ -213,8 +238,15 @@ function GrainTransportAIDriver:getFillUnitInfo(object,totalFillUnitsData)
 	end
 end
 
+function GrainTransportAIDriver:continue()
+	self.nextClosestExactFillRootNode = nil
+	AIDriver.continue(self)
+end
+
 function GrainTransportAIDriver:setDriveNow()
 	self.driveNow = true
+	self.readyToLoadManualAtStart = false
+	self.nextClosestExactFillRootNode = nil
 	AIDriver.setDriveNow(self)
 end
 
@@ -222,3 +254,17 @@ function GrainTransportAIDriver:getCanShowDriveOnButton()
 	return self.readyToLoadManualAtStart or AIDriver.getCanShowDriveOnButton(self)
 end
 
+function GrainTransportAIDriver:stop(stopMsg)
+	if self.firstWaypointNode then
+		self.firstWaypointNode:destroy()
+	end
+	self.nextClosestExactFillRootNode = nil
+	AIDriver.stop(self,stopMsg)
+end
+
+function GrainTransportAIDriver:delete()
+	if self.firstWaypointNode then
+		self.firstWaypointNode:destroy()
+	end
+	AIDriver.delete(self)
+end

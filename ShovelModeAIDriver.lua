@@ -128,6 +128,7 @@ function ShovelModeAIDriver:start()
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
+	self:disableProximitySwerve()
 	AIDriver.continue(self)
 end
 
@@ -238,6 +239,12 @@ function ShovelModeAIDriver:drive(dt)
 		elseif currentDischargeNode.dischargeObject or currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
 			self:setShovelToPositionFinshed(4,dt)
 			self:hold()
+		elseif not self:getIsShovelEmpty() then  --drive in straight line to waitPoint is UnloadStation(UnloadTrigger) or correct Trailer was found
+			if self.course:getDistanceToNextWaypoint(self.shovelEmptyPoint) <2 then 
+				notAllowedToDrive = true
+				local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
+				self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
+			end
 		end
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY then
 		self:hold()
@@ -247,6 +254,7 @@ function ShovelModeAIDriver:drive(dt)
 				local newPoint = self.course:getNextRevWaypointIxFromVehiclePosition(self.ppc:getCurrentWaypointIx(), self.vehicle.cp.directionNode, 3 )
 				self.ppc:initialize(newPoint)
 				self:setShovelState(self.states.STATE_GO_BACK_FROM_EMPTYPOINT);
+				self:enableTrafficConflictDetection()
 			end
 		elseif not self.shovel:getCanDischargeToObject(dischargeNode) or self:almostFullObject(dischargeNode) and not self.foundTrailer then
 			self:setShovelState(self.states.STATE_START_UNLOAD);
@@ -369,7 +377,6 @@ function ShovelModeAIDriver:iAmBeforeEmptyPoint()
 end
 
 function ShovelModeAIDriver:searchForUnloadingObjectRaycast()
-	local vehicle = self.vehicle
 	local ix = self.shovelEmptyPoint
 	local node = WaypointNode('proxyNode')
 	node:setToWaypoint(self.course, ix, true)
@@ -407,6 +414,7 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 							self:debug("supportedFillType")
 							self:debug("Trailer found!")
 							self:setShovelState(self.states.STATE_START_UNLOAD)
+							self:disableTrafficConflictDetection()
 							self.foundTrailer = true
 							return
 						else
@@ -432,6 +440,7 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycastCallback(transformId,
 				if object:getFillUnitSupportsFillType(fillUnitIndex, fillType) then
 					self:debug("Trigger found!")
 					self:setShovelState(self.states.STATE_START_UNLOAD)
+					self:disableTrafficConflictDetection()
 				else 
 					self:debugSparse("fillType not supported!")
 				end
