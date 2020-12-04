@@ -101,31 +101,6 @@ function courseplay.hud:setup()
 	self.visibleArea.y1 = self.basePosY + self:pxToNormal(8, 'y');
 	self.visibleArea.y2 = self.visibleArea.y1 + self.visibleArea.height;
 
-	-- SEEDUSAGECALCULATOR
-	self.suc = {};
-	self.suc.UVsPx = { 10,876, 476,744 };
-	self.suc.width  = self:pxToNormal(466, 'x');
-	self.suc.height = self:pxToNormal(132, 'y');
-	self.suc.x1 = self.baseCenterPosX - self.suc.width * 0.5;
-	self.suc.x2 = self.baseCenterPosX + self.suc.width * 0.5;
-	self.suc.y1 = self.basePosY + self.baseHeight; -- + self:pxToNormal(5, 'y');
-	self.suc.y2 = self.suc.y1 + self.suc.height;
-
-	self.suc.visibleArea = {};
-	self.suc.visibleArea.width  = self:pxToNormal(450, 'x');
-	self.suc.visibleArea.height = self:pxToNormal(116, 'y');
-	self.suc.visibleArea.x1 = self.baseCenterPosX - self.suc.visibleArea.width * 0.5;
-	self.suc.visibleArea.x2 = self.baseCenterPosX + self.suc.visibleArea.width * 0.5;
-	self.suc.visibleArea.y1 = self.suc.y1 + self:pxToNormal(8, 'y');
-	self.suc.visibleArea.y2 = self.suc.y2 - self:pxToNormal(8, 'y');
-	self.suc.visibleArea.hPadding = self:pxToNormal(10, 'x');
-	self.suc.visibleArea.vPadding = self:pxToNormal(10, 'y');
-	self.suc.visibleArea.overlayWidth = 50 -- To Do replace this with somthingg_currentMission.hudTipperOverlay.width * 2.75;
-	self.suc.visibleArea.overlayHeight = self.suc.visibleArea.overlayWidth * g_screenAspectRatio;
-	self.suc.visibleArea.overlayPosX = self.suc.visibleArea.x2 - self.suc.visibleArea.overlayWidth - self.suc.visibleArea.hPadding;
-	self.suc.visibleArea.overlayPosY = self.suc.visibleArea.y1 + self.suc.visibleArea.vPadding;
-
-
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", self.basePosX, self.basePosY, self.visibleArea.x1, self.visibleArea.x2, self.visibleArea.y1, self.visibleArea.y2, self.baseCenterPosX));
 
 	-- LINES AND TEXT
@@ -506,15 +481,6 @@ end
 function courseplay.hud:renderHud(vehicle)
 	-- self = courseplay.hud
 
-	-- SEEDUSAGECALCULATOR
-	-- Do we realy want to keep this, when GC got a Calculator for all kind of filltypes ?
-	if vehicle.cp.suc.active then
-		vehicle.cp.hud.suc:render();
-		if vehicle.cp.suc.selectedFruit.overlay then
-			vehicle.cp.suc.selectedFruit.overlay:render();
-		end;
-	end;
-
 	-- BASE HUD
 	if vehicle.cp.hud.currentPage == self.PAGE_CP_CONTROL and vehicle.cp.canSwitchMode and not vehicle.cp.distanceCheck then
 		vehicle.cp.hud.bgWithModeButtons:render();
@@ -577,23 +543,6 @@ function courseplay.hud:renderHud(vehicle)
 			renderText(data.textPosX, data.textPosY, self.fontSizes.contentValue, tostring(channelNum));
 		end
 		courseplay:setFontSettings('white', false, 'left');
-	end;
-
-	-- SEED USAGE CALCULATOR
-	if vehicle.cp.suc.active then
-		local x = vehicle.cp.suc.textMinX;
-		local selectedField = courseplay.fields.fieldData[ vehicle.cp.fieldEdge.selectedField.fieldNum ];
-		local selectedFruit = vehicle.cp.suc.selectedFruit;
-		courseplay:setFontSettings('shadow', true);
-		renderText(x, vehicle.cp.suc.lines.title.posY - 0.001, vehicle.cp.suc.lines.title.fontSize, vehicle.cp.suc.lines.title.text);
-		courseplay:setFontSettings('white', true);
-		renderText(x, vehicle.cp.suc.lines.title.posY        , vehicle.cp.suc.lines.title.fontSize, vehicle.cp.suc.lines.title.text);
-
-		courseplay:setFontSettings('white', false);
-		renderText(x, vehicle.cp.suc.lines.field.posY, vehicle.cp.suc.lines.field.fontSize, selectedField.fieldAreaText);
-		renderText(x, vehicle.cp.suc.lines.fruit.posY, vehicle.cp.suc.lines.fruit.fontSize, selectedFruit.sucText);
-
-		renderText(x, vehicle.cp.suc.lines.result.posY, vehicle.cp.suc.lines.result.fontSize, selectedField.seedDataText[selectedFruit.name]);
 	end;
 
 	-- BOTTOM GLOBAL INFO
@@ -986,6 +935,15 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else 
 						self:disableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.driveOnAtFillLevel)
 					end
+				elseif entry.functionToCall == 'moveOnAtFillLevel:changeByX' then
+					--DriveOnAtFillLevelSetting
+					if not vehicle.cp.settings.seperateFillTypeLoading:isActive() then
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.moveOnAtFillLevel:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.moveOnAtFillLevel:getText()
+						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.moveOnAtFillLevel)
+					else 
+						self:disableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.moveOnAtFillLevel)
+					end	
 				
 				--TODO: setDriveNow should be AIDriver function! 
 				elseif entry.functionToCall == 'setDriveNow' then
@@ -1500,7 +1458,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.hud = {
 		bg				  = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
 		bgWithModeButtons = Overlay:new(gfxPath, self.basePosX, self.basePosY, self.baseWidth, self.baseHeight);
-		suc				  = Overlay:new(gfxPath, self.suc.x1,	  self.suc.y1,	 self.suc.width, self.suc.height);
 		currentPage = 1;
 		show = false;
 		showMiniHud = true;
@@ -1519,7 +1476,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	};
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.bg,				   self.baseUVsPx,				  self.baseTextureSize.x, self.baseTextureSize.y);
 	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.bgWithModeButtons, self.baseWithModeButtonsUVsPx, self.baseTextureSize.x, self.baseTextureSize.y);
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.suc,			   self.suc.UVsPx,				  self.baseTextureSize.x, self.baseTextureSize.y);
 
 
 
@@ -1529,54 +1485,11 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- clickable buttons
 	vehicle.cp.buttons = {};
 	vehicle.cp.buttons.global = {};
-	vehicle.cp.buttons.suc = {};
 	vehicle.cp.buttons[-2] = {};
 		
 	for page=0, self.numPages do
 		vehicle.cp.buttons[page] = {};
 	end;
-
-	-- SeedUsageCalculator
-	vehicle.cp.suc = {
-		active = false;
-		fontSize = self.fontSizes.seedUsageCalculator;
-	};
-	local lineHeight = vehicle.cp.suc.fontSize;
-	local sucVa = self.suc.visibleArea;
-	vehicle.cp.suc.textMinX = sucVa.x1 + sucVa.hPadding + self.buttonSize.small.w + self.buttonSize.small.margin + self.buttonSize.small.w + sucVa.hPadding;
-	vehicle.cp.suc.textMaxX = sucVa.x2 - sucVa.hPadding;
-	vehicle.cp.suc.textMaxWidth = vehicle.cp.suc.textMaxX - vehicle.cp.suc.textMinX;
-
-	vehicle.cp.suc.lines = {};
-	vehicle.cp.suc.lines.title = {
-		fontSize = vehicle.cp.suc.fontSize * 1.1;
-		text = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR');
-	};
-	vehicle.cp.suc.lines.title.posY = sucVa.y2 - sucVa.vPadding - vehicle.cp.suc.lines.title.fontSize;
-	vehicle.cp.suc.lines.field = {
-		fontSize = vehicle.cp.suc.fontSize;
-		posY = vehicle.cp.suc.lines.title.posY - lineHeight * 1.5;
-		text = '';
-	};
-	vehicle.cp.suc.lines.fruit = {
-		fontSize = vehicle.cp.suc.fontSize;
-		posY = vehicle.cp.suc.lines.field.posY - lineHeight;
-		text = '';
-	};
-	vehicle.cp.suc.lines.result = {
-		fontSize = vehicle.cp.suc.fontSize * 1.05;
-		posY = vehicle.cp.suc.lines.fruit.posY - lineHeight * 4/3;
-		text = '';
-	};
-	local w,h = self.buttonSize.small.w, self.buttonSize.small.h;
-	local xL = sucVa.x1 + sucVa.hPadding;
-	local xR = xL + w + self.buttonSize.small.margin;
-	local y = vehicle.cp.suc.lines.fruit.posY - self:pxToNormal(3, 'y');
-	vehicle.cp.suc.fruitNegButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navLeft' },  'sucChangeFruit', -1, xL, y, w, h);
-	vehicle.cp.suc.fruitPosButton = courseplay.button:new(vehicle, 'suc', { 'iconSprite.png', 'navRight' }, 'sucChangeFruit',  1, xR, y, w, h);
-	vehicle.cp.suc.selectedFruitIdx = 1;
-	vehicle.cp.suc.selectedFruit = nil;
-
 
 	-- main hud content
 	vehicle.cp.hud.reloadPage = {};
@@ -2436,9 +2349,12 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setOverloaderAIDriverContent(vehicle)
+function courseplay.hud:setOverloaderAIDriverContent(vehicle,hasMoveablePipe)
 	-- page 3
-	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.augerPipeToolPositions,3,2)
+	if hasMoveablePipe then
+		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.augerPipeToolPositions,3,2)
+	end
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 3, 1 )
 end
 
 function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)

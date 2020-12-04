@@ -381,16 +381,6 @@ function courseplay.buttons:renderButtons(vehicle, page)
 			end;
 		end;
 	end;
-
-	if vehicle.cp.suc.active then
-		if vehicle.cp.suc.fruitNegButton:render() then
-			hoveredButton = vehicle.cp.suc.fruitNegButton;
-		end;
-		if vehicle.cp.suc.fruitPosButton:render() then
-			hoveredButton = vehicle.cp.suc.fruitPosButton;
-		end;
-	end;
-
 	-- set currently hovered button in vehicle
 	self:setHoveredButton(vehicle, hoveredButton);
 end;

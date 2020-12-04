@@ -482,6 +482,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(DriveOnAtFillLevelSetting, self)
+	self.cp.settings:addSetting(MoveOnAtFillLevelSetting, self)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
 	self.cp.settings:addSetting(FollowAtFillLevelSetting,self)
 	self.cp.settings:addSetting(ForcedToStopSetting,self)
@@ -978,9 +979,6 @@ function courseplay:onDelete()
 		end;
 		if self.cp.hud.bgWithModeButtons ~= nil then
 			self.cp.hud.bgWithModeButtons:delete();
-		end;
-		if self.cp.hud.suc ~= nil then
-			self.cp.hud.suc:delete();
 		end;
 		if self.cp.directionArrowOverlay ~= nil then
 			self.cp.directionArrowOverlay:delete();

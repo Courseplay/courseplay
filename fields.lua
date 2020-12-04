@@ -20,8 +20,6 @@ function courseplay.fields:setup()
 	self.debugCustomLoadedFields = false;
 	self.defaultScanStep = 5;
 	self.scanStep = 5;
-	self.seedUsageCalculator = {};
-	self.seedUsageCalculator.fieldsWithoutSeedData = {};
 end;
 
 function courseplay.fields:setUpFieldsIngameData()
@@ -30,9 +28,6 @@ function courseplay.fields:setUpFieldsIngameData()
 	self:dbg("call setUpIngameData()", 'scan');
 	--Tommi:still needed ?  self.fieldChannels = { g_currentMission.cultivatorChannel, g_currentMission.plowChannel, g_currentMission.sowingChannel, g_currentMission.sowingWidthChannel };
 	--Tommi: still needed ?  self.lastChannel = g_currentMission.cultivatorChannel;
-
-	self.seedUsageCalculator.fruitTypes = self:getFruitTypes();
-	self:setCustomFieldsSeedData();
 
 	self.ingameDataSetUp = true;
 end;
@@ -283,9 +278,6 @@ function courseplay.fields:setSingleFieldEdgePath(initObject, initX, initZ, scan
 								name = string.format('%s %d', courseplay:loc('COURSEPLAY_FIELD'), fieldNum);
 							};
 
-							self.fieldData[fieldNum].fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(self.fieldData[fieldNum].areaHa, 2), g_i18n:getText('unit_ha'));
-							self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(area);
-
 							self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
 
 							self:dbg(string.format('\t\tcourseplay.fields.fieldData[%d] == nil => set as .fieldData[%d], break', fieldNum, fieldNum), dbgType);
@@ -502,8 +494,6 @@ function courseplay.fields:loadCustomFields(importFromOldFile)
 					points = {};
 					areaSqm = 0;
 					areaHa = 0;
-					seedUsage = {};
-					seedPrice = {};
 					numPoints = numPoints;
 					name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), fieldNum, courseplay:loc('COURSEPLAY_USER'));
 					isCustom = true;
@@ -520,7 +510,6 @@ function courseplay.fields:loadCustomFields(importFromOldFile)
 				local area, _, dimensions = self:getPolygonData(fieldData.points, nil, nil, true);
 				fieldData.areaSqm = area;
 				fieldData.areaHa = area / 10000;
-				fieldData.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(fieldNum, self:formatNumber(fieldData.areaHa, 2), g_i18n:getText('unit_ha'));
 				fieldData.dimensions = dimensions;
 
 
@@ -530,8 +519,6 @@ function courseplay.fields:loadCustomFields(importFromOldFile)
 				end;
 
 				self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
-
-				table.insert(self.seedUsageCalculator.fieldsWithoutSeedData, fieldNum);
 			end;
 			i = i + 1;
 		end;
@@ -557,70 +544,6 @@ function courseplay.fields:dbg(str, debugType)
 	end;
 end;
 
--- SeedUsageCalculator functions
-function courseplay.fields:getFruitTypes()
-	--GET FRUITTYPES
-	local fruitTypes = {};
-	local hudW = courseplay.hud.suc.visibleArea.overlayWidth;
-	local hudH = courseplay.hud.suc.visibleArea.overlayHeight;
-	local hudX = courseplay.hud.suc.visibleArea.overlayPosX;
-	local hudY = courseplay.hud.suc.visibleArea.overlayPosY;
-	for name,fruitType in pairs(g_fruitTypeManager.fruitTypes) do
-		if fruitType.allowsSeeding and fruitType.seedUsagePerSqm then
-			local fillTypeDesc = g_fruitTypeManager.fruitTypeIndexToFillType[fruitType.index];
-			if fillTypeDesc then
-				local fruitData = {
-					index = fruitType.index,
-					name = fruitType.name,
-					nameI18N = fillTypeDesc.title,
-					sucText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE'):format(fillTypeDesc.title)
-				};
-
-				if fillTypeDesc.hudOverlayFilenameSmall ~= '' then
-					local hudOverlayPath = fillTypeDesc.hudOverlayFilenameSmall;
-					if StringUtil.startsWith(hudOverlayPath, 'dataS2') or fileExists(hudOverlayPath) then
-						fruitData.overlay = Overlay:new(hudOverlayPath, hudX, hudY, hudW, hudH);
-						fruitData.overlay:setColor(1, 1, 1, 0.25);
-						--print(('SUC fruitType %s: hudPath=%q, overlay=%s'):format(fruitData.name, tostring(hudOverlayPath), tostring(fruitData.overlay)));
-					end;
-				end;
-
-				fruitData.usagePerSqm = fruitType.seedUsagePerSqm;
-				fruitData.pricePerLiter = fillTypeDesc.pricePerLiter;
-
-				if fruitData.nameI18N and fruitData.usagePerSqm and fruitData.pricePerLiter then
-					table.insert(fruitTypes, fruitData);
-				end;
-			end;
-		end;
-	end;
-	self.seedUsageCalculator.numFruits = #fruitTypes;
-	table.sort(fruitTypes, function(a,b) return a.nameI18N:lower() < b.nameI18N:lower() end);
-	self.seedUsageCalculator.enabled = self.seedUsageCalculator.numFruits > 0;
-	return fruitTypes;
-end;
-
-function courseplay.fields:getFruitData(area)
-	local usage, price, text = {}, {}, {};
-
-	if self.seedUsageCalculator.fruitTypes then
-		for i,fruitData in ipairs(self.seedUsageCalculator.fruitTypes) do
-			local name = fruitData.name;
-			usage[name] = fruitData.usagePerSqm * area;
-			price[name] = fruitData.pricePerLiter * usage[name];
-			text[name] = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_USAGE'):format(courseplay:round(g_i18n:getFluid(usage[name])), g_i18n:getText('unit_liter'), g_i18n:formatMoney(g_i18n:getCurrency(price[name])));
-		end;
-	end;
-
-	return usage, price, text;
-end;
-
-function courseplay.fields:setCustomFieldsSeedData()
-	for i,fieldNum in ipairs(self.seedUsageCalculator.fieldsWithoutSeedData) do
-		self.fieldData[fieldNum].seedUsage, self.fieldData[fieldNum].seedPrice, self.fieldData[fieldNum].seedDataText = self:getFruitData(self.fieldData[fieldNum].areaSqm);
-	end;
-	self.seedUsageCalculator.fieldsWithoutSeedData = {};
-end;
 
 local saveFillTypeHudPath = function(self, fillType, filename)
 	self.fillTypeOverlays[fillType].filename = filename;
