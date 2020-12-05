@@ -1835,8 +1835,8 @@ function AIDriver:setBackMarkerNode(vehicle)
 	if AIDriverUtil.hasImplementsOnTheBack(vehicle) then
 		local lastImplement
 		lastImplement, backMarkerOffset = AIDriverUtil.getLastAttachedImplement(vehicle)
-		referenceNode = lastImplement.rootNode
-		self:debug('Using the last implement\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
+		referenceNode = vehicle.rootNode
+		self:debug('Using the last implement\'s rear distance for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	elseif reverserNode then
 		-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
 		-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
@@ -1866,7 +1866,6 @@ function AIDriver:getBackMarkerNode(vehicle)
 end
 
 -- Put a node on the front of the vehicle for easy distance checks use this instead of the root/direction node
--- TODO: check for implements at front like weights
 function AIDriver:setFrontMarkerNode(vehicle)
 	local firstImplement, frontMarkerOffset = AIDriverUtil.getFirstAttachedImplement(vehicle)
 	self:debug('Using the %s\'s root node for the front proximity sensor, %d m from root node',
@@ -1876,7 +1875,7 @@ function AIDriver:setFrontMarkerNode(vehicle)
 		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
 	else
 		unlink(vehicle.cp.driver.aiDriverData.frontMarkerNode)
-		link(firstImplement.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
+		link(vehicle.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
 	end
 	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, frontMarkerOffset)
 	-- Make sure the front marker node does not point up or down, for example in case of

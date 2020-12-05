@@ -140,6 +140,7 @@ function ProximitySensorPack:init(name, vehicle, ppc, node, range, height, direc
     self.vehicle = vehicle
     self.ppc = ppc
     self.range = range
+    self.name = name
     self.node = getChild(node, name)
     if self.node <= 0 then
         -- node with this name does not yet exist
@@ -156,6 +157,23 @@ function ProximitySensorPack:init(name, vehicle, ppc, node, range, height, direc
     for i, deg in ipairs(self.directionsDeg) do
         self.sensors[deg] = ProximitySensor(self.node, deg, self.range, height, xOffsets[i] or 0)
     end
+end
+
+function ProximitySensorPack:debug(...)
+    courseplay.debugVehicle(12, self.vehicle, ...)
+end
+
+function ProximitySensorPack:adjustForwardPosition()
+    -- are we looking forward
+    local forward = 1
+    -- if a sensor about in the middle is pointing back, we are looking back
+    if math.abs(self.directionsDeg[math.floor(#self.directionsDeg / 2)]) > 90 then
+        forward = -1
+    end
+    local x, y, z = getTranslation(self.node)
+    self:debug('moving proximity sensor %s %.1f so it does not interfere with own vehicle', self.name, forward * 0.1)
+    -- move pack forward/back a bit
+    setTranslation(self.node, x, y, z + forward * 0.1)
 end
 
 function ProximitySensorPack:getRange()
@@ -188,7 +206,7 @@ function ProximitySensorPack:update()
     if courseplay.debugChannels[12] then
         local x, y, z = getWorldTranslation(self.node)
         local x1, y1, z1 = localToWorld(self.node, 0, 0, 0.5)
-        cpDebug:drawLine(x, y, z, 0, 0, 1, x, y + 1, z)
+        cpDebug:drawLine(x, y, z, 0, 0, 1, x, y + 3, z)
         cpDebug:drawLine(x, y + 1, z, 0, 1, 0, x1, y1 + 1, z1)
     end
 end
@@ -231,6 +249,9 @@ function ProximitySensorPack:getClosestObjectDistanceAndRootVehicle(deg)
                 closestDistance = d
                 closestRootVehicle = self.sensors[deg]:getClosestRootVehicle()
             end
+        end
+        if closestRootVehicle == self.vehicle then
+            self:adjustForwardPosition()
         end
         return closestDistance, closestRootVehicle, totalDegs / totalWeight, totalDistance / totalWeight
     end

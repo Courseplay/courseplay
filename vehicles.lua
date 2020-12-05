@@ -1649,46 +1649,46 @@ function AIDriverUtil.getAllAttachedImplements(object, implements)
 	return implements
 end
 
----@return table, number frontmost object and the distance between the front of that object and the root node of the object
+---@return table, number frontmost object and the distance between the front of that object and the root node of the vehicle
+--- when > 0 in front of the vehicle
 function AIDriverUtil.getFirstAttachedImplement(vehicle)
-	-- by default, it is the vehicle's front, negative as the vehicle's root node is behind the front implement's root node
-	local minDistance = 0
-	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
-	local frontOffset = vehicle.sizeLength / 2 + vehicle.lengthOffset
+	-- by default, it is the vehicle's front
+	local maxDistance = vehicle.sizeLength / 2 + vehicle.lengthOffset
 	local firstImplement = vehicle
 	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
-			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			-- the distance from the vehicle's root node to the front of the implement
+			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+					implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s front distance %d', implement.object:getName(), d)
-			if d < minDistance then
-				minDistance = d
-				frontOffset = implement.object.sizeLength / 2 + implement.object.lengthOffset
+			if d > maxDistance then
+				maxDistance = d
 				firstImplement = implement.object
 			end
 		end
 	end
-	return firstImplement, frontOffset
+	return firstImplement, maxDistance
 end
 
 ---@return table, number rearmost object and the distance between the back of that object and the root node of the object
 function AIDriverUtil.getLastAttachedImplement(vehicle)
 	-- by default, it is the vehicle's back
-	local maxDistance = 0
+	local minDistance = vehicle.sizeLength / 2 - vehicle.lengthOffset
 	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
-	local backOffset = vehicle.sizeLength / 2 - vehicle.lengthOffset
 	local lastImplement = vehicle
 	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
-			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, - implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			-- the distance from the vehicle's root node to the back of the implement
+			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+					- implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
-			if d > maxDistance then
-				maxDistance = d
-				backOffset = implement.object.sizeLength / 2 - implement.object.lengthOffset
+			if d < minDistance then
+				minDistance = d
 				lastImplement = implement.object
 			end
 		end
 	end
-	return lastImplement, -backOffset
+	return lastImplement, minDistance
 end
 
 

@@ -128,6 +128,7 @@ function ShovelModeAIDriver:start()
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
+	self:disableProximitySpeedControl()
 	self:disableProximitySwerve()
 	AIDriver.continue(self)
 end
