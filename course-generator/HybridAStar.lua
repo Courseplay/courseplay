@@ -490,7 +490,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 						(self.iterations == 1 or math.random() > 2 * pred.h / self.distanceToGoal) then
 					---@type AnalyticSolution
 					local analyticSolution, pathType = self.analyticSolver:solve(pred, goal, turnRadius, allowReverse)
-					self:debug('Check analytical solution at iteration %d, %.1f, %.1f', self.iterations, pred.h, pred.h / self.distanceToGoal)
+					--self:debug('Check analytical solution at iteration %d, %.1f, %.1f', self.iterations, pred.h, pred.h / self.distanceToGoal)
 					local analyticPath = analyticSolution:getWaypoints(pred, turnRadius)
 					-- making sure we continue with the correct trailer heading
 					analyticPath[1]:setTrailerHeading(pred:getTrailerHeading())
