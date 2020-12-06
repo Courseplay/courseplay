@@ -98,11 +98,11 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
         self:setSpeed(0)
-		local augerPipeToolPositionsSetting = self.vehicle.cp.settings.augerPipeToolPositions
+
 		--can discharge and not pipe is moving 
-		if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OBJECT then
+		if self.pipe.currentState == self.pipe.targetState then
             self:debug('Overloading started')
-            if not self.moveablePipe or (augerPipeToolPositionsSetting:hasValidToolPositions() and not augerPipeToolPositionsSetting:updatePositions(dt,1)) then 
+            if self:isAugerPipeToolPositionsOkay(dt) then 
 				self.unloadCourseState = self.states.OVERLOADING
 			end
 		end
@@ -121,6 +121,15 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
 		end
     end
     AIDriver.drive(self, dt)
+end
+
+--if we have augerPipeToolPositions, then wait until we have set them
+function OverloaderAIDriver:isAugerPipeToolPositionsOkay(dt)
+	local augerPipeToolPositionsSetting = self.vehicle.cp.settings.augerPipeToolPositions
+	if self.moveablePipe and augerPipeToolPositionsSetting:hasValidToolPositions() and not augerPipeToolPositionsSetting:updatePositions(dt,1) then 
+		return false
+	end
+	return true
 end
 
 -- make sure we stay close to the trailer while overloading
