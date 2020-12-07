@@ -1300,6 +1300,7 @@ function CombineAIDriver:returnToFieldworkAfterSelfUnloading()
 	return true
 end
 
+-- TODO: split this into two, depending on the call location, like in mode 2
 function CombineAIDriver:onPathfindingDone(path)
 	if path and #path > 2 then
 		self:debug('(CombineAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
