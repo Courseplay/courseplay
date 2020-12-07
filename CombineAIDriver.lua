@@ -268,54 +268,50 @@ function CombineAIDriver:isWaitingInPocket()
 end
 
 function CombineAIDriver:changeToFieldworkUnloadOrRefill()
-	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
-		self:checkFruit()
-		-- TODO: check around turn maneuvers we may not want to pull back before a turn
-		if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
-			self:debug('Start self unload')
-			self:raiseImplements()
+	self:checkFruit()
+	-- TODO: check around turn maneuvers we may not want to pull back before a turn
+	if self.vehicle.cp.settings.selfUnload:is(true) and self:startSelfUnload() then
+		self:debug('Start self unload')
+		self:raiseImplements()
+		self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+		self.fieldworkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD
+		self.ppc:setShortLookaheadDistance()
+		self:disableCollisionDetection()
+	elseif self.vehicle.cp.settings.useRealisticDriving:is(true) and self:shouldMakePocket() then
+		-- I'm on the edge of the field or fruit is on both sides, make a pocket on the right side and wait there for the unload
+		local pocketCourse, nextIx = self:createPocketCourse()
+		if pocketCourse then
+			self:debug('No room to the left, making a pocket for unload')
 			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-			self.fieldworkUnloadOrRefillState = self.states.DRIVING_TO_SELF_UNLOAD
+			self.fieldworkUnloadOrRefillState = self.states.REVERSING_TO_MAKE_A_POCKET
+			-- raise header for reversing
+			self:raiseImplements()
+			self:startCourse(pocketCourse, 1, self.course, nextIx)
+			-- tighter turns
 			self.ppc:setShortLookaheadDistance()
-			self:disableCollisionDetection()
-		elseif self:shouldMakePocket() then
-			-- I'm on the edge of the field or fruit is on both sides, make a pocket on the right side and wait there for the unload
-			local pocketCourse, nextIx = self:createPocketCourse()
-			if pocketCourse then
-				self:debug('No room to the left, making a pocket for unload')
-				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-				self.fieldworkUnloadOrRefillState = self.states.REVERSING_TO_MAKE_A_POCKET
-				-- raise header for reversing
-				self:raiseImplements()
-				self:startCourse(pocketCourse, 1, self.course, nextIx)
-				-- tighter turns
-				self.ppc:setShortLookaheadDistance()
-			else
-				-- revert to normal behavior
-				UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
-			end
-		elseif self:shouldPullBack() then
-			-- is our pipe in the fruit? (assuming pipe is on the left side)
-			local pullBackCourse = self:createPullBackCourse()
-			if pullBackCourse then
-				pullBackCourse:print()
-				self:debug('Pipe in fruit, pulling back to make room for unloading')
-				self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
-				self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_STOP
-				self.courseAfterPullBack = self.course
-				self.ixAfterPullBack = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
-				-- tighter turns
-				self.ppc:setShortLookaheadDistance()
-				self:startCourse(pullBackCourse, 1)
-			else
-				-- revert to normal behavior
-				UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
-			end
 		else
-			-- pipe not in fruit, combine not on outermost headland, just do the normal thing
+			-- revert to normal behavior
+			UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
+		end
+	elseif self.vehicle.cp.settings.useRealisticDriving:is(true) and self:shouldPullBack() then
+		-- is our pipe in the fruit? (assuming pipe is on the left side)
+		local pullBackCourse = self:createPullBackCourse()
+		if pullBackCourse then
+			pullBackCourse:print()
+			self:debug('Pipe in fruit, pulling back to make room for unloading')
+			self.fieldworkState = self.states.UNLOAD_OR_REFILL_ON_FIELD
+			self.fieldworkUnloadOrRefillState = self.states.WAITING_FOR_STOP
+			self.courseAfterPullBack = self.course
+			self.ixAfterPullBack = self.ppc:getLastPassedWaypointIx() or self.ppc:getCurrentWaypointIx()
+			-- tighter turns
+			self.ppc:setShortLookaheadDistance()
+			self:startCourse(pullBackCourse, 1)
+		else
+			-- revert to normal behavior
 			UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 		end
 	else
+		-- pipe not in fruit, combine not on outermost headland, just do the normal thing
 		UnloadableFieldworkAIDriver.changeToFieldworkUnloadOrRefill(self)
 	end
 end
