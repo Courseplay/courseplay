@@ -1251,11 +1251,20 @@ function CombineAIDriver:startSelfUnload()
 		self.pathfindingStartedAt = self.vehicle.timer
 		self.courseAfterPathfinding = nil
 		self.waypointIxAfterPathfinding = nil
-		local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
+		local targetNode = fillRootNode or bestTrailer.rootNode
+		local offsetX = -self.pipeOffsetX - 0.2
+		local alignLength = 3
+		-- arrive near the trailer alignLength meters behind the target, from there, continue straight a bit
+		local offsetZ = -self.pipeOffsetZ - alignLength
+		-- little straight section parallel to the trailer to align better
+		self.selfUnloadAlignCourse = Course.createFromNode(self.vehicle, targetNode,
+				offsetX, offsetZ + 1, offsetZ + 1 + alignLength, 1, false)
+
+	local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
 		local done, path
 		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, fillRootNode or bestTrailer.rootNode, -self.pipeOffsetX - 0.2, -self.pipeOffsetZ,
+				self.vehicle, targetNode, offsetX, offsetZ,
 				self:getAllowReversePathfinding(),
 				fieldNum, {}, nil, nil, true)
 		if done then
@@ -1294,6 +1303,7 @@ function CombineAIDriver:onPathfindingDone(path)
 	if path and #path > 2 then
 		self:debug('(CombineAIDriver) Pathfinding finished with %d waypoints (%d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		local selfUnloadCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
+		selfUnloadCourse:append(self.selfUnloadAlignCourse)
 		self:startCourse(selfUnloadCourse, 1, self.courseAfterPathfinding, self.waypointIxAfterPathfinding)
 		return true
 	else
