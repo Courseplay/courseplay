@@ -33,8 +33,8 @@ handles "mode10": level and compact
 LevelCompactAIDriver = CpObject(AIDriver)
 
 LevelCompactAIDriver.myStates = {
-	DRIVE_TO_PARKING = {},
-	WAITIN_FOR_FREE_WAY = {},
+	DRIVE_TO_PARKING = {checkForTrafficConflict = true},
+	WAITING_FOR_FREE_WAY = {},
 	CHECK_SILO = {},
 	CHECK_SHIELD = {},
 	DRIVE_IN_SILO = {},
@@ -44,8 +44,6 @@ LevelCompactAIDriver.myStates = {
 	PUSH = {},
 	PULLBACK = {}
 }
-
-
 
 --- Constructor
 function LevelCompactAIDriver:init(vehicle)
@@ -89,7 +87,7 @@ function LevelCompactAIDriver:drive(dt)
 		self:moveShield('up',dt)
 		self.ppc:update()
 		AIDriver.driveCourse(self, dt)
-	elseif self.levelState == self.states.WAITIN_FOR_FREE_WAY then
+	elseif self.levelState == self.states.WAITING_FOR_FREE_WAY then
 		self:stopAndWait(dt)
 
 		if not self:shouldGoToSavePosition() then
@@ -113,6 +111,10 @@ function LevelCompactAIDriver:drive(dt)
 	elseif self.levelState == self.states.DRIVE_SILOCOMPACT then
 		self:driveSiloCompact(dt)
 	end
+end
+
+function LevelCompactAIDriver:isTrafficConflictDetectionEnabled()
+	return self.trafficConflictDetectionEnabled and self.levelState.properties.checkForTrafficConflict
 end
 
 function LevelCompactAIDriver:checkShield()
@@ -492,7 +494,7 @@ end
 
 
 function LevelCompactAIDriver:isWaitingForCourseplayers()
-	return self.levelState == self.states.WAITIN_FOR_FREE_WAY
+	return self.levelState == self.states.WAITING_FOR_FREE_WAY
 end 
 
 function LevelCompactAIDriver:getIsModeFillUp()
@@ -509,7 +511,7 @@ end
 
 function LevelCompactAIDriver:onWaypointPassed(ix)
 	if self.course:isWaitAt(ix) then
-		self:changeLevelState(self.states.WAITIN_FOR_FREE_WAY)
+		self:changeLevelState(self.states.WAITING_FOR_FREE_WAY)
 	end
 	AIDriver.onWaypointPassed(self, ix)
 end
