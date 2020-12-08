@@ -35,8 +35,8 @@
     <text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
     <text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
     <text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
-    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Démarrer à" />
-    <text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
+    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Vider la remorque à" />
+    <text name="COURSEPLAY_MOVE_ON_AT" 									text="Repartir en dessous de" />
     <text name="UNKNOWN" 								 				text="Inconnu" />
     <text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sens de la fourrière" />
     <text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Fourrières : Avant/Après" />
@@ -73,7 +73,7 @@
     <text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="a terminé le transport de liquides" />
     <text name="COURSEPLAY_WORK_END" 							 		text="a terminé son travail" />
     <text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": doit être vidé." />
-    <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être rechargé." />
+    <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être ravitaillé." />
     <text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
     <text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est bloqué par un véhicule." />
 	<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="ralentit pour laisser passer un véhicule." />
@@ -81,13 +81,13 @@
     <text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Dist. point de décharge:" />
     <text name="COURSEPLAY_LOADING_AMOUNT" 						 		text="Chargement: %d sur %d" />
 	<text name="COURSEPLAY_UNLOADING_AMOUNT" 							text="Déchargement: %d sur %d" />
-    <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher les points de passage" />
+    <text name="COURSEPLAY_WAYPOINT_MODE" 						 		text="Afficher la course (Points de passage)" />
     <text name="COURSEPLAY_PATHFINDING" 						 		text="Eviter les cultures" />
     <text name="COURSEPLAY_PLOW_FIELD_EDGE" 							text="Labour des fourrières" />
     <text name="COURSEPLAY_ALIGNMENT_WAYPOINT" 							text="Alignement sur le 1er point" />
     <text name="COURSEPLAY_COMBINE_OFFSET_HORIZONTAL" 					text="Décalage latéral" />
-    <text name="COURSEPLAY_START_AT" 						 			text="Débuter à" />
-    <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Tourner dans la parcelle" />
+    <text name="COURSEPLAY_START_AT" 						 			text="Aller vider la batteuse à" />
+    <text name="COURSEPLAY_TURN_ON_FIELD"					 			text="Rester dans la parcelle" />
     <text name="COURSEPLAY_OPPOSITE_TURN_DIRECTION"			 			text="Type de manœuvre" />
     <text name="COURSEPLAY_OPPOSITE_TURN_AT_END"			 			text="Manœuvre à la fin du rang" />
     <text name="COURSEPLAY_OPPOSITE_TURN_WHEN_POSSIBLE"		 			text="Manœuvre dès que possible" />
@@ -146,9 +146,9 @@
     <text name="COURSEPLAY_MUST_BE_REFUELED" 					 		text="Doit faire le plein de carburant" />
     <text name="COURSEPLAY_IS_BEING_REFUELED" 					 		text="Fait le plein de carburant" />
     <text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="Se fait peser" />
-    <text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Trop de points d'attente! Seulement %d permis." />
+    <text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Trop de points d'attente! Il en faut %d." />
     <text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Pas assez de points d'attente! Il en faut %d." />
-    <text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Trop de points de déchargement! Seulement %d permis." />
+    <text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Trop de points de déchargement! Il en faut %d." />
     <text name="COURSEPLAY_UNLOADING_POINTS_TOO_FEW"					text="Pas assez de points de déchargement! Il en faut %d." />
     <text name="COURSEPLAY_WRONG_TRAILER" 						 		text="Remorque incompatible avec ce mode" />
     <text name="COURSEPLAY_WRONG_TOOL" 						 			text="Outil incompatible avec ce mode" />
@@ -220,7 +220,7 @@
     <text name="COURSEPLAY_DIRECTION_WNW"                           	text="ONO"/>
     <text name="COURSEPLAY_DIRECTION_NW"                            	text="NO"/>
     <text name="COURSEPLAY_DIRECTION_NNW"                           	text="NNO"/>
-    <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="La course a été générée avec succès, mais en raison des paramètres actuels, il peut y avoir des problèmes lors de la conduite"/>
+    <text name="COURSEPLAY_COURSE_SUBOPTIMAL"                       	text="La course a été générée avec succès! Mais en raison des paramètres actuels, il peut y avoir des problèmes de conduite"/>
     <text name="COURSEPLAY_HEADLAND" 						 			text="Fourrières:" />
     <text name="COURSEPLAY_BYPASS_ISLANDS"  							text="Détection des obstacles" />
     <text name="COURSEPLAY_ISLAND_BYPASS_MODE_NONE"  					text="Désactivé" />
@@ -233,7 +233,7 @@
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
     <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des rangs" />
-    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-Retours" />
+    <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire (par bloc)" />
     <text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirale (tourne autour)" />
 	<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Enrayure à travers (centre)" />
@@ -259,7 +259,7 @@
     <text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Goulotte au dessus de la culture" />
     <text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Paramètres du mode" />
     <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Réglages de direction" />
-	<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "			text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
+	<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay ne modifiera pas le mode de direction choisi (4 roues directrices, crabe, etc.)" />
   	
     <!-- shovel stuff -->
     <text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="Pas de godet" />
@@ -325,7 +325,7 @@
     <text name="COURSEPLAY_RECORDING_SET_CROSS" 						text="Placer un croisement" />
     <text name="COURSEPLAY_RECORDING_TURN_START" 						text="Commencer la manoeuvre" />
     <text name="COURSEPLAY_RECORDING_TURN_END" 					 		text="Terminer la manoeuvre" />
-    <text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Commencer la marche arrière" />
+    <text name="COURSEPLAY_RECORDING_REVERSE_START" 					text="Commencer une marche arrière" />
     <text name="COURSEPLAY_RECORDING_REVERSE_STOP" 						text="Arrêter la marche arrière" />
     <text name="COURSEPLAY_RECORDING_ADD_SPLIT_POINTS"					text="Ajouter des points intermédiaires" />
     <text name="COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT" 					text="Afficher sur la carte" />
