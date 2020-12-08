@@ -1639,7 +1639,7 @@ function AIDriver:onDraw()
 		self.course:draw()
 	end
 	if CpManager.isDeveloper and self.pathfinder then
-		PathfinderUtil.showNodes(self.pathfinder)
+		--PathfinderUtil.showNodes(self.pathfinder)
 	end
 end
 --TODO: do we want to continue using this setter/getter for driveUnloadNow??
@@ -1835,8 +1835,8 @@ function AIDriver:setBackMarkerNode(vehicle)
 	if AIDriverUtil.hasImplementsOnTheBack(vehicle) then
 		local lastImplement
 		lastImplement, backMarkerOffset = AIDriverUtil.getLastAttachedImplement(vehicle)
-		referenceNode = lastImplement.rootNode
-		self:debug('Using the last implement\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
+		referenceNode = vehicle.rootNode
+		self:debug('Using the last implement\'s rear distance for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	elseif reverserNode then
 		-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
 		-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
@@ -1866,7 +1866,6 @@ function AIDriver:getBackMarkerNode(vehicle)
 end
 
 -- Put a node on the front of the vehicle for easy distance checks use this instead of the root/direction node
--- TODO: check for implements at front like weights
 function AIDriver:setFrontMarkerNode(vehicle)
 	local firstImplement, frontMarkerOffset = AIDriverUtil.getFirstAttachedImplement(vehicle)
 	self:debug('Using the %s\'s root node for the front proximity sensor, %d m from root node',
@@ -1876,9 +1875,15 @@ function AIDriver:setFrontMarkerNode(vehicle)
 		vehicle.cp.driver.aiDriverData.frontMarkerNode = courseplay.createNode('frontMarkerNode', 0, 0, 0, vehicle.rootNode)
 	else
 		unlink(vehicle.cp.driver.aiDriverData.frontMarkerNode)
-		link(firstImplement.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
+		link(vehicle.rootNode, vehicle.cp.driver.aiDriverData.frontMarkerNode)
 	end
 	setTranslation(vehicle.cp.driver.aiDriverData.frontMarkerNode, 0, 0, frontMarkerOffset)
+	-- Make sure the front marker node does not point up or down, for example in case of
+	-- a pallet fork can be moved up/down, we don't want the node pointing up/down, we want it
+	-- pointing forward, having the same x rotation as the vehicle itself
+	local wrx, _, _ = getWorldRotation(vehicle.rootNode)
+	local _, ry, rz = getWorldRotation(vehicle.cp.driver.aiDriverData.frontMarkerNode)
+	setWorldRotation(vehicle.cp.driver.aiDriverData.frontMarkerNode, wrx, ry, rz)
 end
 
 function AIDriver:getFrontMarkerNode(vehicle)
@@ -2068,8 +2073,14 @@ function AIDriver:isFuelLevelOk()
 	return true
 end
 
-function AIDriver:isValidFuelType(object,fillType)
-	return object.getConsumerFillUnitIndex and object:getConsumerFillUnitIndex(fillType)  
+function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
+	if object.getConsumerFillUnitIndex then 
+		local index = object:getConsumerFillUnitIndex(fillType)
+		if fillUnitIndex ~= nil then 
+			return fillUnitIndex and fillUnitIndex == index
+		end		
+		return index 
+	end
 end
 
 function AIDriver:getFuelLevelPercentage()
@@ -2123,7 +2134,7 @@ function AIDriver:openCovers(object,validFillType)
 end
 
 --close all covers
-function AIDriver:closeCovers(object,fillType)
+function AIDriver:closeCovers(object)
 	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
 		return
 	end
@@ -2131,7 +2142,7 @@ function AIDriver:closeCovers(object,fillType)
 		SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
 	end
 	for _,impl in pairs(object:getAttachedImplements()) do
-		self:closeCovers(impl.object,fillType)
+		self:closeCovers(impl.object)
 	end
 end
 

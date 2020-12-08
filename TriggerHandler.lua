@@ -261,6 +261,7 @@ function TriggerHandler:isNearDischargeNode(object,fillUnitIndex,trigger)
 				self:debugSparse(object,"dischargeNode and TriggerNode distance okay !")
 				return true
 			else 
+				self.driver:setSpeed(math.min(1,distance))
 				self:debugSparse(object,"dischargeNode and TriggerNode distance not okay, continue..!")
 				self.lastDistanceToTrigger = distance
 			end
@@ -680,7 +681,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 			local node = fillableObject:getFillUnitExactFillRootNode(fillUnitIndex)
 	--		DebugUtil.drawDebugNode(node, "ExactFillRootNode", false)
 			--checks if we are in the fillPlane, bugged with mode 4 as driver dosen't stop fast enough..
-			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) and not vehicle.cp.driver:is_a(FillableFieldworkAIDriver) then 
+			if not triggerHandler:isNearDischargeNode(fillableObject,fillUnitIndex,self) then 
 				triggerHandler:resetLoadingState()
 				return 
 			elseif not triggerHandler:isDriveNowActivated() then
@@ -1020,46 +1021,43 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 		self.objectsInTrigger[otherId] = nil
 	end	
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) and rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
-		local triggerHandler = rootVehicle.cp.driver.triggerHandler
-		local object = g_currentMission:getNodeObject(otherId)
-        if object ~= nil and object ~= self and object:isa(Vehicle) then
-            local objectRootVehicle = object:getRootVehicle()
-			if not courseplay:isAIDriverActive(objectRootVehicle) then 
-				return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-			end
-			local objectTriggerHandler = objectRootVehicle.cp.driver.triggerHandler
-			if not onLeave and objectTriggerHandler.triggers[self] == nil then 
-				objectTriggerHandler.triggers[self] = true
-			elseif onLeave and next(self.objectsInTrigger) == nil then 
-				objectTriggerHandler.triggers[self] = nil
-			end
-			if object.getFillUnitIndexFromNode ~= nil and not onLeave then
-                local fillUnitIndex = object:getFillUnitIndexFromNode(otherId)
-                if fillUnitIndex ~= nil then
-                    local dischargeNode = self:getDischargeNodeByIndex(self:getPipeDischargeNodeIndex())
-                    if dischargeNode ~= nil then
-                        local fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
-						local validFillUnitIndex = object:getFirstValidFillUnitToFill(fillType)
-                        if fillType and validFillUnitIndex then 
-							courseplay.debugVehicle(2,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
-							SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
-							objectTriggerHandler.isInAugerWagonTrigger = true
-						end
+	if courseplay:isAIDriverActive(rootVehicle) and not rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
+		return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+	end
+	local object = g_currentMission:getNodeObject(otherId)
+	if object ~= nil and object ~= self and object:isa(Vehicle) then
+		local objectRootVehicle = object:getRootVehicle()
+		if not courseplay:isAIDriverActive(objectRootVehicle) then 
+			return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+		end
+		local objectTriggerHandler = objectRootVehicle.cp.driver.triggerHandler
+		if not objectTriggerHandler.validFillTypeLoading then
+			return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
+		end
+		if not onLeave and objectTriggerHandler.triggers[self] == nil then 
+			objectTriggerHandler.triggers[self] = true
+		elseif onLeave and next(self.objectsInTrigger) == nil then 
+			objectTriggerHandler.triggers[self] = nil
+		end
+		if object.getFillUnitIndexFromNode ~= nil and not onLeave then
+			local fillUnitIndex = object:getFillUnitIndexFromNode(otherId)
+            if fillUnitIndex ~= nil then
+				local dischargeNode = self:getDischargeNodeByIndex(self:getPipeDischargeNodeIndex())
+                if dischargeNode ~= nil then
+					local fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
+					local validFillUnitIndex = object:getFirstValidFillUnitToFill(fillType)
+                    if fillType and validFillUnitIndex then 
+						courseplay.debugVehicle(2,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+						SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
+						objectTriggerHandler.isInAugerWagonTrigger = true
 					end
 				end
-			elseif onLeave then
-				SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
-				courseplay.debugVehicle(2,object,"unloadingTriggerCallback close Cover")
-				objectTriggerHandler:resetLoadingState()
-				objectTriggerHandler.isInAugerWagonTrigger = false
 			end
-		end
-		if onLeave then
-			courseplay.debugVehicle(2,object,"unloadingTriggerCallback onLeave")
-		end
-		if onEnter then 
-			courseplay.debugVehicle(2,object,"unloadingTriggerCallback onEnter")
+		elseif onLeave then
+			SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
+			courseplay.debugVehicle(2,object,"unloadingTriggerCallback close Cover")
+			objectTriggerHandler:resetLoadingState()
+			objectTriggerHandler.isInAugerWagonTrigger = false
 		end
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)

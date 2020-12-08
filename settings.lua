@@ -1014,7 +1014,6 @@ function courseplay:createFieldEdgeButtons(vehicle)
 			w = courseplay.hud.contentMaxWidth,
 			h = courseplay.hud.lineHeight
 		};
-		vehicle.cp.suc.toggleHudButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'calculator' }, 'toggleSucHud', nil, courseplay.hud.buttonPosX[4], courseplay.hud.linesButtonPosY[1], w, h, 1, nil, false, false, true);
 		vehicle.cp.hud.showSelectedFieldEdgePathButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[3], courseplay.hud.linesButtonPosY[1], w, h, 1, nil, false);
 		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w, h, 1,  5, false);
 		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w, h, 1, -5, false);
@@ -1027,27 +1026,17 @@ function courseplay:setFieldEdgePath(vehicle, changeDir, force)
 	local newFieldNum = force or vehicle.cp.fieldEdge.selectedField.fieldNum + changeDir;
 	if newFieldNum == 0 then
 		vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
-		if vehicle.cp.suc.active then
-			courseplay:toggleSucHud(vehicle);
-		end;
 		return;
 	end;
 	while courseplay.fields.fieldData[newFieldNum] == nil do
 		if newFieldNum == 0 then
 			vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
-			if vehicle.cp.suc.active then
-				courseplay:toggleSucHud(vehicle);
-			end;
 			return;
 		end;
 		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
 	end;
 
 	vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
-
-	if newFieldNum == 0 and vehicle.cp.suc.active then
-		courseplay:toggleSucHud(vehicle);
-	end;
 
 	--courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
 	if vehicle.cp.fieldEdge.customField.show then
@@ -1117,9 +1106,7 @@ function courseplay:addCustomSingleFieldEdgeToList(vehicle)
 	data.areaSqm = area;
 	data.areaHa = area / 10000;
 	data.dimensions = dimensions;
-	data.fieldAreaText = courseplay:loc('COURSEPLAY_SEEDUSAGECALCULATOR_FIELD'):format(data.fieldNum, courseplay.fields:formatNumber(data.areaHa, 2), g_i18n:getText('unit_ha'));
-	data.seedUsage, data.seedPrice, data.seedDataText = courseplay.fields:getFruitData(area);
-
+	
 	courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] = data;
 	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData);
 
@@ -1180,26 +1167,6 @@ function courseplay:setEngineState(vehicle, on)
 			vehicle:stopMotor();
 		end;
 	end;
-end;
-
-function courseplay:toggleSucHud(vehicle)
-	vehicle.cp.suc.active = not vehicle.cp.suc.active;
-	---courseplay.buttons:setActiveEnabled(vehicle, 'suc');
-	if vehicle.cp.suc.selectedFruit == nil then
-		vehicle.cp.suc.selectedFruitIdx = 1;
-		vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[1];
-	end;
-end;
-
-function courseplay:sucChangeFruit(vehicle, change)
-	local newIdx = vehicle.cp.suc.selectedFruitIdx + change;
-	if newIdx > courseplay.fields.seedUsageCalculator.numFruits then
-		newIdx = newIdx - courseplay.fields.seedUsageCalculator.numFruits;
-	elseif newIdx < 1 then
-		newIdx = courseplay.fields.seedUsageCalculator.numFruits - newIdx;
-	end;
-	vehicle.cp.suc.selectedFruitIdx = newIdx;
-	vehicle.cp.suc.selectedFruit = courseplay.fields.seedUsageCalculator.fruitTypes[vehicle.cp.suc.selectedFruitIdx];
 end;
 
 function courseplay:toggleFindFirstWaypoint(vehicle)
@@ -3145,6 +3112,13 @@ FollowAtFillLevelSetting = CpObject(PercentageSettingList)
 function FollowAtFillLevelSetting:init(vehicle)
 	PercentageSettingList.init(self, 'followAtFillLevel', 'COURSEPLAY_START_AT', 'COURSEPLAY_START_AT', vehicle)
 	self:set(50)
+end
+
+---@class MoveOnAtFillLevelSetting : PercentageSettingList
+MoveOnAtFillLevelSetting = CpObject(PercentageSettingList)
+function MoveOnAtFillLevelSetting:init(vehicle)
+	PercentageSettingList.init(self, 'moveOnAtFillLevel', 'COURSEPLAY_MOVE_ON_AT', 'COURSEPLAY_MOVE_ON_AT', vehicle)
+	self:set(5)
 end
 
 --seperate SiloSelectedFillTypeSettings to save their current state

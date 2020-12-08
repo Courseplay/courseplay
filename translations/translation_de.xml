@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Wegpunkte löschen" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Sofort abfahren" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Abfahren bei:" />
+		<text name="COURSEPLAY_MOVE_ON_AT"									text="Weiterfahren ab weniger als:" />
 		<text name="UNKNOWN" 												text="unbekannt" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Vorgewende Richtung" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Vorgewende vor/nach Feldkurs" />

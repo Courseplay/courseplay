@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Reset route" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Nu rijden" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Wegrijden bij:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
 		<text name="UNKNOWN" 												text="onbekend" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Keerstrook links-/rechtsom" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Keerstrook voor/na veld route" />

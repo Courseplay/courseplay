@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="重置任务" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="立即出发" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="允许卸载值：" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
 		<text name="UNKNOWN" 												text="未知" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="转向角 反向转/正向转" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="转向角 之前/之后 田间作业" />

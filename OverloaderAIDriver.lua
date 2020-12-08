@@ -55,9 +55,7 @@ end
 function OverloaderAIDriver:setHudContent()
 	CombineUnloadAIDriver.setHudContent(self)
 	self:findPipeAndTrailer()
-	if self.moveablePipe then
-		courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
-	end
+	courseplay.hud:setOverloaderAIDriverContent(self.vehicle,self.moveablePipe)
 end
 
 function OverloaderAIDriver:start(startingPoint)
@@ -69,11 +67,21 @@ function OverloaderAIDriver:start(startingPoint)
     CombineUnloadAIDriver.start(self, startingPoint)
 end
 
-function OverloaderAIDriver:isTrailerUnderPipe()
+function OverloaderAIDriver:isTrailerUnderPipe(shouldTrailerBeStandingStill)
     if not self.pipe then return end
     for trailer, value in pairs(self.pipe.objectsInTriggers) do
         if value > 0 then
-            return true
+            if shouldTrailerBeStandingStill then 
+				local rootVehicle = trailer:getRootVehicle()
+				if rootVehicle then 
+					if rootVehicle:getLastSpeed(true) <1 then 
+						return true
+					else 
+						return false
+					end
+				end
+			end
+			return true
         end
     end
     return false
@@ -83,26 +91,45 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
     if self.unloadCourseState == self.states.ENROUTE then
     elseif self.unloadCourseState == self.states.WAITING_FOR_TRAILER then
         self:hold()
-        if self:isTrailerUnderPipe() then
+        if self:isTrailerUnderPipe(true) then
             self:debug('Trailer is here, opening pipe')
             if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
             self.unloadCourseState = self.states.WAITING_FOR_OVERLOAD_TO_START
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
         self:setSpeed(0)
-        if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OBJECT then
+
+		--can discharge and not pipe is moving 
+		if self.pipe.currentState == self.pipe.targetState then
             self:debug('Overloading started')
-            self.unloadCourseState = self.states.OVERLOADING
-        end
+            if self:isAugerPipeToolPositionsOkay(dt) then 
+				self.unloadCourseState = self.states.OVERLOADING
+			end
+		end
     elseif self.unloadCourseState == self.states.OVERLOADING then
         self:setSpeed(0)
         if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OFF then
-            self:debug('Overloading finished, closing pipe')
-            if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
-            self.unloadCourseState = self.states.ENROUTE
-        end
+            if self:isMoveOnFillLevelReached() then 
+                self:debug('Overloading finished, closing pipe')
+                if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
+                self.unloadCourseState = self.states.ENROUTE
+			elseif not self:isTrailerUnderPipe() then
+                self:debug('No Trailer here, closing pipe for now')
+                if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
+                self.unloadCourseState = self.states.WAITING_FOR_TRAILER
+			end
+		end
     end
     AIDriver.drive(self, dt)
+end
+
+--if we have augerPipeToolPositions, then wait until we have set them
+function OverloaderAIDriver:isAugerPipeToolPositionsOkay(dt)
+	local augerPipeToolPositionsSetting = self.vehicle.cp.settings.augerPipeToolPositions
+	if self.moveablePipe and augerPipeToolPositionsSetting:hasValidToolPositions() and not augerPipeToolPositionsSetting:updatePositions(dt,1) then 
+		return false
+	end
+	return true
 end
 
 -- make sure we stay close to the trailer while overloading
@@ -142,6 +169,15 @@ function OverloaderAIDriver:isTrailerEmpty()
             if fillUnit.fillLevel > 0.1 then
                 return false
             end
+        end
+    end
+    return true
+end
+
+function OverloaderAIDriver:isMoveOnFillLevelReached()
+	if self.trailer and self.trailer.getFillUnits then
+        for _, fillUnit in pairs(self.trailer:getFillUnits()) do
+             return fillUnit.fillLevel/fillUnit.capacity*100 < self.vehicle.cp.settings.moveOnAtFillLevel:get() 
         end
     end
     return true
