@@ -56,30 +56,28 @@ function LevelCompactAIDriver:init(vehicle)
 	self:setHudContent()
 	self.fillUpState = self.states.PUSH
 	self.stoppedCourseplayers = {}
-	self:getWorkWidth()
+	self:setLevelerWorkWidth()
+	self.workWidth = 3
 end
 
 function LevelCompactAIDriver:setHudContent()
 	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)
 end
 
-function LevelCompactAIDriver:start()
-	self:beforeStart()
-	self.course = Course(self.vehicle , self.vehicle.Waypoints)
-	self.ppc:setCourse(self.course)
-	self.ppc:initialize()
+function LevelCompactAIDriver:start(startingPoint)
+	AIDriver.start(self,startingPoint)
 	self:changeLevelState(self.states.DRIVE_TO_PARKING)
 	self.fillUpState = self.states.PUSH
 	self.alphaList = nil
 	self.lastDrivenColumn = nil
 	-- reset target silo in case we want to work on a different one...
 	self.targetSilo = nil
-	self:getWorkWidth()
+	self:setLevelerWorkWidth()
 end
 
 function LevelCompactAIDriver:drive(dt)
 	-- update current waypoint/goal point
-	
+	self:drawMap()
 	self.allowedToDrive = true
 	self:lookOutForCourseplayers()
 	self:manageCourseplayersStopping()
@@ -114,13 +112,13 @@ function LevelCompactAIDriver:drive(dt)
 end
 
 function LevelCompactAIDriver:isTrafficConflictDetectionEnabled()
-	return self.trafficConflictDetectionEnabled and self.levelState.properties.checkForTrafficConflict
+	return self.trafficConflictDetectionEnabled and self.levelState and self.levelState.properties.checkForTrafficConflict
 end
 
 function LevelCompactAIDriver:checkShield()
 	local workTool = self.vehicle.cp.workTools[1]
 	
-	if workTool.cp.hasSpecializationLeveler then
+	if SpecializationUtil.hasSpecialization(Leveler, workTool.specializations) then
 		if self:getIsModeFillUp() or self:getIsModeLeveling() then
 			--record alphaList if not existing
 			if self.alphaList == nil then
@@ -134,7 +132,7 @@ function LevelCompactAIDriver:checkShield()
 		else
 			courseplay:setInfoText(self.vehicle, 'COURSEPLAY_WRONG_TOOL');
 		end
-	elseif workTool.cp.hasSpecializationBunkerSiloCompacter then
+	elseif SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations) then
 		if self:getIsModeCompact() then
 			return true
 		else
@@ -303,6 +301,7 @@ function LevelCompactAIDriver:driveSiloLevel(dt)
 end
 
 function LevelCompactAIDriver:driveSiloFillUp(dt)
+--	self:drawMap()
 	if self.fillUpState == self.states.PUSH then
 		--initialize first target point
 		if self.bestTarget == nil or self.vehicle.cp.BunkerSiloMap == nil then
@@ -358,7 +357,7 @@ function LevelCompactAIDriver:drivePush(dt)
 		lx, lz = -lx,-lz
 	end
 	self:debugRouting()
-	self:drawMap()
+--	self:drawMap()
 	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
 end	
 
@@ -374,6 +373,7 @@ function LevelCompactAIDriver:drivePull(dt)
 	if lz < 0 then
 		pullDone = true
 	end
+--	self:drawMap()
 	return pullDone
 end
 
@@ -469,6 +469,10 @@ function LevelCompactAIDriver:updateTarget()
 end
 
 function LevelCompactAIDriver:isAtEnd()
+	if not self.vehicle.cp.BunkerSiloMap or not bestTarget then 
+		return
+	end
+	
 	local targetUnit = self.vehicle.cp.BunkerSiloMap[self.bestTarget.line][self.bestTarget.column]
 	local cx ,cz = targetUnit.cx, targetUnit.cz
 	local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
@@ -714,7 +718,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitFillUp(Silo,actualTarget)
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
 	local vehicle = self.vehicle
 	local firstLine = 0
-	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo, self.workWidth)
+	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo, self:getWorkWidth())
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local stopSearching = false
 		local mostFillLevelAtLine = 0
@@ -774,7 +778,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitLeveling(Silo, lastDrivenColu
 	local vehicle = self.vehicle
 	local newApproach = lastDrivenColumn == nil 
 	local newBestTarget = {}
-	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo, self.workWidth)
+	vehicle.cp.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(vehicle, Silo, self:getWorkWidth())
 	if vehicle.cp.BunkerSiloMap ~= nil then
 		local newColumn = math.ceil(#vehicle.cp.BunkerSiloMap[1]/2)
 		if newApproach then
@@ -871,6 +875,16 @@ function LevelCompactAIDriver:drawMap()
 			drawTile(fillUnit, 1/1 - fillUnit.fillLevel, 1, 0)
 		end
 	end
+	if not self.targetSilo then return end
+	if self.targetSilo.bunkerSiloArea.start then 
+		DebugUtil.drawDebugNode(self.targetSilo.bunkerSiloArea.start, 'startBunkerNode')
+		DebugUtil.drawDebugNode(self.targetSilo.bunkerSiloArea.width, 'widthBunkerNode')
+		DebugUtil.drawDebugNode(self.targetSilo.bunkerSiloArea.height, 'heightBunkerNode')
+	else --for heaps where we have no bunker nodes (start/width/height)
+		cpDebug:drawPoint(self.targetSilo.bunkerSiloArea.sx, 1, self.targetSilo.bunkerSiloArea.sz, 1, 1, 1)
+		cpDebug:drawPoint(self.targetSilo.bunkerSiloArea.wx, 1, self.targetSilo.bunkerSiloArea.wz, 1, 1, 1)
+		cpDebug:drawPoint(self.targetSilo.bunkerSiloArea.hx, 1, self.targetSilo.bunkerSiloArea.hz, 1, 1, 1)
+	end
 end
 
 
@@ -878,7 +892,7 @@ function LevelCompactAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 end
 
-function LevelCompactAIDriver:getWorkWidth()
+function LevelCompactAIDriver:setLevelerWorkWidth()
 	self.workWidth = 3
 	self.leveler = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Leveler)
 	if not self.leveler then
@@ -896,4 +910,8 @@ function LevelCompactAIDriver:getWorkWidth()
 	end
 	self.workWidth = -minRightX + maxLeftX
 	self:debug('Leveler width = %.1f (left %.1f, right %.1f)', self.workWidth, maxLeftX, -minRightX)
+end
+
+function LevelCompactAIDriver:getWorkWidth()
+	return math.max(self.workWidth,self.vehicle.cp.workWidth)
 end
