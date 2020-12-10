@@ -32,6 +32,7 @@ PathfinderUtil.VehicleData = CpObject()
 function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     self.turnRadius = vehicle.cp and vehicle.cp.turnDiameter and vehicle.cp.turnDiameter / 2 or 10
     self.vehicle = vehicle
+    self.rootVehicle = vehicle:getRootVehicle()
     self.name = vehicle.getName and vehicle:getName() or 'N/A'
     -- distance of the sides of a rectangle from the direction node of the vehicle
     -- in other words, the X and Z offsets of the corners from the direction node
@@ -50,6 +51,8 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
         -- around the hitch (which we approximate as the front side of the size rectangle), not around the root node
         self.trailerRectangle = {
             name = self.trailer:getName(),
+            vehicle = self.trailer,
+            rootVehicle = self.trailer:getRootVehicle(),
             dFront = buffer or 0,
             dRear = - self.trailer.sizeLength - (buffer or 0),
             dLeft = self.trailer.sizeWidth / 2,
@@ -256,7 +259,8 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
     local collidingObject = g_currentMission.nodeToObject[transformId]
     if collidingObject and collidingObject.getRootVehicle then
         local rootVehicle = collidingObject:getRootVehicle()
-        if rootVehicle == self.vehicleData.vehicle or PathfinderUtil.elementOf(self.vehiclesToIgnore, rootVehicle) then
+        if rootVehicle == self.vehicleData.rootVehicle or
+                PathfinderUtil.elementOf(self.vehiclesToIgnore, rootVehicle) then
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
