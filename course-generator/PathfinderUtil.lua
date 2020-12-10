@@ -551,6 +551,21 @@ function PathfinderUtil.getAllHeadlands(course)
     return headlands
 end
 
+local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
+                                                          allowReverse, fieldNum,
+                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+    local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
+    local context = PathfinderUtil.Context(
+            PathfinderUtil.VehicleData(vehicle, true, 0.5),
+            PathfinderUtil.FieldData(fieldNum),
+            parameters,
+            vehiclesToIgnore,
+            otherVehiclesCollisionData)
+    return PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
+end
+
+
 ---@param start State3D
 ---@param goal State3D
 ---@param course Course
@@ -568,7 +583,9 @@ function PathfinderUtil.findShortestPathOnHeadland(start, goal, course, turnRadi
     return path
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder
+------------------------------------------------------------------------------------------------------------------------
 ---@param start State3D start node
 ---@param goal State3D goal node
 ---@param context PathfinderUtil.Context
@@ -582,7 +599,9 @@ function PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mus
     return pathfinder, done, path, goalNodeInvalid
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder for a turn maneuver
+------------------------------------------------------------------------------------------------------------------------
 ---@param vehicle table
 ---@param startOffset number offset in meters relative to the vehicle position (forward positive, backward negative) where
 --- we want the turn to start
@@ -629,7 +648,9 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
     return pathfinder, done, path, goalNodeInvalid
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Generate a Dubins path between the vehicle and the goal node
+------------------------------------------------------------------------------------------------------------------------
 ---@param vehicle table
 ---@param startOffset number offset in meters relative to the vehicle position (forward positive, backward negative) where
 --- we want the turn to start
@@ -655,7 +676,9 @@ function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)
     return x, z, yRot
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game
+------------------------------------------------------------------------------------------------------------------------
 ---@param vehicle table, will be used as the start location/heading, turn radius and size
 ---@param goalWaypoint Waypoint The destination waypoint (x, z, angle)
 ---@param xOffset number side offset of the goal from the goalWaypoint
@@ -673,11 +696,12 @@ function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypo
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
     local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
-    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
+    return startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
 end
-
+------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
 --- (sideOffset > 0 is left)
+------------------------------------------------------------------------------------------------------------------------
 ---@param vehicle table, will be used as the start location/heading, turn radius and size
 ---@param goalNode table The goal node
 ---@param xOffset number side offset of the goal from the goal node
@@ -695,24 +719,11 @@ function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    return PathfinderUtil.startPathfindingFromVehicleToGoal(
+    return startPathfindingFromVehicleToGoal(
             vehicle, start, goal, allowReverse, fieldNum,
             vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 end
 
-function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
-                                                          allowReverse, fieldNum,
-                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
-    local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
-    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
-    local context = PathfinderUtil.Context(
-            PathfinderUtil.VehicleData(vehicle, true, 0.5),
-            PathfinderUtil.FieldData(fieldNum),
-            parameters,
-            vehiclesToIgnore,
-            otherVehiclesCollisionData)
-    return PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
-end
 
 function PathfinderUtil.toggleVisualDebug()
     PathfinderUtil.isVisualDebugEnabled = not PathfinderUtil.isVisualDebugEnabled
