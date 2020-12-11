@@ -102,7 +102,6 @@ local function initialize()
 		'Conflict',
 		'AITurn',
 		'course-generator/geo',
-		'course-generator/Pathfinder',
 		'course-generator/Island',
 		'course-generator/courseGenerator',
 		'course-generator/cp',

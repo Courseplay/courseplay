@@ -276,24 +276,6 @@ function addTurnsToCorners( vertices, minHeadlandTurnAngle, headlandOnly)
 	end
 end
 
-function addWpsToReturnToFirstPoint( course, boundary )
-	-- should not check for fruit
-	local path = courseGenerator.pathFinder:findPath( course[ #course ], course[ 1 ], boundary )
-	-- already close enough, don't add extra return path
-	if not path or #path < 5 then
-		return
-	else
-		-- start at the third wp in order to be far enough 
-		-- from the last course wp to avoid circling
-		for i = 3, #path do
-			path[ i ].returnToFirst = true -- just for debugging
-			path[ i ].isConnectingTrack = true -- so it'll raise implements when driving back
-			table.insert( course, path[ i ])
-		end
-	end
-	course:calculateData()
-end
-
 --- Add the transition from headland to the center (up/down rows)
 ---
 --- The innermost headland always has an extra round added (one complete round working and one more marked as connecting

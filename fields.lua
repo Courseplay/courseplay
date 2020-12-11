@@ -61,7 +61,6 @@ function courseplay.fields:setAllFieldEdges()
 					self:dbg(string.format("fieldDef %d (fieldNum=%d): x,z=%.1f,%.1f, isField=%s", self.curFieldScanIndex, fieldNum, x, z, tostring(isField)), 'scan');
 					if isField then
 						self:setSingleFieldEdgePath(initObject, x, z, self.scanStep, maxN, numDirectionTries, fieldNum, false, 'scan');
-						--courseGenerator.findIslands( self.fieldData[ fieldNum ])
 					end;
 
 					self.numAvailableFields = table.maxn(courseplay.fields.fieldData);
@@ -563,7 +562,6 @@ function courseplay.fields:formatNumber(number, precision, money)
 	end;
 	return str;
 end;
-
 
 function courseplay.fields.saveAllFields()
 	if g_server ~= nil and CpManager.cpCoursesFolderPath ~= nil then
