@@ -21,7 +21,7 @@ PathfinderUtil = {}
 PathfinderUtil.dubinsSolver = DubinsSolver()
 PathfinderUtil.reedSheppSolver = ReedsSheppSolver()
 
----Size/turn radius all other information on the vehicle
+---Size/turn radius all other information on the vehicle and its implements
 ---@class PathfinderUtil.VehicleData
 PathfinderUtil.VehicleData = CpObject()
 
@@ -29,6 +29,8 @@ PathfinderUtil.VehicleData = CpObject()
 --- includes all implements and checked first for collisions. If there is a hit, the individual parts
 --- (vehicle and implements) are each checked for collision. This is to avoid false alarms in case of
 --- non-rectangular shapes, like a combine with a wide header
+--- If the vehicle has a trailer, it is handled separately from other implements to allow for the
+--- pathfinding to consider the trailer's heading (which will be different from the vehicle's heading)
 function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     self.turnRadius = vehicle.cp and vehicle.cp.turnDiameter and vehicle.cp.turnDiameter / 2 or 10
     self.vehicle = vehicle
@@ -551,13 +553,24 @@ function PathfinderUtil.getAllHeadlands(course)
     return headlands
 end
 
+---@param start State3D
+---@param goal State3D
 local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
-                                                          allowReverse, fieldNum,
-                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+                                                 allowReverse, fieldNum,
+                                                 vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
     local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
-    local parameters = PathfinderUtil.Parameters(maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or
+            (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
+    local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
+
+    -- initialize the trailer's heading for the starting point
+    if vehicleData.trailer then
+        local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(vehicleData.trailer.rootNode, 0, 0)
+        start:setTrailerHeading(courseGenerator.fromCpAngle(yRot))
+    end
+
     local context = PathfinderUtil.Context(
-            PathfinderUtil.VehicleData(vehicle, true, 0.5),
+            vehicleData,
             PathfinderUtil.FieldData(fieldNum),
             parameters,
             vehiclesToIgnore,
@@ -593,7 +606,7 @@ end
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfinding(start, goal, context, allowReverse, mustBeAccurate)
     PathfinderUtil.overlapBoxes = {}
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 3, 100, 50000, mustBeAccurate)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 4, 100, 40000, mustBeAccurate)
     local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, allowReverse,
             PathfinderConstraints(context), context.vehicleData.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid
