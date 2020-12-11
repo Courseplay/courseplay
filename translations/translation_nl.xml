@@ -332,7 +332,8 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="Altijd 4WD &amp; Diff-Lock achterzijde aan bij veldwerk" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="Altijd 4WD &amp; Diff-Lock voor- en achterzijde aan bij veldwerk" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Velden automatisch scannen?" />
- 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Wilt u de arbeiders belonen?" />
+ 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
+		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Wilt u de arbeiders belonen?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Zaad verbruik calculator" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Veld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Zaad soort: %s" />

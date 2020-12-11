@@ -336,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Vždy &amp; Oba Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Chceš aby pole byla skenována automaticky?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Chceš aby byli pomocníci placeni?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Kalkulačka spotřeby osiva" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Pole: %d (%s %s)" />

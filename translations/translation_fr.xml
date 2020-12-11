@@ -336,7 +336,8 @@
     <text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4x4 Permanent &amp; différentiel arrière au travail" />
     <text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Permanent &amp; différentiel au travail" />
     <text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Les parcelles seront scannées automatiquement au démarrage du jeu" />
-    <text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Les ouvriers Courseplay seront rémunérés en fonctions des heures de travail effectuées" />
+    <text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
+	<text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Les ouvriers Courseplay seront rémunérés en fonctions des heures de travail effectuées" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilisation des semences" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Parcelle: %d (%s %s)" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Type de semence: %s" />

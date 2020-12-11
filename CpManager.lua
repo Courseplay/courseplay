@@ -829,6 +829,7 @@ end;
 function CpManager:minuteChanged()
 end;
 
+--FieldScan startup dialog and github info
 function CpManager:showYesNoDialogue(title, text, callbackFn)
 	-- don't show anything if the tutorial dialog is open (it takes a while until is isOpen shows true after startup, hence the clock)
 	--courseplay.debugFormat(12, "clock %d %s", courseplay.clock, tostring(g_gui.guis.YesNoDialog.target and g_gui.guis.YesNoDialog.target.isOpen))
@@ -836,6 +837,7 @@ function CpManager:showYesNoDialogue(title, text, callbackFn)
 		return
 	end
 	--courseplay.debugFormat(12, text)
+	local text =string.format("%s\n %s",courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'),courseplay:loc('COURSEPLAY_SUPPORT_INFO')) 
 	g_gui:showYesNoDialog({text=text, title=title, callback=callbackFn, target=self})
 end;
 
