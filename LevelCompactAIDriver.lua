@@ -57,7 +57,6 @@ function LevelCompactAIDriver:init(vehicle)
 	self.fillUpState = self.states.PUSH
 	self.stoppedCourseplayers = {}
 	self:setLevelerWorkWidth()
-	self.workWidth = 3
 end
 
 function LevelCompactAIDriver:setHudContent()

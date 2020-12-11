@@ -43,16 +43,19 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
 	-- ignoring his fellow developers ...
 	
 	--only for Heaps as this createBunkerSiloMap() also applies to it ..
-	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz;
-	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz;
-	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz;
-	local bunkerWidth = courseplay:distance(sx,sz, wx, wz)
+	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz; --start BunkerNode
+	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz; --width BunkerNode "x cordinate"
+	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz; --height/"depth" BunkerNode "z cordinate"
+	local bunkerWidth = courseplay:distance(sx,sz, wx, wz) 
 	local bunkerLength = courseplay:distance(sx,sz, hx, hz)
 	local sy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz);
+	
+	-- check the distance from our vehicle either we are comming from the front or back of the silo
 	local startDistance = courseplay:distanceToPoint(vehicle, sx, sy, sz)
 	local endDistance = courseplay:distanceToPoint(vehicle, hx, sy, hz)
 	
 	--correct data for bunkerSilos
+	--shorten the BunkerArea by 1.0 , as the silo size from Giants tends to be bigger the the actual fillArea 
 	if Silo.bunkerSiloArea.start then
 		sx, _, sz = localToWorld(Silo.bunkerSiloArea.start,-0.5,0,0) --start BunkerNode
 		wx, _, wz = localToWorld(Silo.bunkerSiloArea.width,0.5,0,0) --width BunkerNode "x cordinate"
@@ -159,7 +162,7 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
 	else
 		courseplay:debug(('%s: empty Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);
 	end
-	--invert table
+	--invert table as we are comming from the back into the silo
 	if endDistance < startDistance then
 		courseplay:debug(('%s: Bunkersilo will be approached from the back -> turn map'):format(nameNum(vehicle)), 10);
 		local newMap = {}
