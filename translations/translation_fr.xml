@@ -278,6 +278,7 @@
     <text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Se mettre en position de pre-déchargement" />
     <text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Se mettre en position de déchargement" />
     <text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 					 		text="Mettre godet en position à l'arrêt" />
+    <text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 
     <text name="COURSEPLAY_START_AT_POINT" 						 		text="Commencer la course au" />
     <text name="COURSEPLAY_NEAREST_POINT" 						 		text="Point le plus proche" />
@@ -337,7 +338,6 @@
     <text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Permanent &amp; différentiel au travail" />
     <text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Les parcelles seront scannées automatiquement au démarrage du jeu" />
     <text name="COURSEPLAY_SUPPORT_INFO" 								text="Si vous souhaitez de l'aide ou signaler un bug sur courseplay, merci de vous rendre sur le site: https://github.com/Courseplay/courseplay" />
-	<text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Les ouvriers Courseplay seront rémunérés en fonctions des heures de travail effectuées" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilisation des semences" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Parcelle: %d (%s %s)" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Type de semence: %s" />
@@ -393,11 +393,12 @@
     <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
     <text name="COURSEPLAY_MODE10_MODE" 						    	text="Utilisation de la lame" />
-    <text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivellement et tassement" />
-    <text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Remplissage" />
-    <text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Stopper automatiquement pour" />
-    <text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Véhicules avec Courseplay" />
-    <text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="Tous les véhicules motorisés" />
+    <text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+	<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Remplissage" />
+	<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
     <text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détecter les véhicules dans un rayon de " />
     <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max pendant le remplissage" />
     <text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Hauteur de la lame" />
@@ -440,7 +441,6 @@
     <text name="COURSEPLAY_USE_AI_TURNS"				   				text="Utiliser les manœuvres de l'AI" />
     <text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Utiliser les manœuvres de l'AI au lieu des trajectoires calculées" />
     <text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanner les parcelles" />
-    <text name="COURSEPLAY_EARN_WAGES"					   				text="Rémunérer les ouvriers Courseplay" />
 
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_EARLY"				   	text="Le plus tôt possible" />
     <text name="COURSEPLAY_IMPLEMENT_RAISE_LOWER_LATE"				   	text="Le plus tard possible" />
@@ -496,6 +496,8 @@
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
     <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
 	
+    <text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+	<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
     <!-- Replace marker, do not remove! -->
   </texts>
 </l10n>

@@ -91,10 +91,6 @@ function courseplay:start(self)
 			end
 		end
 
-		-- TODO: this must be moved to the AIDriver somewhere, has nothing to do here...
-		if workTool.spec_sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
-			workTool.fertilizerEnabled = self.cp.settings.sowingMachineFertilizerEnabled:is(true)
-		end	
 		
 		if workTool.cp.isSugarCaneAugerWagon then
 			isReversePossible = false
@@ -357,9 +353,6 @@ function courseplay:stop(self)
 			end
 			tool.cp.originalCapacities = nil
 		end
-		if tool.fertilizerEnabled ~= nil then
-			tool.fertilizerEnabled = nil
-		end
 	end
 	if self.cp.directionNodeToTurnNodeLength ~= nil then
 		self.cp.directionNodeToTurnNodeLength = nil
@@ -367,12 +360,6 @@ function courseplay:stop(self)
 
 	self.cp.lastInfoText = nil
 
-	--mode10 restore original compactingScales
-	if self.cp.mode10.OrigCompactScale ~= nil then
-		self.bunkerSiloCompactingScale = self.cp.mode10.OrigCompactScale 
-		self.cp.mode10.OrigCompactScale = nil
-	end
-	
 	if self.cp.cruiseControlSpeedBackup then
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;

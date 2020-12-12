@@ -119,6 +119,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 		end
 	end
 	self.triggerHandler:enableFillTypeUnloading()
+	self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)

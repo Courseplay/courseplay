@@ -277,6 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Mover para posição pré descarregar" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Mover para posição descarregar" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Parar &amp; ir descarregar" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 		
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Iniciar rota em:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="Ponto mais próximo" />
@@ -337,7 +338,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4X4 Permanente &amp; Diferencial frente e traseiro bloqueados" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Você deseja que os campos sejam escaneados automaticamente?" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Você encontrou um erro (bug) ou precisa de ajuda com o Courseplay? Dê uma olhada em: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Você deseja que seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo do uso de sementes" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Tipo de semente: %s" />
@@ -394,10 +394,11 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Botão %d do mouse" /> 
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Modo" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivelamento e Compactação" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="Nivelamento" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="Enchendo" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                      text="Compactação" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="Parar automaticamente para" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Somente Courseplayers" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Somente Courseplayer/AutoDrive" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="Todos os com motores funcionando" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Detectar tratores na distância de " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Velocidade máxima enquanto compacta" />
@@ -440,7 +441,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Usar AI para manobras" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Usar AI para manobras em vez de trajetórias calculadas" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Scanear campos automaticamente" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay pagar salários para trabalhadores" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Clique para mudar" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Clique no veiculo para mudar" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Tubo sempre desdobrado" />
@@ -493,6 +493,9 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Carreta seprarada:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantidade para descarregar %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="carregar manualmente" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

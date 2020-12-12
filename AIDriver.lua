@@ -303,6 +303,7 @@ end
 --- @param startingPoint number, one of StartingPointSetting.START_AT_* constants
 function AIDriver:start(startingPoint)
 	self:beforeStart()
+	self.vehicle.cp.settings.stopAtEnd:set(true)
 	self.state = self.states.RUNNING
 	-- derived classes must disable collision detection if they don't need it
 	self:enableCollisionDetection()
@@ -405,7 +406,6 @@ function AIDriver:update(dt)
 	self:updatePathfinding()
 	self:drive(dt)
 	self:checkIfBlocked()
-	self:payWages(dt)
 	self:detectSlipping()
 	self:resetSpeed()
 	self:updateLoadingText()
@@ -1412,23 +1412,22 @@ function AIDriver:getHasAllTippersClosed()
 end
 
 function AIDriver:setOffsetInBGASilo()
-	if self.BunkerSiloMap == nil then
-		self.BunkerSilo = g_bunkerSiloManager:getTargetBunkerSiloByPointOnCourse(self.course,self.ppc:getCurrentWaypointIx()+3)
-		if self.BunkerSilo ~= nil then
-			self.BunkerSiloMap = g_bunkerSiloManager:createBunkerSiloMap(self.vehicle, self.BunkerSilo,3)
+	if self.bunkerSiloManager == nil then
+		local silo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.course,self.ppc:getCurrentWaypointIx()+3)
+		if silo then
+			self.bunkerSiloManager = BunkerSiloManager(self.vehicle, silo,3)
 		end
 	end
-	if self.BunkerSiloMap ~= nil then
+	if self.bunkerSiloManager ~= nil then
 		if self.bestColumnToFill == nil then
-			self.bestColumnToFill = g_bunkerSiloManager:getBestColumnToFill(self.BunkerSiloMap)
-			self.ppc:initialize(g_bunkerSiloManager:setOffsetsPerWayPoint(self.course,self.BunkerSiloMap,self.bestColumnToFill,self.ppc:getCurrentWaypointIx()))
+			self.bestColumnToFill = self.bunkerSiloManager:getBestColumnToFill()
+			self.ppc:initialize(self.bunkerSiloManager:setOffsetsPerWayPoint(self.course,self.bestColumnToFill,self.ppc:getCurrentWaypointIx()))
 		end
 	end
 end
 
 function AIDriver:resetBGASiloTables()
-	self.BunkerSilo = nil
-	self.BunkerSiloMap = nil
+	self.bunkerSiloManager = nil
 	self.offsetsPerWayPoint = nil
 	self.bestColumnToFill = nil
 end
@@ -1784,28 +1783,28 @@ function AIDriver:initWages()
 	end
 end
 
-function AIDriver:payWages(dt)
-	local spec = self.vehicle.spec_aiVehicle
-	local courseplayMultiplier
-	-- The Giants AIVehicle always pays wages so we need to take that into account and compensate for it
-	-- when paying less than 100% (hence the -1)
-	if courseplay.globalSettings.earnWages:is(true) and self:shouldPayWages() then
-		courseplayMultiplier = courseplay.globalSettings.workerWages:get() / 100 - 1
-	else
-		-- compensate for all the Giants wage paying
-		courseplayMultiplier = -1
-	end
-	if spec and g_server ~= nil then
-		local difficultyMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
-		local wage = -dt * difficultyMultiplier * courseplayMultiplier * spec.pricePerMS
-		g_currentMission:addMoney(wage, spec.startedFarmId, MoneyType.AI, true)
-	end
-end
-
 --- By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances
 function AIDriver:shouldPayWages()
 	return true
 end
+
+function AIDriver:getWagesPercentageAmount()
+	return self:shouldPayWages() and courseplay.globalSettings.workerWages:get() / 100 or 0
+end
+
+--handle a wage multiplier or disable wages completely
+function AIDriver:updateAILowFrequency(superFunc,dt)
+	local rootVehicle = self:getRootVehicle()
+	if courseplay:isAIDriverActive(rootVehicle) then
+		local oldMultiplier = g_currentMission.missionInfo.buyPriceMultiplier
+		g_currentMission.missionInfo.buyPriceMultiplier = g_currentMission.missionInfo.buyPriceMultiplier * rootVehicle.cp.driver:getWagesPercentageAmount()
+		superFunc(self,dt)
+		g_currentMission.missionInfo.buyPriceMultiplier = oldMultiplier
+	else 
+		superFunc(self,dt)
+	end
+end
+AIVehicle.updateAILowFrequency = Utils.overwrittenFunction(AIVehicle.updateAILowFrequency, AIDriver.updateAILowFrequency)
 
 function AIDriver:getAllowReversePathfinding()
 	return self.allowReversePathfinding and self.vehicle.cp.settings.allowReverseForPathfindingInTurns:is(true)

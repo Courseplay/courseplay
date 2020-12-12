@@ -277,6 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 	text="Przejedź do pozycji przed rozładunkiem" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		 	text="Przejedź do pozycji rozładunku" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO"						 	text="Zatrzymaj i jedź ładować" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 		
 		<text name="COURSEPLAY_START_AT_POINT"							 	text="Rozpocznij kurs od:" />
 		<text name="COURSEPLAY_NEAREST_POINT"							 	text="Najbliższy punkt trasy" />
@@ -337,7 +338,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 	text="4x4 zawsze &amp; zabl. oba dyf. (praca w polu)" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 	text="Czy chcesz, aby pola były skanowane automatycznie?" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Znalazłeś błąd lub potrzebujesz pomocy z Courseplay? Zajrzyj na: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES"							 	text="Czy chcesz, aby pracownicy dostawali wynagrodzenie?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 	text="Kalkulator zużycia nasion" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD"				 	text="Pole: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE"			 	text="Typ nasion: %s" />
@@ -394,11 +394,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Przycisk myszki %d" />
 
 		<text name="COURSEPLAY_MODE10_MODE" 						     	text="Tryb:" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 					 	text="Wyrównywanie i ugniatanie" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"						 	text="Napełnianie" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 						 	text="Automatyczne zatrzymanie dla:" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 					 	text="Tylko Courseplay" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 					 	text="Wszystkie z uruch. silnikiem" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Napełnianie" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 	text="Wykryj pojazdy w zasięgu:" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 	text="Max. prędkość podczas pchania:" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 	text="Wysokość lemiesza:" />
@@ -441,7 +442,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Użyj manewrów zawracania AI" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Użyj manewrów zawracania AI zamiast wyliczonych trajektorii zawracania" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Skanuj pola automatycznie" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Pracownicy Courseplay dostają wynagrodzenie" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Kliknij, aby przejść" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Kliknij na pojazd, aby przejść do niego." />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rozkładaj rurę zawsze" />
@@ -495,6 +495,9 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku %d z %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

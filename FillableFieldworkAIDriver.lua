@@ -159,6 +159,7 @@ end
 function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRefill)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
+	local liquidFertilizerFillLevel,herbicideFillLevel = 0, 0
 	if self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, FertilizingCultivator) then
 		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
 		return true
@@ -177,8 +178,16 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRef
 			else
 				if fillType == FillType.SEEDS then hasSeeds = true end
 			end		
+			if fillType == FillType.LIQUIDFERTILIZER then liquidFertilizerFillLevel = info.fillLevel end
+			if fillType == FillType.HERBICIDE then  herbicideFillLevel = info.fillLevel end
 		end
 		totalFillLevel = totalFillLevel + info.fillLevel
+	end
+	-- special handling for extra frontTanks as they seems to change their fillType random
+	-- if we don't have a seeds and either liquidFertilizer or herbicide just continue until both are empty
+	if not allOk and not fillLevelInfo[FillType.SEEDS] and(liquidFertilizerFillLevel > 0 or herbicideFillLevel > 0) then 
+		self:debugSparse('we probably have an empty front Tank')
+		allOk = true
 	end
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then

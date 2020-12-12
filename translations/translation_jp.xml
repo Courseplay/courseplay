@@ -277,6 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="アンロード待機ポジジョンへ移行" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="アンロード位置へ移行" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="停止 &amp; ローディング" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="コースの開始位置" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="近くのウェイポイント" />
@@ -337,7 +338,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="フルタイム4WD &amp; FWオールデフロック" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="フィールドを自動スキャンしますか?" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="作業者に賃金を支払いますか?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="消費量計" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="フィールド: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="種子タイプ: %s" />
@@ -395,11 +395,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="マウスボタン %d" />
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="モード" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="レベリングと圧縮" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="満タン" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="自動停止" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="コースプレイ車両のみ" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="すべての稼動車両" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="満タン" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="輸送車両サーチ範围" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="プッシュ速度" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="ブレードの高さ" />
@@ -442,7 +443,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="AIによるターン制御" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="既存のターン制御の代わりにAIによるターン制御を使用します" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="自動フィールドスキャン" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="コースプレイのヘルパーに賃金を支払います" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="クリックで切換え" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="車両クリックで切換え" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="常にパイプを出す" />
@@ -494,6 +494,9 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Seperate Trailers:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Unloading amount %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manual Loading" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

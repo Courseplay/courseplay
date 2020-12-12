@@ -217,6 +217,7 @@ end
 --enables unloading for CombineUnloadAIDriver with triggerHandler, but gets overwritten by OverloaderAIDriver, as it's not needed for it.
 function CombineUnloadAIDriver:enableFillTypeUnloading()
 	self.triggerHandler:enableFillTypeUnloading()
+	self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
 end
 
 function CombineUnloadAIDriver:driveUnloadCourse(dt)
