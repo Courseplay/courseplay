@@ -497,6 +497,11 @@
 
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="Warte auf Ablader" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="Warte auf Siloarbeiter" />
+
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatisch reparieren" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repariert die Fahrzeuge automatisch." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Nie" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Immer" />
 		
 		<!-- Replace marker, do not remove! -->
 </texts>

@@ -1410,11 +1410,15 @@ function IntSetting:set(value,noEventSend)
 		self.value = value
 		if noEventSend == nil or noEventSend == false then
 			if self.syncValue then
-				SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, value)
+				self:sendEvent(value)
 			end
 		end
 		self:onChange()
 	end
+end
+
+function IntSetting:sendEvent(value)
+	SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, value)
 end
 
 ---@class SettingList
@@ -1502,7 +1506,7 @@ function SettingList:setToIx(ix,noEventSend)
 		self.lastChangeTimeMilliseconds = g_time
 		if noEventSend == nil or noEventSend == false then
 			if self.syncValue then
-				SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, self.current)
+				self:sendEvent()
 			end
 		end
 	end
@@ -1634,6 +1638,15 @@ end
 function SettingList:getNetworkCurrentValue()
 	return self.current
 end
+
+function SettingList:sendEvent()
+	if self.vehicle then 
+		SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, self.current)
+	else 
+		GlobalSettingsEvent.sendEvent(self.parentName, self.name, self.current)
+	end
+end
+
 ---WIP
 ---Generic LinkedList setting and Interface for LinkedList.lua
 ---@class LinkedList : Setting
@@ -1941,8 +1954,8 @@ end
 ---@class CenterModeSetting : SettingList
 CenterModeSetting = CpObject(SettingList)
 
-function CenterModeSetting:init()
-	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '', nil,
+function CenterModeSetting:init(vehicle)
+	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '', vehicle,
 		{
 			courseGenerator.CENTER_MODE_UP_DOWN,
 			courseGenerator.CENTER_MODE_CIRCULAR,
@@ -1961,9 +1974,9 @@ end
 ---@class NumberOfRowsPerLand
 NumberOfRowsPerLandSetting = CpObject(SettingList)
 
-function NumberOfRowsPerLandSetting:init()
+function NumberOfRowsPerLandSetting:init(vehicle)
 	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
-			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', nil,
+			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', vehicle,
 			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24},
 			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24})
 	self:set(6)
@@ -2087,9 +2100,9 @@ end
 
 ---@class FoldImplementAtEndSetting : BooleanSetting
 FoldImplementAtEndSetting = CpObject(BooleanSetting)
-function FoldImplementAtEndSetting:init()
+function FoldImplementAtEndSetting:init(vehicle)
 	BooleanSetting.init(self, 'foldImplementAtEnd', 'COURSEPLAY_SHOULD_FOLD_IMPLEMENT',
-		'COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP', nil)
+		'COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP', vehicle)
 	self:set(true)
 end
 
@@ -2316,18 +2329,18 @@ end
 
 ---@class EnableVisualWaypointsTemporary : BooleanSetting
 EnableVisualWaypointsTemporary = CpObject(BooleanSetting)
-function EnableVisualWaypointsTemporary:init()
+function EnableVisualWaypointsTemporary:init(vehicle)
 	BooleanSetting.init(self, 'enableVisualWaypointsTemporary', 'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY',
-				'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP', nil)
+				'COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
 
 ---@class EnableOpenHudWithMouseVehicle : BooleanSetting
 EnableOpenHudWithMouseVehicle = CpObject(BooleanSetting)
-function EnableOpenHudWithMouseVehicle:init()
+function EnableOpenHudWithMouseVehicle:init(vehicle)
 	BooleanSetting.init(self, 'enableOpenHudWithMouseVehicle', 'COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE',
-				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE', nil)
+				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE', vehicle)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
 end
@@ -2395,7 +2408,7 @@ end
 ---@class AutomaticUnloadingOnFieldSetting : BooleanSetting
 AutomaticUnloadingOnFieldSetting = CpObject(BooleanSetting)
 function AutomaticUnloadingOnFieldSetting:init(vehicle)
-	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD', {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
+	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD',vehicle, {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
 	self:set(false)
 end
 

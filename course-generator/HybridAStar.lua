@@ -497,7 +497,9 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 					analyticPath[1]:setTrailerHeading(pred:getTrailerHeading())
 					State3D.calculateTrailerHeadings(analyticPath, hitchLength)
 					if self:isPathValid(analyticPath) then
-						State3D.printPath(analyticPath, 'ANALYTIC')
+						--TODO: figure out a possible debug channel, if needed
+						
+						--State3D.printPath(analyticPath, 'ANALYTIC')
 						self:debug('Found collision free analytic path (%s) at iteration %d', pathType, self.iterations)
 						-- remove first node of returned analytic path as it is the same as pred
 						table.remove(analyticPath, 1)

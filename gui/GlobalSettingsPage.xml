@@ -58,19 +58,20 @@
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
+		</GuiElement>
 		<!--Layout right-->
-		<!--
+		
 		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="750px -100px" >
-		-->
 			<!--Settings-->
-			<!--
-			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
+		
+			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="autoRepair" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />
 				<GuiElement type="text" profile="multiTextOptionSettingsText" />
 				<GuiElement type="text" profile="multiTextOptionSettingsTitle" />
 				<GuiElement type="bitmap" profile="multiTextOptionSettingsBg" />
 			</GuiElement>
+			<!--
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
 				<GuiElement type="button" profile="multiTextOptionSettingsRight" />

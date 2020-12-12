@@ -2093,9 +2093,11 @@ function CombineUnloadAIDriver.disableProximitySensorForNonCourseplayDriver(unlo
 				local d = calcDistanceFrom(unloader.rootNode, vehicle.rootNode)
 				if d < CombineUnloadAIDriver.safeManeuveringDistance then
 					vehicle.cp.driver:ignoreVehicleProximity(unloader, 3000)
-					if g_updateLoopIndex % 500 == 0 then
-						courseplay.infoVehicle(vehicle, 'Proximity sensor deactivated for player driven %s', nameNum(unloader))
-					end
+					--TODO: figure out a possible debug channel, if needed
+
+					--if g_updateLoopIndex % 500 == 0 then
+						--courseplay.infoVehicle(vehicle, 'Proximity sensor deactivated for player driven %s', nameNum(unloader))
+					--end
 				end
 			end
 		end
