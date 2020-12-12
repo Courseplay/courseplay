@@ -968,35 +968,6 @@ function CombineUnloadAIDriver:updateFillUnitAutoAimTarget(superFunc,fillUnit)
 	end
 end
 
----@param goalWaypoint Waypoint The destination waypoint (x, z, angle)
----@param zOffset number length offset of the goal from the goalWaypoint
----@param allowReverse boolean allow reverse driving
----@param course Course course to start after pathfinding is done, can be nil
----@param ix number course to start at after pathfinding, can be nil
----@param fieldNum number if > 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the
---- pathfinding considers any collision-free path valid, also outside of the field.
----@return boolean true when a pathfinding successfully started
-function CombineUnloadAIDriver:driveToNodeWithPathfinding(node, xOffset, zOffset, fieldNum, targetVehicle)
-	if not self.pathfinder or not self.pathfinder:isActive() then
-		self.courseAfterPathfinding = nil
-		self.waypointIxAfterPathfinding = nil
-		local done, path, goalNodeInvalid
-		self.pathfindingStartedAt = self.vehicle.timer
-		self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToNode(
-				self.vehicle, node, xOffset or 0, zOffset or 0, self.allowReversePathfinding, fieldNum, {targetVehicle}, self.maxFruitPercent, self.offFieldPenalty)
-		if done then
-			return self:onPathfindingDone(path, goalNodeInvalid)
-		else
-			self:setPathfindingDoneCallback(self, self.onPathfindingDone)
-			return true
-		end
-
-	else
-		self:debug('Pathfinder already active')
-	end
-	return false
-end
-
 function CombineUnloadAIDriver:isWithinSafeManeuveringDistance(vehicle)
 	local d = calcDistanceFrom(self.vehicle.rootNode, AIDriverUtil.getDirectionNode(vehicle))
 	return d < self.safeManeuveringDistance
@@ -1305,7 +1276,8 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 				self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 				self:debug('Start pathfinding to moving combine, %d m, ETE: %d s, meet combine at waypoint %d, xOffset = %.1f, zOffset = %.1f',
 						d, estimatedSecondsEnroute, rendezvousWaypointIx, xOffset, zOffset)
-				self:startPathfinding(rendezvousWaypoint, xOffset, zOffset, 0,
+				self:startPathfinding(rendezvousWaypoint, xOffset, zOffset,
+						PathfinderUtil.getFieldNumUnderVehicle(self.combineToUnload),
 						{self.combineToUnload}, self.onPathfindingDoneToMovingCombine)
 			else
 				self:debug('Rendezvous waypoint %d to moving combine too close, wait a bit', rendezvousWaypointIx)
@@ -1342,7 +1314,8 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 	-- when it is on the headland.
 	if self:isPathfindingNeeded(self.vehicle, self:getCombineRootNode(), xOffset, zOffset) then
 		self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
-		self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset, 0, {}, onPathfindingDoneFunc)
+		self:startPathfinding(self:getCombineRootNode(), xOffset, zOffset,
+				PathfinderUtil.getFieldNumUnderVehicle(self.combineToUnload), {}, onPathfindingDoneFunc)
 	else
 		self:debug('Can\'t start pathfinding, too close?')
 		self:startWorking()
@@ -1371,7 +1344,9 @@ function CombineUnloadAIDriver:startPathfindingToFirstUnloader(onPathfindingDone
 	if self:isPathfindingNeeded(self.vehicle, AIDriverUtil.getDirectionNode(self.firstUnloader), 0, 0) then
 		self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 		-- ignore everyone as by the time we get there they'll have moved anyway
-		self:startPathfinding(self.combineToUnload.rootNode, 0, -5, 0, {self.combineToUnload, self.firstUnloader}, onPathfindingDoneFunc)
+		self:startPathfinding(self.combineToUnload.rootNode, 0, -5,
+				PathfinderUtil.getFieldNumUnderVehicle(self.combineToUnload),
+				{self.combineToUnload, self.firstUnloader}, onPathfindingDoneFunc)
 	else
 		self:debug('Won\'t start pathfinding to first unloader, too close?')
 		if self:isOkToStartFollowingFirstUnloader() then

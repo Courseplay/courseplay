@@ -1180,8 +1180,8 @@ function CombineAIDriver:findBestTrailer()
 			if SpecializationUtil.hasSpecialization(Attachable, vehicle.specializations) then
 				attacherVehicle = vehicle.spec_attachable:getAttacherVehicle()
 			end
-			local fieldNum = courseplay.fields:onWhichFieldAmI(vehicle)
-			local myFieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
+			local fieldNum = PathfinderUtil.getFieldNumUnderVehicle(vehicle)
+			local myFieldNum = PathfinderUtil.getFieldNumUnderVehicle(self.vehicle)
 			local x, _, z = getWorldTranslation(vehicle.rootNode)
 			local closestDistance = courseplay.fields:getClosestDistanceToFieldEdge(myFieldNum, x, z)
 			local lastSpeed = rootVehicle:getLastSpeed()
@@ -1256,7 +1256,7 @@ function CombineAIDriver:startSelfUnload()
 		self.selfUnloadAlignCourse = Course.createFromNode(self.vehicle, targetNode,
 				offsetX, offsetZ + 1, offsetZ + 1 + alignLength, 1, false)
 
-	local fieldNum = courseplay.fields:onWhichFieldAmI(self.vehicle)
+	local fieldNum = PathfinderUtil.getFieldNumUnderVehicle(self.vehicle)
 		local done, path
 		-- require full accuracy from pathfinder as we must exactly line up with the trailer
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(

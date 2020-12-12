@@ -375,12 +375,3 @@ function setupIslands( field, nPasses, implementWidth, overlapPercent, minDistan
 	end
 end
 
-function getAllHeadlands(headlands, islands)
-	local result = headlands and {unpack(headlands)} or {}
-	for _, island in ipairs(islands) do
-		for _, islandHeadland in ipairs(island.headlandTracks) do
-			table.insert(result, islandHeadland)
-		end
-	end
-	return result
-end
