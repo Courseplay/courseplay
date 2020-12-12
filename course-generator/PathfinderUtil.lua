@@ -21,6 +21,8 @@ PathfinderUtil = {}
 PathfinderUtil.dubinsSolver = DubinsSolver()
 PathfinderUtil.reedSheppSolver = ReedsSheppSolver()
 
+PathfinderUtil.defaultOffFieldPenalty = 10
+
 ---Size/turn radius all other information on the vehicle and its implements
 ---@class PathfinderUtil.VehicleData
 PathfinderUtil.VehicleData = CpObject()
@@ -186,7 +188,7 @@ PathfinderUtil.Parameters = CpObject()
 ---stay on field
 function PathfinderUtil.Parameters:init(maxFruitPercent, offFieldPenalty)
     self.maxFruitPercent = maxFruitPercent or 50
-    self.offFieldPenalty = offFieldPenalty or 1
+    self.offFieldPenalty = offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty
 end
 
 --- Pathfinder context
@@ -553,7 +555,8 @@ local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                  vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
     local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local parameters = PathfinderUtil.Parameters(maxFruitPercent or
-            (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), offFieldPenalty or 1)
+            (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge),
+            offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty)
     local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 
     -- initialize the trailer's heading for the starting point

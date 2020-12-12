@@ -235,7 +235,7 @@ function CombineUnloadAIDriver:resetPathfinder()
 	self.maxFruitPercent = 10
 	-- prefer driving on field, don't do this too aggressively until we take into account the field owner
 	-- otherwise we'll be driving through others' fields
-	self.offFieldPenalty = 2
+	self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty
 	self.pathfinderFailureCount = 0
 end
 
@@ -1219,12 +1219,12 @@ function CombineUnloadAIDriver:isPathFound(path, goalNodeInvalid, goalDescriptor
 						goalDescriptor,
 						self.vehicle.timer - (self.pathfindingStartedAt or 0))
 				self.maxFruitPercent = math.huge
-				self.offFieldPenalty = 1
+				self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
 			elseif self.pathfinderFailureCount == 1 then
 				self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint...',
 						goalDescriptor,
 						self.vehicle.timer - (self.pathfindingStartedAt or 0))
-				self.offFieldPenalty = 1
+				self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
 			end
 			return false
 		end
