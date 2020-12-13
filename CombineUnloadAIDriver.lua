@@ -2103,11 +2103,13 @@ end
 --- Note that we don't really know if the player is to unload the combine, this will disable all proximity check for
 --- player driven vehicles.
 function CombineUnloadAIDriver.disableProximitySensorForNonCourseplayDriver(unloader)
+	if not g_server then return end
 	-- CP drives unloader, it'll take care of everything
 	if unloader.cp.driver and unloader.cp.driver.isActive and unloader.cp.driver:isActive() then return end
 	-- TODO: maybe check for AutoDrive? Or better provide and interface to AutoDrive to disable the proximity sensor?
 	-- no player in unloader, so do not ignore this vehicle
 	if not unloader:getIsEntered() then return end
+
 	-- find combines driven by CP around unloader
 	if g_currentMission then
 		for _, vehicle in pairs(g_currentMission.vehicles) do
