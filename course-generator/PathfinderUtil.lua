@@ -323,8 +323,8 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     if log and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
                 { x = x, y = y + 1, z = z, yRot = yRot, width = width, length = length})
-        courseplay.debugFormat(7, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f)',
-                vehicleData.name, x, z, width, length)
+        courseplay.debugFormat(7, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
+                vehicleData.name, x, z, width, length, math.deg(yRot))
     end
     --DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
 
@@ -505,7 +505,8 @@ end
 --- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
 ---@param log boolean log colliding shapes/vehicles
-function PathfinderConstraints:isValidNode(node, log)
+---@param ignoreTrailer boolean don't check the trailer
+function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
     -- A helper node to calculate world coordinates
     if not PathfinderUtil.helperNode then
         PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', node.x, -node.y, 0)
@@ -525,7 +526,7 @@ function PathfinderConstraints:isValidNode(node, log)
             self.context.vehicleData,
             self.context.otherVehiclesCollisionData,
             log)
-    if self.context.vehicleData.trailer then
+    if self.context.vehicleData.trailer and not ignoreTrailer then
         -- now check the trailer or towed implement
         -- move the node to the rear of the vehicle (where approximately the trailer is attached)
         local x, y, z = localToWorld(PathfinderUtil.helperNode, 0, 0, self.context.vehicleData.trailerHitchOffset)
