@@ -332,6 +332,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="állandó 4WD &amp; hátsó diff.zár be" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="állandó 4WD &amp; mindkét diff.zár be" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Szeretnéd, hogy a mezők adatait automatikusan beolvassa?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Szeretnéd, hogy a munkásod bért kapjon?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Vetőmag szükséglet számítás" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Terület: %d (%s %s)" />

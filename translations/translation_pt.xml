@@ -332,6 +332,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Sempre Ligado; Diferencial traseiro ligado" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Sempre Ligado; Dois diferenciais ligados" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Pretende que os campos sejam verificados automaticamente?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Pretende que os seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo do uso das sementes" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />

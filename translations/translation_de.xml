@@ -336,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD an &amp; Hinterachssperrdiff auf dem Feld" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Möchtest du dass die Felder automatisch gescannt werden?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Bei Fehler oder Fragen gerne auf der folgenden seite für hilfe vorbeischauen: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Feld: %d (%s %s)" />

@@ -336,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="总是 4WD &amp; 后差速器工作" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="总是 4WD &amp; 前后差速器工作" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="需要自动测量土地范围路径么？" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你要支付雇人的工资么？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="地块编号: %d号(%s %s)" />

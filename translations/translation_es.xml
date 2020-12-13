@@ -337,6 +337,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4x4 Siempre + difer. trasero para trabajo de campo." />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Siempre + ambos difer. para trabajo de campo." />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="¿Quieres escanear los campos automáticamente?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="¿Quieres que tus trabajadores ganen un salario?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo de uso de semillas" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />

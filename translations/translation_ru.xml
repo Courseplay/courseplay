@@ -132,9 +132,9 @@
 		<text name="COURSEPLAY_COMBINED_COURSES" 											text="- комбинированный" />
 		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 										text="Еду к комбайну" />
 		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 										text="Еду рядом с комбайном" />
-		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 											text="Маневрирую для погрузки" />
+		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 											text="Маневрирует для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 									text="Комбайн просит остановится" />
-		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 						text="Ожидаю пока отъедет комбайн" />
+		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 						text="Ожидает пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 											text="Возвращение к %d %d" />
 		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 											text="Еду на временную стоянку %d %d" />
 		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 										text="Жду заполнения бункера (%s %dc)" />
@@ -337,6 +337,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 										text="Всегда 4х4 + блок. заднего дифф. на поле" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 										text="Всегда 4х4 + блок. обоих дифф. на поле" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 											text="Включить автосканирование полей?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 												text="Если вы обнаружили ошибку или нужна помощь с Courseplay, пожалуйста, загляните на https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 												text="Желаете ли вы, чтобы работники на Courseplay получали заработную плату?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 										text="КАЛЬКУЛЯЦИЯ ПОСЕВОВ" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 									text="Поле: %d (%s %s)" />

@@ -336,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="フルタイム4WD &amp; FWリアデフロック" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="フルタイム4WD &amp; FWオールデフロック" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="フィールドを自動スキャンしますか?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="作業者に賃金を支払いますか?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="消費量計" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="フィールド: %d (%s %s)" />

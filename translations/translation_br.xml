@@ -336,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4X4 Permanente &amp; Diferencial traseiro bloqueado" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4X4 Permanente &amp; Diferencial frente e traseiro bloqueados" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Você deseja que os campos sejam escaneados automaticamente?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Você encontrou um erro (bug) ou precisa de ajuda com o Courseplay? Dê uma olhada em: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Você deseja que seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo do uso de sementes" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
