@@ -207,12 +207,14 @@ function LevelCompactAIDriver:manageCourseplayersStopping()
 	
 	--check whether they have left
 	for i=1, #self.stoppedCourseplayers do
-		local x,y,z = getWorldTranslation(self.stoppedCourseplayers[i].rootNode)
-		local cx,cy,cz = self.course:getWaypointPosition(1)
-		local distance = courseplay:distance(x,z,cx,cz) 
-		if distance  > self.vehicle.cp.mode10.searchRadius and self.stoppedCourseplayers[i].cp.totalFillLevel <1 then
-			table.remove(self.stoppedCourseplayers,i)
-			self:debug("remove from stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
+		if self.stoppedCourseplayers[i] ~= nil then
+			local x,y,z = getWorldTranslation(self.stoppedCourseplayers[i].rootNode)
+			local cx,cy,cz = self.course:getWaypointPosition(1)
+			local distance = courseplay:distance(x,z,cx,cz) 
+			if distance  > self.vehicle.cp.mode10.searchRadius and self.stoppedCourseplayers[i].cp.totalFillLevel <1 then
+				table.remove(self.stoppedCourseplayers,i)
+				self:debug("remove from stoppedCourseplayers: "..tostring(courseplayer).." new number: "..tostring(#self.stoppedCourseplayers))
+			end
 		end
 	end
 end
