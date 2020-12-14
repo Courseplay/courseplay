@@ -34,7 +34,7 @@ function PlowAIDriver:init(vehicle)
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(PlowAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
-	self.plow = FieldworkAIDriver.getImplementWithSpecialization(vehicle, Plow)
+	self.plow = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Plow)
 	self:setOffsetX()
 	if self:hasRotatablePlow() then
 		self:debug('has rotatable plow.')
@@ -166,8 +166,8 @@ function PlowAIDriver:getTurnEndSideOffset()
 		local toolOffsetX = self.vehicle.cp.toolOffsetX
 		-- need the double tool offset as the turn end still has the current offset, after the rotation it'll be
 		-- on the other side, (one toolOffsetX would put it to 0 only)
-		return self.vehicle.cp.laneOffset + 2 * toolOffsetX
+		return 2 * toolOffsetX
 	else
-		return self.vehicle.cp.laneOffset
+		return 0
 	end
 end

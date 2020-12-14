@@ -39,36 +39,6 @@ function courseplay:createNewLinkedNode(object, nodeName, linkToNode)
 end;
 
 
-
-function courseplay:disableCropDestruction(vehicle)
-	-- Make sure we have the cp table
-	if vehicle.cp == nil then vehicle.cp = {}; end;
-
-	-- Disable crop destruction if enabled
-	if vehicle.cropDestruction then
-		vehicle.cp.cropDestructionIsActiveBackup = vehicle.cropDestruction.isActive;
-		vehicle.cropDestruction.isActive = false;
-	end;
-
-	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle:getAttachedImplements()) do
-		courseplay:disableCropDestruction(impl.object);
-	end;
-end;
-
-function courseplay:enableCropDestruction(vehicle)
-	-- Enable crop destruction if backup is set
-	if vehicle.cropDestruction and vehicle.cp and vehicle.cp.cropDestructionIsActiveBackup ~= nil then
-		vehicle.cropDestruction.isActive = vehicle.cp.cropDestructionIsActiveBackup;
-		vehicle.cp.cropDestructionIsActiveBackup = nil;
-	end;
-
-	-- CHECK ATTACHED IMPLEMENTS
-	for _,impl in pairs(vehicle:getAttachedImplements()) do
-		courseplay:enableCropDestruction(impl.object);
-	end;
-end;
-
 --- courseplay:findJointNodeConnectingToNode(workTool, fromNode, toNode, doReverse)
 --	Returns: (node, backtrack, rotLimits)
 --		node will return either:		1. The jointNode that connects to the toNode,
@@ -594,7 +564,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 
 						-- Sort wheels in turning wheels and strait wheels and find the min and max distance for each set.
 						for i = 1, #objectWheels do
-							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and objectWheels[i].isLeft ~= nil and objectWheels[i].maxLatStiffnessLoad > 0.5 then
+							if courseplay:isPartOfNode(objectWheels[i].node, componentNode) and AIDriverUtil.isRealWheel(objectWheels[i]) then
 								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 								local _,_,dis = worldToLocal(componentNode, x, y, z);
 								dis = dis * invert;
@@ -737,8 +707,7 @@ function courseplay:getLastComponentNodeWithWheels(workTool)
 			if component.node ~= node then
 				-- Loop through all the wheels and see if they are attached to this component.
 				for i = 1, #workToolsWheels do
-					-- isLeft is only set for real wheels and not dummy wheels, so we can use that to sort out the dummy wheels
-					if workToolsWheels[i].isLeft ~= nil and workToolsWheels[i].maxLatStiffnessLoad > 0.5 then
+					if AIDriverUtil.isRealWheel(workToolsWheels[i]) then
 						if courseplay:isPartOfNode(workToolsWheels[i].node, component.node) then
 							-- Check if they are linked together
 							for _, joint in ipairs(workTool.componentJoints) do
@@ -855,17 +824,6 @@ function courseplay:getToolTurnRadius(workTool)
 
 		for i, attachedImplement in pairs(attacherVehicle:getAttachedImplements()) do
 			if attachedImplement.object == workTool then
-				-- Check if AIVehicleUtil can calculate it for us
-				--local AIMaxToolRadius = AIVehicleUtil.getMaxToolRadius(attachedImplement) * 0.5;
-				--if AIMaxToolRadius > 0 then
-				--	if workToolDistances.attacherJointOrPivotToTurningNode > AIMaxToolRadius then
-				--		AIMaxToolRadius = workToolDistances.attacherJointOrPivotToTurningNode;
-				--	end;
-				--	courseplay:debug(('%s -> TurnRadius: AIVehicleUtil.getMaxToolRadius=%.2fm'):format(nameNum(workTool), AIMaxToolRadius), 6);
-				--	return AIMaxToolRadius;
-				--end;
-
-				-- AIVehicleUtil could not calculate it, so we do it our self.
 				rotMax = attachedImplement.upperRotLimit[2];
 				break;
 			end;
@@ -1375,56 +1333,9 @@ function courseplay:isWheeledWorkTool(workTool)
 	return false;
 end;
 
-function courseplay:setPathVehiclesSpeed(vehicle,dt)
-	if vehicle.cp.collidingVehicleId == nil then return end;
-	local pathVehicle = g_currentMission.nodeToObject[vehicle.cp.collidingVehicleId];
-	--print("update speed")
-	if pathVehicle.speedDisplayDt == nil then
-		pathVehicle.speedDisplayDt = 0;
-		pathVehicle.lastSpeed = 0;
-		pathVehicle.lastSpeedReal = 0;
-		pathVehicle.movingDirection = 1;
-	end;
-	pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt + dt;
-	if pathVehicle.speedDisplayDt > 100 then
-		local newX, newY, newZ = getWorldTranslation(pathVehicle.rootNode);
-		if pathVehicle.lastPosition == nil then
-		  pathVehicle.lastPosition = {
-			newX,
-			newY,
-			newZ
-		  };
-		end;
-		local lastMovingDirection = pathVehicle.movingDirection;
-		local dx, dy, dz = worldDirectionToLocal(pathVehicle.rootNode, newX - pathVehicle.lastPosition[1], newY - pathVehicle.lastPosition[2], newZ - pathVehicle.lastPosition[3]);
-		if dz > 0.001 then
-		  pathVehicle.movingDirection = 1;
-		elseif dz < -0.001 then
-		  pathVehicle.movingDirection = -1;
-		else
-		  pathVehicle.movingDirection = 0;
-		end;
-		pathVehicle.lastMovedDistance = MathUtil.vector3Length(dx, dy, dz);
-		local lastLastSpeedReal = pathVehicle.lastSpeedReal;
-		pathVehicle.lastSpeedReal = pathVehicle.lastMovedDistance * 0.01;
-		pathVehicle.lastSpeedAcceleration = (pathVehicle.lastSpeedReal * pathVehicle.movingDirection - lastLastSpeedReal * lastMovingDirection) * 0.01;
-		pathVehicle.lastSpeed = pathVehicle.lastSpeed * 0.85 + pathVehicle.lastSpeedReal * 0.15;
-		pathVehicle.lastPosition[1], pathVehicle.lastPosition[2], pathVehicle.lastPosition[3] = newX, newY, newZ;
-		pathVehicle.speedDisplayDt = pathVehicle.speedDisplayDt - 100;
-	end;
-end
 
 -- vim: set noexpandtab:
 
-function courseplay:getFreeCapacity(vehicle,fillType)
-    local freeCapacity = 0;
-    for i,fillUnit in pairs(vehicle:getFillUnits()) do
-        --if fillType == nil or fillType == FillType.UNKNOWN or fillUnit.fillTypes[fillType] then
-            freeCapacity = freeCapacity + vehicle:getFillUnitFreeCapacity(i)
-       -- end
-    end
-    return freeCapacity;
-end
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z
@@ -1444,6 +1355,7 @@ function courseplay:isNodeTurnedWrongWay(vehicle,dischargeNode)
 	return nz < 0
 end
 
+-- If the AI collision trigger object is found it is stored in vehicle.aiTrafficCollisionTrigger and returns true
 function courseplay:findAiCollisionTrigger(vehicle)
 	if vehicle == nil then
 		return false;
@@ -1465,6 +1377,8 @@ function courseplay:findAiCollisionTrigger(vehicle)
 			index = vehicle.i3dMappings.aiCollisionTriggerBig
 		elseif vehicle.i3dMappings.aiCollisionTriggerSmall then			-- workaround GIANTS FS19 vehicle K105, K165
 			index = vehicle.i3dMappings.aiCollisionTriggerSmall
+		elseif vehicle.i3dMappings.aiTrafficCollisionTrigger then		-- workaround GIANTS FS19 vehicle
+			index = vehicle.i3dMappings.aiTrafficCollisionTrigger
 		end
 		if index then
 			local triggerObject = I3DUtil.indexToObject(vehicle.components, index);
@@ -1549,6 +1463,11 @@ end
 -- TODO: move this to a separate file and move everything vehicle related and not dependent on other classes out of
 -- courseplay int this
 AIDriverUtil = {}
+
+-- chopper: 0= pipe folded (really? isn't this 1?), 2,= autoaiming;  combine: 1 = closed  2= open
+AIDriverUtil.PIPE_STATE_MOVING = 0
+AIDriverUtil.PIPE_STATE_CLOSED = 1
+AIDriverUtil.PIPE_STATE_OPEN = 2
 
 function AIDriverUtil.isReverseDriving(vehicle)
 	if not vehicle then
@@ -1685,7 +1604,7 @@ end
 
 -- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
 function AIDriverUtil.getTurningRadius(vehicle)
-	-- determine turning radius
+	courseplay.debugVehicle(6, vehicle, 'Finding turn radius')
 	local radius = vehicle.maxTurningRadius * 1.1                     -- needs ackermann steering
 	if vehicle:getAIMinTurningRadius() ~= nil then
 		radius = math.max(radius, vehicle:getAIMinTurningRadius())
@@ -1694,8 +1613,14 @@ function AIDriverUtil.getTurningRadius(vehicle)
 
 	local attachedAIImplements = vehicle:getAttachedImplements()
 
-	for _,implement in pairs(attachedAIImplements) do
-		maxToolRadius = math.max(maxToolRadius, AIVehicleUtil.getMaxToolRadius(implement))
+	for _, implement in pairs(attachedAIImplements) do
+		local turnRadius = AIVehicleUtil.getMaxToolRadius(implement)
+		if turnRadius == 0 then
+			turnRadius = courseplay:getToolTurnRadius(implement.object)
+			courseplay.debugVehicle(6, vehicle, '%s: no Giants turn radius, we calculated %.1f', implement.object:getName(), turnRadius)
+		end
+		maxToolRadius = math.max(maxToolRadius, turnRadius)
+		courseplay.debugVehicle(6, vehicle, '%s: max tool radius %.1f', implement.object:getName(), maxToolRadius)
 	end
 	radius = math.max(radius, maxToolRadius)
 	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
@@ -1715,46 +1640,107 @@ function AIDriverUtil.hasImplementsOnTheBack(vehicle)
 	return false
 end
 
----@return table, number frontmost object and the distance between the front of that object and the root node of the object
+function AIDriverUtil.getAllAttachedImplements(object, implements)
+	if not implements then implements = {} end
+	for _, implement in ipairs(object:getAttachedImplements()) do
+		table.insert(implements, implement)
+		AIDriverUtil.getAllAttachedImplements(implement.object, implements)
+	end
+	return implements
+end
+
+---@return table, number frontmost object and the distance between the front of that object and the root node of the vehicle
+--- when > 0 in front of the vehicle
 function AIDriverUtil.getFirstAttachedImplement(vehicle)
-	-- by default, it is the vehicle's front, negative as the vehicle's root node is behind the front implement's root node
-	local minDistance = 0
-	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
-	local frontOffset = vehicle.sizeLength / 2 + vehicle.lengthOffset
+	-- by default, it is the vehicle's front
+	local maxDistance = vehicle.sizeLength / 2 + vehicle.lengthOffset
 	local firstImplement = vehicle
-	for _, implement in pairs(vehicle:getAttachedImplements()) do
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
-			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			-- the distance from the vehicle's root node to the front of the implement
+			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+					implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s front distance %d', implement.object:getName(), d)
-			if d < minDistance then
-				minDistance = d
-				frontOffset = implement.object.sizeLength / 2 + implement.object.lengthOffset
+			if d > maxDistance then
+				maxDistance = d
 				firstImplement = implement.object
 			end
-			-- TODO: recursively search implements attached to other implements
 		end
 	end
-	return firstImplement, frontOffset
+	return firstImplement, maxDistance
 end
 
 ---@return table, number rearmost object and the distance between the back of that object and the root node of the object
 function AIDriverUtil.getLastAttachedImplement(vehicle)
 	-- by default, it is the vehicle's back
-	local maxDistance = 0
+	local minDistance = vehicle.sizeLength / 2 - vehicle.lengthOffset
 	-- lengthOffset > 0 if the root node is towards the back of the vehicle, < 0 if it is towards the front
-	local backOffset = vehicle.sizeLength / 2 - vehicle.lengthOffset
 	local lastImplement = vehicle
-	for _, implement in pairs(vehicle:getAttachedImplements()) do
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
 		if implement.object ~= nil then
-			local _, _, d = localToLocal(vehicle.rootNode, implement.object.rootNode, 0, 0, - implement.object.sizeLength / 2 + implement.object.lengthOffset)
+			-- the distance from the vehicle's root node to the back of the implement
+			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
+					- implement.object.sizeLength / 2 + implement.object.lengthOffset)
 			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
-			if d > maxDistance then
-				maxDistance = d
-				backOffset = implement.object.sizeLength / 2 - implement.object.lengthOffset
+			if d < minDistance then
+				minDistance = d
 				lastImplement = implement.object
 			end
-			-- TODO: recursively search implements attached to other implements
 		end
 	end
-	return lastImplement, -backOffset
+	return lastImplement, minDistance
+end
+
+
+function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
+	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
+end
+
+function AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization)
+	local aiImplements = vehicle:getAttachedAIImplements()
+	return AIDriverUtil.getImplementWithSpecializationFromList(specialization, aiImplements)
+end
+
+function AIDriverUtil.getImplementWithSpecialization(vehicle, specialization)
+	local implements = vehicle:getAttachedImplements()
+	return AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
+end
+
+function AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
+	for _, implement in ipairs(implements) do
+		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then
+			return implement.object
+		end
+	end
+end
+
+--- Is this a real wheel the implement is actually rolling on (and turning around) or just some auxiliary support
+--- wheel? We need to know about the real wheels when finding the turn radius/distance between attacher joint and
+--- wheels.
+function AIDriverUtil.isRealWheel(wheel)
+	return wheel.hasTireTracks and wheel.maxLatStiffnessLoad > 0.5
+end
+
+function AIDriverUtil.isBehindOtherVehicle(vehicle, otherVehicle)
+	local _, _, dz = localToLocal(AIDriverUtil.getDirectionNode(vehicle), AIDriverUtil.getDirectionNode(otherVehicle), 0, 0, 0)
+	return dz < 0
+end
+
+function AIDriverUtil.isStopped(vehicle)
+-- giants supplied last speed is in mm/s
+	return math.abs(vehicle.lastSpeedReal) < 0.0001
+end
+
+function AIDriverUtil.isReversing(vehicle)
+	return vehicle.movingDirection == -1 and vehicle.lastSpeedReal * 3600 > 0.1
+end
+
+--- Get the current normalized steering angle:
+---@return number between -1 and +1, -1 full right steering, +1 full left steering
+function AIDriverUtil.getCurrentNormalizedSteeringAngle(vehicle)
+	if vehicle.rotatedTime >= 0 then
+		return vehicle.rotatedTime / vehicle.maxRotTime
+	elseif vehicle.rotatedTime < 0 then
+		return -vehicle.rotatedTime / vehicle.minRotTime
+	end
 end

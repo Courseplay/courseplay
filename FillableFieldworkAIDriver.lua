@@ -31,12 +31,14 @@ FillableFieldworkAIDriver.myStates = {
 	TO_BE_REFILLED = {},
 	REFILL_DONE = {}
 }
+
 function FillableFieldworkAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'CombineUnloadAIDriver:init()')
+	courseplay.debugVehicle(11,vehicle,'FillableFieldworkAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
 	self.refillState = self.states.TO_BE_REFILLED
+	self.lastTotalFillLevel = math.huge
 end
 
 function FillableFieldworkAIDriver:setHudContent()
@@ -46,6 +48,7 @@ end
 
 function FillableFieldworkAIDriver:changeToUnloadOrRefill()
 	self.refillState = self.states.TO_BE_REFILLED
+	self:refreshHUD()
 	FieldworkAIDriver.changeToUnloadOrRefill(self)
 end
 --- Out of seeds/fertilizer/whatever
@@ -57,92 +60,136 @@ end
 
 --- Drive the refill part of the course
 function FillableFieldworkAIDriver:driveUnloadOrRefill()
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getCurrentWaypointIx(), 5)
-
-	self:searchForRefillTriggers()
+	if self:getSiloSelectedFillTypeSetting():isEmpty() then 
+		self:setSpeed(0)
+		self:setInfoText('NO_SELECTED_FILLTYPE')
+		return
+	else
+		self:clearInfoText('NO_SELECTED_FILLTYPE')
+	end
+	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 10)
+	--this one is used to disable loading at the unloading stations,
+	--might be better to disable the triggerID for loading
+	self:enableFillTypeLoading(isNearWaitPoint)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
-	elseif self:getIsInFilltrigger() then
-		-- our raycast in searchForRefillTriggers found a fill trigger
-		local allowedToDrive = true
-		-- lx, lz is not used by refillWorkTools, allowedToDrive is returned, should be refactored, but use it for now as it is
-		allowedToDrive, _, _ = courseplay:refillWorkTools(self.vehicle, self.vehicle.cp.refillUntilPct, allowedToDrive, 0, 1)
-		if allowedToDrive then
-			-- slow down to field speed around fill triggers
-			self:setSpeed(math.min(self.vehicle.cp.speeds.turn, self:getRecordedSpeed()))
-		else
-			-- stop for refill when refillWorkTools tells us
-			self:debugSparse('refillWorkTools() tells us to stop')
-			self:setSpeed( 0)
-		end
 	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
-		local allowedToDrive = true;
 		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)
 		self:setSpeed(MathUtil.clamp(distanceToWait,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
 		if distanceToWait < 1 then
-			allowedToDrive = self:fillAtWaitPoint()
+			self:fillAtWaitPoint()
 		end	
-		if not allowedToDrive then
-			self:setSpeed( 0)
-		end
 	else
+		if self.triggerHandler:isLoading() then 
+			self:fillAtWaitPoint()	
+		else 
+			self:clearInfoText('REACHED_REFILLING_POINT')
+		end
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
+		self:closePipeIfNeeded(isNearWaitPoint)
+	end	
+end
+
+function FillableFieldworkAIDriver:enableFillTypeLoading(isInWaitPointRange)
+	self.triggerHandler:enableFillTypeLoading()
+	self.triggerHandler:disableFillTypeUnloading()
+end
+
+function FillableFieldworkAIDriver:needsFillTypeLoading()
+	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+		return true
 	end
-	return false
+end
+
+function FillableFieldworkAIDriver:closePipeIfNeeded(isInWaitPointRange) 
+	--override
 end
 
 function FillableFieldworkAIDriver:fillAtWaitPoint()
-	local vehicle = self.vehicle
-	local allowedToDrive = false
-	courseplay:setInfoText(vehicle, string.format("COURSEPLAY_LOADING_AMOUNT;%d;%d",courseplay.utils:roundToLowerInterval(vehicle.cp.totalFillLevel, 100),vehicle.cp.totalCapacity));
-	self:setInfoText('WAIT_POINT')
-	courseplay:openCloseCover(vehicle, not courseplay.SHOW_COVERS)
-	--fillLevel changed in last loop-> start timer
-	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= vehicle.cp.totalFillLevelPercent then
-		self.prevFillLevelPct = vehicle.cp.totalFillLevelPercent
-		courseplay:setCustomTimer(vehicle, "fillLevelChange", 7);
+	local fillLevelInfo = {}
+	self:getAllFillLevels(self.vehicle, fillLevelInfo)
+	local fillTypeData, fillTypeDataSize= self.triggerHandler:getSiloSelectedFillTypeData()
+	if fillTypeData == nil then
+		return
 	end
-	
-	--if time is up and no fillLevel change happend, check whether we may drive on or not
-	if courseplay:timerIsThrough(vehicle, "fillLevelChange",false) then
-		if vehicle.cp.totalFillLevelPercent >= vehicle.cp.refillUntilPct then
-			self:continue()
-			courseplay:resetCustomTimer(vehicle, "fillLevelChange",true);
-			self.prevFillLevelPct = nil
-			courseplay:openCloseCover(vehicle, courseplay.SHOW_COVERS)
+	self:setSpeed(0)
+	local minFillLevelIsOk = true
+	for _,data in ipairs(fillTypeData) do 
+		for fillType, info in pairs(fillLevelInfo) do
+			if data.fillType == fillType then
+				if info.fillLevel/info.capacity*100 < data.minFillLevel then 
+					minFillLevelIsOk = false
+				end
+			end
 		end
 	end
-	return allowedToDrive
+	if g_updateLoopIndex % 5 == 0 and self:areFillLevelsOk(fillLevelInfo,true) and minFillLevelIsOk then 
+		self:continue()
+	end
+	self:setInfoText('REACHED_REFILLING_POINT')
+	
+end
+
+--TODO might change this one 
+function FillableFieldworkAIDriver:levelDidNotChange(fillLevelPercent)
+	--fillLevel changed in last loop-> start timer
+	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= fillLevelPercent then
+		self.prevFillLevelPct = fillLevelPercent
+		courseplay:setCustomTimer(self.vehicle, "fillLevelChange", 3)
+	end
+	--if time is up and no fillLevel change happend, return true
+	if courseplay:timerIsThrough(self.vehicle, "fillLevelChange",false) then
+		if self.prevFillLevelPct == fillLevelPercent then
+			return true
+		end
+		courseplay:resetCustomTimer(self.vehicle, "fillLevelChange",nil)
+	end
 end
 
 function FillableFieldworkAIDriver:continue()
-	self:debug('Continuing...')
-	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
+	AIDriver.continue(self)
 	self.refillState = self.states.REFILL_DONE	
-	self:clearAllInfoTexts()
+	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
 -- of material (seed, fertilizer, etc.)
-function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)
+function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRefill)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
-
+	if self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, FertilizingCultivator) then
+		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
+		return true
+	end
+	local totalFillLevel = 0
 	for fillType, info in pairs(fillLevelInfo) do
-		if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
-			allOk = false
-			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+		if info.treePlanterSpec then -- is TreePlanter
+			--check fillLevel of pallet on top of treePlanter or if their is one pallet
+			if not info.treePlanterSpec.mountedSaplingPallet or not info.treePlanterSpec.mountedSaplingPallet:getFillUnitFillLevel(1) then 
+				allOk = false
+			end
 		else
-			if fillType == FillType.SEEDS then hasSeeds = true end
+			if self:isValidFillType(fillType) and info.fillLevel == 0 and info.capacity > 0 and not self:helperBuysThisFillType(fillType) then
+				allOk = false
+				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
+			else
+				if fillType == FillType.SEEDS then hasSeeds = true end
+			end		
 		end
+		totalFillLevel = totalFillLevel + info.fillLevel
 	end
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
 		allOk = true
 	end
+	--check if fillLevel changed, refill on Field
+	if isWaitingForRefill then
+		allOk = allOk and self.lastTotalFillLevel >= totalFillLevel
+	end
+	self.lastTotalFillLevel = totalFillLevel
 	return allOk
 end
 
@@ -194,42 +241,10 @@ function FillableFieldworkAIDriver:helperBuysThisFillType(fillType)
 			return true
 		end
 	end
-	if g_currentMission.missionInfo.helperBuyFuel and
-		(fillType == FillType.DIESEL or fillType == FillType.FUEL) then
+	if g_currentMission.missionInfo.helperBuyFuel and self:isValidFuelType(self.vehicle,fillType) then
 		return true
 	end
 	return false
-end
-
-function FillableFieldworkAIDriver:searchForRefillTriggers()
-	-- look straight ahead for now. The rest of CP looks into the direction of the 'current waypoint'
-	-- but we don't have that information (lx/lz) here. See if we can get away with this, should only
-	-- be a problem if we have a sharp curve around the trigger
-	if not self.ppc:isReversing() then
-		local x, y, z = localToWorld(self:getDirectionNode(), 0, 1, 3)
-		local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 0, -0.1, 1)
-		-- raycast start point in front of vehicle
-		courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', true, x, y, z, nx, ny, nz)
-		
-		--create a hammerhead racast to get small triggerStartId
-		local x, y, z = localToWorld(self:getDirectionNode(), -1.5, 1, 10)
-		local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 1, 0, 0)
-		courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'fwd', false, x, y, z, nx, ny, nz,3)
-		
-	else
-		for _,workTool in pairs(self.vehicle.cp.workTools) do
-			local node = workTool.cp.realTurningNode or workTool.rootNode ;
-			local x, y, z = localToWorld(node, 0, 2, 3)
-			local nx, ny, nz = localDirectionToWorld(node, 0, -0.1, -1)
-			-- raycast start point behind the workTool
-			courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'rev', false, x, y, z, nx, ny, nz)
-			
-			--create a hammerhead racast to get small triggerStartId
-			local x, y, z = localToWorld(node, -1.5, 1, -10)
-			local nx, ny, nz = localDirectionToWorld(node, 1, 0, 0)
-			courseplay:doTriggerRaycasts(self.vehicle, 'specialTrigger', 'rev', false, x, y, z, nx, ny, nz,3)
-		end
-	end
 end
 
 function FillableFieldworkAIDriver:getFillLevelInfoText()
@@ -244,3 +259,29 @@ function FillableFieldworkAIDriver:setLightsMask(vehicle)
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 	end
 end
+
+function FillableFieldworkAIDriver:getSiloSelectedFillTypeSetting()
+	return self.vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver
+end
+
+function FillableFieldworkAIDriver:notAllowedToLoadNextFillType()
+	return true
+end
+
+function FillableFieldworkAIDriver:getTurnEndForwardOffset()
+	-- TODO: do other implements need this?
+	if  SpecializationUtil.hasSpecialization(Sprayer, self.vehicle.specializations)
+			and self.vehicle.cp.workWidth > self.vehicle.cp.turnDiameter then
+		-- compensate for very wide implements like sprayer booms where the tip of the implement
+		-- on the inner side of the turn may be very far forward of the vehicle's root and miss
+		-- parts of the inside corner.
+		local forwardOffset = - (self.vehicle.cp.workWidth - self.vehicle.cp.turnDiameter) / 2.5
+		self:debug('sprayer working width %.1f > turn diameter %.1f, applying forward offset %.1f to turn end',
+				self.vehicle.cp.workWidth, self.vehicle.cp.turnDiameter, forwardOffset)
+		return forwardOffset
+	else
+		return 0
+	end
+end
+
+

@@ -37,16 +37,36 @@ Be as specific as possible:
 * For more details on how to post a proper bug report, visit our [Wiki](https://github.com/Courseplay/courseplay/wiki)
 
 ___
+## Help Us Out
+
+We work long, hard, in our own free time at developing and improving Courseplay. If you like the project, show us your undying love:
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=7PDM2P6HQ5D56&item_name=Promote+the+development+of+Courseplay&currency_code=EUR&source=url)
+
+___
 
 ## Credits  
 * Peter Vaiko
 * Tensuko
+* schwiti6190
 * Logo Design by Finals Farming
 ___
 
 ## Attributions
 Please see [`__Attributions.md`](https://github.com/Courseplay/courseplay/blob/master/__Attributions.md) for more information.
 ___
+
+## Supporter
+
+People or Teams that Supports us
+
+* Ameyer1233 [ModHoster Profile](https://www.modhoster.de/community/user/meyer123) 
+
+* Burning Gamers [YouTube Channel](https://www.youtube.com/c/BurningGamersde/featured)
+
+* Mario Hirschfeld [YouTube Channel](https://www.youtube.com/c/MarioHirschfeld/featured)
+___
+
 
 ## Former developers
 * Thomas Gärtner
@@ -59,3 +79,6 @@ ___
 * Skydancer
 * Wolverin0815
 * Pops64
+
+## Former version support
+Pops64 will contiune support for version 5 of CP. This was the version used for FS17. This may be found in this **[repository](https://github.com/pops64/courseplay)**. Only bugfixes and refinement of current features will be supported at this time.

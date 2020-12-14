@@ -17,11 +17,11 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
-	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1, vehicle.cp.suc.active and courseplay.hud.suc.visibleArea.y2 or hudGfx.y2);
+	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1,  hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
-	-- should we switch vehicles?
-	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and not mouseIsInHudArea and
+	-- should we switch vehicles? Removed condition: vehicle.cp.mouseCursorActive <- is it important that it have to be CP mouseCursor ?
+	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle:getIsEntered() and not mouseIsInHudArea and
 		mouseButton == courseplay.inputBindings.mouse.primaryButtonId then
 			clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	end
@@ -29,15 +29,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--LEFT CLICK
 	if (isDown or isUp) and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle.cp.hud.show and vehicle:getIsEntered() and mouseIsInHudArea then
 		local buttonToHandle;
-
-		if vehicle.cp.suc.active then
-			for _,button in pairs(vehicle.cp.buttons.suc) do
-				if button.show and button:getHasMouse(posX, posY) then
-					buttonToHandle = button;
-					break;
-				end;
-			end;
-		end;
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons.global) do
@@ -84,14 +75,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--HOVER
 	elseif vehicle.cp.mouseCursorActive and not isDown and vehicle.cp.hud.show and vehicle:getIsEntered() then
 		-- local currentHoveredButton;
-		if vehicle.cp.suc.active then
-			for _,button in pairs(vehicle.cp.buttons.suc) do
-				if button.show and not button.isHidden then
-					button:setClicked(false);
-					button:setHovered(button:getHasMouse(posX, posY));
-				end;
-			end;
-		end;
 		vehicle.cp.hud.mouseWheel.render = false;
 		
 		for _,button in pairs(vehicle.cp.buttons.global) do
@@ -175,6 +158,7 @@ end
 
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
+	--legancy code
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
 		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
@@ -455,17 +439,13 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 
 		--Shovel:
 		if actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 2);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(1)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 3);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(2)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 4);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(3)
 		elseif actionName == 'COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION' then
-				vehicle:setCpVar('shovelPositionFromKey', true, courseplay.isClient);
-				courseplay:moveShovelToPosition(vehicle, 5);
+			vehicle.cp.settings.frontloaderToolPositions:playPosition(4)
 		--Editor:
 		elseif actionName == 'COURSEPLAY_EDITOR_TOGGLE' then
 				courseEditor:setEnabled(not courseEditor.enabled, vehicle)
@@ -501,8 +481,7 @@ function courseplay.inputActionCallback(vehicle, actionName, keyStatus)
 		elseif actionName == 'COURSEPLAY_DRIVENOW' and vehicle.cp.HUD1noWaitforFill and vehicle.cp.canDrive and vehicle.cp.isDriving then
 			vehicle:setCourseplayFunc('setDriveUnloadNow', true, false, 1);
 		elseif actionName == 'COURSEPLAY_STOP_AT_END' and vehicle.cp.canDrive then
-			vehicle:setCourseplayFunc('setStopAtEnd', nil, false, 1);
-		
+			vehicle:setCourseplayFunc('Setting:stopAtEnd:toggle',nil,false,1)
 		--Switch Mode, but doesn't work right now, not sure why
 		elseif vehicle.cp.canSwitchMode and vehicle.cp.nextMode and actionName == 'COURSEPLAY_NEXTMODE' then
 			vehicle:setCourseplayFunc('setCpMode', vehicle.cp.nextMode, false, 1);

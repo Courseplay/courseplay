@@ -43,29 +43,26 @@ function DevHelper:update()
     if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_aiVehicle then
 
         if self.vehicle ~= g_currentMission.controlledVehicle then
-            PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
+            self.otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
             self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         end
 
         self.vehicle = g_currentMission.controlledVehicle
         self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
-        self.proximitySensorForward = nil
-        self.proximitySensorRight = nil
-        self.pack = nil
     else
         -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
-        if not self.pack then
-            self.pack = ForwardLookingProximitySensorPack(self.node, 10)
-        end
-        self.pack:update()
     end
 
     if self.vehicleData then
-        self.collisionData = PathfinderUtil.getCollisionData(self.node, self.vehicleData, 'me')
-        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(self.collisionData, self.node, self.vehicleData)
+        self.collisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(self.node, self.vehicleData, 'me')
+        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(
+                self.collisionData,
+                self.node,
+                self.vehicleData,
+                self.otherVehiclesCollisionData)
         if hasCollision then
             self.data.vehicleOverlap = vehicle
         else
@@ -213,6 +210,7 @@ function DevHelper:draw()
         end
     end
     PathfinderUtil.showNodes(self.pathfinder)
+    PathfinderUtil.showOverlapBoxes()
 end
 
 ---@param path State3D[]
@@ -276,6 +274,20 @@ function DevHelper:showVehicleSize()
             drawDebugLine(x2,y2,z2,0,0,1,x4,y4,z4,0,0,1);
             drawDebugLine(x3,y3,z3,0,0,1,x4,y4,z4,0,0,1);
         end
+        if self.vehicleData.trailerRectangle then
+            local x, y, z = localToWorld(g_devHelper.helperNode, 0, 0, self.vehicleData.trailerHitchOffset)
+            setTranslation(g_devHelper.helperNode, x, y, z)
+            setRotation(g_devHelper.helperNode, 0, courseGenerator.toCpAngle(node.tTrailer), 0)
+            local x1,y1,z1 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dRight, 2, self.vehicleData.trailerRectangle.dFront);
+            local x2,y2,z2 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dLeft, 2, self.vehicleData.trailerRectangle.dFront);
+            local x3,y3,z3 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dRight, 2, self.vehicleData.trailerRectangle.dRear);
+            local x4,y4,z4 = localToWorld(g_devHelper.helperNode, self.vehicleData.trailerRectangle.dLeft, 2, self.vehicleData.trailerRectangle.dRear);
+
+            drawDebugLine(x1,y1,z1,0,1,0,x2,y2,z2,0,1,0);
+            drawDebugLine(x1,y1,z1,0,1,0,x3,y3,z3,0,1,0);
+            drawDebugLine(x2,y2,z2,0,1,0,x4,y4,z4,0,1,0);
+            drawDebugLine(x3,y3,z3,0,1,0,x4,y4,z4,0,1,0);
+        end
     end
     if self.collisionData then
         for i = 1, 4 do
@@ -293,7 +305,7 @@ function DevHelper.saveVehiclePosition(vehicle, vehiclePositionData)
         savedPosition.xRot, savedPosition.yRot, savedPosition.zRot = getWorldRotation(object.rootNode)
         return savedPosition
     end
-
+    if not vehicle.getAttachedImplements then return end
     table.insert(vehiclePositionData, {vehicle, savePosition(vehicle)})
     for _,impl in pairs(vehicle:getAttachedImplements()) do
         DevHelper.saveVehiclePosition(impl.object, vehiclePositionData)

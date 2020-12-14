@@ -323,15 +323,15 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmo
 		-- create the waypoints for the circle around the island.
 		courseGenerator.debug( "Island %d: circle around first", self.id )
 		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-			table.insert( pathA, copyPoint(cp))
+			table.insert( pathA, shallowCopy(cp))
 		end
 		for _, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-			table.insert( pathB, copyPoint(cp))
+			table.insert( pathB, shallowCopy(cp))
 		end
 	end
 	-- try path A first, going around from toIx to fromIx
 	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( toIx, fromIx, 1 ) do
-		table.insert( pathA, copyPoint(cp))
+		table.insert( pathA, shallowCopy(cp))
 		dA = dA + cp.nextEdge.length
 		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i + 1 ]
 		-- does this section of headland intersects the course and where?
@@ -340,7 +340,7 @@ function Island:bypassOnHeadland( course, startIx, fromIx, toIx, doCircle, doSmo
 	end
 	-- now try path B, going around from fromIx to toIx
 	for i, cp in self.headlandTracks[ self.innermostHeadlandIx ]:iterator( fromIx, toIx, -1 ) do
-		table.insert( pathB, copyPoint(cp))
+		table.insert( pathB, shallowCopy(cp))
 		dB = dB + cp.nextEdge.length
 		local np = self.headlandTracks[ self.innermostHeadlandIx ][ i - 1 ]
 		-- does this section of headland intersects the course and where?
@@ -429,7 +429,7 @@ end
 
 function Island.circleBigIslands( course, islands, headlandFirst, width, minSmoothAngle, maxSmoothAngle )
 	local function addReverseWpToHeadlandPath( headlandPath, ix )
-		local newWp = copyPoint( headlandPath[ ix ])
+		local newWp = shallowCopy( headlandPath[ ix ])
 		newWp.rev = true
 		table.insert( headlandPath, newWp )
 	end
@@ -476,7 +476,7 @@ function Island.circleBigIslands( course, islands, headlandFirst, width, minSmoo
 					addReverseWpToHeadlandPath( headlandPath, ix )
 					course[ i + 1 ].text = "target"
 					headlandPath[ ix ].text = "#headland"
-					local newWp = copyPoint( headlandPath[ #headlandPath ])
+					local newWp = shallowCopy( headlandPath[ #headlandPath ])
 					newWp.x, newWp.y = getPointInTheMiddle( headlandPath[ #headlandPath ], course[ i + 1 ])
 					newWp.rev = false
 					table.insert( headlandPath, newWp )
@@ -517,7 +517,7 @@ function Island:getHeadlandPath( point, distance, width, minSmoothAngle, maxSmoo
 end
 
 function Island:linkHeadlandTracks( point, width, isClockwise, minSmoothAngle, maxSmoothAngle )
-	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle )
+	linkHeadlandTracks( self, width, isClockwise, point, true, minSmoothAngle, maxSmoothAngle, true )
 end
 
 function Island:adjacentTo( point )

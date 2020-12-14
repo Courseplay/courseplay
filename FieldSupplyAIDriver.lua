@@ -21,6 +21,9 @@ Field Supply AI Driver to let fill tools with digestate or liquid manure on the 
 Also known as mode 8
 ]]
 
+--TODO: Have FieldSupplyAIDriver be derived from GrainTransportDriver and not FillableFieldworkAIDriver,
+--		as there is no need for FieldworkAIDriver functions 
+
 ---@class FieldSupplyAIDriver : FillableFieldworkAIDriver
 FieldSupplyAIDriver = CpObject(FillableFieldworkAIDriver)
 
@@ -32,24 +35,23 @@ FieldSupplyAIDriver.myStates = {
 --- Constructor
 function FieldSupplyAIDriver:init(vehicle)
 	FillableFieldworkAIDriver.init(self, vehicle)
+	local settings = self.vehicle.cp.settings
+	self.triggerHandler.driveOnAtFillLevel = settings.driveOnAtFillLevel
 	self:initStates(FieldSupplyAIDriver.myStates)
 	self.supplyState = self.states.ON_REFILL_COURSE
-	--self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
+	self.mode=courseplay.MODE_FIELD_SUPPLY 
 	self:setHudContent()
 end
 
 function FieldSupplyAIDriver:setHudContent()
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end
-
-function FieldSupplyAIDriver:start()
-	self:beforeStart()
-	self.course = Course(self.vehicle , self.vehicle.Waypoints)
-	self.ppc:setCourse(self.course)
-	self.ppc:initialize()
-	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
+--this one is should be better derived!!
+function FieldSupplyAIDriver:start(startingPoint)
 	self.refillState = self.states.REFILL_DONE
-	AIDriver.continue(self)
+	AIDriver.start(self,startingPoint)
+	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
+	self:findPipe() --for Augerwagons
 end
 
 function FieldSupplyAIDriver:stop(msgReference)
@@ -58,28 +60,49 @@ function FieldSupplyAIDriver:stop(msgReference)
 	AIDriver.stop(self, msgReference)
 end
 
+function FieldSupplyAIDriver:onEndCourse()
+	AIDriver.onEndCourse(self)
+end
+
+function FieldSupplyAIDriver:isProximitySwerveEnabled()
+	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
+			self.state == self.states.RETURNING_TO_FIRST_POINT or
+			self.supplyState == self.states.ON_REFILL_COURSE
+end
 
 function FieldSupplyAIDriver:drive(dt)
 	-- update current waypoint/goal point
-	self.allowedToDrive = true
-	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	if self.supplyState == self.states.ON_REFILL_COURSE  then
 		FillableFieldworkAIDriver.driveUnloadOrRefill(self)
 		AIDriver.drive(self, dt)
+		self.unloadingText = nil
 	elseif self.supplyState == self.states.WAITING_FOR_GETTING_UNLOADED then
 		self:stopAndWait(dt)
-		-- unload into a FRC if there is one
-		AIDriver.tipIntoStandardTipTrigger(self)
+		self:updateInfoText()
+		if self.pipe then
+			self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
+			self.triggerHandler:enableFillTypeUnloadingAugerWagon()
+		else
+			self.triggerHandler:enableFillTypeUnloading()
+		end
+		self.triggerHandler:disableFillTypeLoading()
 		--if i'm empty or fillLevel is below threshold then drive to get new stuff
 		if self:isFillLevelToContinueReached() then
 			self:continue()
+			self.triggerHandler:resetLoadingState()
 		end
+	end
+end
+
+function FieldSupplyAIDriver:enableFillTypeLoading(isInWaitPointRange)
+	if not isInWaitPointRange then 
+		FillableFieldworkAIDriver.enableFillTypeLoading(self)
 	end
 end
 
 function FieldSupplyAIDriver:continue()
 	self:changeSupplyState(self.states.ON_REFILL_COURSE )
-	self.state = self.states.RUNNING
+	AIDriver.continue(self)
 end
 
 function FieldSupplyAIDriver:onWaypointPassed(ix)
@@ -91,9 +114,9 @@ function FieldSupplyAIDriver:onWaypointPassed(ix)
 	elseif self.course:isWaitAt(ix) then
 		-- show continue button
 		self.state = self.states.STOPPED
-		self:refreshHUD()
 		self:changeSupplyState(self.states.WAITING_FOR_GETTING_UNLOADED)
-
+		self:setInfoText('REACHED_OVERLOADING_POINT')
+		self:refreshHUD()
 	end
 end
 
@@ -102,38 +125,61 @@ function FieldSupplyAIDriver:changeSupplyState(newState)
 end
 
 function FieldSupplyAIDriver:isFillLevelToContinueReached()
-	local fillLevelInformations ={}
-	for _, workTool in pairs (self.vehicle.cp.workTools) do
-		workTool:getFillLevelInformation(fillLevelInformations)
+	local fillTypeData, fillTypeDataSize= self.triggerHandler:getSiloSelectedFillTypeData()
+	if fillTypeData == nil then
+		return
 	end
-	local fillLevel = 0
-	local capacity =  0
-	for _, fillTypeInfo in pairs(fillLevelInformations) do
-		fillLevel = fillTypeInfo.fillLevel
-		capacity = fillTypeInfo.capacity
+	--pipe still opening wait!
+	if self.pipe and not self.pipe:getIsPipeStateChangeAllowed(AIDriverUtil.PIPE_STATE_CLOSED) then
+		return
 	end
-	local fillLevelPercent = (fillLevel/capacity) *100
-	if fillLevelPercent < self.vehicle.cp.driveOnAtFillLevel and self:levelDidNotChange(fillLevelPercent) then
+	local fillLevelInfo = {}
+	self:getAllFillLevels(self.vehicle, fillLevelInfo)
+	for fillType, info in pairs(fillLevelInfo) do	
+		for _,data in ipairs(fillTypeData) do
+			if data.fillType == fillType then
+				local fillLevelPercentage = info.fillLevel/info.capacity*100
+				if fillLevelPercentage <= self.vehicle.cp.settings.driveOnAtFillLevel:get() and self:levelDidNotChange(fillLevelPercentage) then
+					return true
+				end
+			end
+		end
+	end
+end
+
+function FieldSupplyAIDriver:needsFillTypeLoading()
+	if not self.isInWaitPointRange  then
 		return true
 	end
 end
 
-function FieldSupplyAIDriver:levelDidNotChange(fillLevelPercent)
-	--fillLevel changed in last loop-> start timer
-	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= fillLevelPercent then
-		self.prevFillLevelPct = fillLevelPercent
-		courseplay:setCustomTimer(self.vehicle, "fillLevelChange", 3);
-	end
-	--if time is up and no fillLevel change happend, return true
-	if courseplay:timerIsThrough(self.vehicle, "fillLevelChange",false) then
-		if self.prevFillLevelPct == fillLevelPercent then
-			return true
-		end
-		courseplay:resetCustomTimer(self.vehicle, "fillLevelChange",true);
-	end
-end
-
+--TODO: figure out the usage of this one ??
 function FieldSupplyAIDriver:stopAndWait(dt)
 	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, false, fwd, 0, 1, 0, 1)
 end
 
+function FieldSupplyAIDriver:findPipe()
+    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
+    if implementWithPipe then
+        self.pipe = implementWithPipe
+    end
+end
+
+function FieldSupplyAIDriver:closePipeIfNeeded(isInWaitPointRange) 
+	if self.pipe and not self.isInWaitPointRange then
+		self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
+	end
+end
+
+function FieldSupplyAIDriver:getSiloSelectedFillTypeSetting()
+	return self.vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver
+end
+
+function FieldSupplyAIDriver:getCanShowDriveOnButton()
+	return AIDriver.getCanShowDriveOnButton(self)
+end
+
+--- Don't pay worker double when AutoDrive is driving 
+function FieldSupplyAIDriver:shouldPayWages()
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+end 

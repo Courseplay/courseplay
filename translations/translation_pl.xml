@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE"							 	text="Wyczyść obecny kurs" />
 		<text name="COURSEPLAY_DRIVE_NOW"								 	text="Jedź teraz" />
 		<text name="COURSEPLAY_DRIVE_ON_AT"								 	text="Odwieź ładunek gdy:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Odjedź gdy mniej niż:" />
 		<text name="UNKNOWN"											 	text="Nieznane" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"						 	text="Uwrocia w lewo/prawo" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"					 	text="Uwrocia przed/po kursie pola" />
@@ -75,6 +76,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING"							 	text=": Narzędzie pracy musi zostać załadowane." />
 		<text name="COURSEPLAY_UNLOADING_BALES"							 	text="rozładunek bel." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC"							 	text="jest zablokowany." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="został spowolniony" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED"				 		 	text="dotarł do punktu kiprowania" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 					 	text="Odległość do punktu rozładunku" />
 		<text name="COURSEPLAY_LOADING_AMOUNT"							 	text="Ładowanie: %d z %d" />
@@ -168,6 +170,8 @@
     	<text name="COURSEPLAY_ENDING_LOCATION" 						 	text="Lokacja końcowa:" />
 		<text name="COURSEPLAY_STARTING_DIRECTION"						 	text="Kierunek startowy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT"					 	text="Powrót do 1 punktu:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="Dezaktywuj i zwolnij kierowcę CP" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="Aktywuj i zwolnij kierowcę CP" />
 		<text name="COURSEPLAY_CORNER_1"								 	text="Południowy-Zachód" />
 		<text name="COURSEPLAY_CORNER_2"								 	text="Północny-Zachód" />
 		<text name="COURSEPLAY_CORNER_3"								 	text="Północny-Wschód" />
@@ -233,7 +237,7 @@
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="Spirala" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Spirala od środka" />
 		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Liczba rzędów spirali" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Ustala liczbę rzedów spirali, zanim rozpocznie kolejną" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Ustala liczbę rzędów spirali, zanim rozpocznie kolejną" />
 		<text name="COURSEPLAY_ACTIVATED"								 	text="Aktywowane" />
 		<text name="COURSEPLAY_NAME_ONLY" 								 	text="Tylko nazwa" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 						 	text="Nazwa i Kurs" />
@@ -253,6 +257,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="Minimalny dystans" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"						 	text="Rura wyładowcza po stronie uprawy" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Specyficzne ustawienia trybu" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING"						text="Utrzymuj obecny tryb ster." />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP"				text="Courseplay nie zmieni aktualnego trybu sterowania kołami w pojeździe" />
 		
 		<!-- shovel stuff -->		
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND"						 	text="Nie znaleziono łychy" />
@@ -330,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 	text="4x4 zawsze &amp; zabl. tylny dyf. (praca w polu)" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 	text="4x4 zawsze &amp; zabl. oba dyf. (praca w polu)" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 	text="Czy chcesz, aby pola były skanowane automatycznie?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Znalazłeś błąd lub potrzebujesz pomocy z Courseplay? Zajrzyj na: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES"							 	text="Czy chcesz, aby pracownicy dostawali wynagrodzenie?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 	text="Kalkulator zużycia nasion" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD"				 	text="Pole: %d (%s %s)" />
@@ -363,7 +370,7 @@
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Edytor: Cofnij ostatnią edycję kursu" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Edytor: Zapisz zmiany kursu" />
 		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Edytor: Zwiększ prędkość punktu trasy" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Edytor: Zmniesz prędkość punktu trasy" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Edytor: Zmniejsz prędkość punktu trasy" />
 		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Edytor: Usuń punkt trasy" />
 		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Edytor: Usuń następny punkt" />  
 		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Edytor: Usuń wszystkie punkty do startu" />
@@ -443,17 +450,18 @@
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Przełączanie Mini-HUDa" />
 
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="HUD na PPM" />
-		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (gobalnie)" />
+		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (globalnie)" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="HUD na PPM" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Włącz/Wyłącz otwieranie HUDa prawym przyciskiem myszy (obecny pojazd)" />
 
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Pokaż tymczasowe punkty trasy" />
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Pokazuje kursy tymczasowe (jak wyszukiwanie ścieżki czy zawracanie)" />
-		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Nakładna na uwrociach" />
+		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Nakładka na uwrociach" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Nakładka pomiędzy przejazdami na uwrociach określana procentowo" />
 
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy na uwrociach" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Włącza/Wyłącza wyładunek słomy na uwrociach" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Wyładunek słomy z kombajnu" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Tylko na środku" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Wyładunek słomy wł./wył./tylko na środku" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Nawożenie w siewniku" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Włącza/Wyłącza funkcję nawożenia w siewniku" />
 
@@ -463,14 +471,30 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Określa kiedy podnieść narzędzie, na końcu ścieżki albo rozpoczęciu zawracania" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Kiedy opuścić narzędzia" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Określa kiedy opuścić narzędzie, na początku ścieżki albo zakończeniu zawracania" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Składanie narzędzi" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Włącza/wyłącza, składanie narzędzi po zakończeniu pracy" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Korzystaj z wyszukiwania ścieżki na nawrotach" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Korzystaj z wyszukiwania ścieżki na nawrotach na polach o nieregularnym kształcie, np. aby jechać na uwrociu do następnego rzędu" />
 		<text name="COURSEPLAY_WORKER_WAGES"				   				text="Wynagrodzenie pracowników Courseplay" />
 		<text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Procent jaki dostają pracownicy Courseplay względem wynagrodzenia zwykłych pracowników" />
 		<text name="COURSEPLAY_SELF_UNLOAD"				   					text="Samoczynny rozładunek kombajnu" />
-		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Kombjan rozładuje się samoczynnie gdy jest pełen, a w poblizu znajduje się przyczepa" />
+		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Kombajn rozładuje się samoczynnie gdy jest pełen, a w pobliżu znajduje się przyczepa" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Cofanie przy wyszukiwaniu ścieżki na nawrotach" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Zezwól na wyszukiwanie ścieżki przy nawracaniu, która wymaga cofania (tylko przy maszynach podwieszanych)" />
-		<!-- Replace marker, do not remove! --></texts>
+
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Nie wybrano typu ładunku!/Nie wspiera kursu napełniania!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Dodaj nowy typ ładunku" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="dotarł do punktu napełniania." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="ma zły typ ładunku dla tego triggera." />
+
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Rozładuj kombajn na pierwszym uwrociu" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Zezwala na rozładunek poruszającego się kombajnu na pierwszym uwrociu, kierowca po rozładunku zjedzie z pola." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Poprzedni runCounter = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Załadunek oddzielnych typów ładunków" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku %d z %d" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
+		<!-- Replace marker, do not remove! -->
+	</texts>
 </l10n>

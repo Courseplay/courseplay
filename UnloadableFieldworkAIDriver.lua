@@ -39,6 +39,7 @@ function UnloadableFieldworkAIDriver:init(vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
 	self.stopImplementsWhileUnloadOrRefillOnField = false
+	self.refillUntilPct = vehicle.cp.settings.refillUntilPct
 end
 
 function UnloadableFieldworkAIDriver:setHudContent()
@@ -47,20 +48,22 @@ function UnloadableFieldworkAIDriver:setHudContent()
 end
 
 function UnloadableFieldworkAIDriver.create(vehicle)
-	if FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleLoader) then
+	if AIDriverUtil.hasAIImplementWithSpecialization(vehicle, BaleLoader) then
 		return BaleLoaderAIDriver(vehicle)
-	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, BaleWrapper) then
+	elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, BaleWrapper) then
 		-- Bale wrapper is derived from baler so must check it first to make sure that we instantiate a
 		-- BaleWrapperAIDriver if we have both the baler and the balewrapper specialization
 		return BaleWrapperAIDriver(vehicle)
-	elseif FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Baler) then
+	elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Baler) then
 		return BalerAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
-		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Combine) then
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Combine) then
 		return CombineAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Plow, vehicle.specializations) or
-		FieldworkAIDriver.hasImplementWithSpecialization(vehicle, Plow) then
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Plow) then
 		return PlowAIDriver(vehicle)
+    elseif FS19_addon_strawHarvest and AIDriverUtil.hasAIImplementWithSpecialization(vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) then
+        return CombineAIDriver(vehicle)
 	else
 		return UnloadableFieldworkAIDriver(vehicle)
 	end
@@ -80,6 +83,7 @@ function UnloadableFieldworkAIDriver:drive(dt)
 	-- only reason we need this is to update the totalFillLevel for reverse.lua so it will
 	-- do a raycast for tip triggers (side effects, side effects all over the place, killing me...)
 	courseplay:updateFillLevelsAndCapacities(self.vehicle)
+	self.triggerHandler:disableFillTypeUnloading()
 	-- the rest is the same as the parent class
 	FieldworkAIDriver.drive(self, dt)
 end
@@ -114,7 +118,7 @@ function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 			self:setSpeed(self.vehicle.cp.speeds.turn)
 		end
 	end
-	
+	self.triggerHandler:enableFillTypeUnloading()
 	-- tractor reaches unloadPoint
 	if isNearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
@@ -142,47 +146,20 @@ function UnloadableFieldworkAIDriver:isWaitingForUnload()
 		self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_OR_REFILL
 end
 
-
---- Check if need to unload anything
--- TODO: can this be refactored using FieldworkAIDriver.allFillLevelsOk()?
-function UnloadableFieldworkAIDriver:allFillLevelsOk()
-	if not self.vehicle.cp.workTools then return false end
-	local allOk = true
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		allOk = self:fillLevelsOk(workTool) and allOk
-	end
-	return allOk
-end
-
---- Check fill levels in all tools and stop when one of them isn't ok
-function UnloadableFieldworkAIDriver:fillLevelsOk(workTool)
-	if workTool.getFillUnits then
-		for index, fillUnit in pairs(workTool:getFillUnits()) do
-			-- let's see if we can get by this abstraction for all kinds of tools
-			local ok = self:isLevelOk(workTool, index, fillUnit)
-			if not ok then
+function UnloadableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo)	
+	for fillType, info in pairs(fillLevelInfo) do
+		if self:isValidFillType(fillType) then 
+			local percentage =  info.fillLevel/info.capacity*100 
+			if info.fillLevel >= info.capacity or percentage > self.refillUntilPct:get() or percentage> self.fillLevelFullPercentage  then
+				self:debugSparse('Full or refillUntilPct reached: %.2f', percentage)
+				return false
+			end
+			if self:shouldStopForUnloading(percentage) then
+				self:debugSparse('Stop for unloading: %.2f', percentage)
 				return false
 			end
 		end
 	end
-	-- all fill levels ok
-	return true
-end
-
--- is the fill level ok to continue? With unloadable tools we need to stop working when the tool is full
--- with fruit
-function UnloadableFieldworkAIDriver:isLevelOk(workTool, index, fillUnit)
-	local pc = 100 * workTool:getFillUnitFillLevelPercentage(index)
-	local fillTypeName = g_fillTypeManager:getFillTypeNameByIndex(fillUnit.fillType)
-	if self:shouldStopForUnloading(pc) then
-		self:debugSparse('Stop for unloading: %s: %.2f', fillTypeName, pc )
-		return false
-	end
-	if self:isValidFillType(fillUnit.fillType) and pc > self.fillLevelFullPercentage then
-		self:debugSparse('Full: %s: %.2f', fillTypeName, pc )
-		return false
-	end
-	self:debugSparse('Fill levels: %s: %.2f', fillTypeName, pc )
 	return true
 end
 
@@ -190,24 +167,8 @@ function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
 	return false
 end
 
-
---- Get the first valid (non-fuel) fill type
-function UnloadableFieldworkAIDriver:getFillType()
-	if not self.vehicle.cp.workTools then return end
-	for _, workTool in pairs(self.vehicle.cp.workTools) do
-		if workTool.getFillUnits then
-			for _, fillUnit in pairs(workTool:getFillUnits()) do
-				if self:isValidFillType(fillUnit.fillType) then
-					return fillUnit.fillType
-				end
-			end
-		end
-	end
-	return nil
-end
-
 function UnloadableFieldworkAIDriver:isValidFillType(fillType)
-	return fillType ~= FillType.DIESEL and fillType ~= FillType.DEF	and fillType ~= FillType.AIR
+	return not self:isValidFuelType(self.vehicle,fillType) and fillType ~= FillType.DEF	and fillType ~= FillType.AIR 
 end
 
 function UnloadableFieldworkAIDriver:atUnloadWaypoint()
@@ -236,5 +197,13 @@ function UnloadableFieldworkAIDriver:setLightsMask(vehicle)
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_STREET)
 	else
 		vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+	end
+end
+
+function UnloadableFieldworkAIDriver:setDriveNow()
+	if self.state == self.states.ON_FIELDWORK_COURSE then
+		self:stopAndChangeToUnload()
+	else
+		AIDriver.setDriveNow(self)
 	end
 end

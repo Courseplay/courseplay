@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Odstranit orientační body" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Odvézt bez čekání na doplnění" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Odvézt při:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
 		<text name="UNKNOWN" 												text="neznámý" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Úvrať proti/po směru hodinových ručiček" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Úvrať před/po práci na poli" />
@@ -75,6 +76,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": pracovní stroj musí být doplněn." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="skládá balíky." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="stojí v dopravní zácpě." />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="zpomalil díky provozu." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Místo vysypání dosaženo" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Vzdálenost k bodu vykládky" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Bude naloženo: %d z %d" />
@@ -168,6 +170,8 @@
 		<text name="COURSEPLAY_ENDING_LOCATION" 							text="Poslední pozice" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Směr trasy:" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Návrat na první bod:" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deaktivovat a propustit CP" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="aktivovat a propustit CP" />
 		<text name="COURSEPLAY_CORNER_1" 									text="jihozápad" />
 		<text name="COURSEPLAY_CORNER_2" 									text="severozápad" />
 		<text name="COURSEPLAY_CORNER_3" 									text="severovýchod" />
@@ -232,8 +236,8 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="dokola" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spirála" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Pole" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Počet řádků na pozemku" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="Když pracujete na pozemku, kolik řádků je na pozemku" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktivní" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="pouze stroj" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 							text="stroj a trasa" />
@@ -253,6 +257,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimální odstup" /> 
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="vysýpací roura v neposekaném" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="nastavení specifického režimu" /> 
+    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Udržet aktualní nastavení řízení" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay nezmění aktuální nastavení krabího řízení vozidla" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="Lžíce nenalezena" />
@@ -330,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Vždy &amp; Oba Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Chceš aby pole byla skenována automaticky?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Chceš aby byli pomocníci placeni?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Kalkulačka spotřeby osiva" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Pole: %d (%s %s)" />
@@ -354,7 +361,7 @@
 		<text name="input_COURSEPLAY_PREVMODE" 								text="Courseplay: předchozí mód" />
 		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="Courseplay: myš akce" />
 		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 				text="Courseplay: myš sekundární akce" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: place debug marker in log" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: umístit ladicí značku do protokolu" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		text="Pohyb lžíce do pozice k nakládání" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text="Pohyb lžíce do pozice k převozu" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" text="Pohyb lžíce do pozice k vykládání" />
@@ -446,15 +453,16 @@
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"			text="Pravé tlačítko myši HUD" />
 		<text name="COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE"	text="Zapnout/vypnout pravé tlačítko myši pro otevření HUD (aktuální vozidlo)" />
 
-		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Zobrazit dočasno body" />
+		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY"			text="Zobrazit dočasné body" />
 		<text name="COURSEPLAY_ENABLE_VISUAL_WAYPOINTS_TEMPORARY_TOOLTIP"	text="Zobrazit dočasné trasy (jako hledání cesty nebo otočení)" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT"					text="Souvrať se překrývá" />
 		<text name="COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP"			text="Překrývání mezi průjezdy na souvrati v procentech" />
 
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zobrazit Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Přepnout zobrazení Mini-HUD" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Sláma na souvrati" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Zapnout vypnout pouštění slámy na souvrati" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Kombajn nechává slámu" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="pouze střed pole" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Nechává slámu ano/ne/střed pole" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"                            text="Přihnojování při setí" />
     	<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"                     text="Zapnout vypnout přijnojování u secího stroje" />
 
@@ -465,6 +473,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Kdy zvednout nářadí při ukončení jízdy nebo zahájení zatáčky na souvrati" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Kdy zahloubit nářadí" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Kdy zahloubit nářadí při zahájení jizdy nebo ukončení zatáčky na souvrati" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Složit nářadí" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Zapnout/vypnout složení nářadí do transportní pozice po ukončení práce" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Použít hledání trasy pro otočky" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Použít hledání trasy pro otočky na nepravidelných polích, například jízda po souvrati pro další jízdu" />
@@ -474,5 +484,19 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Samostatné vyložení kombajnu do vleku co je poblíž." />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Povolit zvolení otočení s pocouvnutím" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Povolit zvolení otočení s pocouvnutím, když je nutné (pouze u neseného nářadí)" />
-		<!-- Replace marker, do not remove! --></texts>
+
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Není vrán druh nákladu/ není podporován kurz pro doplnění" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Přidat nový druh nákladu" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="přijel k bodu doplnění." />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="špatný druh nákladu pro tento trigger." />
+
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vyložit kombajn na první souvrati" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Povolit vykládku kombajnu za jízdy, odvozce vyjede z pole." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Počítadlo poslední jízdy = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Nakládka rozdílných nákladů" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Samostatné přívěsy:" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část %d of %d" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuální naložení" />
+		<!-- Replace marker, do not remove! -->
+	</texts>
 </l10n>

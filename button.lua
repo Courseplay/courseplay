@@ -36,7 +36,8 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		self.vehicle = vehicle;
 	end;
 	self.page = hudPage; 
-	self.functionToCall = functionToCall; 
+	self.settingCall = nil
+	self.functionToCall = functionToCall;	
 	self:setParameter(parameter);
 	self.width = width;
 	self.height = height;
@@ -84,6 +85,11 @@ end;
 
 function courseplay.button:setOnlyCallLocal()
 	self.onlyCallLocal = true
+	return self;
+end;
+
+function courseplay.button:setSetting(setting)
+	self.settingCall = setting
 	return self;
 end;
 
@@ -135,15 +141,7 @@ function courseplay.button:render()
 				hoverColor = 'closeRed';
 			end;
 
-			if fn == 'movePipeToPosition' then
-				if vehicle.cp.pipeWorkToolIndex ~= nil and vehicle.cp.manualPipePositionOrder then
-					targetColor = 'warningRed';
-				elseif vehicle.cp.pipeWorkToolIndex ~= nil then
-					targetColor = 'activeGreen';
-				end	
-			elseif fn == 'moveShovelToPosition' and not self.isDisabled and vehicle.cp.manualShovelPositionOrder and vehicle.cp.manualShovelPositionOrder == prm then  -- forced color
-				targetColor = 'warningRed';
-			elseif not self.isDisabled and not self.isActive and not self.isHovered and self.canBeClicked and not self.isClicked then
+			if not self.isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
 				targetColor = 'white';
 			elseif self.isDisabled then
 				targetColor = 'whiteDisabled';
@@ -214,10 +212,10 @@ function courseplay.button:handleHoverAction(vehicle, posX, posY)
 		local downParameter = upParameter * -1;
 		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
 			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), 18);
-			vehicle:setCourseplayFunc(button.functionToCall, upParameter, false, button.page);
+			self:handleInput(vehicle,upParameter)
 		elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
 			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), 18);
-			vehicle:setCourseplayFunc(button.functionToCall, downParameter, false, button.page);
+			self:handleInput(vehicle,downParameter)
 		end;
 	end;
 end
@@ -242,11 +240,27 @@ function courseplay.button:handleMouseClick(vehicle)
 		if self.functionToCall == "goToVehicle" then
 			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal, self.page);
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_ClICKED: %s(%s)", nameNum(vehicle), tostring(self.functionToCall), tostring(parameter)), 18);
+			self:handleInput(vehicle,parameter)
 		end
 		-- self:setClicked(false);
 	end;
 end;
+
+function courseplay.button:handleInput(vehicle,parameter)
+	if self.settingCall then --settingButton
+		courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), 18);
+		self.settingCall[self.functionToCall](self.settingCall, parameter)	
+		if vehicle:getIsEntered() then
+			g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
+		end
+		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
+	else
+		if self.functionToCall then
+			vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal or false, self.page);
+		end
+	end
+end
 
 function courseplay.button:setOffset(offsetX, offsetY)
 	offsetX = offsetX or 0
@@ -367,16 +381,6 @@ function courseplay.buttons:renderButtons(vehicle, page)
 			end;
 		end;
 	end;
-
-	if vehicle.cp.suc.active then
-		if vehicle.cp.suc.fruitNegButton:render() then
-			hoveredButton = vehicle.cp.suc.fruitNegButton;
-		end;
-		if vehicle.cp.suc.fruitPosButton:render() then
-			hoveredButton = vehicle.cp.suc.fruitPosButton;
-		end;
-	end;
-
 	-- set currently hovered button in vehicle
 	self:setHoveredButton(vehicle, hoveredButton);
 end;

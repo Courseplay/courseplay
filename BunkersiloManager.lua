@@ -1,6 +1,32 @@
 ---@class FieldManager
 BunkerSiloManager = CpObject()
 
+--for reference look up : "https://gdn.giants-software.com/documentation_scripting_fs19.php?version=script&category=26&class=244"
+--mostly : "BunkerSilo:load(id, xmlFile, key)"
+--[[
+	example bunker with only one entrance side
+
+				-----------------	<-- heightNode (hx,_,hz)
+				| X X X X X X X |  				   ---
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|	 bunkerLength 
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|
+				| X X X X X X X | 					|
+				| X X X X X X X |  				   ---
+widthNode -->	|				|	<-- startNode (sx,_,sz)
+(wx,_,wz)	
+				|---------------|
+				   bunkerWidth
+		
+		X = unitArea = unitWidth*unitHeigth
+
+
+]]--
+
 -- Constructor
 function BunkerSiloManager:init()
 	print("BunkerSiloManager: init()")
@@ -9,37 +35,57 @@ end
 
 g_bunkerSiloManager = BunkerSiloManager()
 
+--createBunkerSiloMap() is not only for bunkerSilo or it dosen't always has the correct bunker setup ..
 
-function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
-	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz;
-	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz;
-	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz;
-	local sy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz);
-	local bunkerWidth = courseplay:distance(sx,sz, wx, wz)
+--width is workWidth of the tool
+function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width, height)
+	-- the developer could have added comments explaining what sx/wx/hx is but chose not to do so
+	-- ignoring his fellow developers ...
+	
+	--only for Heaps as this createBunkerSiloMap() also applies to it ..
+	local sx,sz = Silo.bunkerSiloArea.sx,Silo.bunkerSiloArea.sz; --start BunkerNode
+	local wx,wz = Silo.bunkerSiloArea.wx,Silo.bunkerSiloArea.wz; --width BunkerNode "x cordinate"
+	local hx,hz = Silo.bunkerSiloArea.hx,Silo.bunkerSiloArea.hz; --height/"depth" BunkerNode "z cordinate"
+	local bunkerWidth = courseplay:distance(sx,sz, wx, wz) 
 	local bunkerLength = courseplay:distance(sx,sz, hx, hz)
+	local sy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz);
+	
+	-- check the distance from our vehicle either we are comming from the front or back of the silo
 	local startDistance = courseplay:distanceToPoint(vehicle, sx, sy, sz)
 	local endDistance = courseplay:distanceToPoint(vehicle, hx, sy, hz)
+	
+	--correct data for bunkerSilos
+	--shorten the BunkerArea by 1.0 , as the silo size from Giants tends to be bigger the the actual fillArea 
+	if Silo.bunkerSiloArea.start then
+		sx, _, sz = localToWorld(Silo.bunkerSiloArea.start,-0.5,0,0) --start BunkerNode
+		wx, _, wz = localToWorld(Silo.bunkerSiloArea.width,0.5,0,0) --width BunkerNode "x cordinate"
+		hx, _, hz = localToWorld(Silo.bunkerSiloArea.height,-0.5,0,1) --height/"depth" BunkerNode "z cordinate"
+		bunkerWidth = calcDistanceFrom(Silo.bunkerSiloArea.start,Silo.bunkerSiloArea.width)-1
+		bunkerLength = calcDistanceFrom(Silo.bunkerSiloArea.start,Silo.bunkerSiloArea.height)-1
+	end
+
+		
 	local widthDirX,widthDirY,widthDirZ,widthDistance = courseplay:getWorldDirection(sx,sy,sz, wx,sy,wz);
 	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);
 
 	local widthCount = 0
-	if 	width then
-		widthCount =math.ceil(bunkerWidth/width)
-	else
-		widthCount =math.ceil(bunkerWidth/vehicle.cp.workWidth)
-	end
-
+	courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (passed in)', bunkerWidth, width)
+	widthCount =math.ceil(bunkerWidth/width)
+	
 	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
 		widthCount = widthCount+1
 	end
 
-	local heightCount = math.ceil(bunkerLength/vehicle.cp.workWidth)
+	local heightCount = math.ceil(bunkerLength/ width)
 	local unitWidth = bunkerWidth/widthCount
 	local unitHeigth = bunkerLength/heightCount
-	local heightLengthX = (Silo.bunkerSiloArea.hx-Silo.bunkerSiloArea.sx)/heightCount
-	local heightLengthZ = (Silo.bunkerSiloArea.hz-Silo.bunkerSiloArea.sz)/heightCount
-	local widthLengthX = (Silo.bunkerSiloArea.wx-Silo.bunkerSiloArea.sx)/widthCount
-	local widthLengthZ = (Silo.bunkerSiloArea.wz-Silo.bunkerSiloArea.sz)/widthCount
+	
+	--width/height in 2D(x and z seperated) of silo
+
+	local heightLengthX = (hx-sx)/heightCount
+	local heightLengthZ = (hz-sz)/heightCount
+	local widthLengthX = (wx-sx)/widthCount
+	local widthLengthZ = (wz-sz)/widthCount
 	local getOffTheWall = 0.5;
 
 	local lastValidfillType = 0
@@ -51,28 +97,35 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 			local newWz = sz + widthLengthZ
 			local newHx = sx + heightLengthX
 			local newHz = sz + heightLengthZ
-
+			
+			--herrain height at start of small part
 			local wY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newWx, 1, newWz);
+			--herrain height at end of small part
 			local hY = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, newHx, 1, newHz);
+			--fillType in between 
 			local fillType = DensityMapHeightUtil.getFillTypeAtLine(newWx, wY, newWz, newHx, hY, newHz, 5)
 			if lastValidfillType ~= fillType and fillType ~= 0 then
 				lastValidfillType = fillType
 			end
+			--fillLevel in small part
 			local newFillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType, sx, sz, newWx, newWz, newHx, newHz )
+			--center probably of small part ??
 			local bx = sx + (widthLengthX/2) + (heightLengthX/2)
 			local bz = sz + (widthLengthZ/2) + (heightLengthZ/2)
 			local offset = 0
 			if vehicle.cp.mode9TargetSilo and vehicle.cp.mode9TargetSilo.type and vehicle.cp.mode9TargetSilo.type == "heap" then
+				--no idea ??
 				offset = unitWidth/2
 			else
 				if widthIndex == 1 then
-					offset = getOffTheWall+ (vehicle.cp.workWidth/2)
+					offset = getOffTheWall + (width / 2)
 				elseif widthIndex == widthCount then
-					offset = unitWidth- (getOffTheWall+ (vehicle.cp.workWidth/2))
+					offset = unitWidth- (getOffTheWall + (width / 2))
 				else
-					offset = unitWidth/2
+					offset = unitWidth / 2
 				end
 			end
+			-- something with direction ??
 			local cx,cz = sx +(widthDirX*offset)+(heightLengthX/2),sz +(widthDirZ*offset)+ (heightLengthZ/2)
 			if vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and heightIndex == heightCount then
 				cx,cz = sx +(widthDirX*offset)+(heightLengthX),sz +(widthDirZ*offset)+ (heightLengthZ)
@@ -80,14 +133,14 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 			local unitArea = unitWidth*unitHeigth
 
 			map[heightIndex][widthIndex] ={
-				sx = sx;
+				sx = sx;	-- start?
 				sz = sz;
 				y = wY;
-				wx = newWx;
+				wx = newWx; -- width?
 				wz = newWz;
-				hx = newHx;
+				hx = newHx; -- height?
 				hz = newHz;
-				cx = cx;
+				cx = cx;     -- center
 				cz = cz;
 				bx = bx;
 				bz = bz;
@@ -109,7 +162,7 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo,width, height)
 	else
 		courseplay:debug(('%s: empty Bunkersilo will be devided in %d lines and %d columns'):format(nameNum(vehicle), heightCount, widthCount), 10);
 	end
-	--invert table
+	--invert table as we are comming from the back into the silo
 	if endDistance < startDistance then
 		courseplay:debug(('%s: Bunkersilo will be approached from the back -> turn map'):format(nameNum(vehicle)), 10);
 		local newMap = {}

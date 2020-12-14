@@ -36,6 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Wegpunkte löschen" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Sofort abfahren" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Abfahren bei:" />
+		<text name="COURSEPLAY_MOVE_ON_AT"									text="Weiterfahren ab weniger als:" />
 		<text name="UNKNOWN" 												text="unbekannt" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Vorgewende Richtung" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Vorgewende vor/nach Feldkurs" />
@@ -75,6 +76,7 @@
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": Gerät muss aufgefüllt werden" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Ballen werden entladen." />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Steckt im Verkehr fest" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Abladestelle erreicht" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Abstand z. Abladepunkt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Wird beladen: %d von %d" />
@@ -168,6 +170,8 @@
         <text name="COURSEPLAY_ENDING_LOCATION" 							text="Endposition" />
 		<text name="COURSEPLAY_STARTING_DIRECTION" 							text="Startrichtung" />
 		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT" 						text="Am Startpunkt enden" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RELEASE_DRIVER"		text="deaktiviert und entlasse CP Fahrer" />
+		<text name="COURSEPLAY_RETURN_TO_FIRST_POINT_RETURN_TO_START_AND_RELEASE_DRIVER"	text="aktiviert und entlasse CP Fahrer" />
 		<text name="COURSEPLAY_CORNER_1" 									text="Südwest" />
 		<text name="COURSEPLAY_CORNER_2" 									text="Nordwest" />
 		<text name="COURSEPLAY_CORNER_3" 									text="Nordost" />
@@ -253,6 +257,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minmale Entfernung" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Drescher-Rohr ist in der Frucht" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modusabhängige Einstellungen" />
+    	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Lenkungsart beibehalten" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Aktuell gewählte Lenkungsart wird von Courseplay nicht verändert" />
 		
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 							text="keine Schaufel vorhanden" />
@@ -330,6 +336,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD an &amp; Hinterachssperrdiff auf dem Feld" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Möchtest du dass die Felder automatisch gescannt werden?" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Bei Fehler oder Fragen gerne auf der folgenden seite für hilfe vorbeischauen: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Feld: %d (%s %s)" />
@@ -420,9 +427,9 @@
 		<text name="COURSEPLAY_AUTODRIVE_MODE"				    			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_NO_AUTODRIVE"				    	text="Nicht installiert" />
 		<text name="COURSEPLAY_AUTODRIVE_DONT_USE"				    		text="Nicht benutzen" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="Zum entladen/auffüllen" />
-		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="Zum parken" />
-		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="Zum entladen/auffüllen und parken" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL"					text="entladen/auffüllen" />
+		<text name="COURSEPLAY_AUTODRIVE_PARK"								text="parken(P)" />
+		<text name="COURSEPLAY_AUTODRIVE_UNLOAD_OR_REFILL_PARK"				text="entladen/auffüllen/P" />
 
 		<text name="COURSEPLAY_AUTODRIVE_FOLDER"				   			text="AutoDrive" />
 		<text name="COURSEPLAY_AUTODRIVE_RETURN_COURSE"				   		text="(und zurück)" />
@@ -434,7 +441,7 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Benutze AI Wendemanöver" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Benutze AI Wendemanöver anstatt berechneter Wendemanöver" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Felder automatisch scannen" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
+		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay Lohnzahlung" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Klick zum einsteigen" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug um einzusteigen" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
@@ -445,6 +452,8 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Tool anheben am Ende einer Reihe oder am start des Vorgewende-Wendemanövers" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Tool absenken" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Geräte einklappen" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Aktiviert/Deaktiviert das einklappen des Gerätes am Ende der Feldarbeit" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL"			text="Rechtsklick HUD" />
@@ -459,8 +468,9 @@
 		
 		<text name="COURSEPLAY_SHOW_MINI_HUD"								text="Zeige Mini-HUD" />
 		<text name="COURSEPLAY_YES_NO_SHOW_MINI_HUD"						text="Mini-HUD an/aus" />
-		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Strohablage im Vorgewende" />
-		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Schaltet die Strohablage im Vorgewende an oder aus" />
+		<text name="COURSEPLAY_STRAW_ON_HEADLAND"							text="Drescher Strohablage" />
+		<text name="COURSEPLAY_STRAW_ON_ONLY_CENTER"						text="Nur Mitte" />
+		<text name="COURSEPLAY_YES_NO_STRAW_ON_HEADLAND"					text="Strohablage an/aus/nur Mitte" />
 
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS"				   	text="Pathfinding im Wendemanöver" />
 		<text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Pathfinding im Wendemanöver auf unförmigen Feldern, vom Vorgewende zur nächste Reihe" />
@@ -470,7 +480,21 @@
 		<text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="Drescher sucht einen Trailer und fährt abtanken" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Pathfinder darf rückwärts fahren" />
 		<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Erlaubt dem Pathfinder, rückwärts zu fahren (Nur nicht gezogene Tools)" />
-		
-		<!-- Replace marker, do not remove! --></texts>
 
+		<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Kein Ladegut gewählt!/Nachfüllkurs nicht unterstützt!!" />
+		<text name="COURSEPLAY_ADD_FILLTYPE"								text="Ladegut hinzufügen" />
+		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="Auffüllpunkt erreicht" />
+		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Ladegut wird hier nicht angenommen" />
+		
+
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Entlade Drescher im ersten Vorgewende" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Fahrenden Drescher im ersten Vorgewende entladen, Abfahrer fährt außerhalb des Feldes." />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="letzter Durchlauf = 0" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="verschiedene Ladegüter" />
+        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="verschiedene Trailer: " />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
+		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
+		
+		<!-- Replace marker, do not remove! -->
+</texts>
 </l10n>
