@@ -2097,6 +2097,35 @@ function CombineUnloadAIDriver:drawDebugInfo()
 
 end
 
+
+--- If the player drives the unloader, check the vicinity  for combines driven by courseplay
+--- and tell them to ignore this vehicle so their proximity sensor won't slow them down when hitting this vehicle.
+--- Note that we don't really know if the player is to unload the combine, this will disable all proximity check for
+--- player driven vehicles.
+function CombineUnloadAIDriver.disableProximitySensorForNonCourseplayDriver(unloader)
+	if not g_server then return end
+	-- CP drives unloader, it'll take care of everything
+	if unloader.cp.driver and unloader.cp.driver.isActive and unloader.cp.driver:isActive() then return end
+	-- TODO: maybe check for AutoDrive? Or better provide and interface to AutoDrive to disable the proximity sensor?
+	-- no player in unloader, so do not ignore this vehicle
+	if not unloader:getIsEntered() then return end
+
+	-- find combines driven by CP around unloader
+	if g_currentMission then
+		for _, vehicle in pairs(g_currentMission.vehicles) do
+			if vehicle.cp.driver and vehicle.cp.driver.is_a and vehicle.cp.driver:is_a(CombineAIDriver) then
+				local d = calcDistanceFrom(unloader.rootNode, vehicle.rootNode)
+				if d < CombineUnloadAIDriver.safeManeuveringDistance then
+					vehicle.cp.driver:ignoreVehicleProximity(unloader, 3000)
+					if g_updateLoopIndex % 500 == 0 then
+						courseplay.infoVehicle(vehicle, 'Proximity sensor deactivated for player driven %s', nameNum(unloader))
+					end
+				end
+			end
+		end
+	end
+end
+
 function CombineUnloadAIDriver:renderText(x, y, ...)
 
 	if not courseplay.debugChannels[self.debugChannel] then return end
