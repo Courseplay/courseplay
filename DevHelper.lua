@@ -77,8 +77,8 @@ function DevHelper:update()
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 5, 3.6)
     self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
-    self.data.fieldId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
 
+    self.data.landId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
@@ -88,16 +88,6 @@ function DevHelper:update()
         local done, path = self.pathfinder:resume()
         if done then
             self:loadPath(path)
-        end
-    end
-
-    if self.context then
-        if self.data.x < self.context.fieldData.minX or self.data.x > self.context.fieldData.maxX or -self.data.z < self.context.fieldData.minY or -self.data.z > self.context.fieldData.maxY then
-            self.data.minX = self.context.fieldData.minX
-            self.data.minY = self.context.fieldData.minY
-            self.data.validNode = 'off field'
-        else
-            self.data.validNode = 'on field'
         end
     end
 
@@ -130,7 +120,7 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
         -- Left Alt + < mark start
-        self.context = PathfinderUtil.Context(self.vehicleData, PathfinderUtil.FieldData(self.data.fieldNum), PathfinderUtil.Parameters())
+        self.context = PathfinderUtil.Context(self.vehicleData, self.data.fieldNum, PathfinderUtil.Parameters())
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then

@@ -445,7 +445,8 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 		self.analyticSolver = DubinsSolver()
 	end
 
-	if not constraints:isValidNode(goal, true) then
+	-- ignore trailer for the first check, we don't know its heading anyway
+	if not constraints:isValidNode(goal, true, true) then
 		self:debug('Goal node is invalid, abort pathfinding.')
 		return true, nil, true
 	end

@@ -69,6 +69,70 @@ Island.bypassModeText = {
 	'COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE',
 	'COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE' }
 
+
+local function generateGridForPolygon( polygon, gridSpacingHint )
+	local grid = {}
+	-- map[ row ][ column ] maps the row/column address of the grid to a linear
+	-- array index in the grid.
+	grid.map = {}
+	polygon.boundingBox = polygon:getBoundingBox()
+	polygon:calculateData()
+	-- this will make sure that the grid will have approximately 64^2 = 4096 points
+	-- TODO: probably need to take the aspect ratio into account for odd shaped
+	-- (long and narrow) fields
+	-- But don't go below a certain limit as that would drive too close to the fruit
+	-- for this limit, use a fraction to reduce the chance of ending up right on the field edge (assuming fields
+	-- are drawn using integer sizes) as that may result in a row or two missing in the grid
+	local gridSpacing = gridSpacingHint or math.max( 4.071, math.sqrt( polygon.area ) / 64 )
+	local horizontalLines = generateParallelTracks( polygon, {}, gridSpacing, gridSpacing / 2 )
+	if not horizontalLines then return grid end
+	-- we'll need this when trying to find the array index from the
+	-- grid coordinates. All of these lines are the same length and start
+	-- at the same x
+	grid.width = math.floor( horizontalLines[ 1 ].from.x / gridSpacing )
+	grid.height = #horizontalLines
+	-- now, add the grid points
+	local margin = gridSpacing / 2
+	for row, line in ipairs( horizontalLines ) do
+		local column = 0
+		grid.map[ row ] = {}
+		for x = line.from.x, line.to.x, gridSpacing do
+			column = column + 1
+			for j = 1, #line.intersections, 2 do
+				if line.intersections[ j + 1 ] then
+					if x > line.intersections[ j ].x + margin and x < line.intersections[ j + 1 ].x - margin then
+						local y = line.from.y
+						-- check an area bigger than the self.gridSpacing to make sure the path is not too close to the fruit
+						table.insert( grid, { x = x, y = y, column = column, row = row })
+						grid.map[ row ][ column ] = #grid
+					end
+				end
+			end
+		end
+	end
+	return grid, gridSpacing
+end
+
+function Island.findIslands( polygon )
+	local grid, _ = generateGridForPolygon( polygon, Island.gridSpacing )
+	local islandNodes = {}
+	for _, row in ipairs(grid.map) do
+		for _, index in pairs(row) do
+			if not courseplay:isField(grid[index].x, -grid[index].y) then
+				-- add a node only if it is far enough from the field boundary
+				-- to filter false positives around the field boundary
+				local _, d = polygon:getClosestPointIndex(grid[index])
+				-- TODO: should calculate the closest distance to polygon edge, not
+				-- the vertices. This may miss an island close enough to the field boundary
+				if d > 8 * Island.gridSpacing then
+					table.insert(islandNodes, grid[index])
+				end
+			end
+		end
+	end
+	return islandNodes
+end
+
 function Island.isTooCloseToAnyIsland( point, islandNodes, minDistance )
 	for _, islandNode in ipairs( islandNodes ) do
 		local d = getDistanceBetweenPoints( point, islandNode )
