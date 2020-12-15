@@ -73,8 +73,6 @@ courseGenerator.HEADLAND_MODE_MAX = 4
 
 courseGenerator.headlandModeTexts = { 'none', 'normal', 'narrow', 'two side'}
 
-courseGenerator.pathFinder = Pathfinder()
-
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
 		startingLocation <= courseGenerator.STARTING_LOCATION_SE
@@ -208,23 +206,10 @@ function courseGenerator.fromCpAngle(angle)
 end
 
 
-
---- Pathfinder wrapper for CP 
--- Expects FS coordinates (x,-z)
-function courseGenerator.findPath( from, to, cpPolygon, fruit )
-	local path, grid = courseGenerator.pathFinder:findPath( courseGenerator.pointToXy( from ), courseGenerator.pointToXy( to ),
-		Polygon:new( courseGenerator.pointsToXy( cpPolygon )), fruit, nil, nil )
-	if path then
-		return courseGenerator.pointsToXz( path ), grid
-	else
-		return nil, grid
-	end
-end
-
 --- Island finder wrapper for CP, 
 -- expects FS coordinates
 function courseGenerator.findIslands( fieldData )
-	local islandNodes = courseGenerator.pathFinder:findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
+	local islandNodes = Island.findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
 	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
 end
 
