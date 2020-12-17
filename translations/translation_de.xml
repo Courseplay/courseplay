@@ -501,8 +501,10 @@
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatisch reparieren" />
 		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repariert die Fahrzeuge automatisch." />
 		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Nie" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Immer" />
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Immer" />
 		
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

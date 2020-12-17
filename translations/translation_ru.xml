@@ -503,8 +503,10 @@
 		<text name="COURSEPLAY_AUTOREPAIR"													text="Автоматический ремонт" />
 		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"											text="Автоматически ремонтировать на поле." />
 		<text name="COURSEPLAY_AUTOREPAIR_OFF"												text="Не ремонтировать" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"											text="Поддерживать исправным" />
-		
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"											text="Поддерживать исправным" />
+
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"								text="Keep unloading until end of row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"						text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
 		<!-- Replace marker, do not remove! -->
-	</texts>
+</texts>
 </l10n>

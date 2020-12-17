@@ -550,6 +550,16 @@ function PathfinderConstraints:resetConstraints()
 end
 
 ---@param start State3D
+---@param vehicleData PathfinderUtil.VehicleData
+local function initializeTrailerHeading(start, vehicleData)
+    -- initialize the trailer's heading for the starting point
+    if vehicleData.trailer then
+        local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(vehicleData.trailer.rootNode, 0, 0)
+        start:setTrailerHeading(courseGenerator.fromCpAngle(yRot))
+    end
+end
+
+---@param start State3D
 ---@param goal State3D
 local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                  allowReverse, fieldNum,
@@ -560,11 +570,7 @@ local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
             offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty)
     local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 
-    -- initialize the trailer's heading for the starting point
-    if vehicleData.trailer then
-        local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(vehicleData.trailer.rootNode, 0, 0)
-        start:setTrailerHeading(courseGenerator.fromCpAngle(yRot))
-    end
+    initializeTrailerHeading(start, vehicleData)
 
     local context = PathfinderUtil.Context(
             vehicleData,
@@ -744,6 +750,44 @@ function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
     return startPathfindingFromVehicleToGoal(
             vehicle, start, goal, allowReverse, fieldNum,
             vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+end
+
+------------------------------------------------------------------------------------------------------------------------
+--- Interface function to start a simple A* pathfinder in the game. The goal is a node
+------------------------------------------------------------------------------------------------------------------------
+---@param vehicle table, will be used as the start location/heading, turn radius and size
+---@param goalNode table The goal node
+---@param xOffset number side offset of the goal from the goal node (> 0 is left)
+---@param zOffset number length offset of the goal from the goal node (> 0 is front)
+---@param fieldNum number if other than 0 or nil the pathfinding is restricted to the given field and its vicinity
+---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
+---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
+function PathfinderUtil.startAStarPathfindingFromVehicleToNode(vehicle, goalNode,
+                                                          xOffset, zOffset,
+                                                          fieldNum, vehiclesToIgnore, maxFruitPercent)
+    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
+    local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+    x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
+    local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+
+    local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
+    local parameters = PathfinderUtil.Parameters(maxFruitPercent or
+            (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge), PathfinderUtil.defaultOffFieldPenalty)
+    local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
+
+    initializeTrailerHeading(start, vehicleData)
+
+    local context = PathfinderUtil.Context(
+            vehicleData,
+            fieldNum,
+            parameters,
+            vehiclesToIgnore,
+            otherVehiclesCollisionData)
+
+    local pathfinder = AStar(100, 10000)
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, false,
+            PathfinderConstraints(context), context.vehicleData.trailerHitchLength)
+    return pathfinder, done, path, goalNodeInvalid
 end
 
 ------------------------------------------------------------------------------------------------------------------------

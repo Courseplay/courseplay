@@ -54,7 +54,7 @@ function CombineUnloadManager:addNewCombines()
 		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			if vehicle.cp.driver and vehicle.cp.driver.is_a and vehicle.cp.driver:is_a(CombineAIDriver) and not self.combines[vehicle] then
+			if vehicle.cp.driver and vehicle.cp.driver.isACombineAIDriver and not self.combines[vehicle] then
 				self:addCombineToList(vehicle, vehicle.cp.driver)
 			end
 		end
@@ -131,7 +131,7 @@ function CombineUnloadManager:releaseUnloaderFromCombine(unloader, combine, noEv
 			self:debug('Released unloader %s from %s', nameNum(unloader), nameNum(combine))
 			table.remove(self.combines[combine].unloaders, ix)
 			if not noEventSend then 
-				UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
+				UnloaderEvents:sendReleaseUnloaderEvent(unloader,combine)
 			end
 		end
 	end
@@ -145,7 +145,7 @@ function CombineUnloadManager:addUnloaderToCombine(unloader,combine,noEventSend)
 			UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
 		end
 	else
-		self:debug('%s is already assigned to combine %s as	 #%d', nameNum(unloader), nameNum(combine), #self.combines[combine].unloaders)
+		self:debug('%s is already assigned to combine %s as	number %d', nameNum(unloader), nameNum(combine), #self.combines[combine].unloaders)
 	end
 end
 
@@ -186,7 +186,7 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	end
 	--then try to find a combine
 	local combine = self:getCombineWithMostFillLevel(unloader)
-	self:debug('Combine with most fill level is %s', combine and combine:getName() or 'N/A')
+	self:debug('Combine with most fill level is %s', nameNum(combine))
 	local bestUnloader
 	if combine ~= nil and combine.cp.driver:getFieldworkCourse() then
 		if combine.cp.settings.combineWantsCourseplayer:is(true) then
@@ -194,7 +194,13 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			combine.cp.settings.combineWantsCourseplayer:set(false)
 			return combine
 		end
-		local unloaders = self:getUnloaders(combine)
+		local num = self:getUnloadersNumber(unloader, combine)
+		if num then
+			-- awesome, we are on the list already.
+			self:debug('%s already assigned to %s as #%d', nameNum(unloader), nameNum(combine), num)
+			return combine
+		end
+		local unloaders = self:getIdleUnloaders(combine)
 		if combine.cp.settings.driverPriorityUseFillLevel:is(true) then
 			bestUnloader = self:getFullestUnloader(combine, unloaders)
 			self:debug('Priority fill level, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
@@ -203,13 +209,20 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 			self:debug('Priority closest, best unloader %s', bestUnloader and nameNum(bestUnloader) or 'N/A')
 		end
 		if bestUnloader == unloader then
-      if self:getCombinesFillLevelPercent(combine) > unloader.cp.driver:getFillLevelThreshold() or	combine.cp.driver:willWaitForUnloadToFinish() then
-				self:debug("%s: fill level %.1f, waiting for unload", nameNum(combine), self:getCombinesFillLevelPercent(combine))
+			local combineFillLevelPercent = self:getCombinesFillLevelPercent(combine)
+			local willWait = combine.cp.driver:willWaitForUnloadToFinish()
+			if combineFillLevelPercent > unloader.cp.driver:getFillLevelThreshold() or willWait then
+				self:debug("%s: fill level %.1f (unloader threshold %.1f), waiting for unload", nameNum(combine),
+						combineFillLevelPercent, unloader.cp.driver:getFillLevelThreshold())
 				self:addUnloaderToCombine(unloader, combine)
 				return combine
 			else
+				self:debug("%s: fill level %.1f (unloader threshold %.1f), combine will wait %s (no unloader assigned)",
+						nameNum(combine), combineFillLevelPercent, unloader.cp.driver:getFillLevelThreshold(), tostring(willWait))
 				return nil, combine
 			end
+		else
+			self:debug('Best unloader %s is not the one requesting (%s)', nameNum(bestUnloader), nameNum(unloader))
 		end
 	end
 end
@@ -232,14 +245,19 @@ end
 function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	local mostFillLevel = 0
 	local combineToReturn
-	for combine,_ in pairs(unloader.cp.driver:getAssignedCombines()) do
+	for combine, _ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[combine]
 		-- if there is no unloader assigned or this unloader is already assigned as the first
-		if data and data.isCombine and (self:getNumUnloaders(combine) == 0 or self:getUnloaderIndex(unloader, combine) == 1) then
+		local numUnloaders = self:getNumUnloaders(combine)
+		local unloaderIndex = self:getUnloaderIndex(unloader, combine)
+		local fillLevelPct = combine.cp.driver:getFillLevelPercentage()
+		local combineReadyToUnload = combine.cp.driver:isReadyToUnload(unloader.cp.settings.useRealisticDriving:is(true))
+		self:debug('For unloader %s: %s (fill level %.1f, ready to unload: %s) has %d unloaders, this unloader is # %d',
+				nameNum(unloader), nameNum(combine), fillLevelPct, tostring(combineReadyToUnload), numUnloaders, unloaderIndex or -1)
+		if data and data.isCombine and (numUnloaders == 0 or unloaderIndex == 1) and combineReadyToUnload then
 			if combine.cp.settings.combineWantsCourseplayer:is(true) then
 				return combine
 			end
-			local fillLevelPct = combine.cp.driver:getFillLevelPercentage()
 			if mostFillLevel < fillLevelPct then
 				mostFillLevel = fillLevelPct
 				combineToReturn = combine
@@ -249,11 +267,12 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	return combineToReturn
 end
 
-function CombineUnloadManager:getUnloaders(combine)
+function CombineUnloadManager:getIdleUnloaders(combine)
 	local unloaders = {}
 	if g_currentMission then
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			if vehicle.cp.driver and vehicle.cp.driver:is_a(CombineUnloadAIDriver) then
+			if vehicle.cp.driver and vehicle.cp.driver.isACombineUnloadAIDriver and
+					vehicle.cp.driver:isWaitingForAssignment() then
 				-- TODO: refactor and move assignedCombines into the CombineUnloadAIDriver
 				local assignedCombines = vehicle.cp.driver:getAssignedCombines()
 				if assignedCombines[combine] then
@@ -316,7 +335,7 @@ end
 function CombineUnloadManager:removeInactiveCombines()
 	local vehiclesToRemove = {}
 	for vehicle, _ in pairs (self.combines) do
-		if not vehicle.cp.driver or not vehicle.cp.driver:is_a(CombineAIDriver) then
+		if not vehicle.cp.driver or not vehicle.cp.driver.isACombineAIDriver then
 			table.insert(vehiclesToRemove, vehicle)
 		end
 	end

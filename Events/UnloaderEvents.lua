@@ -58,7 +58,7 @@ function UnloaderEvents:run(connection) -- wir fuehren das empfangene event aus
 	end;
 end
 
-function UnloaderEvents:sendRelaseUnloaderEvent(unloader,combine)
+function UnloaderEvents:sendReleaseUnloaderEvent(unloader,combine)
     if g_server ~= nil then
         -- Server have to broadcast to all clients and himself
         g_server:broadcastEvent(UnloaderEvents:new(unloader,combine,self.TYPE_REMOVE_FROM_COMBINE))

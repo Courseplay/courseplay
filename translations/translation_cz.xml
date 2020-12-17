@@ -504,8 +504,10 @@
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatická oprava" />
 		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Opravuje se automaticky na poli." />
 		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Neopravovat" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Udržovat v dobrém stavu" />
-	
-    <!-- Replace marker, do not remove! -->
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Udržovat v dobrém stavu" />
+
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+    	<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

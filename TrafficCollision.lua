@@ -506,13 +506,15 @@ function TrafficConflictDetector:updateCollisionBoxes(course, ix, nominalSpeed, 
 
 	local positions
 	if course then
-		positions = course:getPositionsOnCourse(nominalSpeed, ix, TrafficConflictDetector.boxDistance, TrafficConflictDetector.numTrafficCollisionTriggers)
+		positions = course:getPositionsOnCourse(nominalSpeed, ix,
+				TrafficConflictDetector.boxDistance, TrafficConflictDetector.numTrafficCollisionTriggers)
+		self:debug('updating collision boxes at waypoint %d, have %d positions', ix, #positions)
 	else
 		positions = self:getPositionsAtDirection(nominalSpeed, moveForwards, directionNode)
+		self:debug('updating collision boxes (no course), have %d positions', #positions)
 	end
 	local posIx = 1
 	local eta = 0
-	self:debug('updating collision boxes at waypoint %d, have %d positions', ix, #positions)
 	if #positions > 0 then
 		for i, trigger in ipairs(self.trafficCollisionTriggers) do
 			local d = (i - 1) * TrafficConflictDetector.boxDistance

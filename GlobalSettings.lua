@@ -70,7 +70,7 @@ AutoRepairSetting.OFF = 0
 function AutoRepairSetting:init()
 	SettingList.init(self, 'autoRepair', 'COURSEPLAY_AUTOREPAIR', 'COURSEPLAY_AUTOREPAIR_TOOLTIP', nil,
 			{AutoRepairSetting.OFF,  25, 70, 99},
-			{'COURSEPLAY_AUTOREPAIR_OFF', '< 25%', '< 70%', 'COURSEPALY_AUTOREPAIR_ALWAYS'}
+			{'COURSEPLAY_AUTOREPAIR_OFF', '< 25%', '< 70%', 'COURSEPLAY_AUTOREPAIR_ALWAYS'}
 		)
 	self:set(0)
 end

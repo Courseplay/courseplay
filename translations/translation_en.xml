@@ -499,8 +499,10 @@
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
 		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
 		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
-		
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

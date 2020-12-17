@@ -497,9 +497,6 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 					analyticPath[1]:setTrailerHeading(pred:getTrailerHeading())
 					State3D.calculateTrailerHeadings(analyticPath, hitchLength)
 					if self:isPathValid(analyticPath) then
-						--TODO: figure out a possible debug channel, if needed
-						
-						--State3D.printPath(analyticPath, 'ANALYTIC')
 						self:debug('Found collision free analytic path (%s) at iteration %d', pathType, self.iterations)
 						-- remove first node of returned analytic path as it is the same as pred
 						table.remove(analyticPath, 1)
@@ -630,8 +627,8 @@ end
 --- 3 dimensional as we do not take the heading into account and we use a different set of motion primitives
 AStar = CpObject(HybridAStar)
 
-function AStar:init(yieldAfter)
-	HybridAStar.init(self, yieldAfter)
+function AStar:init(yieldAfter, maxIterations)
+	HybridAStar.init(self, yieldAfter, maxIterations)
 	-- this needs to be small enough that no vehicle fit between the grid points (and remain undetected)
 	self.deltaPos = 3
 	self.deltaPosGoal = self.deltaPos

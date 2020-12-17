@@ -2625,6 +2625,18 @@ function CombineWantsCourseplayerSetting:init(vehicle)
 	self:set(false)
 end
 
+---@class KeepUnloadingUntilEndOfRow : BooleanSetting
+KeepUnloadingUntilEndOfRow = CpObject(BooleanSetting)
+function KeepUnloadingUntilEndOfRow:init(vehicle)
+	BooleanSetting.init(self, 'keepUnloadingUntilEndOfRow', 'COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW',
+			'COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP', vehicle)
+	self:set(false)
+end
+
+function KeepUnloadingUntilEndOfRow:isDisabled()
+	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineUnloadAIDriver)
+end
+
 ---@class SiloSelectedFillTypeSetting : LinkedListSetting
 SiloSelectedFillTypeSetting = CpObject(LinkedListSetting)
 SiloSelectedFillTypeSetting.NetworkTypes = {}
@@ -3327,6 +3339,7 @@ function AssignedCombinesSetting:init(vehicle)
 	Setting.init(self, 'assignedCombines','-', '-', vehicle) 
 	self.MAX_COMBINES_FOR_PAGE = 5
 	self.offsetHead = 0
+	-- table has key (the combine's vehicle) with all combines assigned to this unloader in the HUD, value is true
 	self.table = {}
 	self.lastPossibleCombines = {}
 end
@@ -3449,6 +3462,16 @@ end
 
 function AssignedCombinesSetting:getData()
 	return self.table
+end
+
+function AssignedCombinesSetting:__tostring()
+	local ret = 'assigned combines: '
+	local list = ''
+	for combine, _ in pairs(self.table) do
+		list = list .. nameNum(combine) .. ', '
+	end
+	if list == '' then list = 'none' end
+	return ret .. list
 end
 
 function AssignedCombinesSetting:selectClosest()
