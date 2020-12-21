@@ -1962,8 +1962,8 @@ NumberOfRowsPerLandSetting = CpObject(SettingList)
 function NumberOfRowsPerLandSetting:init()
 	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
 			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', nil,
-			{4, 6, 8, 10, 12, 14, 16},
-			{4, 6, 8, 10, 12, 14, 16})
+			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24},
+			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24})
 	self:set(6)
 end
 
