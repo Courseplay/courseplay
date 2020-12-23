@@ -904,29 +904,15 @@
 		<!-- ### DRIVEMODE7 ### -->
 		<article class="manualSection" id="driveMode7">
 			<h2><span class="icon-mode7single"></span> Combine self unloading</h2>
-			<p>This mode works similarly to the overloading mode. The course must have a waiting point at the overloading position, where the combine will stop, extend the pipe, and unload.</p>
-			<figure>
-				<img src="../../res/img/manual_mode7_en.jpg" class="infoImg">
-				<figcaption>Helper route, start point, waypoints, overloading point and stop point in the combine self unloading mode</figcaption>
-			</figure>
-			<p>The combine needs to be hired as a regular helper (or with <span class="emphasize2">AutoCombine</span>), and <span class="emphasize1">only then</span> Courseplay may be activated. The combine will work as a helper until its fill level reaches the percentage set at <code>Start at %</code>. Then it drives to the course's start point, follows the course until the waiting point, where it will unload into a waiting trailer. After, it will follow the course until the end point, from where it will drive to the last position where it worked as a helper. Now, it will activate its cutter and continue threshing.</p>
-			<p class="info"><span class="icon-infoSign inline"></span>At the moment, only helper courses in the four standard directions (north, east, south, west) - or the usage of <span class="emphasize2">AutoCombine</span> in up/down mode - are supported.</p>
+			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers) and will automatically find its way to a free trailer, that can load the harvested filltype and is within 20m of the Fieldborder.</p>
+			<p>The Combine will automatically find its way to the trailer. Just set up a Fieldwork Course and activate the 'self unload' setting.</p>
 		</article>
 
 		<!-- ### DRIVEMODE8 ### -->
 		<article class="manualSection" id="driveMode8">
-			<h2><span class="icon-mode8single"></span> Liquid manure transporter</h2>
-			<p>The liquid manure transporting mode is for transporter barrels and similar tools that have an integrated liquid manure filling trigger. The tool is refilled at a liquid manure silo and then driven to a field's edge, where a working liquid manure barrel can refill automatically.</p>
-			<p>It basically doesn't matter where the course begins or ends, only make sure of two things:</p>
-			<ol>
-				<li><p>The course must lead through a liquid manure trigger (e.g. liquid manure silo) so it can be refilled there automatically.</p></li>
-				<li><p>At the position where the liquid manure barrel should refill (hence the transporter should stop), there needs to be a waiting point.</p></li>
-			</ol>
-			<figure>
-				<img src="../../res/img/manual_mode8_en.jpg" class="infoImg">
-				<figcaption>Start point, waypoints, filling trigger, overloading point and stop point in the liquid manure transport mode</figcaption>
-			</figure>
-			<p>The driver will continue from the waiting/overloading point as soon as the tool is empty.</p>
+			<h2><span class="icon-mode8single"></span> Fieldsupply</h2>
+			<p>The Fieldsupply mode is for transporting anything that you can bring out on a field, like Seeds or liquid manure. The course basically works like Grain Transport, but in addition, you can place a waitpoint where the Driver stops and is ready to overload to a e.g. a seeder or liquid manure sprayer.</p>
+			<p>An Overloader wagen is used for seeds and fertilizer, liqued manure or liquied fertilizer ofcourse require a liquid transport trailer.</p>
 		</article>
 
 		<!-- ### DRIVEMODE9 ### -->
