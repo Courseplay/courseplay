@@ -799,12 +799,19 @@
 		<!-- ### DRIVEMODE1 ### -->
 		<article class="manualSection" id="driveMode1">
 			<h2><span class="icon-mode1single"></span> Grain transport</h2>
-			<p>The tractor waits at the first waypoint until his trailer has been filled. This can happen at a silo, at a field edge or anywhere else. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
+			<p>If you don't add any filltype in the HUD list, the tractor waits at the first waypoint (the middle of the trailer will be positioned on the first waypoint) until his trailer has been filled. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
 			<p>The last waypoint should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
+			<p>For loading a filltype at a trigger (e.g. silo) you have to add up to 5 filltypes in the HUD list, wich will be loaded when:</p>
+			<p><li>Runcounter is higher then 0</li></p>
+			<p><li>Filltype is available in the silo</li></p>
+			<p>In case one of those conditions can't be fullfilled, the next filltype will be loaded (if you got more then one).</p>
+			<p>In case your selected min value can't be reached, you will get noticed that there is not enough left in the silo.</p>
+			<p>If you have more then one trailer (or a multibin trailer) you can load up to 3 different filltypes, by clicking at Seperate Trailers.</p>
 			<figure>
 				<img src="../../res/img/manual_mode1_en.jpg" class="infoImg">
 				<figcaption>Start point, waypoints, unloading trigger and end points in the grain transport mode</figcaption>
 			</figure>
+			<p>One important thing for a Grain Transport Course is, after you started recording, drive in a straight line, so your first waypoint is a few meters ahead of your startwaypoint</p>
 		</article>
 
 		<!-- ### DRIVEMODE2 ### -->
