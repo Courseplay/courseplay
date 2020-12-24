@@ -857,10 +857,11 @@
 			<p>To refill your worker, you got to select a filltype that needs to be refilled and you can add up to 2 filltypes (e.g. seed and fertilizer).</p>
 			<p>When driving through a trigger the driver will wait until the tool is filled with the percentage set at your filltype max value (default: 100%).</p>
 			<p>For refilling at a waitpoint, the min value should be increase to the value, at where the driver is allowed drive back to work.</p>
+			<p>To add the refill course, first load the fieldwork course with <span class="icon-loadMergeCourse" title="Load/merge course"></span> and then add your refill course with the <span class="icon-courseAppend" title="Append course">.</p>
 			<p>Course example:</p>
 			<figure>
 				<img src="../../res/img/manual_mode4_en.jpg" class="infoImg">
-				<figcaption>Start point, waypoints, stop point and refill course and trigger in the fertilizer/seeding mode</figcaption>
+				<figcaption>Start point, stop point and refill course and trigger in the fertilizer/seeding mode</figcaption>
 			</figure>
 			<p>As soon as the tool is empty, it goes into transportation mode and the driver follows the refilling course. Back at the field, the driver drives to the point on the field where it last stopped work, sets the tool into work mode, and continues working.</p>
 		</article>
@@ -878,28 +879,25 @@
 		<!-- ### DRIVEMODE6 ### -->
 		<article class="manualSection" id="driveMode6">
 			<h2><span class="icon-mode6single"></span> Field work</h2>
-			<p>The field work mode is the work horse of all the different modes: it can be used for pressing and collecting bales, windrowing, teddering, cultivating, collecting grass or straw, and much more.</p>
-			<p>Basically, it works much the same as the fertilizing/seeding mode, only that the tool needs to be emptied/unloaded instead of being refilled. Also, the work area must be defined between two waiting points; the unloading course needs to go through a corresponding trigger.</p>
-			<p>As in the fertilizing/seeding mode, the field work course can be generated in two ways:</p>
-			<ol>
-				<li>
-					<p>You record the course yourself. It is important that there need to be two waiting points. The first one at the position where the work on the field should start, and the second at the position where the work on the field should end. This work area is absolutely necessary for the correct functioning of this mode.</p>
-				</li>
-				<li>
-					<p>The course can be generated automatically. For further information, see the <a class="internal" href="#generateCourse"><span class="icon-page8 inline"></span>Generate course</a> section. The waiting points will be set automatically.</p>
-				</li>
-			</ol>
+			<p>The field work mode is doing all the other work on the field, like harvesting, cultivation, pressing and collecting bales and so on.</p>
+			<p>Basically, it works much the same as the fertilizing/seeding mode, only that the tool can/must be emptied/unloaded instead of being refilled.</p>
+			<p>The field work course will be created with the coursegenerator, wich can be found on the Drive Controls Page.</p>
+			<p>The unload course is similar to the refill course of fertilize and seeding mode, just drive through a unloadtrigger or silobunker.</p>
+			<p>For Unloading combines in a similar way, you just have to load a field work course, turn on 'self unload' and place a trailer that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
+			<p>To add the unload course, first load the fieldwork course with <span class="icon-loadMergeCourse" title="Load/merge course"></span> and then add your refill course with the <span class="icon-courseAppend" title="Append course"></span></p>
 			<figure>
 				<img src="../../res/img/manual_mode6_en.jpg" alt="Fieldwork diagram" class="infoImg">
-				<figcaption>Start point, waypoints, stop point and unloading course and trigger in the field work mode</figcaption>
+				<figcaption>Start point, stop point and unloading course and trigger in the field work mode</figcaption>
 			</figure>
-			<p>Tools will be (un)folded and (de)activated automatically. Drivers with balers as tools will stop and unload the bales automatically.</p>
+			<p>Tools will be (un)folded and (de)activated automatically.</p>
+			<p>Balers and bale wrapper will stay on field for their work.</p>
+			<p>To collect bales and unload them where want with an unload course, the unload course must be a bit different. You need to reverse to the place where you want to create a stack and place an 'unload here' waypoint where the 1st stack should be.</p>
 		</article>
 
 		<!-- ### DRIVEMODE7 ### -->
 		<article class="manualSection" id="driveMode7">
 			<h2><span class="icon-mode7single"></span> Combine self unloading</h2>
-			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers) and will automatically find its way to a free trailer, that can load the harvested filltype and is within 20m of the Fieldborder.</p>
+			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers) and will automatically find its way to a free trailer, that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
 			<p>The Combine will automatically find its way to the trailer. Just set up a Fieldwork Course and activate the 'self unload' setting.</p>
 		</article>
 
