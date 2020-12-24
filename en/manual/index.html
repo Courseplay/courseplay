@@ -852,17 +852,12 @@
 		<article class="manualSection" id="driveMode4">
 			<h2><span class="icon-mode4single"></span> Fertilize and seeding</h2>
 			<p>When fertilizing or seeding, there are two sections: one, the actual work part on the field, and two, the course from the field to the refilling trigger and back to the field.</p>
-			<p>The field work course can be created in two different ways:</p>
-			<ol>
-				<li>
-					<p>You record the course yourself. It is important that there need to be two waiting points. The first one at the position where the work on the field should start, and the second at the position where the work on the field should end. This work area is absolutely necessary for the correct functioning of this mode.</p>
-				</li>
-				<li>
-					<p>The course can be generated automatically. For further information, see the <a class="internal" href="#generateCourse"><span class="icon-page8 inline"></span>Generate course</a> section. The waiting points will be set automatically.</p>
-				</li>
-			</ol>
-			<p>The second part, the automatic refilling, is a regular "A to B" course. It should start at the second waiting point (so, the end of the field work course), then go through the fertilizer/liquid manure/seeding trigger, and back to the field, ending just before the first waiting point of the field work course. As soon as a refilling trigger is recognized, the driver stops and refills automatically. If a tool isn't fillable via a trigger, but rather manually (e.g. a solid manure spreader or via a liquid manure transfer trailer), an additional waiting point has to be set and the point where the tool should be filled.</p>
-			<p>When driving through a trigger or waiting at the refill waiting point, the driver will wait until the tool is filled with the percentage set in the <code>Refill until percentage</code> option (default: 100%, available on the <a href="#hud_mode2settings" class="internal"><span class="icon-page3 inline"></span>Combi mode settings</a> page) and then continue his course.</p>
+			<p>The field work course will be created with the coursegenerator, wich can be found on the Drive Controls Page.</p>
+			<p>The second part, the automatic refilling, is a regular "A to B" course. Just start near the field and then go through the fertilizer/liquid manure/seeding trigger (or under an overloader pipe), and back to the field, ending near the field. As soon as a refilling trigger is recognized, the driver stops and refills automatically. If a tool isn't fillable via a trigger, but rather manually (e.g. a solid manure spreader), an additional waiting point has to be set and the point where the tool should be filled.</p>
+			<p>To refill your worker, you got to select a filltype that needs to be refilled and you can add up to 2 filltypes (e.g. seed and fertilizer).</p>
+			<p>When driving through a trigger the driver will wait until the tool is filled with the percentage set at your filltype max value (default: 100%).</p>
+			<p>For refilling at a waitpoint, the min value should be increase to the value, at where the driver is allowed drive back to work.</p>
+			<p>Course example:</p>
 			<figure>
 				<img src="../../res/img/manual_mode4_en.jpg" class="infoImg">
 				<figcaption>Start point, waypoints, stop point and refill course and trigger in the fertilizer/seeding mode</figcaption>
