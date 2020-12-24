@@ -149,7 +149,7 @@
 				<span class="icon-page0"></span>
 				HUD: Combine controls
 			</h2>
-			<p class="info"><span class="icon-infoSign inline"></span>This page is only accessable from combines, choppers, harvesters and tractors with attached combines or choppers.</p>
+			<p class="info"><span class="icon-infoSign inline"></span>This page is only accessable from combines, choppers, harvesters and tractors with attached combines or choppers. A player driven Combine that will be unloaded by CP Combie Mode Drivers is not supported for now.</p>
 			<ul>
 				<li data-line="1">
 					<h4>Request driver / Driver requested</h4>
@@ -164,11 +164,6 @@
 					<p>Manually send the current driver to follow his course. He will drive the course, unload/overload, and drive on to his first waypoint.</p>
 				</li>
 				<li data-line="4">
-					<h4>Driver side</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only displayed for choppers</p>
-					<p>By default, the drivers choose the fitting (non fruit) side to drive by and unload a chopper. With this option you can hard code a side of your choice where they should drive (e.g. when you're threshing a field manually in a spiral).</p>
-				</li>
-				<li data-line="4">
 					<h4>Driver priority</h4>
 					<p class="info"><span class="icon-infoSign inline"></span>Only displayed for combines and harvesters (not choppers)</p>
 					<p>When multiple drivers should unload a combine or harvester, this option defines with which priority the drivers are called.</p>
@@ -176,11 +171,6 @@
 						<li><span class="emphasize1">Fill level:</span> The driver with the highest fill level will be called first, no matter the distance to the combine.</li>
 						<li><span class="emphasize1">Distance:</span> The driver closest to the combine will be called first.</li>
 					</ul>
-				</li>
-				<li data-line="5">
-					<h4>Turning maneuver</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only displayed for choppers, only when they're in manual mode (i.e. not in helper or field work mode)</p>
-					<p>Manually tell the current driver that you're now starting your turning maneuver. The driver will drive out of your way and turn as well. Clicking it again tells the driver he can now return and continue unloading the chopper.</p>
 				</li>
 				<li data-line="5">
 					<h4>Stop during unloading</h4>
@@ -211,6 +201,11 @@
 						<p>While standing on a field, the field's edge/border path can be scanned. It is then displayed as blue lines and yellow dots (can be toggled with <span class="icon-eye inline"></span>).</p>
 						<p>If you want to save the edge path, choose a new field number for it with <span class="icon-arrowUp inline"></span>/<span class="icon-arrowDown inline"></span>. If a field edge path with that number already exists, you can overwrite it, otherwise your can add the path to the list.</p>
 						<p>Each manually scanned field is saved in the <code>courseplayFields.xml</code> file and loaded with the savegame.</p>
+					</li>
+					<li>
+						<h4>Copy course</h4>
+						<p>Lets you copy the exact course and waypoints from another vehicle. Also works with combined, generated or unsaved courses.</p>
+						<p>First choose the vehicle whose course you want to copy, then press the <span class="icon-copy inline" title="copy button"></span> button. The current course and waypoints will be overwritten completely.</p>
 					</li>
 				</ul>
 			</section>
@@ -486,8 +481,8 @@
 				HUD: Manage combines
 			</h2>
 			<p class="info"><span class="icon-infoSign inline"></span>This page is displayed only in the "combi" and "overloader" modes.</p>
-			<p>These settings are only relevant for the combi and overloader modes. You can choose between the driver looking for a combine in need automatically (the default setting), or have an assigned, non-changing combine (manual). If the driver looks for combines automatically, it has to be on the same field as the combine in order to find it. If the driver has been assigned manually to a combine, it can be outside of the field area not. The driver drives from his start point to the combine, no matter where it is.</p>
-			<p>This can be useful for big and hilly fields where the automatic assignment doesn't always work. Or for areas which aren't fields, like meadows.</p>
+			<p>Here you can choose wich Combine(s) you want to unload by clicking the [ ] and mark the Combine(s) with an X -> [X]</p>
+			<p>In case you can't find your Combien on the right field, you can filter the list by choosing a field and only the combines on that field will be shown in the list.</p>
 		</article>
 
         <!-- #################### -->
@@ -519,39 +514,12 @@
 			</h2>
 			<ul>
 				<li>
-					<h4>Path finding</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only available in "combi" and "overload" modes</p>
-					<p>When activated, the driver tries as best as possible not to drive through the fruit. On the one hand this means that on the way to the combine/chopper he drives around the fruit. On the other hand it means that he won't drive to unload a combine if the combine's pipe is on the fruit side. The driver will only start if either the pipe is on the non-fruit side, or the combine is 100% full (ignoring the <code>Start&nbsp;at&nbsp;%</code> setting).</p>
-					<p class="emphasize3"><span class="icon-infoSign inline"></span>At the moment, the "driving around the fruit" part of this option is deactivated, as we're reworking it completely. We plan to reimplement it in the next release.</p>
-				</li>
-				<li>
-					<h4>Open Courseplay</h4>
-					<p>You can choose if the hud should be opened when the right mouse button is clicked, or if the keyboard keys should be used instead (default: <kbd title="Control">CTRL</kbd>+<kbd title="Delete">DELETE</kbd>).</p>
+					<h4>Advanced Settings</h4>
+					<p>Opens up our advanced settings page.</p>
 				</li>
 				<li>
 					<h4>Show waypoints</h4>
 					<p>Choose which course waypoints should be displayed.</p>
-				</li>
-				<li>
-					<h4>Warning lights</h4>
-					<p>Choose if and when the beacon and hazard lights should be activated.</p>
-				</li>
-				<li>
-					<h4>Waiting time</h4>
-					<p>By default, drivers stop and wait at waiting points (except for field work and fertilizing/seeding modes), until the driver is told explicitly to continue (waiting time = 0 sec). When a waiting time has been set (above 0 sec), the driver waits at the waiting point until that set time has passed and then continues automatically. This can be useful for, e.g., a weight station at a BGA.</p>
-					<dl class="buttonInfo">
-						<dt>Default change</dt>
-						<dd>5 sec</dd>
-						<div class="clearfix"></div>
-						<dt><kbd title="Control">CTRL</kbd> change</dt>
-						<dd>10 sec</dd>
-						<div class="clearfix"></div>
-					</dl>
-				</li>
-				<li>
-					<h4>Map icons: display text</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only available if map icons are activated</p>
-					<p>This options activates / deactivates the text shown on the ingame map under the CP vehicles icons.</p>
 				</li>
 				<li>
 					<h4>Debug channels</h4>
@@ -566,8 +534,25 @@
         <article class="manualSection" id="hud_drivingSettings">
 			<h2>
 				<span class="icon-page7"></span>
-				HUD: Drive and work settings
+				HUD: Vehicle settings
 			</h2>
+			<li>
+				<h4>Warning lights</h4>
+				<p>Choose if and when the beacon and hazard lights should be activated.</p>
+			</li>
+				<p>Refuel</p>
+				<p> - WIP</p>
+			</ul>
+		</article>
+
+        <!-- #################### -->
+        <!-- HUD PAGE 8 -->
+		<article class="manualSection" id="hud_courseGeneration">
+			<h2>
+				<span class="icon-page8"></span>
+				HUD: Offsets
+			</h2>
+			<p>On this page, you can set differnt kind of Offsets, depending on your course and mode. - WIP</p>
 			<ul>
 				<li>
 					<h4>Lane offset</h4>
@@ -619,99 +604,6 @@
 						<div class="clearfix"></div>
 					</dl>
 				</li>
-
-				<li>
-					<h4>Always use 4WD</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only available if the DriveControl mod is installed</p>
-					<p>Courseplay automatically activates and deactivates 4WD depending on the situation and the course. This option forces 4WD to always be on.</p>
-				</li>
-				<li>
-					<h4>Copy course</h4>
-					<p>Lets you copy the exact course and waypoints from another vehicle. Also works with combined, generated or unsaved courses.</p>
-					<p>First choose the vehicle whose course you want to copy, then press the <span class="icon-copy inline" title="copy button"></span> button. The current course and waypoints will be overwritten completely.</p>
-				</li>
-			</ul>
-		</article>
-
-        <!-- #################### -->
-        <!-- HUD PAGE 8 -->
-		<article class="manualSection" id="hud_courseGeneration">
-			<h2>
-				<span class="icon-page8"></span>
-				HUD: Course generation
-			</h2>
-			<p class="info"><span class="icon-infoSign inline"></span>This page is only displayed in the "Fertilizer and seeding" and "Field work" modes.</p>
-			<p>For general usage, see the <a href="#generateCourse" class="internalTab"><span class="icon-page8 inline" title="generate course button"></span> course generation</a> page.</p>
-			<ul>
-				<li>
-					<h4>Field edge path</h4>
-					<p class="emphasize2"><span class="icon-infoSign inline"></span>Only available if fields have been scanned or custom scanned fields exist</p>
-					<p>This setting contains a list of all the scanned fields (both automatic and custom). Choose the field for which you want to generate a course. If no field edge path has been selected, the currently loaded course will be used instead as a fictive field border path.</p>
-					<p>When a field edge path has been selected, you can view its borders with the <span class="icon-eye inline" title="field edge path visibility button"></span> visibility button.</p>
-					<p>In addition, the <span class="icon-calculator inline" title="Seed Usage Calculator button"></span> <span class="emphasize2">Seed Usage Calculator</span> can display the amount of seeds needed for the selected field, for every fruit available in the game.</p>
-				</li>
-
-				<li>
-					<h4>Work width</h4>
-					<p>The tool's work width can be set here, from which the course's lane width is calculated. While changing the width, red lines representing the work width are displayed at the vehicle/tool.</p>
-					<dl class="buttonInfo">
-						<dt>Default change</dt>
-						<dd>0.1 m (above 10 m: 0.5 m)</dd>
-						<div class="clearfix"></div>
-						<dt><kbd title="Control">CTRL</kbd> change</dt>
-						<dd>0.5 m (above 10 m: 2 m)</dd>
-						<div class="clearfix"></div>
-					</dl>
-					<p>The work width can also be calculated automatically for the current vehicle/tool constellation by clicking the <span class="icon-calculator inline" title="calculator button"></span> (calculator) button.</p>
-					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
-				</li>
-				<li>
-					<h4>Starting/Ending location</h4>
-					<p>Choose the location from where the course will begin/end:</p>
-					<ol>
-						<li>A field corner</li>
-						<li>Current vehicle position</li>
-						<li>Last used position</li>
-					</ol>
-					<p class="info"><span class="icon-infoSign inline"></span>If you select Current vehicle position or Last used position and set the headland to be worked on 
-						after the center of the field (<span class="icon-headlandAfter inline" title="headland after field course"></span>), 
-						the location you select here will be where the course <span class="emphasize3">ends</span>.</p>
-					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
-				</li>
-				<li>
-					<h4>Starting direction</h4>
-					<p>Available choices depend on the starting location.</p>
-					<p>If you selected a corner to start from then choose the direction that the first lane will go from the starting corner.</p>
-					<p>If you selected a vehicle position, the starting direction is determined automatically based on the headland direction
-						 (<span class="icon-headlandClockwise2 inline" title="clockwise headland"></span>) or (<span class="icon-headlandCounterClockwise2 inline" title="counter-clockwise headland"></span>).</p>
-					<p class="info"><span class="icon-infoSign inline"></span>This setting is required in order to be able to generate a course.</p>
-				</li>
-				<li>
-					<h4>Return to first point</h4>
-					<p>Choose whether the driver should drive back to the first (start) point when the tool is full (field work mode) / empty (fertilizer/seeding mode).</p>
-				</li>
-				<li>
-					<h4><span class="icon-headlandClockwise2" style="margin-right:0.2em !important;"></span><span class="icon-headlandBefore"></span> Headland</h4>
-					<p>Set whether the course should include headland ("turn row") (<a href="http://en.wikipedia.org/wiki/Headland_(agriculture)" title="Read more about headland at Wikipedia"><span class="icon-wiki inline"></span> Wikipedia</a>), whether it should be clockwise (<span class="icon-headlandClockwise2 inline" title="clockwise headland"></span>) or counter-clockwise (<span class="icon-headlandCounterClockwise2 inline" title="counter-clockwise headland"></span>) and whether it should be before (<span class="icon-headlandBefore inline" title="headland before field course"></span>) (e.g. with a combine) or after (<span class="icon-headlandAfter inline" title="headland after field course"></span>) (e.g. with a seeder).</p>
-					<p>You can also set the number of headlands to generate here.</p>
-				</li>
-				<li>
-					<h4>Headland corners</h4>
-					<p>Choosing Smooth will generate slightly rounded corners on the headland so vehicles miss less fruit at sharp corners.</p> 
-					<p>You can also opt for making turn maneuvers at the corners (this works for combines only).</p>
-					<p class="info"><span class="icon-infoSign inline"></span>This choice is available only if you select Current vehicle position/Last used postion as a starting location.</p>
-				</li>
-				<li>
-					<h4><span class="icon-page8"></span> Generate course</h4>
-					<p>When all required options have been set, the "generate course" button (<span class="icon-page8 inline" title="generate course button"></span>) becomes available. Clicking it, it generates the course with the above settings. Again, the minimum requirements are:
-					<ol>
-						<li>Either a field edge path or a course with at least <span class="emphasize2">5 waypoints</span> must be loaded (when headland is activated, the course has to have at least <span class="emphasize2">20 waypoints</span>)</li>
-						<li>the loaded course has not been generated</li>
-						<li>the loaded course has not been combined from multiple courses</li>
-						<li>a starting corner has been set</li>
-						<li>a starting direction has been set</li>
-					</ol>
-				</li>
 			</ul>
 		</article>
 
@@ -759,11 +651,6 @@
 						<img src="../../res/img/manualShovelUnloading.png" alt="Shovel in unloading position" class="infoImg origSize">
 						<figcaption>Fig. 4: Shovel in unloading position</figcaption>
 					</figure>
-				</li>
-				<li>
-					<h4>Stop + go loading</h4>
-					<p>If activated, the driver will stop when the shovel is being filled. The driver will move forward when it's not filled anymore until it's filled again, repeating until it's full.</p>
-					<p>If not activated, the driver will drive through the silo, being filled while moving (default setting).</p>
 				</li>
 			</ul>
 		</article>
@@ -1003,7 +890,6 @@
 
 		<article class="manualSection" id="generateCourse">
 			<h2>Generating a course</h2>
-			<p>For general descriptions of the settings, see <a href="#hud_courseGeneration" class="internal"><span class="icon-page8 inline"></span>HUD: Course generation</a>.</p>
 			<p>In order to generate a field course (for the field work and fertilizing/seeding modes) automatically, the following steps need to be done.</p>
 			<ol>
 				<li>
