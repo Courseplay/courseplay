@@ -54,7 +54,7 @@
 								<li><a href="#hud_combineSettings"><span class="icon-page0"></span><span>Combine controls</span></a></li>
 								<li><a href="#hud_driverControls"><span class="icon-page1"></span><span>Driver controls</span></a></li>
 								<li><a href="#hud_manageCourses"><span class="icon-page2"></span><span>Manage courses</span></a></li>
-								<li><a href="#hud_mode2settings"><span class="icon-page3"></span><span>Combi mode settings</span></a></li>
+								<li><a href="#hud_mode2settings"><span class="icon-page3"></span><span>Value Settings</span></a></li>
 								<li><a href="#hud_manageCombine"><span class="icon-page4"></span><span>Manage combines</span></a></li>
 								<li><a href="#hud_speeds"><span class="icon-page5"></span><span>Speeds</span></a></li>
 								<li><a href="#hud_generalSettings"><span class="icon-page6"></span><span>General settings</span></a></li>
@@ -391,38 +391,14 @@
 		<article class="manualSection" id="hud_mode2settings">
 			<h2>
 				<span class="icon-page3"></span>
-				HUD: Combi mode settings
+				HUD: Value Settings
 			</h2>
-			<p class="info"><span class="icon-infoSign inline"></span>This page is displayed in all modes except "Transfer", "Field work" and "Fill and empty shovel".</p>
-			<p>Just like the name implies, these settings are for the combi and overload modes. You can configure your driver to be better suited to unload the combine. In addition there is one option for the "fertilizer/seeding" and "Fieldsupply" modes. The values can be changed by clicking the <span class="icon-plus inline" title="plus"></span>/<span class="icon-minus inline" title="minus"></span> buttons on the right hand side (bigger steps with pressed <kbd title="Control">CTRL</kbd> key) or the mouse wheel.</p>
+			<p>Depending on the Mode you selected, you have a few different options.</p>
+			<p>The values can be changed with the mouse wheel.</p>
 			<ul>
 				<li>
-					<h4>Side offset</h4>
-					<p>This value defines the horizontal offset between the driver and the combine/chopper when unloading. Technically, it's the distance between the combine's center and its pipe end. By default it's set to "auto" - the driver calculates the side distance automatically. The value can be changed and set to "manual" by clicking <span class="icon-plus inline" title="plus"></span>/<span class="icon-minus inline" title="minus"></span>. You can reset it to "automatic" by setting it to 0 (zero).</p>
-					<dl class="buttonInfo">
-						<dt>Default change</dt>
-						<dd>0.1 m</dd>
-						<div class="clearfix"></div>
-						<dt><kbd title="Control">CTRL</kbd> change</dt>
-						<dd>0.5 m</dd>
-						<div class="clearfix"></div>
-					</dl>
-				</li>
-				<li>
-					<h4>Pipe offset</h4>
-					<p>This value defines the vertical offset between the driver's trailer and the combine/chopper when unloading (ahead/behind). This is being used to have the trailer directly underneath the pipe. By default it's set to "auto". In contrast to the side offset or the turning circle, clicking <span class="icon-plus inline" title="plus"></span>/<span class="icon-minus inline" title="minus"></span> adds to/subtracts from the automatic value. Meaning: e.g. "1 m ahead", "2.5 m back", &hellip;. You can reset it to "automatic" by setting it to 0 (zero).</p>
-					<dl class="buttonInfo">
-						<dt>Default change</dt>
-						<dd>0.1 m</dd>
-						<div class="clearfix"></div>
-						<dt><kbd title="Control">CTRL</kbd> change</dt>
-						<dd>0.5 m</dd>
-						<div class="clearfix"></div>
-					</dl>
-				</li>
-				<li>
-					<h4>Turning circle</h4>
-					<p>This value defines the driving tractor's turning circle, which is especially used for turning maneuvers when unloading a combine or chopper. The value, like the side offset, is calculated automatically (based on wheel angle, wheel base, track width, number of trailers), as soon as a driver is hired. It can be changed and set to "manual" by clicking <span class="icon-plus inline" title="plus"></span>/<span class="icon-minus inline" title="minus"></span>. You can reset it to "automatic" by setting it to 0 (zero).</p>
+					<h4>Turning circle (Combi Mode and Overloader Mode)</h4>
+					<p>This value defines the driving tractor's turning circle, it defines the minimum turning circle for the Pathfinder. The value, like the side offset, is calculated automatically (based on wheel angle, wheel base, track width, number of trailers), as soon as a driver is hired. You can reset it to "automatic" by setting it to 0 (zero).</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>1 m</dd>
@@ -433,9 +409,10 @@
 					</dl>
 				</li>
 				<li>
-					<h4>Start at %</h4>
+					<h4>Start at % (Combi Mode and Overloader Mode)</h4>
 					<p>This value defines the combine's fill level percentage that tells the driver to drive to and unload it. When unloading choppers, this value defines when the second unloading driver should join the unloading chain.</p>
-					<p><span class="emphasize1">Note:</span> if <a href="#hud_generalSettings" class="internalTab">path finding</a> is activated, this value is ignored as long as the combine's pipe is on the fruit side and the combine isn't full.</p>
+					<p>For normal Combines, the Unloader will only start if the pipe won't be in the fruit and the option unload on first headland is activated.</p>
+					<p><span class="emphasize1">Note:</span> if fruitbypass is activated, the driver will always drive to the Combine at the set %, even when the pipe is in the fruit.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>5%</dd>
@@ -446,7 +423,7 @@
 					</dl>
 				</li>
 				<li>
-					<h4>Drive on at %</h4>
+					<h4>Drive on at % (Combi Mode and Overloader Mode)</h4>
 					<p>This value defines at which trailer fill level percentage the driver should start to drive the course to the unload point. This can be useful if, e.g., the trailer is 97% full and the driver shouldn't wait 5 more minutes for the next unloading, only to get a measly 3%.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
@@ -458,9 +435,23 @@
 					</dl>
 				</li>
 				<li>
-					<h4>Refill until percentage</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>This option is only displayed in "fertilizer/seeding" and "Fieldsupply" modes.</p>
-					<p>This value defines the fill level percentage that a sprayer, seeder etc. fills up at a trigger.</p>
+					<h4>Drive on at less then % (Overloader Mode)</h4>
+					<p>This value defines at which trailer fill level percentage the driver should start to drive the course to the unload point. This can be useful if, e.g., the trailer is 97% full and the driver shouldn't wait 5 more minutes for the next unloading, only to get a measly 3%.</p>
+					<dl class="buttonInfo">
+						<dt>Default change</dt>
+						<dd>5%</dd>
+						<div class="clearfix"></div>
+						<dt><kbd title="Control">CTRL</kbd> change</dt>
+						<dd>10%</dd>
+						<div class="clearfix"></div>
+					</dl>
+				</li>
+				<li>
+					<h4>Filltype lists (Grain transport, Fertilizer/Seeding and Fieldsupply)</h4>
+					<p>As soon as you added a filltype to load or reload, the filltype will be displayed with a few values:</p>
+					<p>Count (only for Grain Transport): How many times will the Driver load that filltype from a silo.</p>
+					<p>Max: The maximum value it should try to load (less is accepted too).</p>
+					<p>Min: How much should the driver minimal load, if he can't, he will wait for more to come untill he can load the min value.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>1%</dd>
