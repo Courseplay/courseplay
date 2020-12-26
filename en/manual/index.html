@@ -196,6 +196,16 @@
 						<p>See: <span class="emphasize2">"Recording mode"</span></p>
 					</li>
 					<li>
+						<h4>Copy course</h4>
+						<p>Lets you copy the exact course and waypoints from another vehicle. Also works with combined, generated or unsaved courses.</p>
+						<p>First choose the vehicle whose course you want to copy, then press the <span class="icon-copy inline" title="copy button"></span> button. The current course and waypoints will be overwritten completely.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="manualSubSection">
+				<h3>No course loaded + Fieldwork or fertilizer/seeding mode activated</h3>
+				<ul>
+					<li>
 						<h4>Calculate current field's edge path</h4>
 						<p class="info"><span class="icon-infoSign inline"></span>See also: <a href="#fieldScanner" class="internal">field scanner</a></p>
 						<p>While standing on a field, the field's edge/border path can be scanned. It is then displayed as blue lines and yellow dots (can be toggled with <span class="icon-eye inline"></span>).</p>
@@ -203,9 +213,8 @@
 						<p>Each manually scanned field is saved in the <code>courseplayFields.xml</code> file and loaded with the savegame.</p>
 					</li>
 					<li>
-						<h4>Copy course</h4>
-						<p>Lets you copy the exact course and waypoints from another vehicle. Also works with combined, generated or unsaved courses.</p>
-						<p>First choose the vehicle whose course you want to copy, then press the <span class="icon-copy inline" title="copy button"></span> button. The current course and waypoints will be overwritten completely.</p>
+						<h4>Course generation...</h4>
+						<p>Opens the advanced course generator</p>
 					</li>
 				</ul>
 			</section>
@@ -230,7 +239,7 @@
 					<li>
 						<h4><span class="icon-waitPointSign"></span>Set waiting point</h4>
 						<p>While recording, you have the possibility to set waiting points on the course. At those points, the driver, while driving the course, will stop and wait until either you tell him to continue, or the configured <a href="#hud_generalSettings" class="internal">waiting time</a> has passed. When a driver reaches a waiting point, a message will be displayed (<code>XYZ has reached waiting point.</code>).</p>
-						<p>In certain modes, waiting points have special meanings, other than waiting: in the <a href="#driveMode4" class="internal"><span class="icon-mode4single"></span> fertilizer/seeding</a> and <a href="#driveMode6" class="internal"><span class="icon-mode6single"></span> field work</a> modes, they indicate the start and end of the work area, and - if using a bale loader - the unloading point. In the <a href="#driveMode9" class="internal"><span class="icon-mode9single"></span> shovel filling and unloading</a> mode, they indicate the start and end of the loading area and the unloading point.</p>
+						<p>In certain modes, waiting points have special meanings, other than waiting: in the <a href="#driveMode4" class="internal"><span class="icon-mode4single"></span> fertilizer/seeding</a> mode, the waitpoint defines a position where the worker stops and wait untill he got his set min% value reached, this can be done by a player or by a courseplay driver. They also indicate the start and end of the work area, as well as the area where to check for an unload point for <a href="#driveMode9" class="internal"><span class="icon-mode9single"></span> shovel filling and unloading</a> mode and for <a href="#driveMode3" class="internal"><span class="icon-mode3single"></span> overloader</a> mode, to set the overloading position.</p>
 					</li>
 					<li>
 						<h4><span class="icon-crossSign"></span>Set crossing point</h4>
@@ -250,6 +259,10 @@
 						<p>Courseplay supports reverse driving with trailers in many modes. Activating this option later tells the driver to drive this portion of the course in reverse. You should only activate and deactivate it once you're at a complete stop and not rolling anymore. When active during the recording, you must drive in reverse, otherwise there will be severe driving errors later. Clicking once activates the reverse mode (the button turns green), clicking it again ends it.</p>
 						<p class="info"><span class="icon-infoSign inline"></span> See also: <a href="#reverseDriving" class="internal">Reverse driving</a></p>
 					</li>
+					<li>
+						<h4><span class="icon-unloadhere"></span>Unload here</h4>
+						<p>Unload here points are used to tell the driver to create a heap, like a beet rental. They are also used in unloading chaff into a bunker when fill them up in reverse, as well as unloading bales.</p>
+					</li>
 				</ul>
 			</section>
 			<section class="manualSubSection">
@@ -261,27 +274,34 @@
 					</li>
 					<li>
 						<h4>Start course at&hellip;</h4>
-						<p class="info"><span class="icon-infoSign inline"></span>Available in all modes except "Fill and empty shovel"</p>
-						<p>Some courses have relatively many waypoints in a small area, especially at the starting point (e.g. generated courses with headland). Here you can choose if the driver starts the course at the nearest waypoint (default setting), the current wapypoint or directly at the first waypoint.</p>
+						<p>Some courses have relatively many waypoints in a small area, especially at the starting point (e.g. generated courses with headland). Here you can choose if the driver starts the course at the nearest waypoint (default setting), the next closest (it takes the currecnt vehicle direction into account), the current wapypoint or directly at the first waypoint.</p>
+					</li>
+				</ul>
+			</section>
+			<section class="manualSubSection">
+				<h3>Course loaded, not driving + Fieldwork or fertilizer/seeding mode activated</h3>
+				<ul>
+					<li>
+						<p class="info">If you want to use AutoDrive to refill/unload/parking, the option will be here.</p>
 					</li>
 					<li>
-						<h4>Farm silo load</h4>
-						<p class="info"><span class="icon-infoSign inline"></span>Only available in grain transport mode</p>
-						<p>With this option you can choose the silo fruit type to be filled into the trailer at the course's start point. Each tractor can have a different selected fill type, allowing for multiple different routes from that silo running at the same time. This setting is saved in the <code>vehicles.xml</code> file.</p>
+						<h4>Return to first point</h4>
+						<p>This option is used to define if the driver stays at the last waypoint of the fieldwork course, or drives back to the start.</p>
+						<p>In addition, you can also dismiss the driver automatically, as soon as you enter the driver, for quick start driving without dismiss the driver in the HUD.</p>
 					</li>
+				</ul>
+			</section>
+			<section class="manualSubSection">
+				<ul>
 					<li>
 						<h4>Switch mode</h4>
-						<p><span class="icon-mode1block" style="font-size:1.5em;"></span> <span class="icon-mode2block" style="font-size:1.5em;"></span> <span class="icon-mode3block" style="font-size:1.5em;"></span> <span class="icon-mode4block" style="font-size:1.5em;"></span> <span class="icon-mode5block" style="font-size:1.5em;"></span> <span class="icon-mode6block" style="font-size:1.5em;"></span> <span class="icon-mode7block" style="font-size:1.5em;"></span> <span class="icon-mode8block" style="font-size:1.5em;"></span> <span class="icon-mode9block" style="font-size:1.5em;"></span></p>
-						<p>In order to being able to do many different work types, there are different driving modes. Certain modes are only available for certain types of vehicles. For example, a tractor won't be allowed to drive in the <a href="#driveMode7" class="internal"><span class="icon-mode7single"></span> combine self unloading</a> mode. The current mode will be highlighted in green. The mode names are display as a tooltip when hovering over the buttons.</p>
+						<p><span class="icon-mode1block" style="font-size:1.5em;"></span> <span class="icon-mode2block" style="font-size:1.5em;"></span> <span class="icon-mode3block" style="font-size:1.5em;"></span> <span class="icon-mode4block" style="font-size:1.5em;"></span> <span class="icon-mode5block" style="font-size:1.5em;"></span> <span class="icon-mode6block" style="font-size:1.5em;"></span> <span class="icon-mode8block" style="font-size:1.5em;"></span> <span class="icon-mode9block" style="font-size:1.5em;"></span></p>
+						<p>In order to being able to do many different work types, there are different driving modes. Certain modes are only available for certain types of vehicles. For example, a tractor won't be allowed to drive in the <a href="#driveMode9" class="internal"><span class="icon-mode9single"></span> shovel filling and emptying</a> mode. The current mode will be highlighted in green. The mode names are display as a tooltip when hovering over the buttons.</p>
 						<p>The different modes are described in detail in the <a class="internalTab" href="#driveModes">Driving modes</a> section.</p>
 					</li>
 					<li>
 						<h4><span class="icon-clearCourse"></span>Clear course</h4>
 						<p>When a course has been recorded or loaded, you can delete the current course selection. The saved course will not be deleted from the save game, only the driver will clear his current course.</p>
-					</li>
-					<li>
-						<h4><span class="icon-search"></span>Search for first waypoint</h4>
-						<p>With this option activated, the direction and distance to the course's first waypoint (in relation to the tractor) are displayed. This can be useful if you don't remember where the course's start is.</p>
 					</li>
 				</ul>
 			</section>
@@ -297,22 +317,8 @@
 						<p>When you're driving a "filling" course, for example unloading a combine in combi mode, or collecting grass in field work mode, you can force the driver to drive the unloading portion of the route immediately.</p>
 					</li>
 					<li>
-						<h4>Continue</h4>
-						<p>When a driver has reached a waiting point, you can manually tell him to continue.</p>
-					</li>
-					<li>
-						<h4>Stop at last point or trigger</h4>
-						<p>When activated, the tractor will stop at the next valid unloading or fill trigger, or - if no triggers exist on that route - at the end of the route.</p>
-					</li>
-					<li>
-						<h4>Ridge markers</h4>
-						<p class="info"><span class="icon-infoSign inline"></span>Available only in "fertilizing and seeding" mode</p>
-						<p>When using a seeder with a generated course, choose whether the ridge markers should be deployed automatically or manually (i.e. you control them). This setting is saved in the <code>vehicles.xml</code> file.</p>
-					</li>
-					<li>
-						<h4>Unloading on field</h4>
-						<p class="info"><span class="icon-infoSign inline"></span>Available only in "field work" mode, with an attached bale loader and with <span class="emphasize3">no unloading course</span> existing after the field work course</p>
-						<p>If activated, the bale loader will unload the bales automatically on the field when 100% full.</p>
+						<h4>WIP</h4>
+						<li>more to come ?</li>
 					</li>
 				</ul>
 			</section>
@@ -327,6 +333,10 @@
 			</h2>
 			<p>On this page you'll find an overview containing your saved courses and folders. The list can be scrolled through by using the up/down arrows <span class="icon-arrowUp inline" title="up arrow"></span>/<span class="icon-arrowDown inline" title="down arrow"></span> near the hud's right edge, or by using the mouse wheel.</p>
 			<p>The course management system basically works like a regular file system. You can create folders, move courses or other folders to it, and load and delete them. The courses and folders are saved in the <code>courseplay.xml</code> file.</p>
+			<li>
+				<h4><span class="icon-search"></span>Search for first waypoint</h4>
+				<p>With this option activated, the direction and distance to the course's first waypoint (in relation to the tractor) are displayed. This can be useful if you don't remember where the course's start is.</p>
+			</li>
 
 			<dl class="buttonInfo">
 				<dt>Default change</dt>
@@ -777,7 +787,7 @@
 		<!-- ### DRIVEMODE7 ### -->
 		<article class="manualSection" id="driveMode7">
 			<h2><span class="icon-mode7single"></span> Combine self unloading</h2>
-			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers) and will automatically find its way to a free trailer, that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
+			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers), that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
 			<p>The Combine will automatically find its way to the trailer. Just set up a Fieldwork Course and activate the 'self unload' setting.</p>
 		</article>
 
