@@ -80,7 +80,7 @@
 							</ul>
 						</li>
 						<li>
-							<a href="#generateCourse"><span>Generate course</span></a>
+							<a href="#generateCourse"><span>Advanced course generator</span></a>
 						</li>
 						<li>
 							<a href="#fieldScanner"><span>Field scanner</span></a>
@@ -397,7 +397,7 @@
 			<p>The values can be changed with the mouse wheel.</p>
 			<ul>
 				<li>
-					<h4>Turning circle (Combi Mode and Overloader Mode)</h4>
+					<h4>Turning circle (Combi Mode and Overloader Mode, also used for round Headland Corners)</h4>
 					<p>This value defines the driving tractor's turning circle, it defines the minimum turning circle for the Pathfinder. The value, like the side offset, is calculated automatically (based on wheel angle, wheel base, track width, number of trailers), as soon as a driver is hired. You can reset it to "automatic" by setting it to 0 (zero).</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
@@ -882,27 +882,89 @@
 		<!-- #################### -->
 
 		<article class="manualSection" id="generateCourse">
-			<h2>Generating a course</h2>
-			<p>In order to generate a field course (for the field work and fertilizing/seeding modes) automatically, the following steps need to be done.</p>
+			<h2>Advanced course generator</h2>
+			<p>The course generator is accessible from the Driver Controls HUD Page, but only on fieldwork or fertilizeing/seeding mode.</p>
+			<p class="info">Keep in mind that some setting combinations, big fields and smal working width can lead into long generation times.
+				Your Game won't simple crash and your computer is not hanging up.
+				Patience is the key to success!</p>
+			
+			<p>There are several options that will be listed here. To find the best course for you, we suggest you to try different settings. To do that, just change a value and press 'generate course'. If you don't like the result, change an other value and just press 'generate course' again.</p>
+			<p>The Field can be selected by clicking the arrows, use the scroll wheel, or simply click on the Field on the PDA.</p>
 			<ol>
 				<li>
-					<p>If the field scanner is activated, choose a field edge path from the list. If no field is selected, the currently loaded course (if present) is used as a field edge path.</p>
+					<p><h3>Field edge path:</h3>
+						<p>Current loaded course - you can record a round course and save it to use in the course generator, keep in mind that once a course is generated, the current loaded course is no longer your round course.</p>
+						<p>Scanned Fields from the Map</p>
+						<p>Usergenerated Fields, by useing the calculate current field's path option in the HUD. (The Fieldnumber will be displayed with a '(User)' in it.</p>
+					</p>
 				</li>
 				<li>
-					<p>Set the work width. The work width is needed to calculated the distance between the course's lanes.</p>
+					<p><h3>Starting position:</h3></p>
+					<p>Current vehicle position</p>
+					<p>South-west/north-west/north-east/south-east corner</p>
+					<p>Select position on map - this can be done by simply click on the PDA at the position where the start should be</p>
 				</li>
 				<li>
-					<p>Set the starting corner. Depending on the size and form of the field and the chosen starting direction, the starting point's position can be in different places:</p>
-					<figure>
-						<img src="../../res/img/manual_generateCourse_startingCorners_en.jpg" class="infoImg">
-						<figcaption>Two possible starting positions with a "north east" starting corner</figcaption>
-					</figure>
+					<p><h3>Bypass islands:</h3></p>
+					<p>Off - will ignore any islands on the Field</p>
+					<p>Single - will make a simple round bypass</p>
+					<p>Circle - will generate a complete circle arround the island, wich will be driven arround completely once</p>
 				</li>
 				<li>
-					<p>Selecting Vehicle position or Last used position instead of a corner starts a different course generation algorithm. </p>
-					<p>In this mode, the vehicle's position determines the start or end of the headland tracks. If you work the headlands
-					   first ()<span class="icon-headlandBefore inline"></span>) the course will start at the field boundary nearest to the vehicle.
-					   If you work the headland last (<span class="icon-headlandAfter inline"></span>), this is where the course will end.</p>
+					<p><h3>Skip rows (0-3):</h3></p>
+					<p>This is useful to prevent turns that will do a reverse maneuver</p>
+					<p>On odd shaped fields, can lead to visual lines across off field parts, wich won't be driven when you have turned on 'use Pathfinder in turns' on the advanced settings page.</p>
+				</li>
+				<li>
+					<p><h3>Multiple tools (0-8):</h3></p>
+					<p>This is the only option you need, when you want to use more then one tool on a field</p>
+					<p>You don't have to add any work width, just set the work width for one tool, the rest will be calculated automatically</p>
+					<p>Very important note - do not start a multi tool course with headlands in a corner, it will lead to a bad or up to not working at all inner path (explanation picture might follow)</p>
+				</li>
+				<li>
+					<p><h3>Working width:</h3></p>
+					<p>Worktool working width should be already set here</p>
+					<p>If this is not the case, the yellow button on the right will set the worktool width to the work width setting</p>
+					<p>Some tools send the correct working width, in this case, use the arrows or mouse wheel to adjust the correct working width manualy</p>
+				</li>
+				<li>
+					<p><h3>Headland:</h3></p>
+						<ul>
+						<li>
+							<p><h5>Arround:</h5></p>
+						</li>
+						</ul>
+							<p>Headland passes (1-50, generator might reduce it to a fitting value)</p>
+							<p>Headland counter-/clockwise</p>
+							<p>Start wokring on (Headland passes / up/down rows) - This setting switches the start with the stop positon, keep that in mind if you select a starting position on the map</p>
+							<p>Headland corner - smooth - will generate a simple smooth corner</p>
+							<p>Headland corner - turn - will generate a sharp corner with a turn maneuver</p>
+							<p>Headland corner - round - will generate a round corner, the radius depends on the set turn radius, set on the value setting page on the HUD</p>
+							<p>Headland overlap (0-20%)</p>
+						<ul>
+						<li>
+							<p><h5>Narrow Field:</h5></p>
+						</li>
+						</ul>
+							<p>Headland counter-/clockwise</p>
+						<ul>
+						<li>	
+							<p><h5>Short edges:</h5></p>
+						</li>
+						</ul>
+							<p>Headland passes (1-50, generator might reduce it to a fitting value)</p>
+							<p>Start wokring on (Headland passes / up/down rows) - same as for 'arround'</p>
+							<p>Headland overlap (0-20%)</p>
+				</li>
+				<li>
+					<p><h3>Field center (experimental)</h3></p>
+					<p>up/down - simple rows that will be next to each other</p>
+					<p>racetrack - </p>
+					<p>spiral - </p>
+					<p>lands (4- 24) - </p>
+				</li>
+				<li>
+					<p><h3>Course explanation:</h3></p>
 					<figure>
 						<img src="../../res/img/manual_generateCourse_vehicleLocation.png" class="infoImg">
 						<figcaption>Start of course is based on vehicle position</figcaption>
@@ -912,40 +974,17 @@
 					<p>Due to the nature of this automatic alignment, the up/down tracks won't necessarily start where the headland ends,
 						so often, there's a connecting track is needed between the two (see the above picture). The vehicle will raise and 
 						turn off implements while traveling on that connecting track.</p>
-				</li>
-				<li>
-					<p>Set the starting direction. That's the direction that the first lane will have.</p>
-				</li>
-				<li>
-					<p><span class="emphasize2">(optional)</span><br />
-					Activate/deactivate <code>Return to first point</code>. If activated, the driver will drive to the starting point (instead of the end point) when the used tool is full (field work mode)/empty (fertilizer and seeding mode). This can be useful if the unloading/refilling course begins at the starting point.</p>
 					<figure>
-						<img src="../../res/img/manual_generateCourse_returnToFirstPoint_en.jpg" class="infoImg">
-						<figcaption>The driver returns to the starting instead of the stopping at the end point</figcaption>
-					</figure>
-					<p>This settings will be hard coded into the course, meaning it can not be changed dynamically while the course is being driven.</p>
-				</li>
-				<li>
-					<p><span class="emphasize2">(optional)</span><br />
-					Set your headland options. Courseplay currently supports a maximum of six lanes, which can be either <span class="icon-headlandBefore inline"></span> before (e.g. with a combine) or <span class="icon-headlandAfter inline"></span> after (e.g. with a cultivator) the field course. If the headland is set to "before", it will start approximately at the set starting corner. If it's set to "after", the field course will continue directly into the headland lane.</p>
-					<p>Also choose the direction of the headland: <span class="icon-headlandClockwise2 inline" title="Headland direction button"></span> clockwise or <span class="icon-headlandCounterClockwise2 inline" title="Headland direction button"></span> counter-clockwise</p>
-					<p>Depending on the size and form of the field, the set starting corner and start direction, it can happen that the headland begins at a point where there are multiple waypoints close by (e.g. the field course's points). This can lead to the driver not always finding waypoint #1. Should this happen, you can set <code>Start course at first point</code> on the <a href="#hud_driverControls" class="internal"><span class="icon-page1 inline"></span> Driver controls</a> page.</p>
-				</li>
-				<li>
-					<p>Click the <span class="icon-page8 inline" title="generate course button"></span> generate course button.</p>
-					<figure>
+						<p><h3>Course example:</h3></p>
 						<img src="../../res/img/manual_generateCourse_generatedCourse.jpg" class="infoImg">
 						<figcaption>A generated course with one lane of headland</figcaption>
 					</figure>
-					<p>If the <span class="icon-page8 inline" title="generate course button"></span> generate course button is disabled, you should check if all requirements are met:</p>
-					<ul>
-						<li>A valid field edge path / a course with at least <span class="emphasize2">5 waypoints</span> must be loaded (when headland is activated, the course has to have at least <span class="emphasize2">20 waypoints</span>)</li>
-						<li>The loaded course has not been generated</li>
-						<li>The loaded course has not been combined from multiple courses</li>
-						<li>A starting corner has been set</li>
-						<li>A starting direction has been set</li>
-					</ul>
-					<p>The waiting points at the start and the end will be set automatically. If you want to add an unloading/refilling course, the field course must be generated first. Afterwards, add the unloading/refilling course.</p>
+				</li>
+				<li>
+					<figure>
+						<img src="../../res/img/manual_generateCourse_returnToFirstPoint_en.jpg" class="infoImg">
+						<figcaption>The driver returns to the starting point instead of stopping at the end point</figcaption>
+					</figure>
 				</li>
 			</ol>
 		</article>
