@@ -133,7 +133,6 @@ In GlobalSettingsPage.xml add the following just after the 'workerWages' block (
 In translation_en.xml add
 .
 .
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay workers earn wages" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click to switch" />  -- add for clicktoswitch
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Click on a vehicle to switch to it" />  -- add for clicktoswitch
 .

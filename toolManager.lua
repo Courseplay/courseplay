@@ -16,6 +16,15 @@ function courseplay:attachImplement(implement)
 					firstAttacherVehicle.cp.tooIsDirty = true; 
 				end;				
 			end
+			local rootVehicle = attacherVehicle:getRootVehicle()
+			if rootVehicle then 
+				if rootVehicle.cp.settings then 
+					rootVehicle.cp.settings:validateCurrentValues()
+				end
+				if rootVehicle.cp.driver then 
+					rootVehicle.cp.driver:refreshHUD()
+				end
+			end
 		end
 		courseplay:setAttachedCombine(self);
 	end
@@ -30,8 +39,14 @@ function courseplay:onPostDetachImplement(implementIndex)
 	if sAI[implementIndex].object == self.cp.attachedCombine then
 		self.cp.attachedCombine = nil;
 	end
-	if self.cp.driver then 
-		self.cp.driver:refreshHUD()
+	local rootVehicle = self:getRootVehicle()
+	if rootVehicle then 
+		if rootVehicle.cp.settings then 
+			rootVehicle.cp.settings:validateCurrentValues()
+		end
+		if rootVehicle.cp.driver then 
+			rootVehicle.cp.driver:refreshHUD()
+		end
 	end
 end;
 
@@ -39,11 +54,9 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
 	vehicle.cp.hasAugerWagon = false;
-	vehicle.cp.hasSugarCaneAugerWagon = false;
-	vehicle.cp.hasSugarCaneTrailer = false
-	vehicle.cp.hasFertilizerSowingMachine = nil;
+
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
-	if not vehicle.cp.workToolAttached then
+	if not vehicle.cp.workToolAttached and not vehicle.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
 	end
 	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
@@ -174,64 +187,33 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	courseplay:setOwnFillLevelsAndCapacities(workTool,vehicle.cp.mode)
 	local hasWorkTool = false;
 	local hasWaterTrailer = false
-	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
-	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		if SpecializationUtil.hasSpecialization(Dischargeable, workTool.specializations) and (SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) or SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations)) and workTool.cp.capacity and workTool.cp.capacity > 0.1 and not  SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) then
-			if vehicle.cp.mode == 2 and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) or vehicle.cp.mode == 1 then 
+
+	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
+	if isAllowedOkay and isDisallowedOkay then
+		if vehicle.cp.mode == 5 then 
+			-- For reversing purpose ?? still needed ?
+			if isImplement then
 				hasWorkTool = true;
 				vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			end
-		end; 
-	-- MODE 3: AUGERWAGON
-	elseif vehicle.cp.mode == 3 then
-		if SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) then
+		else
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
+	end
+	
 
 	-- MODE 4: FERTILIZER AND SEEDING
-	elseif vehicle.cp.mode == 4 then
-		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+	if vehicle.cp.mode == 4 then
+		if isAllowedOkay and isDisallowedOkay then
 			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
 			vehicle.cp.noStopOnEdge = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 			vehicle.cp.noStopOnTurn = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 		end;
-
-	-- MODE 5: TRANSFER
-	elseif vehicle.cp.mode == 5 then
-		-- For reversing purpose
-		if isImplement then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-		-- DO NOTHING
-
 	-- MODE 6: FIELDWORK
 	elseif vehicle.cp.mode == 6 then
-		if (courseplay:isBaler(workTool) 
-		or courseplay:isBaleLoader(workTool) 
-		or courseplay:isSpecialBaleLoader(workTool) 
-		or workTool.cp.hasSpecializationCultivator
-		or courseplay:isCombine(workTool)
-		or workTool.cp.hasSpecializationFruitPreparer 
-		or workTool.cp.hasSpecializationPlow
-		or workTool.cp.hasSpecializationTedder
-		or workTool.cp.hasSpecializationWindrower
-		or workTool.cp.hasSpecializationCutter
-		or workTool.cp.hasSpecializationWeeder
-		or workTool.spec_dischargeable
-		or courseplay:isMower(workTool)
-		or courseplay:isAttachedCombine(workTool) 
-		or courseplay:isFoldable(workTool))
-		and not courseplay:isSprayer(workTool)
-		and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
-		then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+		if isAllowedOkay and isDisallowedOkay then
 			courseplay:setMarkers(vehicle, workTool);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
@@ -248,49 +230,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 				vehicle.cp.hasSpecialChopper = true;
 			end;
 		end;
-
-	-- MODE 8: Field Supply
-	elseif vehicle.cp.mode == 8 then
-		if SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) or SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-
-	-- MODE 9: FILL AND EMPTY SHOVEL
-	elseif vehicle.cp.mode == 9 then
-		if not isImplement and (courseplay:isWheelloader(workTool) or workTool.typeName == 'frontloader' or courseplay:isMixer(workTool)) then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			workTool.cp.shovelState = 1;
-
-		elseif isImplement and (courseplay:isFrontloader(workTool) or workTool.cp.hasSpecializationShovel or SpecializationUtil.hasSpecialization(DynamicMountAttacher, workTool.specializations) ) then 
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			workTool.spec_attachable.attacherVehicle.cp.shovelState = 1
-		end;
-	-- MODE 10:Leveler
-	elseif vehicle.cp.mode == 10 then
-		if isImplement and (workTool.cp.hasSpecializationLeveler or SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations) ) then 
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-	end;
-	
-	--belongs to mode4 but should be considered even if the mode is not set correctely
-	if workTool.spec_sprayer ~= nil and workTool.spec_sowingMachine ~= nil then
-				vehicle.cp.hasFertilizerSowingMachine = true;
-	end
-	
+	end	
 	--belongs to mode3 but should be considered even if the mode is not set correctely
 	if workTool.cp.isAugerWagon then
 		vehicle.cp.hasAugerWagon = true;
-		if workTool.cp.isSugarCaneAugerWagon then
-			vehicle.cp.hasSugarCaneAugerWagon = true
-		end
 	end;
-	if workTool.cp.isSugarCaneTrailer then
-		vehicle.cp.hasSugarCaneTrailer = true
-	end
+
 	
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
 	
@@ -301,7 +246,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	--------------------------------------------------
 
 	if not isImplement or hasWorkTool or workTool.cp.isNonTippersHandledWorkTool then
-		-- SPECIAL SETTINGS
+		-- SPECIAL SETTINGS ?? is this one needed any more ? 
 		courseplay:askForSpecialSettings(vehicle, workTool);
 
 		--FOLDING PARTS: isFolded/isUnfolded states
@@ -737,76 +682,28 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 	end
 end
 
+--this one enable the buttons and allowes the user to change the mode
 function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	--5 is always valid
 	if cpModeToCheck == 5 then 
 		return true;
 	end
-	local modeValid = false
-	if vehicle.cp.workToolAttached then
-		for _, workTool in pairs(vehicle.cp.workTools) do
-			if courseplay:getIsToolValidForCpMode(workTool,cpModeToCheck) then
-				modeValid = true
-			end
-		end
+	if cpModeToCheck == 7 then 
+		return false;
 	end
-	if not modeValid then
-		modeValid = courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck)
-	end
-	return modeValid
+	local callback = {}
+	callback.isDisallowedOkay = true
+	courseplay:getIsToolValidForCpMode(vehicle,cpModeToCheck,callback)
+	return callback.isAllowedOkay and callback.isDisallowedOkay
 end
 
---- Is this mode valid for the tool?
---- @param workTool table tool to check
---- @param cpModeToCheck number is worktool valid for this mode?
-function courseplay:getIsToolValidForCpMode(workTool, cpModeToCheck)
-	local modeValid = false
-	--Made Mode1 and Mode2 separate check to have a cleaner check for Liquid Trailer.
-	if cpModeToCheck == courseplay.MODE_GRAIN_TRANSPORT and (SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and not SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 or SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations)) then
-		modeValid = true;
-	elseif cpModeToCheck == courseplay.MODE_COMBI and SpecializationUtil.hasSpecialization(Dischargeable ,workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and not SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and workTool.cp.capacity and workTool.cp.capacity > 0.1 and not SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) then
-		modeValid = true;
-	elseif cpModeToCheck == courseplay.MODE_OVERLOADER and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations) and SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) then
-		modeValid = true
-	elseif cpModeToCheck == courseplay.MODE_SEED_FERTILIZE then
-		local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-		if isSprayer or isSowingMachine or workTool.cp.isTreePlanter or workTool.cp.isKuhnDC401 or workTool.cp.isKuhnHR4004 then
-			modeValid = true;
-		end
-	elseif cpModeToCheck == courseplay.MODE_FIELDWORK then
-		if (courseplay:isBaler(workTool)
-			or courseplay:isBaleLoader(workTool)
-			or courseplay:isSpecialBaleLoader(workTool)
-			or workTool.cp.hasSpecializationPickup
-			or workTool.cp.hasSpecializationCultivator
-			or courseplay:isCombine(workTool)
-			or workTool.cp.hasSpecializationFruitPreparer
-			or workTool.cp.hasSpecializationPlow		
-			or workTool.cp.hasSpecializationTedder
-			or workTool.cp.hasSpecializationWindrower
-			or workTool.cp.hasSpecializationWeeder
-			or workTool.cp.hasSpecializationCutter
-			--or workTool.spec_dischargeable
-			or courseplay:isMower(workTool)
-			or courseplay:isAttachedCombine(workTool)
-			or courseplay:isFoldable(workTool))
-			and not courseplay:isSprayer(workTool)
-			and not (courseplay:isSowingMachine(workTool) and not workTool.cp.hasSpecializationWeeder)
-		then
-			modeValid = true;
-		end
-	elseif cpModeToCheck == 8 and (SpecializationUtil.hasSpecialization(FillTriggerVehicle, workTool.specializations) or SpecializationUtil.hasSpecialization(Pipe, workTool.specializations) and SpecializationUtil.hasSpecialization(Trailer, workTool.specializations)) then
-
-		modeValid = true;
-
-	elseif cpModeToCheck == courseplay.MODE_SHOVEL_FILL_AND_EMPTY and (courseplay:hasShovel(workTool) or SpecializationUtil.hasSpecialization(DynamicMountAttacher, workTool.specializations)) then
-		modeValid = true;
-	
-	elseif cpModeToCheck == courseplay.MODE_BUNKERSILO_COMPACTER and (courseplay:hasLeveler(workTool) or SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations)) then
-		modeValid = true;
-
+function courseplay:getIsToolValidForCpMode(object, mode, callback)
+	isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(mode,object)
+	callback.isAllowedOkay = callback.isAllowedOkay or isAllowedOkay
+	callback.isDisallowedOkay = callback.isDisallowedOkay and isDisallowedOkay
+	for _,impl in pairs(object:getAttachedImplements()) do
+		courseplay:getIsToolValidForCpMode(impl.object, mode, callback)
 	end
-	return modeValid ;
 end
 
 function courseplay:updateFillLevelsAndCapacities(vehicle)

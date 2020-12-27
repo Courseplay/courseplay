@@ -121,7 +121,7 @@
 		<Value name="positionOrigin" value="bottomLeft" />
 		<Value name="textAlignment" value="left" />
 		<Value name="textSize" value="12px"/>
-		<Value name="textMax	Width" value="430px"/>
+		<Value name="textMaxWidth" value="430px"/>
 	</Profile>
 
 	<Profile name="cpMultiTextOption" extends="multiTextOption">

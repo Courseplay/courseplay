@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+	-Mode is declared in order, so from 1(GrainTransportAIDriver) to 10(LevelCompactAIDriver)
+	-do not change the order here!!
+	
+	A mode is enabled if the specializations of the vehicle or its attached implements or trailers:
+    	- match one of the Setups under allowedSetups
+	
+	A mode is disabled if one of the specializations under disallowedSetups was found, for either the vehicle or the implement, ..
+	
+	AllowedSetups:
+		- each Setup represents an AND Gate (the vehicle must have all of the specializations listed in the Setup group)
+		- multiple Setups represent an OR GATE
+		- as a combination this work like a "Disjunctive normal form"
+		example:
+			(Setup_1.Specialization_1 and Setup_1.Specialization_2) or Setup_2.Specialization_1
+			= Setup 1 or Setup 2
+			if one of the Setup was found => mode is Allowed
+
+	DisallowedSetups:
+		- for now only one Setup used as an OR GATE
+		example:
+			Setup_1.Specialization_1 or Setup_1.Specialization_2 or ...
+			if one of them was found => mode is Disallowed completely, regardless of the checked object
+
+	
+
+-->
+<ValidModeSetup>
+	<!--GrainTransportAIDriver(1)-->
+	<Mode>	
+		<AllowedSetups>
+			<Setup>	
+				<Specialization name="spec_dischargeable"/>
+				<Specialization name="spec_trailer"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_fillTriggerVehicle"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+				<Specialization name="spec_pipe"/>
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--CombineUnloadAIDriver(2)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_dischargeable"/>
+				<Specialization name="spec_trailer"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+				<Specialization name="spec_pipe"/>
+				<Specialization name="spec_fillTriggerVehicle"/>
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--OverloaderAIDriver(3)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_pipe"/>
+				<Specialization name="spec_trailer"/>
+			</Setup>
+			<Setup>
+			<!-- as an example spezial tools can be enabled by the xml file of the tool
+				<SpecialTool name="fieldLinerHTS31.xml"/>
+			 -->
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--FillableFieldworkAIDriver(4)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_sprayer"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_sowingMachine"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_spec_fertilizingSowingMachine"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_treePlanter"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+				<Specialization name="spec_strawHarvestPelletizer"/>
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--AIDriver(5)	
+		currently skipped in courseplay:getIsToolCombiValidForCpMode:getIsToolCombiValidForCpMode()!
+		as every cp driver setup is allowed to use the TransportMode!
+	 -->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--UnloadableFieldWorkAIDriver(6)-->
+	<Mode>
+		<AllowedSetups>
+			<!--bale stuff-->
+			<Setup>
+				<Specialization name="spec_baler"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_baleWrapper"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_baleLoader"/>
+			</Setup>
+			<!--cultivator, plow-->
+			<Setup>
+				<Specialization name="spec_cultivator"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_plow"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_weeder"/>
+			</Setup>
+			<!--grass equiment-->
+			<Setup>
+				<Specialization name="spec_mower"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_windrower"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_tedder"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_pickup"/>
+			</Setup>
+			<!--combines..-->
+			<Setup>
+				<Specialization name="spec_cutter"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_fruitPreparer"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_combine"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_strawHarvestPelletizer"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+
+		</DisallowedSetups>
+	</Mode>
+	<!--not used (mode 7)
+		currently disabled, as this mode is not used right now!
+	 -->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--FieldSupplyAIDriver(8)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_pipe"/>
+				<Specialization name="spec_trailer"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_fillTriggerVehicle"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_waterTrailer"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--ShovelModeAIDriver/TriggerShovelModeAIDriver (9)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_shovel"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_dynamicMountAttacher"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+				<!--bale stuff-->
+				<Specialization name="spec_baler"/>
+				<Specialization name="spec_baleWrapper"/>
+				<Specialization name="spec_baleLoader"/>
+				<!--cultivator, plow-->
+				<Specialization name="spec_cultivator"/>
+				<Specialization name="spec_plow"/>
+				<Specialization name="spec_weeder"/>
+				<!--grass equiment-->
+				<Specialization name="spec_mower"/>
+				<Specialization name="spec_windrower"/>
+				<Specialization name="spec_tedder"/>
+				<Specialization name="spec_pickup"/>
+				<!--combines..-->
+				<Specialization name="spec_cutter"/>
+				<Specialization name="spec_fruitPreparer"/>
+				<Specialization name="spec_combine"/>
+				<Specialization name="spec_strawHarvestPelletizer"/>
+				<!--sower,sprayer..-->
+				<Specialization name="spec_sprayer"/>
+				<Specialization name="spec_sowingMachine"/>
+				<Specialization name="spec_treePlanter"/>
+				<!--no trailer-->
+				<Specialization name="spec_pipe"/>
+				<Specialization name="spec_trailer"/>
+				<Specialization name="spec_fillTriggerVehicle"/>
+				<Specialization name="spec_waterTrailer"/>
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+	<!--LevelCompactAIDriver(10)-->
+	<Mode>
+		<AllowedSetups>
+			<Setup>
+				<Specialization name="spec_bunkerSiloCompacter"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_leveler"/>
+			</Setup>
+		</AllowedSetups>
+		<DisallowedSetups>
+			<Setup>
+				<!--bale stuff-->
+				<Specialization name="spec_baler"/>
+				<Specialization name="spec_baleWrapper"/>
+				<Specialization name="spec_baleLoader"/>
+				<!--cultivator, plow-->
+				<Specialization name="spec_cultivator"/>
+				<Specialization name="spec_plow"/>
+				<Specialization name="spec_weeder"/>
+				<!--grass equiment-->
+				<Specialization name="spec_mower"/>
+				<Specialization name="spec_windrower"/>
+				<Specialization name="spec_tedder"/>
+				<Specialization name="spec_pickup"/>
+				<!--combines..-->
+				<Specialization name="spec_cutter"/>
+				<Specialization name="spec_fruitPreparer"/>
+				<Specialization name="spec_combine"/>
+				<Specialization name="spec_strawHarvestPelletizer"/>
+				<!--sower,sprayer..-->
+				<Specialization name="spec_sprayer"/>
+				<Specialization name="spec_sowingMachine"/>
+				<Specialization name="spec_treePlanter"/>
+				<!--no trailer-->
+				<Specialization name="spec_pipe"/>
+				<Specialization name="spec_trailer"/>
+				<Specialization name="spec_fillTriggerVehicle"/>
+				<Specialization name="spec_waterTrailer"/>
+			</Setup>
+		</DisallowedSetups>
+	</Mode>
+</ValidModeSetup>
+
+

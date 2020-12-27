@@ -277,6 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="移动到预卸载位置" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="移动到卸载位置" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="停止并装载" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 		
 		<text name="COURSEPLAY_START_AT_POINT" 								text="执行任务的点" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="最近的点" />
@@ -337,7 +338,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="总是 4WD &amp; 前后差速器工作" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="需要自动测量土地范围路径么？" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="你要支付雇人的工资么？" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="种子使用量" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="地块编号: %d号(%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="种子类型: %s" />
@@ -394,11 +394,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR"						 		text="鼠标按键 %d" /> <!-- TODO TRANSLATE: %s = number -->
 	
 		<text name="COURSEPLAY_MODE10_MODE" 								text="工作模式" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="平整和压实" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="填充" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="自动停止" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="CP控制的" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="所有的" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="填充" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="扫描工作范围 " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="最大速度" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="叶片高度" />
@@ -440,7 +441,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="使用AI转向" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="使用AI转向而不是计算的" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="自动扫描地块" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay 赚取工资" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="点击切换" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="点击切换车辆" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="伸出管道" />
@@ -494,6 +494,9 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="独立拖车:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="卸货量 %d 的 %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="手动加载" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

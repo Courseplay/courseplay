@@ -7,7 +7,8 @@ TriggerHandler.myLoadingStates = {
 	NOTHING = {},
 	IS_UNLOADING = {},
 	DRIVE_NOW = {},
-	STOPPED = {}
+	STOPPED = {},
+	WAITING_FOR_UNLOAD_READY = {}
 }
 TriggerHandler.APPROACH_AUGER_TRIGGER_SPEED = 3
 
@@ -33,6 +34,7 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.debugChannel = 2
 	self.lastDistanceToTrigger = nil
 	self.lastDebugLoadingCallback = nil
+	self.bunkerSilo = nil
 end 
 
 function TriggerHandler:isDebugActive()
@@ -76,6 +78,9 @@ function TriggerHandler:onUpdate(dt)
 		if self:isDriveNowActivated() then 
 			self:changeLoadingState("NOTHING")
 		end
+	end
+	if self.validFillTypeUnloadingBunkerSilo then 
+		self:updateUnloadingBunkerSilo()
 	end
 end 
 
@@ -155,7 +160,6 @@ function TriggerHandler:renderText(y,text,xOffset)
 	return y-0.02
 end
 
---TODO Raycast for isInTrigger
 function TriggerHandler:onUpdateTick(dt)
 
 end
@@ -207,6 +211,20 @@ function TriggerHandler:updateUnloadingTriggers()
 		self:disableUnloadingIfEmpty()
 	end
 end 
+
+function TriggerHandler:updateUnloadingBunkerSilo()
+--	if self.bunkerSilo ~= nil then
+--		self.bunkerSilo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.driver.course,self.driver.ppc:getCurrentWaypointIx()+3)
+--	else 
+--		self.bunkerSilo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.driver.course,self.driver.ppc:getCurrentWaypointIx()-3)
+--	end
+	if self:isWaitingForUnloadReady() then 
+		self.driver:setInfoText('WAITING_FOR_LEVELCOMPACTAIDRIVER')
+		self.driver:setSpeed(0)
+	else 
+		self.driver:clearInfoText('WAITING_FOR_LEVELCOMPACTAIDRIVER')
+	end
+end
 
 function TriggerHandler:disableFillingIfFull()
 	if self:isFilledUntilPercantageX() then 
@@ -314,6 +332,18 @@ function TriggerHandler:setFillableObject(object,fillUnitIndex,fillType,trigger,
 	self.driver:refreshHUD()
 end
 
+function TriggerHandler:setWaitingForUnloadReady()
+	if not self:isWaitingForUnloadReady() and self.validFillTypeUnloadingBunkerSilo then
+		self:changeLoadingState("WAITING_FOR_UNLOAD_READY")
+	end
+end
+
+function TriggerHandler:resetWaitingForUnloadReady()
+	if self:isWaitingForUnloadReady() then
+		self:changeLoadingState("NOTHING")
+	end
+end
+
 function TriggerHandler:resetFillableObject()
 	self.fillableObject=nil
 end
@@ -328,6 +358,10 @@ end
 
 function TriggerHandler:isUnloading()
 	return self.loadingState:is("IS_UNLOADING")
+end
+
+function TriggerHandler:isWaitingForUnloadReady()
+	return self.loadingState:is("WAITING_FOR_UNLOAD_READY")
 end
 
 --Driver stops loading
@@ -449,6 +483,10 @@ function TriggerHandler:enableFillTypeUnloading()
 	self.validFillTypeUnloading = true
 end
 
+function TriggerHandler:enableFillTypeUnloadingBunkerSilo()
+	self.validFillTypeUnloadingBunkerSilo = true
+end
+
 function TriggerHandler:enableFillTypeUnloadingAugerWagon()
 	self.validFillTypeUnloadingAugerWagon = true
 end
@@ -469,6 +507,7 @@ end
 function TriggerHandler:disableFillTypeUnloading()
 	self.validFillTypeUnloading = false
 	self.validFillTypeUnloadingAugerWagon = false
+	self.validFillTypeUnloadingBunkerSilo = false
 end
 
 function TriggerHandler:disableFuelLoading()
@@ -486,6 +525,10 @@ function TriggerHandler:isAllowedToLoadFuel()
 		return true
 	end
 end 
+
+function TriggerHandler:isAllowedToUnloadAtBunkerSilo()
+	return self.validFillTypeUnloadingBunkerSilo 
+end
 
 --Loading Trigger callback check 
 --1: maxFillLevel reached 

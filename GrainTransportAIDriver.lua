@@ -37,6 +37,7 @@ function GrainTransportAIDriver:start(startingPoint)
 	self.nextClosestExactFillRootNode = nil
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
+	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self.firstWaypointNode = WaypointNode('firstWaypoint')
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
 end
@@ -101,6 +102,7 @@ function GrainTransportAIDriver:drive(dt)
 		self.triggerHandler:disableFillTypeUnloading()
 	else 
 		self.triggerHandler:enableFillTypeUnloading()
+		self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
 		self.triggerHandler:disableFillTypeLoading()
 	end
 		-- TODO: are these checks really necessary?

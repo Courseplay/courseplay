@@ -44,12 +44,14 @@ function FieldSupplyAIDriver:init(vehicle)
 end
 
 function FieldSupplyAIDriver:setHudContent()
+	AIDriver.setHudContent(self)
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end
 --this one is should be better derived!!
 function FieldSupplyAIDriver:start(startingPoint)
 	self.refillState = self.states.REFILL_DONE
 	AIDriver.start(self,startingPoint)
+	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
 	self:findPipe() --for Augerwagons
 end

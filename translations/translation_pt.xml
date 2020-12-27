@@ -253,8 +253,8 @@
 		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="distância mínima" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Tubo da ceifeira está no fruto" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="configurações específicas do modo" />
-    <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
-		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
+   		<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			   			text="Keep Current Steering" />
+		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "				text="Courseplay won't change the current crab steering setting of the vehicle" />
 
 		<!-- shovel stuff -->
 		<text name="COURSEPLAY_SHOVEL_NOT_FOUND" 					 		text="nenhuma pá encontrada" />
@@ -273,6 +273,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Mover para posição de pré-descarga" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Mover para posição de descarga" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 					 		text="Parar e ir carregar" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 						 		text="Iniciar percurso em:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 						 		text="próximo ponto" />
@@ -333,7 +334,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Sempre Ligado; Dois diferenciais ligados" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Pretende que os campos sejam verificados automaticamente?" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 						 		text="Pretende que os seus trabalhadores recebam salários (%s / hora)?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo do uso das sementes" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Tipo de semente: %s" />
@@ -361,7 +361,7 @@
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="Courseplay: Mover para posição de pré-descarga" />
 		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text="Courseplay: Mover para posição de descarga" />
 		
-    <text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Editor Courseplay: Ativa/desativa editor de percurso" />
+   		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Editor Courseplay: Ativa/desativa editor de percurso" />
 		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Editor Courseplay: Desfazer a ultima edição" />
 		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Editor Courseplay: Salvar mudanças do percurso" />
 		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"							text="Editor Courseplay: Aumentar a velocidade do waypoint" />
@@ -393,11 +393,12 @@
 		<text name="COURSEPLAY_DELETE_COURSE" 						 		text="Eliminar percurso/pasta" />
 	
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="modo" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="nivelar e compactar" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="encher" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="paragem automática" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="procurar só com CP ligado" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="só com os motores ligados" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="encher" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="detetar tratores no alcance " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="velocidade máxima ao empurrar" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="altura da lâmina" />
@@ -440,7 +441,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Use manobras de virar AI" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Use manobras de giro AI em vez de trajetórias de giro calculadas" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Digitalizar lavouras automaticamente" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Trabalhadores do Courseplay ganham salários" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"					   			text="Click para mudar" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Clique no veículo para mudar para ele" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="desdobre o tubo" />
@@ -492,6 +492,9 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Escolha Do Reboque:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Descarregar a %d até %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Carregamento Manual;" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

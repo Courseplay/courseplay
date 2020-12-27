@@ -38,7 +38,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_OVERLOADER then
 		status,driver,err,errDriverName = xpcall(OverloaderAIDriver, function(err) printCallstack(); return self,err,"OverloaderAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		status,driver,err,errDriverName = xpcall(ShovelModeAIDriver, function(err) printCallstack(); return self,err,"ShovelModeAIDriver" end, vehicle)
+		status,driver,err,errDriverName = xpcall(ShovelModeAIDriver.create, function(err) printCallstack(); return self,err,"ShovelModeAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
 		status,driver,err,errDriverName = xpcall(FillableFieldworkAIDriver, function(err) printCallstack(); return self,err,"FillableFieldworkAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
@@ -110,27 +110,6 @@ end;]]
 function courseplay:setDriveNow(vehicle)
 --	courseplay:setDriveUnloadNow(vehicle, true);
 	vehicle.cp.driver:setDriveNow()
-end
-
-function courseplay:toggleMode10automaticSpeed(self)
-	if self.cp.mode10.leveling then
-		self.cp.mode10.automaticSpeed = not self.cp.mode10.automaticSpeed
-	end
-end
-function courseplay:toggleMode10drivingThroughtLoading(self)
-	self.cp.mode10.drivingThroughtLoading = not self.cp.mode10.drivingThroughtLoading
-end
-
-function courseplay:toggleMode10AutomaticHeight(self)
-	self.cp.mode10.automaticHeigth = not self.cp.mode10.automaticHeigth 
-end
-
-function courseplay:toggleMode10Mode(self)
-	self.cp.mode10.leveling = not self.cp.mode10.leveling
-end
-
-function courseplay:toggleMode10SearchMode(self)
-	self.cp.mode10.searchCourseplayersOnly = not self.cp.mode10.searchCourseplayersOnly
 end
 
 function courseplay:toggleOppositeTurnMode(vehicle)
@@ -374,13 +353,6 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	
 end;
 
-function courseplay:changeMode10Radius (vehicle, changeBy)
-	vehicle.cp.mode10.searchRadius = math.max(1,vehicle.cp.mode10.searchRadius + changeBy)
-end
-
-function courseplay:changeShieldHeight (vehicle, changeBy)
-	vehicle.cp.mode10.shieldHeight = MathUtil.clamp(vehicle.cp.mode10.shieldHeight + changeBy,0,1.5)
-end
 
 function courseplay:changeTurnDiameter(vehicle, changeBy)
 	vehicle.cp.turnDiameter = vehicle.cp.turnDiameter + changeBy;
@@ -1397,6 +1369,8 @@ IntSetting = CpObject(Setting)
 --- @param label string text ID in translations used as a label for this setting on the GUI
 --- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
 --- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+--- @param MIN int min allowed value
+--- @param MAX int max allowed value
 function IntSetting:init(name, label, toolTip, vehicle,MIN,MAX)
 	Setting.init(self, name, label, toolTip, vehicle)
 	self.MAX = MAX
@@ -1798,6 +1772,34 @@ function SpeedSetting:init(name, label, toolTip, vehicle,startValue,stopValue)
 	SettingList.init(self, name, label, toolTip, vehicle,values, texts)
 end
 
+-- Generic IntSetting with power of x (for example 0.1) 
+---@class IntSettingScientific 
+IntSettingScientific = CpObject(IntSetting)
+--- @param name string name of this settings, will be used as an identifier in containers and XML
+--- @param label string text ID in translations used as a label for this setting on the GUI
+--- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
+--- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+--- @param MIN int min allowed value
+--- @param MAX int max allowed value
+--- @param POWER float changes int value by const POWER 
+function IntSettingScientific:init(name, label, toolTip, vehicle,MIN,MAX,POWER)
+	IntSetting.init(self, name, label, toolTip, vehicle,MIN,MAX)
+	self.MAX = MAX
+	self.MIN = MIN
+	self.POWER = POWER
+end
+
+function IntSettingScientific:getText()
+	return tostring(self:getFixedValue())
+end
+
+-- get the fixed value with self.POWER
+function IntSettingScientific:getFixedValue()
+	return self:get()*self.POWER
+end
+
+
+
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
 AutoDriveModeSetting = CpObject(SettingList)
@@ -2123,14 +2125,6 @@ function ReturnToFirstPointSetting:isReleaseDriverActive()
 	return self:get() == self.RELEASE_DRIVER or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
 
---- Load courses at startup?
----@class LoadCoursesAtStartupSetting : BooleanSetting
-LoadCoursesAtStartupSetting = CpObject(BooleanSetting)
-function LoadCoursesAtStartupSetting:init()
-	BooleanSetting.init(self, 'loadCoursesAtStartup', 'COURSEPLAY_LOAD_COURSES_AT_STARTUP',
-		'COURSEPLAY_LOAD_COURSES_AT_STARTUP_TOOLTIP', nil)
-end
-
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
@@ -2256,24 +2250,6 @@ function AllowReverseForPathfindingInTurnsSetting:init(vehicle)
 			'COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP', vehicle)
 end
 
----@class AutoFieldScanSetting : BooleanSetting
-AutoFieldScanSetting = CpObject(BooleanSetting)
-function AutoFieldScanSetting:init()
-	BooleanSetting.init(self, 'autoFieldScan', 'COURSEPLAY_AUTO_FIELD_SCAN',
-		'COURSEPLAY_YES_NO_FIELDSCAN', nil)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(true)
-end
-
----@class ClickToSwitchSetting : BooleanSetting
-ClickToSwitchSetting = CpObject(BooleanSetting)
-function ClickToSwitchSetting:init()
-	BooleanSetting.init(self, 'clickToSwitch', 'COURSEPLAY_CLICK_TO_SWITCH',
-				'COURSEPLAY_YES_NO_CLICK_TO_SWITCH', nil)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(true)
-end
-
 ---@class PipeAlwaysUnfold : BooleanSetting
 PipeAlwaysUnfoldSetting = CpObject(BooleanSetting)
 function PipeAlwaysUnfoldSetting:init(vehicle)
@@ -2347,24 +2323,6 @@ function EnableVisualWaypointsTemporary:init()
 	self:set(false)
 end
 
----@class ShowMiniHud : BooleanSetting
-ShowMiniHud = CpObject(BooleanSetting)
-function ShowMiniHud:init()
-	BooleanSetting.init(self, 'showMiniHud', 'COURSEPLAY_SHOW_MINI_HUD',
-				'COURSEPLAY_YES_NO_SHOW_MINI_HUD', nil)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(false)
-end
-
----@class EnableOpenHudWithMouseGlobal : BooleanSetting
-EnableOpenHudWithMouseGlobal = CpObject(BooleanSetting)
-function EnableOpenHudWithMouseGlobal:init()
-	BooleanSetting.init(self, 'enableOpenHudWithMouseGlobal', 'COURSEPLAY_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL',
-				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_GLOBAL', nil)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(true)
-end
-
 ---@class EnableOpenHudWithMouseVehicle : BooleanSetting
 EnableOpenHudWithMouseVehicle = CpObject(BooleanSetting)
 function EnableOpenHudWithMouseVehicle:init()
@@ -2372,25 +2330,6 @@ function EnableOpenHudWithMouseVehicle:init()
 				'COURSEPLAY_YES_NO_ENABLE_OPEN_HUD_WITH_MOUSE_VEHICLE', nil)
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(true)
-end
-
----@class EarnWagesSetting : BooleanSetting
-EarnWagesSetting = CpObject(BooleanSetting)
-function EarnWagesSetting:init()
-	BooleanSetting.init(self, 'earnWages', 'COURSEPLAY_EARN_WAGES',
-		'COURSEPLAY_YES_NO_WAGES', nil)
-	-- set default while we are transitioning from the the old setting to this new one
-	self:set(false)
-end
-
----@class HourlyWages : SettingList
-WorkerWages = CpObject(SettingList)
-function WorkerWages:init()
-	SettingList.init(self, 'workerWages', 'COURSEPLAY_WORKER_WAGES', 'COURSEPLAY_WORKER_WAGES_TOOLTIP', nil,
-			{ 50, 100, 250, 500, 1000},
-			{'50%', '100%', '250%', '500%', '1000%'}
-		)
-	self:set(100)
 end
 
 ---@class SelfUnloadSetting : BooleanSetting
@@ -3149,6 +3088,35 @@ function FieldSupplyDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
+---@class ShovelModeDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+ShovelModeDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function ShovelModeDriver_SiloSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle, "ShovelModeDriver")
+	self.MAX_FILLTYPES = 1
+	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
+end
+
+---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
+ShovelModeAIDriverTriggerHandlerIsActive = CpObject(BooleanSetting)
+function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle)
+	BooleanSetting.init(self, 'shovelModeAIDriverTriggerHandlerIsActive','COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE', 'COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE', vehicle) 
+	self:set(false)
+end
+
+function ShovelModeAIDriverTriggerHandlerIsActive:isDisabled()
+	if self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY then 
+		return true
+	end
+	return false
+end
+
+function ShovelModeAIDriverTriggerHandlerIsActive:onChange()
+	if self.vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
+		courseplay:setAIDriver(self.vehicle, courseplay.MODE_SHOVEL_FILL_AND_EMPTY)
+	end	
+	BooleanSetting.onChange(self)
+end
+
 ---@class SeperateFillTypeLoadingSetting : SettingList
 SeperateFillTypeLoadingSetting = CpObject(SettingList)
 SeperateFillTypeLoadingSetting.DEACTIVED = 0
@@ -3283,20 +3251,19 @@ end
 ---@class BunkerSpeedSetting : SpeedSetting
 BunkerSpeedSetting = CpObject(SpeedSetting)
 function BunkerSpeedSetting:init(vehicle)
-	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,3,20) 
-	self:set(20)
-	self.MAX_SPEED_LEVELING = 15
+	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,5,20) 
+	self:set(10)
+	self.MAX_SPEED_LEVELING = 10
 end
 
-function BunkerSpeedSetting:checkAndSetValidValue(new)
-	if self.vehicle.cp.mode10.leveling then
+function BunkerSpeedSetting:checkAndSetValidValue(x)
+	local new = SettingList.checkAndSetValidValue(self, x)
+	if self.vehicle.cp.settings.levelCompactMode:hasLeveler() then
 		if new > self.MAX_SPEED_LEVELING then 
-			return 1
-		else 
-			return SettingList.checkAndSetValidValue(self, new)
+			return 10
 		end
 	end 
-	return SettingList.checkAndSetValidValue(self, new)
+	return new
 end
 
 function BunkerSpeedSetting:onChange()
@@ -3304,12 +3271,17 @@ function BunkerSpeedSetting:onChange()
 end
 
 function BunkerSpeedSetting:getText()
-	if self.vehicle.cp.mode10.automaticSpeed then 
+	if self.isAutomaticActive() then 
 		return courseplay:loc('COURSEPLAY_AUTOMATIC')
 	else 
-		SpeedSetting.getText(self)
+		return SpeedSetting.getText(self)
 	end
 end
+
+function BunkerSpeedSetting:isAutomaticActive()
+	return false
+end
+
 --[[
 ---@class CrawlSpeedSetting : SpeedSetting
 CrawlSpeedSetting = CpObject(SpeedSetting)
@@ -3905,40 +3877,108 @@ function ShovelStopAndGoSetting:init(vehicle)
 	self:set(true)
 end
 
+---@class LevelCompactModeSetting : SettingList
+LevelCompactModeSetting = CpObject(SettingList)
+LevelCompactModeSetting.COMPACTING = 1
+LevelCompactModeSetting.LEVELING = 2
+LevelCompactModeSetting.FILLING = 3
+function LevelCompactModeSetting:init(vehicle)
+	SettingList.init(self, 'levelCompactMode', 'COURSEPLAY_MODE10_MODE', 'COURSEPLAY_MODE10_MODE', vehicle,
+		{ 
+			LevelCompactModeSetting.COMPACTING,
+			LevelCompactModeSetting.LEVELING,
+			LevelCompactModeSetting.FILLING 
+		},
+		{
+			'COURSEPLAY_MODE10_MODE_COMPACTING',
+			'COURSEPLAY_MODE10_MODE_LEVELING',
+			'COURSEPLAY_MODE10_MODE_BUILDUP'
+		}
+		)
+end
+
+---SettingList.checkAndSetValidValue(self, new)
+function LevelCompactModeSetting:checkAndSetValidValue(x)
+	local new = SettingList.checkAndSetValidValue(self, x)
+	if self:hasLeveler() then
+		if new == LevelCompactModeSetting.COMPACTING then 
+			return LevelCompactModeSetting.LEVELING
+		end
+	else 
+		if new > LevelCompactModeSetting.COMPACTING then 
+			return LevelCompactModeSetting.COMPACTING
+		end
+	end
+	return new
+end
+
+function LevelCompactModeSetting:hasLeveler()
+	return AIDriverUtil.getImplementWithSpecialization(self.vehicle, Leveler) ~= nil
+end
+
+---@class LevelCompactSearchOnlyAutomatedDriverSetting : BooleanSetting
+LevelCompactSearchOnlyAutomatedDriverSetting = CpObject(BooleanSetting)
+function LevelCompactSearchOnlyAutomatedDriverSetting:init(vehicle)
+	BooleanSetting.init(self, 'levelCompactSearchOnlyAutomatedDriver', 'COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle,
+		{'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'})
+	self:set(true)
+end
+
+---@class LevelCompactSearchRadiusSetting : IntSetting
+LevelCompactSearchRadiusSetting = CpObject(IntSetting)
+function LevelCompactSearchRadiusSetting:init(vehicle)
+	IntSetting.init(self, 'levelCompactSearchRadius', 'COURSEPLAY_MODE10_SEARCHRADIUS', 'COURSEPLAY_MODE10_SEARCHRADIUS', vehicle,10,200)
+	self:set(50)
+end
+
+function LevelCompactSearchRadiusSetting:getText()
+	return ('%d%s'):format(self:get(), courseplay:loc('COURSEPLAY_UNIT_METER'))
+end
+
+---@class LevelCompactShieldHeightSetting : SettingList
+LevelCompactShieldHeightSetting = CpObject(SettingList)
+LevelCompactShieldHeightSetting.Automatic = -1
+function LevelCompactShieldHeightSetting:init(vehicle)
+	local texts = {}
+	local values = {}
+	texts[1] = 'COURSEPLAY_AUTOMATIC'
+	values[1] = -1
+	for i=2,17 do
+		local x = (i-2)*0.1
+		values[i] = x
+		texts[i] = x
+	end
+	SettingList.init(self, 'levelCompactShieldHeight', 'COURSEPLAY_MODE10_BLADE_HEIGHT', 'COURSEPLAY_MODE10_BLADE_HEIGHT', vehicle,values,texts)
+	self:set(-1)
+end
+
+function LevelCompactShieldHeightSetting:isAutomaticActive()
+	return self:get() == self.Automatic
+end
+
+function LevelCompactShieldHeightSetting:getText()
+	if not self:isAutomaticActive() then
+		return ('%.1f%s'):format(self:get(), courseplay:loc('COURSEPLAY_UNIT_METER'))
+	else 
+		return SettingList.getText(self)
+	end
+end
+
+function LevelCompactShieldHeightSetting:changeByX(x)
+	if not self:isDisabled() then 
+		SettingList.changeByX(self,x) 
+	end
+end
+
+function LevelCompactShieldHeightSetting:isDisabled()
+	return self.vehicle.cp.settings.levelCompactMode:get() == LevelCompactModeSetting.COMPACTING
+end
+
 --[[
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
 function SearchCombineAutomaticallySetting:init(vehicle)
 	BooleanSetting.init(self, 'searchCombineAutomatically','COURSEPLAY_COMBINE_SEARCH_MODE', 'COURSEPLAY_COMBINE_SEARCH_MODE', vehicle, {'COURSEPLAY_MANUAL_SEARCH','COURSEPLAY_AUTOMATIC_SEARCH'}) 
-	self:set(false)
-end
-
---??
----@class Mode10_automaticSpeedSetting : BooleanSetting
-Mode10_automaticSpeedSetting = CpObject(BooleanSetting)
-function Mode10_automaticSpeedSetting:init(vehicle)
-	BooleanSetting.init(self, 'mode10_automaticSpeed','-', '-', vehicle) 
-	self:set(false)
-end
-
----@class Mode10_drivingThroughtLoadingSetting : BooleanSetting
-Mode10_drivingThroughtLoadingSetting = CpObject(BooleanSetting)
-function Mode10_drivingThroughtLoadingSetting:init(vehicle)
-	BooleanSetting.init(self, 'mode10_drivingThroughtLoading','COURSEPLAY_MODE10_SILO_LOADEDBY', 'COURSEPLAY_MODE10_SILO_LOADEDBY', vehicle,{'COURSEPLAY_MODE10_REVERSE_UNLOADING','COURSEPLAY_MODE10_DRIVINGTHROUGH'}) 
-	self:set(false)
-end
-
----@class Mode10_modeSetting : BooleanSetting
-Mode10_modeSetting = CpObject(BooleanSetting)
-function Mode10_modeSetting:init(vehicle)
-	BooleanSetting.init(self, 'mode10_mode','COURSEPLAY_MODE10_MODE', 'COURSEPLAY_MODE10_MODE', vehicle, {'COURSEPLAY_MODE10_MODE_BUILDUP','COURSEPLAY_MODE10_MODE_LEVELING'}) 
-	self:set(false)
-end
-
----@class Mode10_searchModeSetting : BooleanSetting
-Mode10_searchModeSetting = CpObject(BooleanSetting)
-function Mode10_searchModeSetting:init(vehicle)
-	BooleanSetting.init(self, 'mode10_searchMode','COURSEPLAY_MODE10_SEARCH_MODE', 'COURSEPLAY_MODE10_SEARCH_MODE', vehicle, {'COURSEPLAY_MODE10_SEARCH_MODE_ALL','COURSEPLAY_MODE10_SEARCH_MODE_CP'}) 
 	self:set(false)
 end
 

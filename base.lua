@@ -35,13 +35,8 @@ function courseplay:onLoad(savegame)
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	self.cp.hasHarvesterAttachable = false;
 	self.cp.hasSpecialChopper = false;
-	if self.cp.isCombine or self.cp.isHarvesterSteerable then
-		self.cp.mode7Unloading = false
-	end
-	self.cp.speedDebugLine = "no speed info"
 
-	-- GIANT DLC
-	self.cp.haveInversedRidgeMarkerState = nil; --bool
+	self.cp.speedDebugLine = "no speed info"
 
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
@@ -78,8 +73,6 @@ function courseplay:onLoad(savegame)
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
-	-- saves the shortest distance to the next waypoint (for recocnizing circling)
-	self.cp.shortestDistToWp = nil
 
 	self.Waypoints = {}
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
@@ -113,38 +106,10 @@ function courseplay:onLoad(savegame)
 	self.cp.slippingStage = 0;
 	self.cp.saveFuel = false;
 	self.cp.hasAugerWagon = false;
-	self.cp.hasSugarCaneAugerWagon = false
-	self.cp.hasSugarCaneTrailer = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 
-	-- ai mode 9: shovel
-	self.cp.shovelEmptyPoint = nil;
-	self.cp.shovelFillStartPoint = nil;
-	self.cp.shovelFillEndPoint = nil;
-	self.cp.shovelState = 1;
-	self.cp.shovel = {};
-	self.cp.shovelLastFillLevel = nil;
 
-	--ai mode 10 : bunkersilo
-	self.cp.mode10 = {}
-	self.cp.mode10.stoppedCourseplayers = {}
-	self.cp.mode10.alphaList = {}		
-	self.cp.mode10.leveling = true
-	self.cp.mode10.automaticHeigth = true
-	self.cp.mode10.searchRadius = 50
-	self.cp.mode10.searchCourseplayersOnly = false
-	self.cp.mode10.shieldHeight = 0.3
-	self.cp.mode10.levelerIsFrontAttached = false
- 	self.cp.mode10.jumpsPerRun = 0
-	self.cp.mode10.automaticSpeed = true
-	self.cp.mode10.lowestAlpha = 99
-	self.cp.mode10.lastTargetLine = 99
-	self.cp.mode10.deadline = nil
-	self.cp.mode10.firstLine = 0
-	self.cp.mode10.bladeOffset = 0
-	self.cp.mode10.drivingThroughtLoading = false
-	
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
 		crossing = {};
@@ -481,6 +446,8 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, self)
 	self.cp.settings:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, self)
+	self.cp.settings:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, self)
+	self.cp.settings:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, self)
 	self.cp.settings:addSetting(DriveOnAtFillLevelSetting, self)
 	self.cp.settings:addSetting(MoveOnAtFillLevelSetting, self)
 	self.cp.settings:addSetting(RefillUntilPctSetting, self)
@@ -491,7 +458,6 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(TurnSpeedSetting, self)
 	self.cp.settings:addSetting(FieldSpeedSettting,self)
 	self.cp.settings:addSetting(StreetSpeedSetting,self)
-	self.cp.settings:addSetting(BunkerSpeedSetting,self)
 	self.cp.settings:addSetting(ShowVisualWaypointsSetting,self)
 	self.cp.settings:addSetting(ShowVisualWaypointsCrossPointSetting,self)
 	self.cp.settings:addSetting(OppositeTurnModeSetting,self)
@@ -502,6 +468,13 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(FrontloaderToolPositionsSetting,self)
 	self.cp.settings:addSetting(AugerPipeToolPositionsSetting,self)
 	self.cp.settings:addSetting(ShovelStopAndGoSetting,self)
+	self.cp.settings:addSetting(LevelCompactModeSetting,self)
+	self.cp.settings:addSetting(LevelCompactSearchOnlyAutomatedDriverSetting,self)
+	self.cp.settings:addSetting(LevelCompactSearchRadiusSetting,self)
+	self.cp.settings:addSetting(LevelCompactShieldHeightSetting,self)
+	self.cp.settings:addSetting(BunkerSpeedSetting,self)
+	
+	
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
@@ -583,71 +556,7 @@ function courseplay:onDraw()
 		--renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
 		--renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
 	end
-	
-	
-	if courseplay.debugChannels[10] and self.cp.BunkerSiloMap ~= nil and self.cp.actualTarget ~= nil then
-
-		local fillUnit = self.cp.BunkerSiloMap[self.cp.actualTarget.line][self.cp.actualTarget.column]
-		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
-		local sx,sz = fillUnit.sx,fillUnit.sz
-		local wx,wz = fillUnit.wx,fillUnit.wz
-		local bx,bz = fillUnit.bx,fillUnit.bz
-		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
-		local y = 0
-		local height = fillUnit.height or 0.5;
-		if self.cp.mode10.leveling then
-			if self.cp.mode10.automaticHeigth then
-				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz)+ height;
-			else
-				y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + self.cp.mode10.shieldHeight + self.cp.tractorHeight ;
-			end
-		else
-			y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, sx, 1, sz) + 0.5;
-		end
-		cpDebug:drawLine(sx, y, sz, 1, 0, 0, wx, y, wz);
-		cpDebug:drawLine(wx, y, wz, 1, 0, 0, hx, y, hz);
-		cpDebug:drawLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz);
-		--drawDebugLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz, 1, 0, 0); -- Have gradiant color. new draw line cant do that
-		cpDebug:drawLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz);
-		cpDebug:drawPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1);
-		if self.cp.mode == 9 then
-			renderText(0.2,0.225,0.02,"unit.fillLevel: "..tostring(fillUnit.fillLevel))
-			if self.cp.mode9SavedLastFillLevel ~= nil then
-				renderText(0.2,0.195,0.02,"SavedLastFillLevel: "..tostring(self.cp.mode9SavedLastFillLevel))
-				renderText(0.2,0.165,0.02,"triesTheSameFillUnit: "..tostring(self.cp.mode9triesTheSameFillUnit))
-			end
-		elseif self.cp.mode == 10 then
-
-			--renderText(0.2,0.395,0.02,"numStoppedCPs: "..tostring(#self.cp.mode10.stoppedCourseplayers ))
-			--renderText(0.2,0.365,0.02,"shieldHeight: "..tostring(self.cp.mode10.shieldHeight))
-			--renderText(0.2,0.335,0.02,"lowestAlpha: "..tostring(self.cp.mode10.lowestAlpha))
-			--renderText(0.2,0.305,0.02,"speeds.bunkerSilo: "..tostring(self.cp.speeds.bunkerSilo))
-			--renderText(0.2,0.275,0.02,"jumpsPerRun: "..tostring(self.cp.mode10.jumpsPerRun))
-			--renderText(0.2,0.245,0.02,"bladeOffset: "..tostring(self.cp.mode10.bladeOffset))
-			--renderText(0.2,0.215,0.02,"diffY: "..tostring(self.cp.diffY ))
-			--renderText(0.2,0.195,0.02,"tractorHeight: "..tostring(self.cp.tractorHeight ))
-			--renderText(0.2,0.165,0.02,"shouldBHeight: "..tostring(self.cp.shouldBHeight ))
-			--renderText(0.2,0.135,0.02,"targetHeigth: "..tostring(self.cp.mode10.targetHeigth))
-			--renderText(0.2,0.105,0.02,"height: "..tostring(self.cp.currentHeigth))
-		end
-	end
-	
-	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
-		local x,y,z = getWorldTranslation(self.cp.directionNode)
-		cpDebug:drawLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ);
-		local bunker = self.cp.mode9TargetSilo
-		if bunker ~= nil then
-			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
-			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
-			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
-			--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
-			cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
-		end
-	end
-	
+			
 	
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then
@@ -1377,17 +1286,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		if offsetData[7] ~= nil then self.cp.laneNumber = tonumber(offsetData[7]) end;
 
 		
-		--mode10
-		curKey = key .. '.courseplay.mode10';
-		self.cp.mode10.leveling =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#leveling'), true);
-		self.cp.mode10.searchCourseplayersOnly = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#CourseplayersOnly'), true);
-		self.cp.mode10.searchRadius = Utils.getNoNil( getXMLInt(xmlFile, curKey .. '#searchRadius'), 50);
-		self.cp.mode10.shieldHeight = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#shieldHeight'), 0.3);
-		self.cp.mode10.automaticSpeed =  Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticSpeed'), true);
-		self.cp.mode10.automaticHeigth = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#automaticHeight'), true);
-		self.cp.mode10.bladeOffset = Utils.getNoNil( getXMLFloat(xmlFile, curKey .. '#bladeOffset'), 0);
-		self.cp.mode10.drivingThroughtLoading = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#drivingThroughtLoading'), false);
-
 		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
 
 		courseplay:validateCanSwitchMode(self);
@@ -1449,17 +1347,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".fieldWork #savedPositionZ", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.z,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
 
-	--LevlingAndCompactingSettings
-	setXMLBool(xmlFile, newKey..".mode10 #leveling", self.cp.mode10.leveling)
-	setXMLBool(xmlFile, newKey..".mode10 #CourseplayersOnly", self.cp.mode10.searchCourseplayersOnly)
-	setXMLInt(xmlFile, newKey..".mode10 #searchRadius", self.cp.mode10.searchRadius)
-	setXMLString(xmlFile, newKey..".mode10 #shieldHeight", string.format("%.1f",self.cp.mode10.shieldHeight))
-	setXMLBool(xmlFile, newKey..".mode10 #automaticSpeed", self.cp.mode10.automaticSpeed)
-	setXMLBool(xmlFile, newKey..".mode10 #automaticHeight", self.cp.mode10.automaticHeigth)
-	setXMLString(xmlFile, newKey..".mode10 #bladeOffset", string.format("%.1f",self.cp.mode10.bladeOffset))
-	setXMLBool(xmlFile, newKey..".mode10 #drivingThroughtLoading", self.cp.mode10.drivingThroughtLoading)
-	
-	
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)
 
@@ -1496,8 +1383,11 @@ AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, cou
 
 
 function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, workArea, dt)
-	if tool.fertilizerEnabled ~= nil then
-		tool.spec_sprayer.workAreaParameters.sprayFillLevel = tool.fertilizerEnabled and tool.spec_sprayer.workAreaParameters.sprayFillLevel or 0
+	local rootVehicle = tool:getRootVehicle()
+	if courseplay:isAIDriverActive(rootVehicle) then
+		if rootVehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) then
+			tool.spec_sprayer.workAreaParameters.sprayFillLevel = 0
+		end
 	end
 	return originalFunction(tool, superFunc, workArea, dt)
 end

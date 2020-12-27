@@ -91,10 +91,6 @@ function courseplay:start(self)
 			end
 		end
 
-		-- TODO: this must be moved to the AIDriver somewhere, has nothing to do here...
-		if workTool.spec_sprayer ~= nil and self.cp.hasFertilizerSowingMachine then
-			workTool.fertilizerEnabled = self.cp.settings.sowingMachineFertilizerEnabled:is(true)
-		end	
 		
 		if workTool.cp.isSugarCaneAugerWagon then
 			isReversePossible = false
@@ -102,14 +98,12 @@ function courseplay:start(self)
 		
 	end;
 	self.cp.isReversePossible = isReversePossible
-	self.cp.mode10.levelerIsFrontAttached = isFrontAttached
 		
 	local numWaitPoints = 0
 	local numUnloadPoints = 0
 	local numCrossingPoints = 0
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};
-	self.cp.mode10.alphaList = {}
 
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
 	if (self.cp.mode == 4 or self.cp.mode == 6) then
@@ -196,132 +190,6 @@ function courseplay:start(self)
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
-function courseplay:getCanUseCpMode(vehicle)
-	-- check engine running state
-	if not courseplay:getIsEngineReady(vehicle) then
-		return false;
-	end;
-
-	local mode = vehicle.cp.mode;
-
-	if (mode == 7 and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable)
-	or ((mode == 1 or mode == 2 or mode == 3 or mode == 4 or mode == 8 or mode == 9) and (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable))
-	or ((mode ~= 5) and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder)) then
-		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE');
-		print('Not Supported Vehicle Type')
-		return false;
-	end;
-
-
-	if mode ~= 5 and mode ~= 7 and not vehicle.cp.workToolAttached then
-		if mode == 4 or mode == 6 then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TOOL');
-		elseif mode == 9 then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_SHOVEL_NOT_FOUND');
-		elseif mode == 10 then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE10_NOBLADE');
-		else
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
-		end;
-		return false;
-	end;
-	
-	if mode == 10 and vehicle.cp.mode10.levelerIsFrontAttached then
-		courseplay:setInfoText(vehicle, 'COURSEPLAY_MODE10_NOFRONTBLADE');
-		return false;
-	end
-
-	local minWait, maxWait, minUnload, maxUnload;
-
-	if (mode == 1 and vehicle.cp.hasAugerWagon) or mode == 3 or mode == 8 or mode == 10 then
-		minWait, maxWait = 1, 1;
-		if  vehicle.cp.hasWaterTrailer then
-			maxWait = 10
-		end
-		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
-			return false;
-		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
-			return false;
-		end;
-		if mode == 3 then
-			maxUnload = 0
-			if vehicle.cp.workTools[1] == nil or vehicle.cp.workTools[1].cp == nil or not vehicle.cp.workTools[1].cp.isAugerWagon then
-				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
-				return false;
-			elseif vehicle.cp.numUnloadPoints > maxUnload then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
-			return false; 
-			end;
-		elseif mode == 8 then
-			if vehicle.cp.workTools[1] == nil then
-				courseplay:setInfoText(vehicle, 'COURSEPLAY_WRONG_TRAILER');
-				return false;
-			end;
-		end;
-	elseif mode == 7 then
-		-- DELETE ME MODE 7 Crap
-		minWait, maxWait = 1, 1;
-		if vehicle.cp.numUnloadPoints == 0 and vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, string.format("COURSEPLAY_WAITING_POINTS_TOO_FEW;%d",minWait));
-			return false;
-		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
-			return false;
-		end;
-		minUnload, maxUnload = 2, 2;
-		if vehicle.cp.numWaitPoints == 0 and vehicle.cp.numUnloadPoints < minUnload then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_FEW;%d',minUnload));
-			return false;
-		elseif vehicle.cp.numUnloadPoints > maxUnload then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
-			return false;
-		end;
-	elseif mode == 4 or mode == 6 then
-		if vehicle.cp.startWork == nil or vehicle.cp.stopWork == nil then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_WORK_AREA');
-			return false;
-		end;
-		if mode == 6 then
-			maxUnload = 0;
-			if vehicle.cp.hasBaleLoader then
-				minWait, maxWait = 2, 3;
-				if vehicle.cp.numWaitPoints < minWait then
-					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
-					return false;
-				elseif vehicle.cp.numWaitPoints > maxWait then
-					courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
-					return false;
-				end;																									--TODO: Remove when tippers are supported with 2 unload points
-			elseif (vehicle.cp.isCombine or vehicle.cp.isHarvesterSteerable or vehicle.cp.hasHarvesterAttachable) and not vehicle.cp.hasSpecialChopper then
-				maxUnload = 2;
-			else
-				maxUnload = 1;
-			end;
-			if vehicle.cp.numUnloadPoints > maxUnload then
-				courseplay:setInfoText(vehicle, string.format('COURSEPLAY_UNLOADING_POINTS_TOO_MANY;%d',maxUnload));
-				return false;
-			end;
-		end;
-
-	elseif mode == 9 then
-		minWait, maxWait = 3, 3;
-		if vehicle.cp.numWaitPoints < minWait then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_FEW;%d',minWait));
-			return false;
-		elseif vehicle.cp.numWaitPoints > maxWait then
-			courseplay:setInfoText(vehicle, string.format('COURSEPLAY_WAITING_POINTS_TOO_MANY;%d',maxWait));
-			return false;
-		elseif vehicle.cp.shovelFillStartPoint == nil or vehicle.cp.shovelFillEndPoint == nil or vehicle.cp.shovelEmptyPoint == nil then
-			courseplay:setInfoText(vehicle, 'COURSEPLAY_NO_VALID_COURSE');
-			return false;
-		end;
-	end;
-
-	return true;
-end;
-
 -- stops driving the course
 function courseplay:stop(self)
 	if g_server == nil then 
@@ -357,9 +225,6 @@ function courseplay:stop(self)
 			end
 			tool.cp.originalCapacities = nil
 		end
-		if tool.fertilizerEnabled ~= nil then
-			tool.fertilizerEnabled = nil
-		end
 	end
 	if self.cp.directionNodeToTurnNodeLength ~= nil then
 		self.cp.directionNodeToTurnNodeLength = nil
@@ -367,24 +232,13 @@ function courseplay:stop(self)
 
 	self.cp.lastInfoText = nil
 
-	--mode10 restore original compactingScales
-	if self.cp.mode10.OrigCompactScale ~= nil then
-		self.bunkerSiloCompactingScale = self.cp.mode10.OrigCompactScale 
-		self.cp.mode10.OrigCompactScale = nil
-	end
-	
 	if self.cp.cruiseControlSpeedBackup then
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
 	end; 
 
 	self.spec_lights.aiLightsTypesMask = self.cp.aiLightsTypesMaskBackup
-	
-	self.cp.BunkerSiloMap = nil
-	self.cp.mode9TargetSilo = nil
-	self.cp.mode10.lowestAlpha = 99
-	
-	
+		
 	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.settings.forcedToStop:set(false)

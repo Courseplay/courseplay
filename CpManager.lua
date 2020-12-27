@@ -133,9 +133,10 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRAFFIC
 	self.trafficCollisionIgnoreList = {};
-
+	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- MISCELLANEOUS
+	self.validModeSetupHandler = ValidModeSetupHandler()
 end;
 
 function CpManager:deleteMap()
@@ -931,6 +932,8 @@ function CpManager:setupGlobalInfoText()
 		REACHED_REFILLING_POINT				= { level =  0, text = 'COURSEPLAY_REACHED_REFILL_POINT' };
 		WRONG_FILLTYPE_FOR_TRIGGER			= { level =  0, text = 'COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER' };
 		RUNCOUNTER_ERROR_FOR_TRIGGER		= { level =  0, text = 'COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER' };
+		WAITING_FOR_UNLOADERS				= { level =  0, text = 'COURSEPLAY_WAITING_FOR_UNLOADERS' };
+		WAITING_FOR_LEVELCOMPACTAIDRIVER	= { level =  0, text = 'COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER' };
 	};
 end;
 

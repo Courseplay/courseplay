@@ -277,6 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Vor Abladeposition setzen" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Abladeposition setzen" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Stop &amp; Go Laden" />
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="Schaufel Triggermodus"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Kurs beginnen am" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="naheliegendsten Wegpunkt" />
@@ -337,7 +338,6 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD an &amp; Sperrdifferential auf den Feld" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Möchtest du dass die Felder automatisch gescannt werden?" />
 		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Bei Fehler oder Fragen gerne auf der folgenden seite für hilfe vorbeischauen: https://github.com/Courseplay/courseplay" />
-		<text name="COURSEPLAY_YES_NO_WAGES" 								text="Möchtest du Löhne für deine Fahrer aktivieren?" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Saatgut-Rechner" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Feld: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Saattyp: %s" />
@@ -394,11 +394,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Maustaste %d" /> <!-- TODO TRANSLATE: %s = number -->					
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Betriebsart" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="verteilen und verdichten" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING" 						text="verteilen" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"							text="aufschütten" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                      text="verdichten" />
 		<text name="COURSEPLAY_MODE10_SEARCH_MODE" 							text="automatisch anhalten für" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="nur Courseplayer" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="alle mit laufendem Motor" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP" 						text="Courseplay und Autodrive" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL" 						text="vom Spieler kontrolliert" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="erkenne Fahrzeuge im Umkreis von" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="maximale Geschwindigkeit beim Schieben" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Schildhöhe" />
@@ -441,7 +442,6 @@
 		<text name="COURSEPLAY_USE_AI_TURNS"				   				text="Benutze AI Wendemanöver" />
 		<text name="COURSEPLAY_USE_AI_TURNS_TOOLTIP"						text="Benutze AI Wendemanöver anstatt berechneter Wendemanöver" />
 		<text name="COURSEPLAY_AUTO_FIELD_SCAN"				   				text="Felder automatisch scannen" />
-		<text name="COURSEPLAY_EARN_WAGES"					   				text="Courseplay Lohnzahlung" />
 		<text name="COURSEPLAY_CLICK_TO_SWITCH"								text="Klick zum einsteigen" />
 		<text name="COURSEPLAY_YES_NO_CLICK_TO_SWITCH"					   	text="Klick auf ein Fahrzeug um einzusteigen" />
 		<text name="COURSEPLAY_PIPE_ALWAYS_UNFOLD"					   		text="Rohr immer ausfahren" />
@@ -452,7 +452,7 @@
 		<text name="COURSEPLAY_IMPLEMENT_RAISE_TIME_TOOLTIP"				text="Tool anheben am Ende einer Reihe oder am start des Vorgewende-Wendemanövers" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME"					   	text="Tool absenken" />
 		<text name="COURSEPLAY_IMPLEMENT_LOWER_TIME_TOOLTIP"				text="Tool absenken am Ende einer Reihe oder am ende des Vorgewende-Wendemanövers" />
-		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Geräte einklappen" />
+		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT"						text="Geräte am Kursende einklappen" />
 		<text name="COURSEPLAY_SHOULD_FOLD_IMPLEMENT_TOOLTIP"				text="Aktiviert/Deaktiviert das einklappen des Gerätes am Ende der Feldarbeit" />
 		<text name="COURSEPLAY_FERTILIZE_OPTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_YES_NO_FERTILIZE_OPTION"						text="Aktiviert oder deaktiviert die Düngefunktion der Sämaschine" />
@@ -487,13 +487,16 @@
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Ladegut wird hier nicht angenommen" />
 		
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Entlade Drescher im ersten Vorgewende" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Entlade Drescher im Vorgewende" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Fahrenden Drescher im ersten Vorgewende entladen, Abfahrer fährt außerhalb des Feldes." />
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="letzter Durchlauf = 0" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="verschiedene Ladegüter" />
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="verschiedene Trailer: " />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
+
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="Warte auf Ablader" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="Warte auf Siloarbeiter" />
 		
 		<!-- Replace marker, do not remove! -->
 </texts>

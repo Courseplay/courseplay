@@ -53,7 +53,6 @@ local function initialize()
 		'CpManager',
 		'base',
 		'button',
-		'bunkersilo_management',
 		'BunkersiloManager',
 		'courseplay_event',
 		'course_management',
@@ -70,6 +69,8 @@ local function initialize()
 		'recording',
 		'reverse',
 		'settings',
+		'GlobalSettings',
+		'ValidModeSetupHandler',
 		'signs', 
 		'specialTools', 
 		'start_stop', 
@@ -99,6 +100,7 @@ local function initialize()
 		'CombineAIDriver',
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
+		'TriggerShovelModeAIDriver',
 		'Conflict',
 		'AITurn',
 		'course-generator/geo',
@@ -313,11 +315,10 @@ local function setGlobalData()
 	courseplay.globalSettings = SettingsContainer("globalSettings")
 	courseplay.globalSettings:addSetting(LoadCoursesAtStartupSetting)
 	courseplay.globalSettings:addSetting(AutoFieldScanSetting)
-	courseplay.globalSettings:addSetting(EarnWagesSetting)
-	courseplay.globalSettings:addSetting(WorkerWages)
+	courseplay.globalSettings:addSetting(WorkerWagesSetting)
 	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
-	courseplay.globalSettings:addSetting(ShowMiniHud)
-	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobal)
+	courseplay.globalSettings:addSetting(ShowMiniHudSetting)
+	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobalSetting)
 
 	courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
 	courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
