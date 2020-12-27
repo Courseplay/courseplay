@@ -130,18 +130,18 @@
 		<text name="COURSEPLAY_COMBINE_IS_TURNING" 											text="Комбайн поворачивает" />
 		<text name="COURSEPLAY_NO_WORK_AREA" 												text="у этого маршрута нет рабочей области" />
 		<text name="COURSEPLAY_COMBINED_COURSES" 											text="- комбинированный" />
-		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 										text="Еду к комбайну" />
-		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 										text="Еду рядом с комбайном" />
+		<text name="COURSEPLAY_DRIVE_BEHIND_COMBINE" 										text="Едет к комбайну" />
+		<text name="COURSEPLAY_DRIVE_NEXT_TO_COMBINE" 										text="Едет рядом с комбайном" />
 		<text name="COURSEPLAY_DRIVE_TO_COMBINE" 											text="Маневрирует для погрузки" />
 		<text name="COURSEPLAY_COMBINE_WANTS_ME_TO_STOP" 									text="Комбайн просит остановится" />
 		<text name="COURSEPLAY_WAITING_TILL_WAITING_POSITION_IS_FREE" 						text="Ожидает пока отъедет комбайн" />
 		<text name="COURSEPLAY_TURNING_TO_COORDS" 											text="Возвращение к %d %d" />
-		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 											text="Еду на временную стоянку %d %d" />
-		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 										text="Жду заполнения бункера (%s %dc)" />
-		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 										text="Ищу комбайн для работы" />
-		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 									text="Жду завершения маневра комбайна" />
-		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 										text="Ожидаю новой путевой точки" />
-		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 											text="Еду за транспортом" />
+		<text name="COURSEPLAY_DRIVE_TO_WAYPOINT" 											text="Едет на временную стоянку %d %d" />
+		<text name="COURSEPLAY_WAITING_FOR_FILL_LEVEL" 										text="Ждёт заполнения бункера (%s %dc)" />
+		<text name="COURSEPLAY_NO_COMBINE_IN_REACH" 										text="Ищет комбайн для работы" />
+		<text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 									text="Ждёт завершения маневра комбайна" />
+		<text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 										text="Ожидает новой путевой точки" />
+		<text name="COURSEPLAY_FOLLOWING_TRACTOR" 											text="Едет за транспортом" />
 		<text name="COURSEPLAY_SHOULD_BE_REFUELED" 											text="низкий уровень топлива" />
 		<text name="COURSEPLAY_MUST_BE_REFUELED" 											text="слишком мало топлива!" />
 		<text name="COURSEPLAY_IS_BEING_REFUELED" 											text="заправляется топливом" />
@@ -278,7 +278,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 						text="Установить в положение предразгрузки" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 							text="Установить в положение разгрузки" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 											text="Стоять пока ковш наполняется" />
-		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"								text="shovel trigger mode"/>
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"								text="Режим триггера ковша"/>
 						
 		<text name="COURSEPLAY_START_AT_POINT" 												text="Способ запуска:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 												text="с ближайшей очевидной точки" />
@@ -347,7 +347,6 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_STARTEND" 									text="Показать/скрыть начальную и конечную точки" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_ALL" 										text="Показать/скрыть все точки" />
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING" 									text="Показать/скрыть точки пересечения" />
-				
 		<text name="COURSEPLAY_HUD_OPEN" 													text="показать Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE" 													text="скрыть Courseplay" />
 		<text name="COURSEPLAY_FUNCTIONS" 													text="функции Courseplay" />
@@ -397,12 +396,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 											text="Кнопка мыши %d" />
 				
 		<text name="COURSEPLAY_MODE10_MODE" 												text="Режим" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   						text="Leveling" />
-		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     					text="возведение от конца" />
-		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                						text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     						text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   					text="Just courseplayer/autodrive driver" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  					text="All player controlled unloaders" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   						text="выравнивание" />
+		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     					text="возведение от конца ямы" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                						text="уплотнение" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     						text="Автоматически останавливаться для" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   					text="только CP/AD водителей" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  					text="всех игроков с разгрузчиками" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 										text="Обнаружения техники в радиусе " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 										text="Макс. скорость при сгребании" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 										text="Высота подъёма отвала" />
@@ -493,13 +492,13 @@
 				
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"								text="Разгрузка комбайна на 1-й ПП" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"						text="Разрешить разгрузку движущегося комбайн на первой поворотной полосе (ПП), при этом разгрузчику придётся выезжать за пределы поля." />
-		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"								text="last runCounter = 0" />
+		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"								text="последний runCounter = 0" />
 		<text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"									text="Загружать отдельные fillTypes" />
 		<text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"							text="Разделить прицепы:" />
 		<text name="COURSEPLAY_MANUAL_LOADING"												text="Ручная загрузка" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"										text="ожидает разгружающих" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"							text="ожидает работающих на яме" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
