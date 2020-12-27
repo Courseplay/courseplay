@@ -277,7 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	 	text="Przejedź do pozycji przed rozładunkiem" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		 	text="Przejedź do pozycji rozładunku" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO"						 	text="Zatrzymaj i jedź ładować" />
-		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="Tryb załadunku łyżką"/>
 		
 		<text name="COURSEPLAY_START_AT_POINT"							 	text="Rozpocznij kurs od:" />
 		<text name="COURSEPLAY_NEAREST_POINT"							 	text="Najbliższy punkt trasy" />
@@ -348,35 +348,35 @@
 		<text name="COURSEPLAY_VISUALWAYPOINTS_CROSSING"				 	text="Pokaż/Ukryj skrzyżowania" />
 		<text name="COURSEPLAY_HUD_OPEN"								 	text="Pokaż hud Courseplay" />
 		<text name="COURSEPLAY_HUD_CLOSE"								 	text="Ukryj hud Courseplay" />
-		<text name="COURSEPLAY_FUNCTIONS"								 	text="Courseplay: Funkcje" />
-		<text name="input_COURSEPLAY_MODIFIER"							 	text="Courseplay: Modyfikator" />
-		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY"				 	text="Courseplay: Akceptacja podmenu" />
+		<text name="COURSEPLAY_FUNCTIONS"								 	text="CP: Funkcje" />
+		<text name="input_COURSEPLAY_MODIFIER"							 	text="CP: Modyfikator" />
+		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY"				 	text="CP: Akceptacja podmenu" />
 		<text name="input_COURSEPLAY_HUD"								 	text="Pokaż/Ukryj hud Courseplay" />
-		<text name="input_COURSEPLAY_START_STOP"						 	text="Courseplay: Wystartuj/Zatrzymaj kierowcę" />
-		<text name="input_COURSEPLAY_CANCELWAIT"						 	text="Courseplay: Kontynuuj" />
-		<text name="input_COURSEPLAY_DRIVENOW"							 	text="Courseplay: Jedź teraz" />
-		<text name="input_COURSEPLAY_STOP_AT_END"						 	text="Courseplay: Zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
-		<text name="input_COURSEPLAY_NEXTMODE" 							 	text="Courseplay: Następny tryb" />
-		<text name="input_COURSEPLAY_PREVMODE" 							 	text="Courseplay: Poprzedni tryb" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY"				 	text="Courseplay: Akcja myszy" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"				 	text="Courseplay: Kolejna akcja myszy" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 	text="Courseplay: Umieść znacznik debugowania w LOGu" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"		text="Courseplay: Przejedź do pozycji załadunku" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="Courseplay: Przejedź do pozycji transportu" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="Courseplay: Przejedź do pozycji przed rozładunkiem" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="Courseplay: Przejedź do pozycji rozładunku" />
+		<text name="input_COURSEPLAY_START_STOP"						 	text="CP: Wystartuj/Zatrzymaj kierowcę" />
+		<text name="input_COURSEPLAY_CANCELWAIT"						 	text="CP: Kontynuuj" />
+		<text name="input_COURSEPLAY_DRIVENOW"							 	text="CP: Jedź teraz" />
+		<text name="input_COURSEPLAY_STOP_AT_END"						 	text="CP: Zatrzymaj się w ostatnim miejscu lub następnym triggerze" />
+		<text name="input_COURSEPLAY_NEXTMODE" 							 	text="CP: Następny tryb" />
+		<text name="input_COURSEPLAY_PREVMODE" 							 	text="CP: Poprzedni tryb" />
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY"				 	text="CP: Akcja myszy" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"				 	text="CP: Kolejna akcja myszy" />
+		<text name="input_COURSEPLAY_DEBUG_MARKER"			 			 	text="CP: Umieść znacznik debugowania w LOGu" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"		text="CP: Przejedź do pozycji załadunku" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="CP: Przejedź do pozycji transportu" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Przejedź do pozycji przed rozładunkiem" />
+		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Przejedź do pozycji rozładunku" />
 		
-		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Edytor: Wł./Wył. edytor" />
-		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Edytor: Cofnij ostatnią edycję kursu" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Edytor: Zapisz zmiany kursu" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Edytor: Zwiększ prędkość punktu trasy" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Edytor: Zmniejsz prędkość punktu trasy" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Edytor: Usuń punkt trasy" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Edytor: Usuń następny punkt" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Edytor: Usuń wszystkie punkty do startu" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Edytor: Usuń wszystkie punkty do końca" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Edytor: Wstaw punkt trasy" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Edytor: Zmień typ punktu trasy" />
+		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CP Edytor: Wł./Wył. edytor" />
+		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CP Edytor: Cofnij ostatnią edycję kursu" />
+		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CP Edytor: Zapisz zmiany kursu" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="CP Edytor: Zwiększ prędkość punktu trasy" />
+		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="CP Edytor: Zmniejsz prędkość punktu trasy" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="CP Edytor: Usuń punkt trasy" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="CP Edytor: Usuń następny punkt" />  
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="CP Edytor: Usuń wszystkie punkty do startu" />
+		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Edytor: Usuń wszystkie punkty do końca" />
+		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Edytor: Wstaw punkt trasy" />
+		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Edytor: Zmień typ punktu trasy" />
 		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Nawożenie w siewniku" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normalny" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Oczekiwania" />
@@ -394,12 +394,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Przycisk myszki %d" />
 
 		<text name="COURSEPLAY_MODE10_MODE" 						     	text="Tryb:" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Wyrównywanie" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Napełnianie" />
-		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Ubijanie" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automatycznie zatrzymaj się gdy" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="pojawi się kierowca CP/AD" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="pojawi się gracz" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 					 	text="Wykryj pojazdy w zasięgu:" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 					 	text="Max. prędkość podczas pchania:" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 					 	text="Wysokość lemiesza:" />
@@ -496,8 +496,8 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku %d z %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="czeka przez pojazd rozładowujący" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="czeka przez pojazd w silosie" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
