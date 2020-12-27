@@ -35,13 +35,8 @@ function courseplay:onLoad(savegame)
 	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	self.cp.hasHarvesterAttachable = false;
 	self.cp.hasSpecialChopper = false;
-	if self.cp.isCombine or self.cp.isHarvesterSteerable then
-		self.cp.mode7Unloading = false
-	end
-	self.cp.speedDebugLine = "no speed info"
 
-	-- GIANT DLC
-	self.cp.haveInversedRidgeMarkerState = nil; --bool
+	self.cp.speedDebugLine = "no speed info"
 
 	--turn maneuver
 	self.cp.waitForTurnTime = 0.00   --float
@@ -78,8 +73,6 @@ function courseplay:onLoad(savegame)
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
-	-- saves the shortest distance to the next waypoint (for recocnizing circling)
-	self.cp.shortestDistToWp = nil
 
 	self.Waypoints = {}
 	self.cp.canDrive = false --can drive course (has >4 waypoints, is not recording)
@@ -113,30 +106,10 @@ function courseplay:onLoad(savegame)
 	self.cp.slippingStage = 0;
 	self.cp.saveFuel = false;
 	self.cp.hasAugerWagon = false;
-	self.cp.hasSugarCaneAugerWagon = false
-	self.cp.hasSugarCaneTrailer = false
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 
-	-- ai mode 9: shovel
-	self.cp.shovelEmptyPoint = nil;
-	self.cp.shovelFillStartPoint = nil;
-	self.cp.shovelFillEndPoint = nil;
-	self.cp.shovelState = 1;
-	self.cp.shovel = {};
-	self.cp.shovelLastFillLevel = nil;
 
-	--ai mode 10 : bunkersilo
-	self.cp.mode10 = {}
-	self.cp.mode10.alphaList = {}		
-	self.cp.mode10.levelerIsFrontAttached = false
- 	self.cp.mode10.jumpsPerRun = 0
-	self.cp.mode10.lowestAlpha = 99
-	self.cp.mode10.lastTargetLine = 99
-	self.cp.mode10.deadline = nil
-	self.cp.mode10.firstLine = 0
-	self.cp.mode10.bladeOffset = 0
-	
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
 		crossing = {};
@@ -583,23 +556,7 @@ function courseplay:onDraw()
 		--renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
 		--renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
 	end
-		
-	if courseplay.debugChannels[10] and self.cp.tempMOde9PointX ~= nil then
-		local x,y,z = getWorldTranslation(self.cp.directionNode)
-		cpDebug:drawLine(self.cp.tempMOde9PointX2,self.cp.tempMOde9PointY2+2,self.cp.tempMOde9PointZ2, 1, 0, 0, self.cp.tempMOde9PointX,self.cp.tempMOde9PointY+2,self.cp.tempMOde9PointZ);
-		local bunker = self.cp.mode9TargetSilo
-		if bunker ~= nil then
-			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
-			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
-			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
-			--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
-			cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
-		end
-	end
-	
+			
 	
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[12] then

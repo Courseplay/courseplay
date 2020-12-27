@@ -76,10 +76,11 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width,isHeap)
 	local widthCount = 0
 	courseplay.debugVehicle(10, vehicle, 'Bunker width %.1f, working width %.1f (passed in)', bunkerWidth, width)
 	widthCount =math.ceil(bunkerWidth/width)
-	
-	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
-		widthCount = widthCount+1
-	end
+
+	--check if this one is still needed ?
+--	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
+--		widthCount = widthCount+1
+--	end
 
 	local heightCount = math.ceil(bunkerLength/ width)
 	local unitWidth = bunkerWidth/widthCount

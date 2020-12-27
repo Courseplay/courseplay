@@ -665,7 +665,7 @@ function ShovelModeAIDriver:getClosestPointToStartFill()
 	local closestDistance = math.huge
 	local closestPoint = 0
 	for i= self.ppc:getCurrentWaypointIx(), self.course:getNumberOfWaypoints() do
-		local px, _, pz = self.course:getWaypointPosition(vehicle.cp.shovelFillStartPoint)
+		local px, _, pz = self.course:getWaypointPosition(self.shovelFillStartPoint)
 		local distance = self.course:getDistanceBetweenPointAndWaypoint(px, pz, i)
 		--print(string.format("try %s distance %s rev %s ",tostring(i),tostring(distance),tostring(self.course:isReverseAt(i))))
 		if distance < closestDistance and self.course:isReverseAt(i) then

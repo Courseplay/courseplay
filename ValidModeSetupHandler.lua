@@ -22,12 +22,12 @@ function ValidModeSetupHandler:loadFromXml()
 			--	courseplay.info(string.format("ValidModeSetupHandler, modeKey not found: %s",modeKey))
 				break
 			end
-			--all the allowedSpecSetup ..
+			--all the allowedSetups ..
 			local allowedSetups = {}
-			self:loadSetupsFromXml(self.xmlFile,modeKey,allowedSetups,"allowedSpecializations")
-			--all the disallowedSpecSetup ..
+			self:loadSetupsFromXml(self.xmlFile,modeKey,allowedSetups,"AllowedSetups")
+			--all the disallowedSetups ..
 			local disallowedSetups = {}
-			self:loadSetupsFromXml(self.xmlFile,modeKey,disallowedSetups,"disallowedSpecializations")
+			self:loadSetupsFromXml(self.xmlFile,modeKey,disallowedSetups,"DisallowedSetups")
 			local validData = {}
 			if #allowedSetups > 0 then 
 				validData.allowedSetups =  allowedSetups
@@ -45,7 +45,7 @@ function ValidModeSetupHandler:loadFromXml()
 	end
 end
 
---load the Setup for either the allowed or disallowed Specs
+--load the Setup for either the allowed or disallowed Setups
 function ValidModeSetupHandler:loadSetupsFromXml(xmlFile,baseKey,entry,allowKey)
 	local key = string.format("%s.%s",baseKey,allowKey)
 	local i = 0
@@ -55,18 +55,17 @@ function ValidModeSetupHandler:loadSetupsFromXml(xmlFile,baseKey,entry,allowKey)
 		--	courseplay.info(string.format("ValidModeSetupHandler, %s not found: %s",allowKey,setupKey))
 			break
 		end
---		print(string.format("ValidModeSetupHandler, %s found",setupKey))
 		local specSetup = {}
 		self:loadSetupFromXml(xmlFile,setupKey,specSetup,"Specialization")	
-		self:loadSetupFromXml(xmlFile,setupKey,specSetup,"SpezialTool")	
+		self:loadSetupFromXml(xmlFile,setupKey,specSetup,"SpecialTool")	
 		if #specSetup>0 then
 			table.insert(entry,specSetup)
 		end
 		i = i+1
 	end
 end
---SpezialTool
---load the Specializations for either the allowed or disallowed Specs
+
+--load the Specializations or SpecialTools
 function ValidModeSetupHandler:loadSetupFromXml(xmlFile,baseKey,entry,itemKey)
 	local i = 0
 	while true do 
@@ -76,7 +75,6 @@ function ValidModeSetupHandler:loadSetupFromXml(xmlFile,baseKey,entry,itemKey)
 			break
 		end
 		local specName = getXMLString(xmlFile, key.."#name")
-	--	print(string.format("ValidModeSetupHandler, %s found: %s at: %s",itemKey,specName,key))
 		table.insert(entry,specName)
 		i = i+1
 	end
@@ -128,7 +126,7 @@ end
 ---checks if one setup combo is disallowed for this object
 ---@param table : setups 
 ---@param vehicle : object, implement,vehicle
----@return boolean : isAllowedOkay
+---@return boolean : isDisallowedOkay
 function ValidModeSetupHandler:isSetupDisallowedValid(setups,object)
 	local disallowedSetup = false
 	for _,specSetup in pairs(setups) do 

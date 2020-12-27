@@ -275,22 +275,7 @@ function courseplay:executeFunction(self, func, value, page)
 					end;
 				end;
 			end; --END if not self:getIsCourseplayDriving()
-
-		elseif page == 10 then
-			if line == 1 and not self:getIsCourseplayDriving() then
-				courseplay:toggleMode10Mode(self)
-			elseif line == 2 then
-				courseplay:toggleMode10SearchMode(self)
-			elseif line == 5 then
-				courseplay:toggleMode10automaticSpeed(self)
-			elseif line == 6 then
-				if self.cp.mode10.leveling then
-					courseplay:toggleMode10AutomaticHeight(self)
-				end
-			elseif 	line == 7 then
-				courseplay:toggleMode10drivingThroughtLoading(self)
-			end 
-		end; --END is page 0 or 1 or 3 or 10]]
+			]]--
 	end; --END isRowFunction
 end;
 

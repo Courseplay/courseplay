@@ -21,10 +21,6 @@ TriggerShovelModeAIDriver = CpObject(ShovelModeAIDriver)
 
 TriggerShovelModeAIDriver.MAX_SPEED_IN_LOADING_TRIGGER = 5
 
-function TriggerShovelModeAIDriver:init(vehicle)
-	ShovelModeAIDriver.init(self, vehicle)
-end
-
 function TriggerShovelModeAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(self.vehicle)

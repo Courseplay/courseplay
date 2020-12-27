@@ -54,9 +54,7 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
 	vehicle.cp.hasAugerWagon = false;
-	vehicle.cp.hasSugarCaneAugerWagon = false;
-	vehicle.cp.hasSugarCaneTrailer = false
-	vehicle.cp.hasFertilizerSowingMachine = nil;
+
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 	if not vehicle.cp.workToolAttached and not vehicle.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
@@ -189,48 +187,33 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	courseplay:setOwnFillLevelsAndCapacities(workTool,vehicle.cp.mode)
 	local hasWorkTool = false;
 	local hasWaterTrailer = false
-	-- MODE 1 + 2: GRAIN TRANSPORT / COMBI MODE
-	if vehicle.cp.mode == 1 or vehicle.cp.mode == 2 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
-		if isAllowedOkay and isDisallowedOkay then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end; 
-	-- MODE 3: AUGERWAGON
-	elseif vehicle.cp.mode == 3 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
-		if isAllowedOkay and isDisallowedOkay then
+
+	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
+	if isAllowedOkay and isDisallowedOkay then
+		if vehicle.cp.mode == 5 then 
+			-- For reversing purpose ?? still needed ?
+			if isImplement then
+				hasWorkTool = true;
+				vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
+			end
+		else
 			hasWorkTool = true;
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
+	end
+	
 
 	-- MODE 4: FERTILIZER AND SEEDING
-	elseif vehicle.cp.mode == 4 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
+	if vehicle.cp.mode == 4 then
 		if isAllowedOkay and isDisallowedOkay then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
 			vehicle.cp.noStopOnEdge = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 			vehicle.cp.noStopOnTurn = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 		end;
-
-	-- MODE 5: TRANSFER
-	elseif vehicle.cp.mode == 5 then
-		-- For reversing purpose
-		if isImplement then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-		-- DO NOTHING
-
 	-- MODE 6: FIELDWORK
 	elseif vehicle.cp.mode == 6 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
 		if isAllowedOkay and isDisallowedOkay then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 			courseplay:setMarkers(vehicle, workTool);
 			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
 			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
@@ -247,48 +230,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 				vehicle.cp.hasSpecialChopper = true;
 			end;
 		end;
-
-	-- MODE 8: Field Supply
-	elseif vehicle.cp.mode == 8 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
-		if isAllowedOkay and isDisallowedOkay then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-
-	-- MODE 9: FILL AND EMPTY SHOVEL
-	elseif vehicle.cp.mode == 9 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
-		if isAllowedOkay and isDisallowedOkay then
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-			workTool.cp.shovelState = 1;
-		end;
-	-- MODE 10:Leveler
-	elseif vehicle.cp.mode == 10 then
-		local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
-		if isAllowedOkay and isDisallowedOkay then
---		if isImplement and (workTool.cp.hasSpecializationLeveler or SpecializationUtil.hasSpecialization(BunkerSiloCompacter, workTool.specializations) ) then 
-			hasWorkTool = true;
-			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
-		end;
-	end;
-	
-	--belongs to mode4 but should be considered even if the mode is not set correctely
-	if workTool.spec_sprayer ~= nil and workTool.spec_sowingMachine ~= nil then
-				vehicle.cp.hasFertilizerSowingMachine = true;
-	end
-	
+	end	
 	--belongs to mode3 but should be considered even if the mode is not set correctely
 	if workTool.cp.isAugerWagon then
 		vehicle.cp.hasAugerWagon = true;
-		if workTool.cp.isSugarCaneAugerWagon then
-			vehicle.cp.hasSugarCaneAugerWagon = true
-		end
 	end;
-	if workTool.cp.isSugarCaneTrailer then
-		vehicle.cp.hasSugarCaneTrailer = true
-	end
+
 	
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
 	
@@ -299,7 +246,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	--------------------------------------------------
 
 	if not isImplement or hasWorkTool or workTool.cp.isNonTippersHandledWorkTool then
-		-- SPECIAL SETTINGS
+		-- SPECIAL SETTINGS ?? is this one needed any more ? 
 		courseplay:askForSpecialSettings(vehicle, workTool);
 
 		--FOLDING PARTS: isFolded/isUnfolded states
