@@ -1,0 +1,218 @@
+.singleTipsAndTricks {
+	padding:20px 0 0;
+	margin:20px 0;
+}
+
+body.js .singleTipsAndTricks h2 {
+	cursor:pointer;
+	padding:2px 4px;
+	text-decoration:none;
+}
+body.js .singleTipsAndTricks h2:hover, body.js .singleTipsAndTricks h2:focus {
+	color: #FC0;
+}
+body.js .singleTipsAndTricks h2:active {
+	background-color:#FC0;
+	color:#333;
+}
+
+.singleTipsAndTricks .faqContent {
+	padding-bottom:20px;
+}
+.singleTipsAndTricks .faqContent.closed {
+	display:none;
+}
+
+/* -------------------------------- */
+
+#bugReport .faqContent > ul > li, #bugReport .faqContent > ol > li {
+	background:rgba(0,0,0,0.35);
+	border-top:1px solid rgba(255,255,255,0.15);
+	border-right:1px solid rgba(0,0,0,0.4);
+	border-bottom:1px solid rgba(0,0,0,0.4);
+	list-style:none;
+	padding:0 0 0.5em;
+	margin: 0.8em 0;
+}
+#bugReport .faqContent > ul > li:first-of-type, #bugReport .faqContent > ol > li:first-of-type { margin-top:0; }
+#bugReport .faqContent > ul > li:last-of-type, #bugReport .faqContent > ol > li:last-of-type { margin-bottom:0; }
+#bugReport .faqContent > ul > li > h4 {
+	margin-bottom:0.5em;
+}
+#bugReport .faqContent > ul > li > h4 {
+	margin-top:0;
+	padding:0.5em 0.8em;
+}
+
+#bugReport .faqContent > ul > li > span,
+#bugReport .faqContent > ul > li > p, #bugReport .faqContent > ol > li > p,
+#bugReport .faqContent > ul > li > dl,
+#bugReport .faqContent > ul > li > figure, #bugReport .faqContent > ol > li > figure {
+	margin:0.5em 0.8em;
+}
+#bugReport .faqContent > ol > li:before {
+	border-top:none;
+	left:0;
+	top:0;
+}
+#bugReport .faqContent > ol > li {
+	padding-top:1.3em;
+}
+#bugReport .faqContent > ul > li ul, #bugReport .faqContent > ol > li ul,
+#bugReport .faqContent > ul > li ol {
+	margin:0.5em 1.8em;
+}
+
+/* -------------------------------- */
+
+#faqToolSupport ul { margin:0; }
+#faqToolSupport li {
+	list-style-type:none;
+	padding:8px;
+}
+#faqToolSupport li:nth-child(2n)   { background:rgba(0,0,0,0.25); }
+#faqToolSupport li:nth-child(2n-1) { background:rgba(0,0,0,0.17); }
+.annotations {
+	border-top:1px solid #D6D6D6;
+	font-size:0.9em;
+	margin-top:20px;
+}
+
+
+#faqOffset h3 {
+	margin-top:2em;
+	margin-bottom:0;
+}
+
+/* LANE CHANGE */
+.no-js #playLaneOffsets,
+.no-js #laneChangeStage,
+.js #laneChangeImage {
+	display:none;
+}
+
+/* OFFSET CALCULATOR */
+.no-js #offsetCalculatorIntro,
+.no-js #offsetCalculator {
+	display:none;
+}
+
+
+#offsetCalculator { border-top:2px solid #c6c6c6; margin-top:20px; padding-top:20px; position:relative; }
+#textElements { display:none; }
+#input { 
+	border-bottom:1px solid #d6d6d6;
+	display:none; 
+	margin-bottom:10px;
+	padding-bottom:10px;
+}
+#input fieldset { float:left; }
+#input fieldset:first-of-type { 
+	border-right:1px solid #d6d6d6;
+	margin-right:20px; 
+	padding-right:20px; 
+}
+#input label { display:block; }
+#input input {
+	width:60px;
+	background:#f5f5f5;
+	color:#323232;
+	font-family:'Source Sans Pro', 'Open Sans', 'Segoe UI', 'Trebuchet MS', sans-serif;
+	border:1px solid #c6c6c6;
+	padding:3px 6px;
+}
+
+
+#amount { display:none; }
+#amountText { margin-right:15px; }
+span[class^="icon-"] { cursor:pointer !important; }
+span[class^="icon-"].hidden { cursor:default !important; opacity: 0; }
+#offsetCalculator span[class^="icon-"]:hover, #offsetCalculator span[class^="icon-"]:active {
+	color:#FC0;
+}
+#save { display:none; position:absolute; right:0; top:50px; }
+
+figure { margin-top:1em; margin-bottom:1em; }
+img.infoImg {
+	border-bottom:1px solid #d6d6d6;
+	padding:5px;
+}
+figcaption {
+	font-family:'ACaslonPro-Italic', Caslon, 'Caslon Pro', Garamond, serif;
+	font-style:italic;
+}
+
+.button {
+	display: inline-block;
+	text-decoration: none;
+	font-size: 12px;
+	line-height: 23px;
+	height: 24px;
+	margin: 0;
+	padding: 0 10px 1px;
+	cursor: pointer;
+	border-width: 1px;
+	border-style: solid;
+	white-space: nowrap;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box;
+	border-radius: 3px;
+
+	background: #F3F3F3;
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#FEFEFE),to(#F4F4F4));
+	background-image: -webkit-linear-gradient(top,#FEFEFE,#F4F4F4);
+	background-image: -moz-linear-gradient(top,#FEFEFE,#F4F4F4);
+	background-image: -o-linear-gradient(top,#FEFEFE,#F4F4F4);
+	background-image: -ms-linear-gradient(top,#FEFEFE,#F4F4F4);
+	background-image: linear-gradient(top,#FEFEFE,#F4F4F4);
+	border-color: #BBB;
+	color: #333;
+	text-shadow: 0 1px 0 white;
+	font-family:'Source Sans Pro', 'Open Sans', 'Segoe UI', 'Trebuchet MS', sans-serif;
+}
+
+.button:active {
+	outline: 0;
+}
+
+.button.hidden {
+	display: none;
+}
+
+.button:hover,.button:focus {
+	background: #F3F3F3;
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#f3f3f3));
+
+	background-image: -webkit-linear-gradient(top,#fff,#f3f3f3);
+	background-image: -moz-linear-gradient(top,#fff,#f3f3f3);
+	background-image: -o-linear-gradient(top,#fff,#f3f3f3);
+	background-image: -ms-linear-gradient(top,#fff,#f3f3f3);
+	background-image: linear-gradient(top,#fff,#f3f3f3);
+	border-color: #999;
+	color: #222;
+}
+
+.button.active:hover {
+	background: #eee;
+	background-image: -webkit-gradient(linear,left top,left bottom,from(#f4f4f4),to(#fefefe));
+
+	background-image: -webkit-linear-gradient(top,#f4f4f4,#fefefe);
+	background-image: -moz-linear-gradient(top,#f4f4f4,#fefefe);
+	background-image: -o-linear-gradient(top,#f4f4f4,#fefefe);
+	background-image: -ms-linear-gradient(top,#f4f4f4,#fefefe);
+	background-image: linear-gradient(top,#f4f4f4,#fefefe);
+	border-color: #999;
+	color: #333;
+	text-shadow: 0 -1px 0 #fff;
+
+	-webkit-box-shadow: inset 0 2px 5px -3px rgba(0,0,0,0.5);
+	-moz-box-shadow: inset 0 2px 5px -3px rgba(0,0,0,0.5);
+	box-shadow: inset 0 2px 5px -3px rgba(0,0,0,0.5);
+}
+
+.hidden {
+	display:none;
+}
