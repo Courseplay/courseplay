@@ -16,16 +16,16 @@ body.js .singleTipsAndTricks h2:active {
 	color:#333;
 }
 
-.singleTipsAndTricks .faqContent {
+.singleTipsAndTricks .tipsAndTricksContent {
 	padding-bottom:20px;
 }
-.singleTipsAndTricks .faqContent.closed {
+.singleTipsAndTricks .tipsAndTricksContent.closed {
 	display:none;
 }
 
 /* -------------------------------- */
 
-#bugReport .faqContent > ul > li, #bugReport .faqContent > ol > li {
+#bugReport .tipsAndTricksContent > ul > li, #bugReport .tipsAndTricksContent > ol > li {
 	background:rgba(0,0,0,0.35);
 	border-top:1px solid rgba(255,255,255,0.15);
 	border-right:1px solid rgba(0,0,0,0.4);
@@ -34,32 +34,32 @@ body.js .singleTipsAndTricks h2:active {
 	padding:0 0 0.5em;
 	margin: 0.8em 0;
 }
-#bugReport .faqContent > ul > li:first-of-type, #bugReport .faqContent > ol > li:first-of-type { margin-top:0; }
-#bugReport .faqContent > ul > li:last-of-type, #bugReport .faqContent > ol > li:last-of-type { margin-bottom:0; }
-#bugReport .faqContent > ul > li > h4 {
+#bugReport .tipsAndTricksContent > ul > li:first-of-type, #bugReport .tipsAndTricksContent > ol > li:first-of-type { margin-top:0; }
+#bugReport .tipsAndTricksContent > ul > li:last-of-type, #bugReport .tipsAndTricksContent > ol > li:last-of-type { margin-bottom:0; }
+#bugReport .tipsAndTricksContent > ul > li > h4 {
 	margin-bottom:0.5em;
 }
-#bugReport .faqContent > ul > li > h4 {
+#bugReport .tipsAndTricksContent > ul > li > h4 {
 	margin-top:0;
 	padding:0.5em 0.8em;
 }
 
-#bugReport .faqContent > ul > li > span,
-#bugReport .faqContent > ul > li > p, #bugReport .faqContent > ol > li > p,
-#bugReport .faqContent > ul > li > dl,
-#bugReport .faqContent > ul > li > figure, #bugReport .faqContent > ol > li > figure {
+#bugReport .tipsAndTricksContent > ul > li > span,
+#bugReport .tipsAndTricksContent > ul > li > p, #bugReport .tipsAndTricksContent > ol > li > p,
+#bugReport .tipsAndTricksContent > ul > li > dl,
+#bugReport .tipsAndTricksContent > ul > li > figure, #bugReport .tipsAndTricksContent > ol > li > figure {
 	margin:0.5em 0.8em;
 }
-#bugReport .faqContent > ol > li:before {
+#bugReport .tipsAndTricksContent > ol > li:before {
 	border-top:none;
 	left:0;
 	top:0;
 }
-#bugReport .faqContent > ol > li {
+#bugReport .tipsAndTricksContent > ol > li {
 	padding-top:1.3em;
 }
-#bugReport .faqContent > ul > li ul, #bugReport .faqContent > ol > li ul,
-#bugReport .faqContent > ul > li ol {
+#bugReport .tipsAndTricksContent > ul > li ul, #bugReport .tipsAndTricksContent > ol > li ul,
+#bugReport .tipsAndTricksContent > ul > li ol {
 	margin:0.5em 1.8em;
 }
 
