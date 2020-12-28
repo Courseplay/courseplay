@@ -5,19 +5,19 @@ CP = {};
 
 CP.animationTime = 250;
 CP.el = {
-	faqContent: $('.faqContent'),
+	tipsAndTricksContent: $('.tipsAndTricksContent'),
 	faqTitles: $('.singleTipsAndTricks').find('h2')
 };
-CP.el.faqContent.addClass('closed');
+CP.el.tipsAndTricksContent.addClass('closed');
 
 CP.el.faqTitles.on('click', function(evt) {
 	var t = $(this),
-		thisFaqContent = t.next('.faqContent'),
-		isOpen = thisFaqContent.hasClass('open');
+		thisTipsAndTricksContent = t.next('.tipsAndTricksContent'),
+		isOpen = thisTipsAndTricksContent.hasClass('open');
 
-	CP.el.faqContent.removeClass('open').addClass('closed');
+	CP.el.tipsAndTricksContent.removeClass('open').addClass('closed');
 	if (!isOpen) {
-		thisFaqContent.removeClass('closed').addClass('open');
+		thisTipsAndTricksContent.removeClass('closed').addClass('open');
 		scrollTo(t.parents('.singleTipsAndTricks'));
 	};
 });
