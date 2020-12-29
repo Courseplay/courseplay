@@ -582,6 +582,8 @@
 				<span class="icon-page6"></span>
 				Advanced settings
 			</h2>
+				<p class="info">This side is accessable from General Settings Page.</p>
+				<ul>
 				<p><h4>Vehicle Settings</h4></p>
 					<li>
 						<h4>Use AI turn maneuvers</h4>
@@ -647,6 +649,13 @@
 						<h4>Show Mini-HUD</h4>
 						<p>Simply turns on/off the mini-HUD.</p>
 					</li>
+					<li>
+						<h4>Automatic Repair</h4>
+						<p>This option will repair your vehicle accoring to the status of your Vehicle GUI. 100% is completely healthy.</p>
+						<p>The values got choosen according to this table: <a href="https://forum.giants-software.com/viewtopic.php?f=955&t=140597&#p1097926">Damage-yield-table.</a></p>
+						<p>It will repair when under 70% health wich is 30% damage and will start to gain less crop yield.</p>
+						<p>Repair under 25% health, will be 75% damage and is about 25% less crop yield.</p>
+					</li>
 				</ul>
 		</article>
 
@@ -657,14 +666,19 @@
 				<span class="icon-page7"></span>
 				HUD: Vehicle settings
 			</h2>
-			<li>
-				<h4>Warning lights</h4>
-				<p>Choose if and when the beacon and hazard lights should be activated.</p>
-			</li>
-			<li>
-				<p>Refuel</p>
-				<p> - WIP</p>
-			</li>
+			<ul>
+				<li>
+					<h4>Warning lights</h4>
+					<p>Choose if and when the beacon and hazard lights should be activated.</p>
+				</li>
+				<li>
+					<h4>Refuel</h4>
+					<p>Whenever a driver passes by a gas station and refuel point, choose if always refuel or just when under 20%.</p>
+				</li>
+				<li>
+					<h4></h4>
+					<p></p>
+				</li>
 			</ul>
 		</article>
 
@@ -1013,7 +1027,7 @@
 
 		<article class="manualSection" id="generateCourse">
 			<h2>Advanced course generator</h2>
-			<p>The course generator is accessible from the Driver Controls HUD Page, but only on fieldwork or fertilizeing/seeding mode.</p>
+			<p>The course generator is accessable from the Driver Controls HUD Page, but only on fieldwork or fertilizeing/seeding mode.</p>
 			<p class="info">Keep in mind that some setting combinations, big fields and smal working width can lead into long generation times.
 				Your Game won't simple crash and your computer is not hanging up.
 				Patience is the key to success!</p>
