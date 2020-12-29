@@ -277,7 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Pohyb lžíce do pozice k vykládání" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Pohyb lžíce do pozice k vykládání" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Zastavit a jet nákládat:" />
-		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="Režim lopaty"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Začátek trasy:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="na nejbližším bodě" />
@@ -337,7 +337,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Vždy &amp; Zadní Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Vždy &amp; Oba Dif. pro práci v terénu" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Chceš aby pole byla skenována automaticky?" />
-		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Našli jste chybu nebo potřebujete pomoc s Courseplay, pak se prosím podívejte na: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Kalkulačka spotřeby osiva" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Pole: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Osivo: %s" />
@@ -395,12 +395,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR"						 		text="Kolečno myši %d" /> 
 
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="mod" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Urovnávání" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="naplnit" />
-		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Dusání" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticky zastavit" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Pouze courseplayer/autodrive řidič" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="Všechny řidiče s řezankou" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Detekovat traktor v okruhu:" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Maximální rychlost při dusání:" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Výška radlice:" />
@@ -498,8 +498,8 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuální naložení" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="počkat na odvozce" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="počkat na pracovníky na jámě" />
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>
