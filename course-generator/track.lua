@@ -149,7 +149,7 @@ function generateCourseForField( field, implementWidth, headlandSettings,
 		field.headlandPath, boundary = generateTwoSideHeadlands( field.boundary, field.bigIslands,
 			implementWidth, headlandSettings, centerSettings, minDistanceBetweenPoints, minSmoothAngle, maxSmoothAngle)
 		field.track, field.bestAngle, field.nTracks, field.blocks, resultIsOk = generateTracks({ boundary }, field.bigIslands,
-			implementWidth - implementWidth / 2, 0, centerSettings )
+			implementWidth, 0, centerSettings )
 	end
 	courseGenerator.debug("####### COURSE GENERATOR END ###########################################################")
 
