@@ -499,10 +499,10 @@
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="czeka przez pojazd rozładowujący" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="czeka przez pojazd w silosie" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatyczna naprawa" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Naprawa jest przeprowadzana automatycznie na polu." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Nie naprawiaj" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Naprawiaj" />
 		
 		<!-- Replace marker, do not remove! -->
 	</texts>
