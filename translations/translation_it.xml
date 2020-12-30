@@ -497,6 +497,12 @@
 
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		
 		<!-- Replace marker, do not remove! -->
 	</texts>
 </l10n>

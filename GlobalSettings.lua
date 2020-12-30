@@ -62,3 +62,32 @@ function ShowMiniHudSetting:init()
 	-- set default while we are transitioning from the the old setting to this new one
 	self:set(false)
 end
+
+
+---@class AutoRepairSetting : SettingList
+AutoRepairSetting = CpObject(SettingList)
+AutoRepairSetting.OFF = 0
+function AutoRepairSetting:init()
+	SettingList.init(self, 'autoRepair', 'COURSEPLAY_AUTOREPAIR', 'COURSEPLAY_AUTOREPAIR_TOOLTIP', nil,
+			{AutoRepairSetting.OFF,  25, 70, 99},
+			{'COURSEPLAY_AUTOREPAIR_OFF', '< 25%', '< 70%', 'COURSEPALY_AUTOREPAIR_ALWAYS'}
+		)
+	self:set(0)
+end
+
+function AutoRepairSetting:isAutoRepairActive()
+	return self:get() ~= AutoRepairSetting.OFF
+end
+
+function AutoRepairSetting:onUpdateTick(dt, isActive, isActiveForInput, isSelected)
+	local rootVehicle = self:getRootVehicle()
+	if courseplay:isAIDriverActive(rootVehicle) then 
+		if courseplay.globalSettings.autoRepair:isAutoRepairActive() then 
+			local repairStatus = (1 - self:getWearTotalAmount())*100
+			if repairStatus < courseplay.globalSettings.autoRepair:get() then 
+				self:repairVehicle()
+			end		
+		end
+	end
+end
+Wearable.onUpdateTick = Utils.appendedFunction(Wearable.onUpdateTick, AutoRepairSetting.onUpdateTick)
