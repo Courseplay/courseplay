@@ -496,6 +496,12 @@
 
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text=""esperando por descarregadores" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="esperando motorista" />
+
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

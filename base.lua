@@ -109,7 +109,6 @@ function courseplay:onLoad(savegame)
 	self.cp.generationPosition = {}
 	self.cp.generationPosition.hasSavedPosition = false
 
-
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
 		crossing = {};
@@ -405,6 +404,7 @@ function courseplay:onLoad(savegame)
 	courseplay:validateCanSwitchMode(self);
 
 	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
+	-- TODO: make sure every non global setting, has the vehicle table (self) for multiplayer sync 
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer("settings")
 	self.cp.settings:addSetting(SearchCombineOnFieldSetting, self)

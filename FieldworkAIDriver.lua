@@ -477,6 +477,7 @@ function FieldworkAIDriver:stopAndRefuel()
 		self:stopWork()
 		self:foldImplements()
 		self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+		self.triggerHandler:disableFuelLoading()
 		self:debug('passing the control to AutoDrive to run the fuel refill course.')
 		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, -2, self, FieldworkAIDriver.onEndCourse, nil);
 	end
@@ -567,6 +568,7 @@ function FieldworkAIDriver:onEndCourse()
 	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
 		self.state == self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE then
 		-- unload/refill course ended, return to fieldwork
+		self.triggerHandler:enableFuelLoading()
 		self:debug('AI driver in mode %d continue fieldwork at %d/%d waypoints', self:getMode(), self.aiDriverData.continueFieldworkAtWaypoint, self.fieldworkCourse:getNumberOfWaypoints())
 		self:startFieldworkWithPathfinding(self.aiDriverData.continueFieldworkAtWaypoint)
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then

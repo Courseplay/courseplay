@@ -130,6 +130,7 @@ local function initialize()
 		'Events/SiloSelectedFillTypeEvent',
 		'Events/StartStopWorkEvent',
 		'Events/SettingsListEvent',
+		'Events/GlobalSettingsEvent',
 		'Events/AssignedCombinesEvents',
 		'Events/CourseEvent',
 		'Events/InfoTextEvent',
@@ -319,7 +320,7 @@ local function setGlobalData()
 	courseplay.globalSettings:addSetting(ClickToSwitchSetting)
 	courseplay.globalSettings:addSetting(ShowMiniHudSetting)
 	courseplay.globalSettings:addSetting(EnableOpenHudWithMouseGlobalSetting)
-
+	courseplay.globalSettings:addSetting(AutoRepairSetting)
 	courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
 	courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
 
