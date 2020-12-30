@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Odstranit orientační body" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Odvézt bez čekání na doplnění" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Odvézt při:" />
-		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Jeďte dál za méně než:" />
 		<text name="UNKNOWN" 												text="neznámý" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Úvrať proti/po směru hodinových ručiček" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Úvrať před/po práci na poli" />
@@ -498,13 +498,13 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Vyložit pouze část %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuální naložení" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="čekání na odvozce" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="čekání na pracovníky na jámě" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatická oprava" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Opravuje se automaticky na poli." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Neopravovat" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Udržovat v dobrém stavu" />
 	
     <!-- Replace marker, do not remove! -->
 	</texts>
