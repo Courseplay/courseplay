@@ -237,8 +237,8 @@
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"										text="загонами" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    				text="круговой" />
 		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    				text="загонами v2" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    				text="Рядов на загон" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    				text="Указывается количество рядов в загоне при работе в режиме 'загонами v2'." />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    				text="Проходов на загон" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    				text="Указывается количество проходов в загоне при работе в режиме 'загонами v2'." />
 		<text name="COURSEPLAY_ACTIVATED" 													text="да" />
 		<text name="COURSEPLAY_NAME_ONLY" 													text="название техники" />
 		<text name="COURSEPLAY_NAME_AND_COURSE" 											text="назв.техники и маршрут" />
@@ -500,10 +500,10 @@
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"										text="ожидает разгружающих" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"							text="ожидает работающих на яме" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"													text="Автоматический ремонт" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"											text="Автоматически ремонтировать на поле." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"												text="Не ремонтировать" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"											text="Поддерживать исправным" />
 		
 		<!-- Replace marker, do not remove! -->
 	</texts>
