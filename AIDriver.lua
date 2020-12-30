@@ -1908,6 +1908,11 @@ function AIDriver:checkSafetyConstraints(maxSpeed, allowedToDrive, moveForwards)
 	return math.min(proximityLimitedSpeed, trafficLimitedSpeed), allowedToDrive, moveForwards
 end
 
+------------------------------------------------------------------------------------------------------------------------
+--- Proximity sensor control
+------------------------------------------------------------------------------------------------------------------------
+--- proximity speed control enabled/disabled: if disabled, all of the vehicle's proximity sensors are deactivated and
+--- won't see anything, therefore, no stopping/slowing down/swerving on obstacles
 function AIDriver:enableProximitySpeedControl()
 	self.proximitySpeedControlEnabled = true
 end
@@ -1920,6 +1925,8 @@ function AIDriver:isProximitySpeedControlEnabled()
 	return self.proximitySpeedControlEnabled
 end
 
+--- proximity swerve enabled/disabled: will try to swerve for other vehicles when enabled. Will swerve for CP driven
+--- vehicles only when driving in a different direction (heading difference > 45 degrees)
 function AIDriver:enableProximitySwerve()
 	self.proximitySwerveEnabled = true
 end
@@ -1928,8 +1935,18 @@ function AIDriver:disableProximitySwerve()
 	self.proximitySwerveEnabled = false
 end
 
+--- proximity swerve enabled is checked with isProximitySwerveEnabled() and thus can be extended in derived classes with
+--- checking for the specific vehicle.
 function AIDriver:isProximitySwerveEnabled(vehicle)
 	return self.proximitySwerveEnabled
+end
+
+
+--- proximity slow down: slowing down when close to another vehicle
+--- proximity slow down is checked with isProximitySlowDownEnabled() and thus can be extended in derived classes with
+--- checking for the specific vehicle.
+function AIDriver:isProximitySlowDownEnabled(vehicle)
+	return true
 end
 
 --- Temporarily ignore vehicle for the forward proximity sensor
@@ -1961,6 +1978,7 @@ AIDriver.psStateNoVehicle = {name = 'no vehicle'}
 AIDriver.psStateReverse = {name = 'reverse'}
 AIDriver.psStateSwerve = {name = 'swerve'}
 AIDriver.psStateSlowDown = {name = 'slow down'}
+AIDriver.psStateSlowDownDisabled = {name = 'slow down disabled'}
 AIDriver.psStateReverse = {name = 'reverse'}
 AIDriver.psStateStop = {name = 'stop'}
 
@@ -2026,14 +2044,16 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 		debug(AIDriver.psStateNoObstacle, '')
 		return maxSpeed, allowedToDrive, moveForwards
 	end
-	-- something in range, reduce speed proportionally
+
+	-- something in range, reduce speed proportionally when enabled
 	local deltaV = maxSpeed - AIDriver.proximityMinLimitedSpeed
-	local newSpeed = AIDriver.proximityMinLimitedSpeed + normalizedD * deltaV
+	local slowSpeed = AIDriver.proximityMinLimitedSpeed + normalizedD * deltaV
+	local newSpeed = maxSpeed
 	local sameDirection = TurnContext.isSameDirection(
 			AIDriverUtil.getDirectionNode(self.vehicle), AIDriverUtil.getDirectionNode(vehicle), 45)
 	-- check for nil and NaN
 	if deg and deg == deg and self:isProximitySwerveEnabled(vehicle) and
-			(not sameDirection or not vehicle:getIsCourseplayDriving())then
+			(not sameDirection or not vehicle:getIsCourseplayDriving()) then
 		local dx = dAvg * math.sin(math.rad(deg))
 		-- which direction to swerve (have a little bias for right, sorry UK folks :)
 		local dir = dx > -1.2 and 1 or -1
@@ -2044,13 +2064,23 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 		local error = setPoint - dx
 		local offsetChange = 0.5 * error
 		self.course:changeTemporaryOffsetX(offsetChange, 1000)
-		debug(AIDriver.psStateSwerve, 'dAvg = %.1f (%d), slow down, speed = %.1f, swerve dx = %.1f, setPoint = %.1f, error = %.1f, offsetChange = %.1f',
+		-- always slow down when swerving
+		newSpeed = slowSpeed
+		debug(AIDriver.psStateSwerve, 'dAvg = %.1f (%d), speed = %.1f, swerve dx = %.1f, setPoint = %.1f, error = %.1f, offsetChange = %.1f',
 				dAvg, 100 * normalizedD, newSpeed, dx, setPoint, error, offsetChange)
 	else
-		self:setInfoText('SLOWING_DOWN_FOR_TRAFFIC')
+		if self:isProximitySlowDownEnabled(vehicle) then
+			newSpeed = slowSpeed
+			self:setInfoText('SLOWING_DOWN_FOR_TRAFFIC')
+			debug(AIDriver.psStateSlowDown, 'proximity: d = %.1f (%d), speed = %.1f, deg = %.1f',
+					d, 100 * normalizedD, newSpeed, deg)
+		else
+			newSpeed = maxSpeed
+			debug(AIDriver.psStateSlowDownDisabled, 'proximity: d = %.1f (%d), speed = %.1f, deg = %.1f',
+					d, 100 * normalizedD, newSpeed, deg)
+		end
+		-- not swerving, reset offset
 		self.course:setTemporaryOffset(0, 0, 6000)
-		debug(AIDriver.psStateSlowDown, 'proximity: d = %.1f (%d), slow down, speed = %.1f, deg = %.1f',
-				d, 100 * normalizedD, newSpeed, deg)
 	end
 	return newSpeed, allowedToDrive, moveForwards
 end

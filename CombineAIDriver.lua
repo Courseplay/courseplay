@@ -1603,3 +1603,24 @@ function CombineAIDriver:addForwardProximitySensor()
 	self.forwardLookingProximitySensorPack = WideForwardLookingProximitySensorPack(
 			self.vehicle, self.ppc, self:getFrontMarkerNode(self.vehicle), self.proximitySensorRange, 1, self.vehicle.cp.workWidth)
 end
+
+--- Check the vehicle in the proximity sensor's range. If it is player driven, don't slow them down when hitting this
+--- vehicle.
+--- Note that we don't really know if the player is to unload the combine, this will disable all proximity check for
+--- player driven vehicles.
+function CombineAIDriver:isProximitySlowDownEnabled(vehicle)
+	-- if not on fieldwork, always enable slowing down
+	if self.state ~= self.states.ON_FIELDWORK_COURSE then return true end
+
+	-- CP drives other vehicle, it'll take care of everything, including enable/disable
+	-- the proximity sensor when unloading
+	if vehicle.cp.driver and vehicle.cp.driver.isActive and vehicle.cp.driver:isActive() then return true end
+
+	if vehicle and vehicle:getIsEntered() then
+		self:debugSparse('human player in nearby %s not driven by CP so do not slow down for it', nameNum(vehicle))
+		-- trust the player to avoid collisions
+		return false
+	else
+		return true
+	end
+end
