@@ -494,7 +494,7 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantidade para descarregar %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="carregar manualmente" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text=""esperando por descarregadores" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="esperando por descarregadores" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="esperando motorista" />
 
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
