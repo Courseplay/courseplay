@@ -135,7 +135,7 @@
 
 		<article class="manualSection" id="controls">
 			<h2>Controls</h2>
-			<p>In general, controlling Courseplay works with the mouse, due to free keys in Farming Simulator being rather rare. By using the <kbd title="Delete">DELETE</kbd> the Courseplay hud, where you can configure and control the drivers, is activated. Normaly, the hud will be opened with the <span class="emphasize1">right mouse button</span>. Due to some controls like Wheelloader, this will collide with opening the hud. In this case, you can go into our advanced Settings Page and deactivate it either for your current vehicle (first page) or global (second page) if you don't like to use <span class="emphasize1">right mouse button</span> at all.
+			<p>In general, controlling Courseplay works with the mouse, due to free keys in Farming Simulator being rather rare. By using the <kbd title="Delete">DELETE</kbd> the Courseplay hud, where you can configure and control the drivers, is activated. Normally, the hud will be opened with the <span class="emphasize1">right mouse button</span>. Due to some controls like wheel loader, this will collide with opening the hud. In this case, you can go into our advanced Settings Page and deactivate it either for your current vehicle (first page) or global (second page) if you don't like to use <span class="emphasize1">right mouse button</span> at all.
 			<p>More functions can be assigned to any key or the mouse buttons in the game's options menu.</p>
 		</article>
 
@@ -156,7 +156,7 @@
 				<span class="icon-page0"></span>
 				HUD: Combine controls
 			</h2>
-			<p class="info"><span class="icon-infoSign inline"></span>This page is only accessable from combines, choppers, harvesters and tractors with attached combines or choppers. A player driven Combine that will be unloaded by CP Combie Mode Drivers is not supported for now.</p>
+			<p class="info"><span class="icon-infoSign inline"></span>This page is only accessible from combines, choppers, harvesters and tractors with attached combines or choppers. Note that unloading a human player driven combine by a Courseplay unloader is not supported for now.</p>
 			<ul>
 				<li data-line="1">
 					<h4>Request driver / Driver requested</h4>
@@ -246,7 +246,7 @@
 					<li>
 						<h4><span class="icon-waitPointSign"></span>Set waiting point</h4>
 						<p>While recording, you have the possibility to set waiting points on the course. At those points, the driver, while driving the course, will stop and wait until either you tell him to continue, or the configured waiting time has passed. When a driver reaches a waiting point, a message will be displayed (<code>XYZ has reached waiting point.</code>).</p>
-						<p>In certain modes, waiting points have special meanings, other than waiting: in the <a href="#driveMode4" class="internal"><span class="icon-mode4single"></span> fertilizer/seeding</a> mode, the waitpoint defines a position where the worker stops and wait untill he got his set min% value reached, this can be done by a player or by a courseplay driver. They also indicate the start and end of the work area, as well as the area where to check for an unload point for <a href="#driveMode9" class="internal"><span class="icon-mode9single"></span> shovel filling and unloading</a> mode and for <a href="#driveMode3" class="internal"><span class="icon-mode3single"></span> overloader</a> mode, to set the overloading position.</p>
+						<p>In certain modes, waiting points have special meanings, other than waiting: in the <a href="#driveMode4" class="internal"><span class="icon-mode4single"></span> fertilizer/seeding</a> mode, the wait point defines a position where the worker stops and wait until he got his set min% value reached, this can be done by a player or by a courseplay driver. They also indicate the start and end of the work area, as well as the area where to check for an unload point for <a href="#driveMode9" class="internal"><span class="icon-mode9single"></span> shovel filling and unloading</a> mode and for <a href="#driveMode3" class="internal"><span class="icon-mode3single"></span> overloader</a> mode, to set the overloading position.</p>
 					</li>
 					<li>
 						<h4><span class="icon-crossSign"></span>Set crossing point</h4>
@@ -281,7 +281,7 @@
 					</li>
 					<li>
 						<h4>Start course at&hellip;</h4>
-						<p>Some courses have relatively many waypoints in a small area, especially at the starting point (e.g. generated courses with headland). Here you can choose if the driver starts the course at the nearest waypoint (default setting), the next closest (it takes the currecnt vehicle direction into account), the current wapypoint or directly at the first waypoint.</p>
+						<p>Some courses have relatively many waypoints in a small area, especially at the starting point (e.g. generated courses with headland). Here you can choose if the driver starts the course at the nearest waypoint (default setting), the next closest (it takes the current vehicle direction into account), the current waypoint or directly at the first waypoint.</p>
 					</li>
 				</ul>
 			</section>
@@ -428,8 +428,8 @@
 				<li>
 					<h4>Start at % (Combi Mode and Overloader Mode)</h4>
 					<p>This value defines the combine's fill level percentage that tells the driver to drive to and unload it. When unloading choppers, this value defines when the second unloading driver should join the unloading chain.</p>
-					<p>For normal Combines, the Unloader will only start if the pipe won't be in the fruit and the option unload on first headland is activated.</p>
-					<p><span class="emphasize1">Note:</span> if fruitbypass is activated, the driver will always drive to the Combine at the set %, even when the pipe is in the fruit.</p>
+					<p>For normal combines, the unloader will only start if the pipe won't be in the fruit and the option unload on first headland is activated.</p>
+					<p><span class="emphasize1">Note:</span> if fruit avoidance is activated, the driver will always drive to the combine at the set %, even when the pipe is in the fruit.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>5%</dd>
@@ -464,11 +464,11 @@
 					</dl>
 				</li>
 				<li>
-					<h4>Filltype lists (Grain transport, Fertilizer/Seeding and Fieldsupply)</h4>
-					<p>As soon as you added a filltype to load or reload, the filltype will be displayed with a few values:</p>
-					<p>Count (only for Grain Transport): How many times will the Driver load that filltype from a silo.</p>
+					<h4>Fill type lists (Grain transport, Fertilizer/Seeding and Field Supply)</h4>
+					<p>As soon as you added a fill type to load or reload, the fill type will be displayed with a few values:</p>
+					<p>Count (only for Grain Transport): How many times will the Driver load that fill type from a silo.</p>
 					<p>Max: The maximum value it should try to load (less is accepted too).</p>
-					<p>Min: How much should the driver minimal load, if he can't, he will wait for more to come untill he can load the min value.</p>
+					<p>Min: How much should the driver minimal load, if he can't, he will wait for more to come until he can load the min value.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>1%</dd>
@@ -489,7 +489,7 @@
 				HUD: Manage combines
 			</h2>
 			<p class="info"><span class="icon-infoSign inline"></span>This page is displayed only in the "combi" and "overloader" modes.</p>
-			<p>Here you can choose wich Combine(s) you want to unload by clicking the [ ] and mark the Combine(s) with an X -> [X]</p>
+			<p>Here you can choose which Combine(s) you want to unload by clicking the [ ] and mark the Combine(s) with an X -> [X]</p>
 			<p>In case you can't find your Combien on the right field, you can filter the list by choosing a field and only the combines on that field will be shown in the list.</p>
 		</article>
 
@@ -530,7 +530,7 @@
 					<ul>
 						<li>
 							<h4>Self unload</h4>
-							<p>Looks for an empty trailer that can load the harvested filltype and drive to it to unload.</p>
+							<p>Looks for an empty trailer that can load the harvested fill type and drive to it to unload.</p>
 						</li>
 						<li>
 							<h4>Pipe always unfold</h4>
@@ -582,7 +582,7 @@
 				<span class="icon-page6"></span>
 				Advanced settings
 			</h2>
-				<p class="info">This side is accessable from General Settings Page.</p>
+				<p class="info">This side is accessible from General Settings Page.</p>
 				<ul>
 				<p><h4>Vehicle Settings</h4></p>
 					<li>
@@ -592,7 +592,7 @@
 					</li>
 					<li>
 						<h3>Use pathfinding in turn</h3>
-						<p>Let the pathfineder generate the best way to the next row, this is useful when your next row is behind a corner or on the other side of the fild or island.</p>
+						<p>Let the pathfinder generate the best way to the next row, this is useful when your next row is behind a corner or on the other side of the field or island.</p>
 					</li>
 					<li>
 						<h3>Reversing for pathfinding in turn</h3>
@@ -627,7 +627,7 @@
 
 					<li>
 						<h3>Load course at startup</h3>
-						<p>Will load all course at startup, wich will lead into a longer loadtime of your savegame. You can turn this off to get quicker into your savegame, but when load a course from course Manager, it might take a while untill the course is loaded, depending on the amount of waypoints.</p>
+						<p>Will load all course at startup, which will lead into a longer load time of your savegame. You can turn this off to get quicker into your savegame, but when load a course from course Manager, it might take a while until the course is loaded, depending on the amount of waypoints.</p>
 					</li>
 					<li>
 						<h3>scan fields automatically</h3>
@@ -651,9 +651,9 @@
 					</li>
 					<li>
 						<h3>Automatic Repair</h3>
-						<p>This option will repair your vehicle accoring to the status of your Vehicle GUI. 100% is completely healthy.</p>
+						<p>This option will repair your vehicle according to the status of your Vehicle GUI. 100% is completely healthy.</p>
 						<p>The values got choosen according to this table: <a href="https://forum.giants-software.com/viewtopic.php?f=955&t=140597&#p1097926">Damage-yield-table.</a></p>
-						<p>It will repair when under 70% health wich is 30% damage and will start to gain less crop yield.</p>
+						<p>It will repair when under 70% health which is 30% damage and will start to gain less crop yield.</p>
 						<p>Repair under 25% health, will be 75% damage and is about 25% less crop yield.</p>
 					</li>
 				</ul>
@@ -676,12 +676,12 @@
 					<p>When driver is standing still at a certain point for a while, it will turn off the engine to save fuel.</p>
 				</li>
 				<li>
-					<h4>Refill fuel at gast station</h4>
+					<h4>Refill fuel at gas station</h4>
 					<p>Whenever a driver passes by a gas station and refuel point, choose if always refuel or just when under 20%.</p>
 				</li>
 				<li>
 					<h4>Covers</h4>
-					<p>Automatic oben/close covers on or off.</p>
+					<p>Automatic open/close covers on or off.</p>
 				</li>
 				<li>
 					<h4>Waiting time</h4>
@@ -689,7 +689,7 @@
 				</li>
 				<li>
 					<h4>Align w/first waypoint (Align with first waypoint)</h4>
-					<p>When active, the driver will align the work area before the startpoint.</p>
+					<p>When active, the driver will align the work area before the start point.</p>
 				</li>
 			</ul>
 		</article>
@@ -701,13 +701,13 @@
 				<span class="icon-page8"></span>
 				HUD: Offsets
 			</h2>
-			<p>On this page, you can set differnt kind of Offsets, depending on your course and mode. - WIP</p>
+			<p>On this page, you can set different kind of offsets, depending on your course and mode. - WIP</p>
 			<ul>
 				<li>
 					<h4>Lane offset</h4>
 					<p class="info"><span class="icon-infoSign inline"></span>Only available in "fertilizing/seeding" and "field work" modes</p>
 					<p>When you have multiple tools driving the same field course, use this option to set their effective lanes.</p>
-					<p class="emphasize1">See the <a href="../faq/index.html">FAQ</a></span> for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span></p>
+					<p class="emphasize1">See the <a href="../faq/index.html">FAQ</a> for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span></p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
 						<dd>0.1 m</dd>
@@ -725,11 +725,12 @@
 						<li><span class="emphasize1">Regular lane change</span>: the vehicle always drives left/right of its lane.</li>
 						<li><span class="emphasize1">Symmetric lane change</span>: The tool switches from left to right / right to left each lane, thus creating a symmetric pattern.</li>
 					</ul>
-					<p class="emphasize1">See the <a href="../faq/index.html">FAQ</a></span> for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span></p>
+					<p class="emphasize1">See the <a href="../faq/index.html">FAQ</a>
+						for further information <span class="emphasize2">(&ldquo;How to use the offset? — a.k.a. how do I let multiple vehicles drive a fieldwork course?&rdquo;)</span></p>
 				</li>
 				<li>
 					<h4>Tool offset horizontal</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only available in "overloader", "fertilizing/seeding" and "field work", "combine self-unloading" and "Fieldsupply" modes</p>
+					<p class="info"><span class="icon-infoSign inline"></span>Only available in "overloader", "fertilizing/seeding" and "field work", "combine self-unloading" and "Field Supply" modes</p>
 					<p>For some tools it might be important not to drive the course exactly in the center line, but slightly to the right or to the left (e.g. bale collectors). This option lets you set this offset. It can also be used for filling / overloading points, to accommodate different vehicle sizes on the same course.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
@@ -742,7 +743,7 @@
 				</li>
 				<li>
 					<h4>Tool offset vertical</h4>
-					<p class="info"><span class="icon-infoSign inline"></span>Only available in "overloader", "fertilizing/seeding", "field work", "combine self-unloading" and "Fieldsupply" modes</p>
+					<p class="info"><span class="icon-infoSign inline"></span>Only available in "overloader", "fertilizing/seeding", "field work", "combine self-unloading" and "Field Supply" modes</p>
 					<p>Identical to the horizontal offset, only that the driver drives further ahead/behind the actual course.</p>
 					<dl class="buttonInfo">
 						<dt>Default change</dt>
@@ -811,7 +812,7 @@
 				<span class="icon-page10"></span>
 				HUD: Leveling and compacting settings
 			</h2>
-			<p class="info">This Mode got 3 different workmodes: filling up, leveling and compacting.</p>
+			<p class="info">This Mode got 3 different modes: filling up, leveling and compacting.</p>
 			<ul>
 				<li>
 					<h3>Filling up</h3>
@@ -819,31 +820,31 @@
 				</li>
 				<li>
 					<h3>Leveling</h3>
-					<p>This mode can be used with a shield to get the chaff into an even hight or spreading it with Tools like the Fliegl Duo.</p>
+					<p>This mode can be used with a shield to get the chaff into an even high or spreading it with Tools like the Fliegl Duo.</p>
 				</li>
 				<li>
 					<h3>Compacting</h3>
-					<p>This mode can be used with no tools attached, weights, or siloroller.</p>
+					<p>This mode can be used with no tools attached, weights, or silo roller.</p>
 				</li>
 				<li>
-					<h3>Automaticly stop for</h3>
-					<p>Drives to the Waitpoint when a CP Driver/AD Driver or any Vehicle with running engine is within the detection range.</p>
+					<h3>Automatically stop for</h3>
+					<p>Drives to the wait point when a CP driver/AD driver or any vehicle with running engine is within the detection range.</p>
 				</li>
 				<li>
 					<h3>Detect unloaders in range of</h3>
-					<p>Set the Range of where to detect other Vehicles, the detection is a circle, wich center is the Stoppoint of the Drivers course.</p>
+					<p>Set the range of where to detect other vehicles, the detection is a circle, which center is the stop point of the Drivers course.</p>
 				</li>
 				<li>
 					<h3>Blade width</h3>
-					<p>General tool width, wich will be used to calculate the lines where the driver is able to drive to not touch the walls.</p>
+					<p>General tool width, which will be used to calculate the lines where the driver is able to drive to not touch the walls.</p>
 				</li>
 				<li>
 					<h3>Max speed while pushing</h3>
 					<p>Speed how fast we drive into the silo.</p>
 				</li>
 				<li>
-					<h3>Blade hight (only in filling up and leveling)</h3>
-					<p>The automatic hight will be measured at the start of the course and is slightly over the ground.</p>
+					<h3>Blade height (only in filling up and leveling)</h3>
+					<p>The automatic height will be measured at the start of the course and is slightly over the ground.</p>
 					<p>Increase this value to choose a leveling hight, or when the filling up mode keeps getting stuck at the ground.</p>
 				</li>
 			</ul>
@@ -862,7 +863,7 @@
 				<li><span class="icon-mode5block"></span> <a href="#driveMode5"><span>Transfer</span></a></li>
 				<li><span class="icon-mode6block"></span> <a href="#driveMode6"><span>Field work</span></a></li>
 				<li><span class="icon-mode7block"></span> <a href="#driveMode7"><span>Combine self unloading</span></a></li>
-				<li><span class="icon-mode8block"></span> <a href="#driveMode8"><span>Fieldsupply</span></a></li>
+				<li><span class="icon-mode8block"></span> <a href="#driveMode8"><span>Field supply</span></a></li>
 				<li><span class="icon-mode9block"></span> <a href="#driveMode9"><span>Fill and empty shovel</span></a></li>
 			</ol>
 		</article>
@@ -870,19 +871,19 @@
 		<!-- ### DRIVEMODE1 ### -->
 		<article class="manualSection" id="driveMode1">
 			<h2><span class="icon-mode1single"></span> Grain transport</h2>
-			<p>If you don't add any filltype in the HUD list, the tractor waits at the first waypoint (the middle of the trailer will be positioned on the first waypoint) until his trailer has been filled. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
+			<p>If you don't add any fill type in the HUD list, the tractor waits at the first waypoint (the middle of the trailer will be positioned on the first waypoint) until his trailer has been filled. As soon as the fill level reaches the set percentage (<code>Drive on at %</code>), the driver starts to drive the course. As soon as he reaches an unloading trigger, he unloads automatically. Afterwards he continues the course to return to the first waypoint.</p>
 			<p>The last waypoint should be 5 to 10 m ahead of the first, and have somewhat the same direction as the first.</p>
-			<p>For loading a filltype at a trigger (e.g. silo) you have to add up to 5 filltypes in the HUD list, wich will be loaded when:</p>
-			<p><li>Runcounter is higher then 0</li></p>
-			<p><li>Filltype is available in the silo</li></p>
-			<p>In case one of those conditions can't be fullfilled, the next filltype will be loaded (if you got more then one).</p>
+			<p>For loading a fill type at a trigger (e.g. silo) you have to add up to 5 fill types in the HUD list, which will be loaded when:</p>
+			<p><li>Run counter is higher then 0</li></p>
+			<p><li>Fill type is available in the silo</li></p>
+			<p>In case one of those conditions can't be fulfilled, the next fill type will be loaded (if you got more then one).</p>
 			<p>In case your selected min value can't be reached, you will get noticed that there is not enough left in the silo.</p>
-			<p>If you have more then one trailer (or a multibin trailer) you can load up to 3 different filltypes, by clicking at Seperate Trailers.</p>
+			<p>If you have more then one trailer (or a multibin trailer) you can load up to 3 different fill types, by clicking at Separate Trailers.</p>
 			<figure>
 				<img src="../../res/img/manual_mode1_en.jpg" class="infoImg">
 				<figcaption>Start point, waypoints, unloading trigger and end points in the grain transport mode</figcaption>
 			</figure>
-			<p>One important thing for a Grain Transport Course is, after you started recording, drive in a straight line, so your first waypoint is a few meters ahead of your startwaypoint</p>
+			<p>One important thing for a Grain Transport Course is, after you started recording, drive in a straight line, so your first waypoint is a few meters ahead of your start waypoint</p>
 		</article>
 
 		<!-- ### DRIVEMODE2 ### -->
@@ -890,21 +891,21 @@
 			<h2><span class="icon-mode2single"></span> Combi</h2>
 			<p>The combi mode is very similar to the <a href="#driveMode1" class="internal"><span class="icon-mode1single inline"></span>Grain transport</a> mode, in that the tractor drives a course and unloads at a trigger. But, in addition, the driver unloads a working combine or chopper on the field.</p>
 			<p>The tractor waits at the last waypoint until a combine, chopper or harvester calls him. This will happen if:
-			<p><li>The Combine is driven by Courseplay</li></p>
-			<p><li>The Combine is selected in the <a href="#hud_manageCombine" class="internal"><span class="icon-page4 inline"></span>HUD:&nbsp;manage&nbsp;combines</a> by clicking the [ ] it will tunr into a [X]</li></p>		
+			<p><li>The combine is driven by Courseplay</li></p>
+			<p><li>The combine is selected in the <a href="#hud_manageCombine" class="internal"><span class="icon-page4 inline"></span>HUD:&nbsp;manage&nbsp;combines</a> by clicking the [ ] it will turn into a [X]</li></p>
 			<p><li>The combine's fill level is above the percentage (<code>Start&nbsp;at&nbsp;%</code>) set for the tractor</li></p>	
-			<p>We also have some conditions on when and where the Unloader will go to the Combine:</p>
-			<p><li>On first Headland, the Combine will only be unloaded while driving, when the option is set to active in the advanced settings Menu, else the Combine will create a pocket at arround 95% of its filllevel</li></p>
-			<p><li>If the pipe is in the fruit, the combine will only call the driver after Combien reversed out of the fruit, or in case there is fruit on both sides, he will also create a pocket at 95% of its filllevel</li></p>
-			<p><li>In case the pipe is not in the fruit, the Combine and Unloader will arrange a 'rendezvous' where they should meet up. Depending on several conditions, it is not guaranteed the Unloader will make it in time</li></p>
-			<p>When the Unloader knows where to go, it will start to drive it's path to the Combine. When the Diver is near, the Combine will start to unfold the pipe, as soon as the pipe is fully unfolded, the driver will palce the trailer under it with an automatic offset, wich can be corrected in the offsetmenu</p>
+			<p>We also have some conditions on when and where the unloader will go to the combine:</p>
+			<p><li>On first headland, the combine will only be unloaded while driving, when the option is set to active in the advanced settings Menu, else the combine will create a pocket at around 95% of its fill level</li></p>
+			<p><li>If the pipe is in the fruit, the combine will only call the driver after Combien reversed out of the fruit, or in case there is fruit on both sides, he will also create a pocket at 95% of its fill level</li></p>
+			<p><li>In case the pipe is not in the fruit, the combine and unloader will arrange a 'rendezvous' where they should meet up. Depending on several conditions, it is not guaranteed the unloader will make it in time</li></p>
+			<p>When the Unloader knows where to go, it will start to drive it's path to the Combine. When the driver is near, the combine will start to unfold the pipe, as soon as the pipe is fully unfolded, the driver will place the trailer under it with an automatic offset, which can be corrected in the offset menu</p>
 			<p>If the trailer isn't full yet (<code>Drive&nbsp;on&nbsp;at&nbsp;%</code>), the tractor stops or moves back a bit and waits in the field for his next unloading operation. As soon as the trailer's fill level is above the <code>Drive&nbsp;on&nbsp;at&nbsp;%</code> percentage, the driver will drive to the course's first waypoint, and from there continue the course, unloading the trailer and returning to the field.</p>
 			<figure>
 				<img src="../../res/img/manual_mode2_en.jpg" class="infoImg">
 				<figcaption>Combine, start point, waypoints, unloading trigger and end points in the combi mode</figcaption>
 			</figure>
 			<p>You should only use one trailer, as there are some reverse driving operations.</p>
-			<p>Manual Driving the Combine is not supported yet, as we have a communication between the Combine and the Unloader.</p>
+			<p>Manual driving the combine is not supported yet, as we have a communication between the combine and the unloader.</p>
 		</article>
 
 		<!-- ### DRIVEMODE3 ### -->
@@ -923,12 +924,12 @@
 		<article class="manualSection" id="driveMode4">
 			<h2><span class="icon-mode4single"></span> Fertilize and seeding</h2>
 			<p>When fertilizing or seeding, there are two sections: one, the actual work part on the field, and two, the course from the field to the refilling trigger and back to the field.</p>
-			<p>The field work course will be created with the coursegenerator, wich can be found on the Drive Controls Page.</p>
+			<p>The field work course will be created with the course generator, which can be found on the Drive Controls Page.</p>
 			<p>The second part, the automatic refilling, is a regular "A to B" course. Just start near the field and then go through the fertilizer/liquid manure/seeding trigger (or under an overloader pipe), and back to the field, ending near the field. As soon as a refilling trigger is recognized, the driver stops and refills automatically. If a tool isn't fillable via a trigger, but rather manually (e.g. a solid manure spreader), an additional waiting point has to be set and the point where the tool should be filled.</p>
-			<p>To refill your worker, you got to select a filltype that needs to be refilled and you can add up to 2 filltypes (e.g. seed and fertilizer).</p>
-			<p>When driving through a trigger the driver will wait until the tool is filled with the percentage set at your filltype max value (default: 100%).</p>
-			<p>For refilling at a waitpoint, the min value should be increase to the value, at where the driver is allowed drive back to work.</p>
-			<p>To add the refill course, first load the fieldwork course with <span class="icon-loadMergeCourse" title="Load/merge course"></span> and then add your refill course with the <span class="icon-courseAppend" title="Append course">.</p>
+			<p>To refill your worker, you got to select a fill type that needs to be refilled and you can add up to 2 fill types (e.g. seed and fertilizer).</p>
+			<p>When driving through a trigger the driver will wait until the tool is filled with the percentage set at your fill type max value (default: 100%).</p>
+			<p>For refilling at a wait point, the min value should be increase to the value, at where the driver is allowed drive back to work.</p>
+			<p>To add the refill course, first load the fieldwork course with <span class="icon-loadMergeCourse" title="Load/merge course"></span> and then add your refill course with the <span class="icon-courseAppend" title="Append course">.</span></p>
 			<p>Course example:</p>
 			<figure>
 				<img src="../../res/img/manual_mode4_en.jpg" class="infoImg">
@@ -952,9 +953,9 @@
 			<h2><span class="icon-mode6single"></span> Field work</h2>
 			<p>The field work mode is doing all the other work on the field, like harvesting, cultivation, pressing and collecting bales and so on.</p>
 			<p>Basically, it works much the same as the fertilizing/seeding mode, only that the tool can/must be emptied/unloaded instead of being refilled.</p>
-			<p>The field work course will be created with the coursegenerator, wich can be found on the Drive Controls Page.</p>
-			<p>The unload course is similar to the refill course of fertilize and seeding mode, just drive through a unloadtrigger or silobunker.</p>
-			<p>For Unloading combines in a similar way, you just have to load a field work course, turn on 'self unload' and place a trailer that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
+			<p>The field work course will be created with the course generator, which can be found on the Drive Controls Page.</p>
+			<p>The unload course is similar to the refill course of fertilize and seeding mode, just drive through a unload trigger or silo bunker.</p>
+			<p>For Unloading combines in a similar way, you just have to load a field work course, turn on 'self unload' and place a trailer that can load the harvested fill type and is on the field or within 20 m of the field edge.</p>
 			<p>To add the unload course, first load the fieldwork course with <span class="icon-loadMergeCourse" title="Load/merge course"></span> and then add your refill course with the <span class="icon-courseAppend" title="Append course"></span></p>
 			<figure>
 				<img src="../../res/img/manual_mode6_en.jpg" alt="Fieldwork diagram" class="infoImg">
@@ -968,15 +969,15 @@
 		<!-- ### DRIVEMODE7 ### -->
 		<article class="manualSection" id="driveMode7">
 			<h2><span class="icon-mode7single"></span> Combine self unloading</h2>
-			<p>This mode got completely replaced by a simple option called 'self unload' wich is use for Harvester and Combine (not Choppers), that can load the harvested filltype and is on the field or within 20m of the Fieldborder.</p>
+			<p>This mode got completely replaced by a simple option called 'self unload' which is use for Harvester and Combine (not Choppers), that can load the harvested fill type and is on the field or within 20 m of the field edge.</p>
 			<p>The Combine will automatically find its way to the trailer. Just set up a Fieldwork Course and activate the 'self unload' setting.</p>
 		</article>
 
 		<!-- ### DRIVEMODE8 ### -->
 		<article class="manualSection" id="driveMode8">
-			<h2><span class="icon-mode8single"></span> Fieldsupply</h2>
-			<p>The Fieldsupply mode is for transporting anything that you can bring out on a field, like Seeds or liquid manure. The course basically works like Grain Transport, but in addition, you can place a waitpoint where the Driver stops and is ready to overload to a e.g. a seeder or liquid manure sprayer.</p>
-			<p>An Overloader wagen is used for seeds and fertilizer, liqued manure or liquied fertilizer ofcourse require a liquid transport trailer.</p>
+			<h2><span class="icon-mode8single"></span> Field Supply</h2>
+			<p>The Field supply mode is for transporting anything that you can bring out on a field, like Seeds or liquid manure. The course basically works like Grain Transport, but in addition, you can place a wait point where the Driver stops and is ready to overload to a e.g. a seeder or liquid manure sprayer.</p>
+			<p>An Overloader wagon is used for seeds and fertilizer, liqued manure or liqied fertilizer of course require a liquid transport trailer.</p>
 		</article>
 
 		<!-- ### DRIVEMODE9 ### -->
@@ -1020,16 +1021,16 @@
 			<p>Four waypoints before waiting point #3 the driver will set the shovel to the <span class="emphasize2">pre-unloading position</span> (<span class="icon-shovelPreUnloading inline"></span>) and start looking for a trigger or a trailer to unload to. If nothing has been found, the driver will stop. If something has been found, the driver continues until the shovel is ready to unload into the bunker/trailer. The shovel will then be set to the <span class="emphasize2">unloading position</span> (<span class="icon-shovelUnloading inline"></span>) and unload.</p>
 			<p>If filling into a trailer, the trailer does not have to be exactly at/behind waiting point #3, it can in fact be situated slightly in front of it. But, to ensure a perfect procedure, the trailer should be right at your waiting point #3. After unloading, the shovel is set back to the <span class="emphasize2">pre-unloading position</span> (<span class="icon-shovelPreUnloading inline"></span>); the driver will use the "reverse from bunker/trailer" part of your recording and continue the course from the until it reaches the end point.</p>
 			<br />
-			<p>A second way of useing Mode9 will be loading something out of the trigger.</p>
+			<p>A second way of using Mode9 will be loading something out of the trigger.</p>
 			<p>For this, you got to turn on '' and create a slightly different course.</p>
-			<p>In addition, a new option will apprear on the shovel page to add a filltype, that you want to load.</p>
+			<p>In addition, a new option will appear on the shovel page to add a fill type, that you want to load.</p>
 			<p>The course should be recorded like this:</p>
 			<ol>
 				<li>
-					<p>The course will start in front of the trigger where you want to unload a filltype.</p>
+					<p>The course will start in front of the trigger where you want to unload a fill type.</p>
 				</li>
 				<li>
-					<p>Drive stright towards the trigger, so you have at least one additional waypoint in front of the trigger after the startpoint.</p>
+					<p>Drive straight towards the trigger, so you have at least one additional waypoint in front of the trigger after the startpoint.</p>
 				</li>
 				<li>
 					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back from the trigger (and a bit further).</p>
@@ -1064,17 +1065,17 @@
 				</li>
 			</p>
 			<p>The course for all 3 options, is the same.</p>
-			<p>You attach your tool at the back of your tractor and drive into the bunker. Stay withint the first meter of the bunker, the tool points towards the inside of the bunker.</p>
-			<p>Start recording the course. The first Waypoint should be inside of the bunker. Drive straight out of the bunker to a save place where you driver can wait for other drivers to unload into the bunker. Place a waitpoint there and switch to reverse driveing. Then drive in reverse infront of the Bunker and stop the record. Thats all.</p>
+			<p>You attach your tool at the back of your tractor and drive into the bunker. Stay within the first meter of the bunker, the tool points towards the inside of the bunker.</p>
+			<p>Start recording the course. The first Waypoint should be inside of the bunker. Drive straight out of the bunker to a save place where you driver can wait for other drivers to unload into the bunker. Place a wait point there and switch to reverse driveing. Then drive in reverse in front of the Bunker and stop the record. That's all.</p>
 			<p>For the option to build up, you should use a shield, that option is best used in a wedge silo.</p>
-			<p>For the option compacting, a roller should be used, while leveling can use a shield or a spreader like the Fliegel Duo from ModHub.</p>
+			<p>For the option compacting, a roller should be used, while leveling can use a shield or a spreader like the Fliegl Duo from ModHub.</p>
 		</article>
 
 		<!-- #################### -->
 
 		<article class="manualSection" id="generateCourse">
 			<h2>Advanced course generator</h2>
-			<p>The course generator is accessable from the Driver Controls HUD Page, but only on fieldwork or fertilizeing/seeding mode.</p>
+			<p>The course generator is accessible from the Driver Controls HUD Page, but only on fieldwork or fertilizing/seeding mode.</p>
 			<p class="info">Keep in mind that some setting combinations, big fields and smal working width can lead into long generation times.
 				Your Game won't simple crash and your computer is not hanging up.
 				Patience is the key to success!</p>
@@ -1086,7 +1087,7 @@
 					<p><h3>Field edge path:</h3>
 						<p>Current loaded course - you can record a round course and save it to use in the course generator, keep in mind that once a course is generated, the current loaded course is no longer your round course.</p>
 						<p>Scanned Fields from the Map</p>
-						<p>Usergenerated Fields, by useing the calculate current field's path option in the HUD. (The Fieldnumber will be displayed with a '(User)' in it.</p>
+						<p>User generated Fields, by using the calculate current field's path option in the HUD. (The field number will be displayed with a '(User)' in it.</p>
 					</p>
 				</li>
 				<li>
@@ -1099,12 +1100,12 @@
 					<p><h3>Bypass islands:</h3></p>
 					<p>Off - will ignore any islands on the Field</p>
 					<p>Single - will make a simple round bypass</p>
-					<p>Circle - will generate a complete circle arround the island, wich will be driven arround completely once</p>
+					<p>Circle - will generate a complete circle around the island, which will be driven around completely once</p>
 				</li>
 				<li>
 					<p><h3>Skip rows (0-3):</h3></p>
 					<p>This is useful to prevent turns that will do a reverse maneuver</p>
-					<p>On odd shaped fields, can lead to visual lines across off field parts, wich won't be driven when you have turned on 'use Pathfinder in turns' on the advanced settings page.</p>
+					<p>On odd shaped fields, can lead to visual lines across off field parts, which won't be driven when you have turned on 'use Pathfinder in turns' on the advanced settings page.</p>
 				</li>
 				<li>
 					<p><h3>Multiple tools (0-8):</h3></p>
@@ -1114,20 +1115,20 @@
 				</li>
 				<li>
 					<p><h3>Working width:</h3></p>
-					<p>Worktool working width should be already set here</p>
-					<p>If this is not the case, the yellow button on the right will set the worktool width to the work width setting</p>
+					<p>Work tool working width should be already set here</p>
+					<p>If this is not the case, the yellow button on the right will set the work tool width to the work width setting</p>
 					<p>Some tools send the correct working width, in this case, use the arrows or mouse wheel to adjust the correct working width manualy</p>
 				</li>
 				<li>
 					<p><h3>Headland:</h3></p>
 						<ul>
 						<li>
-							<p><h5>Arround:</h5></p>
+							<p><h5>Around:</h5></p>
 						</li>
 						</ul>
 							<p>Headland passes (1-50, generator might reduce it to a fitting value)</p>
 							<p>Headland counter-/clockwise</p>
-							<p>Start wokring on (Headland passes / up/down rows) - This setting switches the start with the stop positon, keep that in mind if you select a starting position on the map</p>
+							<p>Start working on (Headland passes / up/down rows) - This setting switches the start with the stop position, keep that in mind if you select a starting position on the map</p>
 							<p>Headland corner - smooth - will generate a simple smooth corner</p>
 							<p>Headland corner - turn - will generate a sharp corner with a turn maneuver</p>
 							<p>Headland corner - round - will generate a round corner, the radius depends on the set turn radius, set on the value setting page on the HUD</p>
@@ -1144,13 +1145,13 @@
 						</li>
 						</ul>
 							<p>Headland passes (1-50, generator might reduce it to a fitting value)</p>
-							<p>Start wokring on (Headland passes / up/down rows) - same as for 'arround'</p>
+							<p>Start working on (Headland passes / up/down rows) - same as for 'around'</p>
 							<p>Headland overlap (0-20%)</p>
 				</li>
 				<li>
 					<p><h3>Field center (experimental)</h3></p>
 					<p>up/down - simple rows that will be next to each other</p>
-					<p>racetrack - some kind of spirals wich will lead into each other if that makes sence at all, feel free to try it out :)</p>
+					<p>racetrack - some kind of spirals which will lead into each other if that makes sense at all, feel free to try it out :)</p>
 					<p>spiral - the rows will get close to the edge line by line</p>
 					<p>lands (4- 24) - best for Combines and Harvester with the pipe on the left side, so the pipe is most of its time outside of the fruit</p>
 				</li>
