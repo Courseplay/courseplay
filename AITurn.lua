@@ -450,7 +450,11 @@ end
 -- this turn starts when the vehicle reached the point where the implements are raised.
 -- now use turn.lua to generate the turn maneuver waypoints
 function CourseTurn:startTurn()
-	if self.turnContext:isPathfinderTurn(self.turningRadius * 2) then
+	local canTurnOnField = AITurn.canTurnOnField(self.turnContext, self.vehicle)
+	if (canTurnOnField or self.vehicle.cp.settings.turnOnField:is(false)) and
+			self.turnContext:isPathfinderTurn(self.turningRadius * 2) then
+		-- if we can turn on the field or it does not matter if we can, pathfinder turn is ok. If turn on field is on
+		-- but we don't have enough space and have to reverse, fall back to the generated turns
 		self:generatePathfinderTurn()
 	else
 		self:generateCalculatedTurn()
@@ -547,20 +551,14 @@ end
 function CourseTurn:generatePathfinderTurn()
 	self.pathfindingStartedAt = self.vehicle.timer
 	local done, path
-	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
-	local canTurnOnField, distanceToReverse = AITurn.canTurnOnField(self.turnContext, self.vehicle)
-	if not canTurnOnField and self.vehicle.cp.settings.turnOnField:is(true) then
-		self:debug('Turn on field is on, generating reverse course before turning.')
-		self.reverseBeforeStartingTurnWaypoints = self.turnContext:createReverseWaypointsBeforeStartingTurn(self.vehicle, distanceToReverse)
-		startOffset = startOffset - distanceToReverse
-	end
+	local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets(self.vehicle)
 
 	if self.vehicle.cp.settings.usePathfindingInTurns:is(false) or self.turnContext:isSimpleWideTurn(self.turningRadius * 2) then
-		self:debug('Wide turn: generate turn with Dubins path')
+		self:debug('Wide turn: generate turn with Dubins path, start offset %.1f, goal offset %.1f', startOffset, goalOffset)
 		path = PathfinderUtil.findDubinsPath(self.vehicle, startOffset, turnEndNode, 0, goalOffset, self.turningRadius)
 		return self:onPathfindingDone(path)
 	else
-		self:debug('Wide turn: generate turn with hybrid A*')
+		self:debug('Wide turn: generate turn with hybrid A*, start offset %.1f, goal offset %.1f', startOffset, goalOffset)
 		self.driver.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, startOffset, turnEndNode, goalOffset,
 				self.turningRadius, self.driver:getAllowReversePathfinding(), self.fieldworkCourse)
 		if done then
