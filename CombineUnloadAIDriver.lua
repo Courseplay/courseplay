@@ -1448,7 +1448,7 @@ function CombineUnloadAIDriver:startPathfindingToTurnEnd(xOffset, zOffset)
 	if not self.pathfinder or not self.pathfinder:isActive() then
 		local done, path, goalNodeInvalid
 		self.pathfindingStartedAt = self.vehicle.timer
-		local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets()
+		local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets(self.vehicle)
 		-- ignore combine for pathfinding, it is moving anyway and our turn functions make sure we won't hit it
 		self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.findPathForTurn(self.vehicle, startOffset, turnEndNode, goalOffset,
 				self.vehicle.cp.turnDiameter / 2, self:getAllowReversePathfinding(), self.followCourse, {self.combineToUnload})

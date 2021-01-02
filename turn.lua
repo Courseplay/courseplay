@@ -2246,7 +2246,7 @@ end
 --- Assuming a vehicle just finished a row, provide parameters for calculating a path to the start
 --- of the next row, making sure that the vehicle and the implement arrives there aligned with the row direction
 ---@return number, number, number the node where the turn ends, z offset to use with the start node, z offset to use with the end node
-function TurnContext:getTurnEndNodeAndOffsets()
+function TurnContext:getTurnEndNodeAndOffsets(vehicle)
 	local turnEndNode, startOffset, goalOffset
 	if self.frontMarkerDistance > 0 then
 		-- implement in front of vehicle. Turn should end with the implement at the work start position, this is where
@@ -2259,11 +2259,18 @@ function TurnContext:getTurnEndNodeAndOffsets()
 		-- on the work start node so by the time the implement reaches it, it is also aligned
 		turnEndNode = self.workStartNode
 		startOffset = 0
-		-- vehicle is about frontMarkerDistance before the work end when finishing the turn, giving enough time
-		-- for the implement to align
-		-- TODO: this isn't exact science here, as the distance we need to straighten out the implement is rather
-		-- a function of the radius, the starting angle and probably the towbar length.
-		goalOffset = - self.turnEndForwardOffset
+		-- vehicle is about frontMarkerDistance before the work end when finishing the turn
+		if AIDriverUtil.getTowBarLength(vehicle) > 0 then
+			-- giving enough time for the implement to align, the vehicle will reach the next row about the
+			-- front marker distance _before_ the turn end so have the front marker distance to drive straight,
+			-- during this time we expect the implement to align with the tractor
+			-- TODO: this isn't exact science here, as the distance we need to straighten out the implement is rather
+			-- a function of the radius, the starting angle and probably the tow bar length.
+			goalOffset = - self.turnEndForwardOffset
+		else
+			-- no towed implement (mounted on vehicle), no need to align, place the implement exactly at the work start
+			goalOffset = self.turnEndForwardOffset
+		end
 	end
 	return turnEndNode, startOffset, goalOffset
 end
@@ -2281,6 +2288,7 @@ function TurnContext:drawDebug()
 			cx, cy, cz = localToWorld(self.workStartNode, -self.workWidth / 2, 0, 0)
 			nx, ny, nz = localToWorld(self.workStartNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 0, 1, 0, nx, ny + height, nz)
+			DebugUtil.drawDebugNode(self.workStartNode, 'work start')
 		end
 		if self.lateWorkStartNode then
 			cx, cy, cz = localToWorld(self.lateWorkStartNode, -self.workWidth / 2, 0, 0)
@@ -2291,6 +2299,7 @@ function TurnContext:drawDebug()
 			cx, cy, cz = localToWorld(self.workEndNode, -self.workWidth / 2, 0, 0)
 			nx, ny, nz = localToWorld(self.workEndNode, self.workWidth / 2, 0, 0)
 			cpDebug:drawLine(cx, cy + height, cz, 1, 0, 0, nx, ny + height, nz)
+			DebugUtil.drawDebugNode(self.workEndNode, 'work end')
 		end
 		if self.lateWorkEndNode then
 			cx, cy, cz = localToWorld(self.lateWorkEndNode, -self.workWidth / 2, 0, 0)
@@ -2300,6 +2309,10 @@ function TurnContext:drawDebug()
 		if self.vehicleAtTurnEndNode then
 			cx, cy, cz = localToWorld(self.vehicleAtTurnEndNode, 0, 0, 0)
 			cpDebug:drawLine(cx, cy, cz, 1, 1, 0, cx, cy + 2, cz)
+			DebugUtil.drawDebugNode(self.vehicleAtTurnEndNode, 'vehicle\nat turn end')
+		end
+		if self.vehicleAtTurnStartNode then
+			DebugUtil.drawDebugNode(self.vehicleAtTurnStartNode, 'vehicle\nat turn start')
 		end
 	end
 end
