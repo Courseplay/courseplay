@@ -131,7 +131,6 @@ function ValueEncodedChromosome:crossover( spouse )
 	for i = 1, #self do
 		if math.random( 2 ) > 1 then
 			offspring[ i ] = spouse[ i ]
-
 		end
 	end
 	return offspring

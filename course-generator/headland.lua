@@ -195,6 +195,7 @@ local function continueUntilStraightSection(headlandPath, track, passNumber, i, 
 	-- search only for the next few meters
 	local searchLimit = courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceToCorner:get() +
 			courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinDistanceFromCorner:get()
+	local count = 0
 	while dElapsed < searchLimit do
 		dElapsed = dElapsed + track[i].nextEdge.length
 		local r = track:getSmallestRadiusWithinDistance(i,
@@ -203,14 +204,15 @@ local function continueUntilStraightSection(headlandPath, track, passNumber, i, 
 				step)
 		-- nice straight section, done
 		if r > courseplay.globalCourseGeneratorSettings.headlandLaneChangeMinRadius:get() then
-			courseGenerator.debug('Added waypoints to reach a straight section for the headland %d lane change after %.1f m, r = %.1f',
-				passNumber, dElapsed, r)
+			courseGenerator.debug('Added %d waypoints to reach a straight section for the headland %d lane change after %.1f m, r = %.1f',
+				count, passNumber, dElapsed, r)
 			return i
 		end
 		table.insert( headlandPath, track[ i ])
 		headlandPath[ #headlandPath ].passNumber = passNumber
 		headlandPath[ #headlandPath ].isConnectingTrack = isConnectingTrack
 		i = i + step
+		count = count + 1
 	end
 	-- no straight section found, bail out here
 	courseGenerator.debug('No straight section found after %1.f m for headland %d lane change to next', dElapsed, passNumber)
@@ -245,14 +247,16 @@ local function addTrackToHeadlandPath(headlandPath, track, passNumber, from, ste
 		i = i + step
 		count = count + 1
 	end
-	courseGenerator.debug('Added %d (of %d) waypoints to headland %d (%s)',
-			count, #headlandPath, passNumber, addFullCircle and 'add full round' or 'add straight section')
+	courseGenerator.debug('Added %d (of %d) waypoints to headland %d (%s), starting at %d',
+			count, #headlandPath, passNumber, addFullCircle and 'add full round' or 'add straight section', from)
 	if justOneRound then
 		return i
 	end
 	headlandPath[#headlandPath].endOfHeadland = true
 	if addFullCircle then
-		local ret = addTrackToHeadlandPath( headlandPath, track, passNumber, i, step, false, true)
+		-- no additional straight section, we already adding a full circle. The innermost headland may be
+		-- close to a corner as there are no more headland transitions
+		local ret = addTrackToHeadlandPath(headlandPath, track, passNumber, i, step, false, true, true)
 		return ret
 	else
 		-- now, one round is complete. Making sure we do not attempt to switch headlands in tight corners

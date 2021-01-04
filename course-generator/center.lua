@@ -132,10 +132,6 @@ local function isCornerOnTheLeft( entryCorner )
 	return entryCorner == courseGenerator.BLOCK_CORNER_TOP_LEFT or entryCorner == courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
 end
 
-local function getEntryCornerForFirstHeadland(entryCorner, clockwise)
-
-end
-
 --- Find the best angle to use for the tracks in a polygon.
 --  The best angle results in the minimum number of tracks
 --  (and thus, turns) needed to cover the polygon.

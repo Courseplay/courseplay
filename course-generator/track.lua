@@ -314,21 +314,28 @@ function addHeadlandToCenterTransition(course, headlandSettings, centerSettings,
 			-- this is where the up/down rows start (and the extra headland round ends)
 			course[i].upDownRowStart = nil
 			local cutFromHere, cutToHere = 0, i - 1
-			local dPrev = getDistanceBetweenPoints(course[i], course[i - 1])
-			-- walk back from the up/down row on the headland until we reach the headland waypoint closest to the
-			-- first up/down waypoint
+			-- walk back from the up/down row on the headland and find the headland waypoint closest to the
+			-- first up/down waypoint (also, it has to be on the right side of the up/down row start waypoint
+			local dMin = math.huge
 			for j, point in course:iterator(i - 1, 1, -1) do
 				local d = getDistanceBetweenPoints(course[i], point)
-				if d < 2 * width and isOnGoodSide(course[i], point) then
-					-- distance just started to grow
+				if d < dMin and isOnGoodSide(course[i], point) then
+					-- this is closer, remember it
+					-- we add a little just to make sure that if we encounter the same distance again (because we
+					-- did a full circle on the extra waypoints), that will overwrite cutFromHere, making sure the
+					-- we cut as close as possible to the end of the real (non-extra) headland and there'll be no
+					-- unecessary connecting track.
+					-- TODO: this still results in almost a full circle when the starting point is very close to the
+					-- start of the up/down rows in the lands pattern.
+					dMin = d + 0.01
 					cutFromHere = j + 1
+				end
+				-- we reached the end of the headland (went through all extra waypoints)
+				if point.endOfHeadland then
 					break
-				else
-					-- this point on the connecting track is closer to the first point in the up/down rows
-					dPrev = d
 				end
 			end
-			-- remove the waypoints between the newly added turn start and end
+			-- remove the extra waypoints
 			if cutFromHere > 0 then
 				courseGenerator.debug('Removing waypoints %d - %d to fix headland-up/down transition', cutFromHere, cutToHere)
 				for _ = cutFromHere, cutToHere do
