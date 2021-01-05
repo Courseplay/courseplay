@@ -31,11 +31,11 @@
     <text name="COURSEPLAY_MODE_7" 							 			text="Batteuse va à la remorque" />
     <text name="COURSEPLAY_MODE_8" 							 			text="Transport de liquides" />
     <text name="COURSEPLAY_MODE_9" 							 			text="Charger et décharger avec un godet" />
-    <text name="COURSEPLAY_MODE_10" 									text="Nivellement et compactage" />
+    <text name="COURSEPLAY_MODE_10" 									text="Nivellement et tassement" />
     <text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
     <text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
     <text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
-    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Vider la remorque à" />
+    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Remplissage mini" />
     <text name="COURSEPLAY_MOVE_ON_AT" 									text="Repartir en dessous de" />
     <text name="UNKNOWN" 								 				text="Inconnu" />
     <text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sens de la fourrière" />
@@ -393,19 +393,19 @@
     <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
     <text name="COURSEPLAY_MODE10_MODE" 						    	text="Utilisation de la lame" />
-    <text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
-	<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Remplissage" />
-	<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
-	<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
-	<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
-	<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
+    <text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Egaliser" />
+	<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Remplir le silo" />
+	<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Tasser le silo" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Arrêter pour :" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Véhicules CP et AD" />
+	<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="Tous les véhicules motorisés" />
     <text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détecter les véhicules dans un rayon de " />
-    <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max pendant le remplissage" />
+    <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max de la lame" />
     <text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Hauteur de la lame" />
     <text name="COURSEPLAY_MODE10_NOSILO"						 		text="Aucun silo détecté au point de départ" />
     <text name="COURSEPLAY_MODE10_NOBLADE"						 		text="Pas de lame attelée" />
     <text name="COURSEPLAY_MODE10_NOFRONTBLADE"							text="Lame frontale non compatible" />
-    <text name="COURSEPLAY_MODE10_SETTINGS"						    	text="Paramètres" />
+    <text name="COURSEPLAY_MODE10_SETTINGS"						    	text="Paramètres de la lame" />
     <text name="COURSEPLAY_MODE10_BLADE_WIDTH" 					 		text="Largeur de la lame" />
     <text name="COURSEPLAY_MODE10_SILO_LOADEDBY" 						text="Remplissage du silo" />
     <text name="COURSEPLAY_MODE10_DRIVINGTHROUGH" 						text="En traversant le silo" />
@@ -496,16 +496,16 @@
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
     <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
 	
-    <text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-	<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+    <text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="est à son point d'attente" />
+	<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="attend que l'ouvrier du silo atteigne son point d'attente" />
 
-    <text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-	<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-	<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-	<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
-
-    <text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
-    <text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+    <text name="COURSEPLAY_AUTOREPAIR"									text="Réparation automatique" />
+	<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Le véhicule et ses outils seront réparés automatiquement si une course est active" />
+	<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Désactivée" />
+	<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Maintenir à 100%" />
+	  
+	<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Vider jusqu'à la fin du rang" />
+    <text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="La benne continue de vider jusqu'à la fin du rang, même si la batteuse est vide" />
     <!-- Replace marker, do not remove! -->
   </texts>
 </l10n>
