@@ -182,6 +182,7 @@ function CombineAIDriver:start(startingPoint)
 	local total, pipeInFruit = self.fieldworkCourse:setPipeInFruitMap(self.pipeOffsetX, self.vehicle.cp.workWidth)
 	local ix = self.fieldworkCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:shouldStrawSwathBeOn(ix)
+	self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
 	self:debug('Pipe in fruit map created, there are %d non-headland waypoints, of which at %d the pipe will be in the fruit',
 			total, pipeInFruit)
 end
@@ -247,8 +248,6 @@ function CombineAIDriver:onWaypointPassed(ix)
 	-- harvesting fruit while making the pocket unless we have self unload turned on
 	if self:shouldMakePocket() and self.vehicle.cp.settings.selfUnload:is(false) then
 		self.fillLevelFullPercentage = self.pocketFillLevelFullPercentage
-	else
-		self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
 	end
 
 	self:shouldStrawSwathBeOn(ix)

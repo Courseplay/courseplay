@@ -755,6 +755,9 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 					self.allHybridRetries = self.allHybridRetries + 1
 					self.constraints:relaxConstraints()
 					return self:findHybridStartToEnd()
+				else
+					self:debug('all hybrid: we already tried with relaxed constraints, this did not work out')
+					return true, nil, goalNodeInvalid
 				end
 			end
 		elseif self.phase == self.MIDDLE then
