@@ -50,6 +50,8 @@ function DevHelper:update()
         self.vehicle = g_currentMission.controlledVehicle
         self.node = g_currentMission.controlledVehicle.rootNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
+
+        self:updateProximitySensors(self.vehicle)
     else
         -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
@@ -121,6 +123,18 @@ function DevHelper:overlapBoxCallback(transformId)
     self.data.collidingShapes = self.data.collidingShapes .. '|' .. text
 end
 
+function DevHelper:updateProximitySensors(vehicle)
+    if vehicle and vehicle.cp.driver then
+        if vehicle.cp.driver.forwardLookingProximitySensorPack then
+            local d, otherVehicle, deg, dAvg =
+                vehicle.cp.driver.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+        end
+        if vehicle.cp.driver.backwardLookingProximitySensorPack then
+            local d, otherVehicle, deg, dAvg =
+                vehicle.cp.driver.backwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+        end
+    end
+end
 
 function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end

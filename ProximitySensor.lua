@@ -87,7 +87,7 @@ function ProximitySensor:raycastCallback(objectId, x, y, z, distance)
 end
 
 function ProximitySensor:getClosestObjectDistance()
---    self:showDebugInfo()
+    self:showDebugInfo()
     return self.distanceOfClosestObject
 end
 
@@ -101,6 +101,7 @@ function ProximitySensor:getClosestRootVehicle()
 end
 
 function ProximitySensor:showDebugInfo()
+    if not courseplay.debugChannels[12] then return end
     local text = string.format('%.1f ', self.distanceOfClosestObject)
     if self.objectId then
         local object = g_currentMission:getNodeObject(self.objectId)
