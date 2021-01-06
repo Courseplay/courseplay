@@ -601,7 +601,7 @@ function CombineAIDriver:checkRendezvous()
 				self:debugSparse('Slow down around the unloader rendezvous waypoint %d to let the unloader catch up',
 						self.agreedUnloaderRendezvousWaypointIx)
 				self:setSpeed(self:getWorkSpeed() / 2)
-				local dToTurn = self.fieldworkCourse:getDistanceToNextTurn(self.agreedUnloaderRendezvousWaypointIx)
+				local dToTurn = self.fieldworkCourse:getDistanceToNextTurn(self.agreedUnloaderRendezvousWaypointIx) or math.huge
 				if dToTurn < 20 then
 					self:debug('Unloader rendezvous waypoint %d is before a turn, waiting for the unloader here',
 							self.agreedUnloaderRendezvousWaypointIx)
@@ -757,7 +757,7 @@ end
 --- to unload. Now make sure that this location is not around a turn or the pipe isn't in the fruit by
 --- trying to move it up or down a bit. If that's not possible, just leave it and see what happens :)
 function CombineAIDriver:findBestWaypointToUnloadOnUpDownRows(ix)
-	local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(ix) or 0
+	local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(ix) or math.huge
 	local lRow, ixAtRowStart = self.fieldworkCourse:getRowLength(ix)
 	local pipeInFruit = self.fieldworkCourse:isPipeInFruitAt(ix)
 	local currentIx = self.fieldworkCourse:getCurrentWaypointIx()
