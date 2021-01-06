@@ -301,9 +301,9 @@
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Adicionar borda do campo %d na lista" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Reescrever borda do campo %d na lista" />
 		<text name="COURSEPLAY_USER" 										text="Usuário" />
-		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="Deverá ser reparado em breve" />
-		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="Precisa ser reparado" />
-		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="está sendo reparado" />
+		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="Deverá ser consertado em breve" />
+		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="Precisa ser consertado" />
+		<text name="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED" 					text="está sendo consertado" />
 		<text name="COURSEPLAY_COVER_HANDLING" 								text="Cobertura" />
 		<text name="COURSEPLAY_REMOVEACTIVECOMBINEFROMTRACTOR" 				text="Remover designação da ceifadeira" />
 		<text name="COURSEPLAY_STOP_DURING_UNLOADING" 						text="Parar durante descarregamento" />
@@ -497,13 +497,13 @@
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="esperando por descarregadores" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="esperando motorista" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Consertar automaticamente" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Consertar automaticamente no campo." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Não consertar" />
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Manter em 100%" />
 		
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Continuar descarregando até o final da linha" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Quando a colheitadeira estiver vazia, seguir até o final da linha" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>
