@@ -21,7 +21,7 @@ PathfinderUtil = {}
 PathfinderUtil.dubinsSolver = DubinsSolver()
 PathfinderUtil.reedSheppSolver = ReedsSheppSolver()
 
-PathfinderUtil.defaultOffFieldPenalty = 10
+PathfinderUtil.defaultOffFieldPenalty = 5
 
 ---Size/turn radius all other information on the vehicle and its implements
 ---@class PathfinderUtil.VehicleData
@@ -569,7 +569,7 @@ end
 
 ---@param start State3D
 ---@param goal State3D
-local function startPathfindingFromVehicleToGoal(vehicle, start, goal,
+function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
                                                  allowReverse, fieldNum,
                                                  vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
     local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)

@@ -82,7 +82,7 @@ function DevHelper:update()
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 5, 3.6)
-    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
+    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 3, 3)
 
     self.data.landId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
@@ -126,7 +126,6 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
         -- Left Alt + < mark start
-        self.context = PathfinderUtil.Context(self.vehicleData, self.data.fieldNum, PathfinderUtil.Parameters())
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
@@ -170,7 +169,9 @@ function DevHelper:startPathfinding()
     else
         self:debug('Starting pathfinding (no reverse) between %s and %s', tostring(self.start), tostring(self.goal))
         local start = State3D:copy(self.start)
-        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, false)
+
+        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, start, self.goal, false, 0)
+
     end
 
     if done then
