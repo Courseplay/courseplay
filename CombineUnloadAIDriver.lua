@@ -1209,12 +1209,11 @@ function CombineUnloadAIDriver:isPathFound(path, goalNodeInvalid, goalDescriptor
 						goalDescriptor,
 						self.vehicle.timer - (self.pathfindingStartedAt or 0))
 				self.maxFruitPercent = math.huge
-				self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
 			elseif self.pathfinderFailureCount == 1 then
 				self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint...',
 						goalDescriptor,
 						self.vehicle.timer - (self.pathfindingStartedAt or 0))
-				self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
+				self.offFieldPenalty = self.offFieldPenalty / 2
 			end
 			return false
 		end
@@ -1324,7 +1323,15 @@ function CombineUnloadAIDriver:onPathfindingDoneForDistance(path, goalNodeInvali
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.combineToUnload), true) and
 			self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
-		self:arrangeRendezvousWithCombine(driveToCombineCourse:getLength())
+		-- to better estimate the driving distance, generate a Dubins path. This will include all turns we have to make
+		-- (which may be a considerable distance and thus time). We then take the difference between the Dubins path and
+		-- the straight distance and add it to the A* distance. This still isn't accurate but much closer to reality
+		local _, dubinsPathLength = PathfinderUtil.findDubinsPath(self.vehicle, 0,
+				AIDriverUtil.getDirectionNode(self.combineToUnload), 0, 0,
+				AIDriverUtil.getTurningRadius(self.vehicle))
+		local directPathLength = calcDistanceFrom(self.vehicle.rootNode, self.combineToUnload.rootNode)
+		self:debug('Distance: %d m, Dubins: %d m, A*: %d m', directPathLength, driveToCombineCourse:getLength(), dubinsPathLength)
+		self:arrangeRendezvousWithCombine(driveToCombineCourse:getLength() + dubinsPathLength - directPathLength)
 		return true
 	else
 		self:debug('pathfinding to find distance to combine did not work out, no rendezvous.')
@@ -1537,6 +1544,13 @@ function CombineUnloadAIDriver:startPathfinding(
 		if self:isFruitAt(target, xOffset, zOffset) then
 			self:info('There is fruit at the target, disabling fruit avoidance')
 			self.maxFruitPercent = math.huge
+		end
+
+		if self.combineToUnload and self.combineToUnload.cp.driver:isOnHeadland() then
+			-- when the combine is on the headland, chances are that we have to drive off-field to it,
+			-- so make the life easier for the pathfinder
+			self:debug('Combine is on headland, reducing off-field penalty for pathfinder')
+			self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
 		end
 
 		local done, path, goalNodeInvalid

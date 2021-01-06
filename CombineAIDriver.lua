@@ -1566,6 +1566,11 @@ function CombineAIDriver:isManeuvering()
 			)
 end
 
+function CombineAIDriver:isOnHeadland()
+	return self.state ~= self.states.ON_FIELDWORK_COURSE and
+			self.fieldworkCourse:isOnHeadland(self.fieldworkCourse:getCurrentWaypointIx())
+end
+
 --- Are we ready for an unloader?
 --- @param noUnloadWithPipeInFruit boolean pipe must not be in fruit for unload
 function CombineAIDriver:isReadyToUnload(noUnloadWithPipeInFruit)

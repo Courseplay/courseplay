@@ -732,7 +732,7 @@ function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypo
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
     local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
-    return startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent)
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
@@ -755,7 +755,7 @@ function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
     local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
-    return startPathfindingFromVehicleToGoal(
+    return PathfinderUtil.startPathfindingFromVehicleToGoal(
             vehicle, start, goal, allowReverse, fieldNum,
             vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 end
