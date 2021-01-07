@@ -25,17 +25,17 @@
     <text name="COURSEPLAY_MODE_1" 							 			text="Transport (Charger et livrer)" />
     <text name="COURSEPLAY_MODE_2" 							 			text="Remorque (vider et livrer)" />
     <text name="COURSEPLAY_MODE_3" 							 			text="Transbordeur" />
-    <text name="COURSEPLAY_MODE_4" 							 			text="Fertiliser et semer" />
+    <text name="COURSEPLAY_MODE_4" 							 			text="Fertiliser, pulvériser et semer" />
     <text name="COURSEPLAY_MODE_5" 							 			text="Aller à" />
     <text name="COURSEPLAY_MODE_6" 							 			text="Travail dans la parcelle" />
     <text name="COURSEPLAY_MODE_7" 							 			text="Batteuse va à la remorque" />
-    <text name="COURSEPLAY_MODE_8" 							 			text="Transport de liquides" />
+    <text name="COURSEPLAY_MODE_8" 							 			text="Ravitaillement à la parcelle" />
     <text name="COURSEPLAY_MODE_9" 							 			text="Charger et décharger avec un godet" />
     <text name="COURSEPLAY_MODE_10" 									text="Nivellement et tassement" />
     <text name="COURSEPLAY_CONTINUE" 						 			text="Continuer" />
     <text name="COURSEPLAY_CLEAR_COURSE" 						 		text="Réinitialiser la course" />
     <text name="COURSEPLAY_DRIVE_NOW" 						 			text="Démarrer maintenant" />
-    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Remplissage mini" />
+    <text name="COURSEPLAY_DRIVE_ON_AT" 						 		text="Remplissage mini pour aller vider" />
     <text name="COURSEPLAY_MOVE_ON_AT" 									text="Repartir en dessous de" />
     <text name="UNKNOWN" 								 				text="Inconnu" />
     <text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sens de la fourrière" />
@@ -64,13 +64,13 @@
     <text name="COURSEPLAY_CREATE_FOLDER" 						 		text="Créer un nouveau dossier" />
     <text name="COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS" 				text="Recherche de course et de dossier" />
     <text name="COURSEPLAY_DEACTIVATE_FILTER" 					 		text="Désactiver les filtres" />
-    <text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 					text="a atteint le point de chargement" />
+    <text name="COURSEPLAY_REACHED_OVERLOADING_POINT" 					text="a atteint le point de ravitaillement" />
     <text name="COURSEPLAY_SAVE_PIPE_POSITION" 					    	text="Enregistrer la position de la goulotte" />
     <text name="COURSEPLAY_MOVE_PIPE_TO_POSITION"						text="positionne la goulotte" />
     <text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="est arrivé au point d'attente" />
     <text name="COURSEPLAY_REACHED_END_POINT" 					 		text="a fini sa course" />
     <text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="a terminé son transport" />
-    <text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="a terminé le transport de liquides" />
+    <text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="a terminé le ravitaillement" />
     <text name="COURSEPLAY_WORK_END" 							 		text="a terminé son travail" />
     <text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": doit être vidé." />
     <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être ravitaillé." />
@@ -393,14 +393,14 @@
     <text name="COURSEPLAY_MOUSE_BUTTON_NR" 					 		text="Bouton %d de la souris" /> <!-- %s = number ( could be "%de Bouton de la Souris" for "mouse #th button" ) -->
 
     <text name="COURSEPLAY_MODE10_MODE" 						    	text="Utilisation de la lame" />
-    <text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Egaliser" />
+    <text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Egaliser le silo" />
 	<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Remplir le silo" />
 	<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Tasser le silo" />
 	<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Arrêter pour :" />
 	<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Véhicules CP et AD" />
 	<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="Tous les véhicules motorisés" />
     <text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Détecter les véhicules dans un rayon de " />
-    <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max de la lame" />
+    <text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Vitesse max" />
     <text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Hauteur de la lame" />
     <text name="COURSEPLAY_MODE10_NOSILO"						 		text="Aucun silo détecté au point de départ" />
     <text name="COURSEPLAY_MODE10_NOBLADE"						 		text="Pas de lame attelée" />
@@ -479,7 +479,7 @@
     <text name="COURSEPLAY_USE_PATHFINDING_IN_TURNS_TOOLTIP"			text="Utiliser Pathfinding lors des manœuvres dans les parcelles, pour suivre la fourrière en allant au rang suivant par exemple" />	
     <text name="COURSEPLAY_WORKER_WAGES"				   				text="Salaire des ouvriers Courseplay" />
     <text name="COURSEPLAY_WORKER_WAGES_TOOLTIP"						text="Salaire des ouvriers Courseplay en pourcentage du salaire des ouvriers normaux" />
-    <text name="COURSEPLAY_SELF_UNLOAD"				   					text="Vider la batteuse" />
+    <text name="COURSEPLAY_SELF_UNLOAD"				   					text="La batteuse va vider à la remorque" />
     <text name="COURSEPLAY_SELF_UNLOAD_TOOLTIP"							text="La batteuse va vider automatiquement lorsqu'elle est pleine et s'il y a une remorque à proximité" />		
  	<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS"	   	text="Marche arrière avec Pathfinding" />
 	<text name="COURSEPLAY_ALLOW_REVERSE_FOR_PATHFINDING_IN_TURNS_TOOLTIP"	text="Permet à Pathfinding de faire une manœuvre incluant une marche arrière (uniquement pour les outils portés)" />
@@ -487,12 +487,12 @@
   	<text name="COURSEPLAY_NO_SELECTED_FILLTYPE"						text="Pas de produit sélectionné! Cette course n'est pas valide!!" />
 	<text name="COURSEPLAY_ADD_FILLTYPE"								text="Ajouter un produit" />
 	<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="a atteint le point de chargement." />
-	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="a un produit incompatible avec ce trigger." />
+	<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="a un chargement incompatible avec ce trigger." />
 	
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans 1ère fourrière" />
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant, en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière" />
     <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text=": Transport terminé, nombre de tours à 0" />
-    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Produit différent par benne" />
+    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Chargement différent par benne" />
     <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
     <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
 	
