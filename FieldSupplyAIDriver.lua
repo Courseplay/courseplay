@@ -141,7 +141,7 @@ function FieldSupplyAIDriver:isFillLevelToContinueReached()
 		for _,data in ipairs(fillTypeData) do
 			if data.fillType == fillType then
 				local fillLevelPercentage = info.fillLevel/info.capacity*100
-				if fillLevelPercentage <= self.vehicle.cp.settings.driveOnAtFillLevel:get() and self:levelDidNotChange(fillLevelPercentage) then
+				if fillLevelPercentage <= self.vehicle.cp.settings.moveOnAtFillLevel:get() and self:levelDidNotChange(fillLevelPercentage) then
 					return true
 				end
 			end
