@@ -1210,10 +1210,11 @@ function CombineUnloadAIDriver:isPathFound(path, goalNodeInvalid, goalDescriptor
 						self.vehicle.timer - (self.pathfindingStartedAt or 0))
 				self.maxFruitPercent = math.huge
 			elseif self.pathfinderFailureCount == 1 then
-				self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint...',
-						goalDescriptor,
-						self.vehicle.timer - (self.pathfindingStartedAt or 0))
 				self.offFieldPenalty = self.offFieldPenalty / 2
+				self:error('No path found to %s in %d ms, pathfinder failed once, relaxing pathfinder field constraint (%.1f)...',
+						goalDescriptor,
+						self.vehicle.timer - (self.pathfindingStartedAt or 0),
+						self.offFieldPenalty)
 			end
 			return false
 		end
@@ -1546,11 +1547,13 @@ function CombineUnloadAIDriver:startPathfinding(
 			self.maxFruitPercent = math.huge
 		end
 
-		if self.combineToUnload and self.combineToUnload.cp.driver:isOnHeadland() then
-			-- when the combine is on the headland, chances are that we have to drive off-field to it,
+		if self.combineToUnload and self.combineToUnload.cp.driver:isOnHeadland(1) and
+				self.combineToUnload.cp.settings.allowUnloadOnFirstHeadland:is(true) then
+			-- when the combine is on the first headland, chances are that we have to drive off-field to it,
 			-- so make the life easier for the pathfinder
-			self:debug('Combine is on headland, reducing off-field penalty for pathfinder')
-			self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 2
+			self.offFieldPenalty = PathfinderUtil.defaultOffFieldPenalty / 3
+			self:debug('Combine is on first headland, unload on first headland allowed, reducing off-field penalty for pathfinder to %.1f',
+					self.offFieldPenalty)
 		end
 
 		local done, path, goalNodeInvalid
