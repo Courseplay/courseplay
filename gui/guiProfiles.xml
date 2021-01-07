@@ -210,7 +210,7 @@
 	<Profile name="cpMenuPageTabAlternate" extends="cpMenuPageTab" with="alternateRow" />
 
 	<Profile name="cpDialogBg" extends="dialogBg">
-		<Value name="size" value="1800px 800px" />
+		<Value name="size" value="1800px 900px" />
 	</Profile>
 
 	<Profile name="cpHeaderSelector" extends="multiTextOptionSettings">
@@ -230,7 +230,7 @@
 		<Value name="hasFrame" value="false" />
 	</Profile>
 
-	<Profile name="cpPagingTabList" extends="list" with="anchorTopLeft">
+	<Profile name="cpPagingTabList" extends="list" with="anchorMiddleLeft">
 		<Value name="size" value="1800px 112px" />
 		<Value name="position" value="0px 0px" />
 		<Value name="itemsPerRow" value="6" />
@@ -245,13 +245,13 @@
 		<Value name="rowBackgroundProfileAlternate" value="cpMenuPageTabAlternate" />
 	</Profile>
 
-	<Profile name="cpFullScreenSpanning" extends="uiElementContainerFullScreenSpanning" with="anchorTopLeft">
+	<Profile name="cpFullScreenSpanning" extends="uiElementContainerFullScreenSpanning" with="anchorMiddleLeft">
 		<Value name="size" value="1800px 720px" />
 		<Value name="position" value="0px 0px" />
 		<Value name="margin" value="0px 0px 0px 0px" />
 	</Profile>
 
-	<Profile name="cpIngameMenuSettingsBox" extends="ingameMenuSettingsBox" with="anchorTopLeft">
+	<Profile name="cpIngameMenuSettingsBox" extends="ingameMenuSettingsBox" with="anchorMiddleLeft">
 		<Value name="hasFrame" value="false" />
 	</Profile>
 

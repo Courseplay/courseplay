@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <GUI name="globalSettingsPage">
-	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="0px -130px" id="container">
+	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="0px 0px" id="container">
 	<!-- Infobox -->
 		<GuiElement type="bitmap" profile="ingameMenuHelpRowBg" position="80px 80px" id="ingameMenuHelpBox" visible="true">
 			<GuiElement type="bitmap" profile="ingameMenuHelpRowIcon" />
 			<GuiElement type="text" profile="ingameMenuHelpRowText" id="ingameMenuHelpBoxText" text="" onTextChanged="onIngameMenuHelpTextChanged"/>
 		</GuiElement>
 	</GuiElement>
-	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="100px -130px" id="container">
+	<GuiElement type="empty" profile="cpIngameMenuSettingsBox" size="1800px 720px" position="100px 50px" id="container">
 
 		<!--Layout left-->
-		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="-50px -100px" >
+		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="-50px -250px" >
 			<!--Settings-->
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="loadCoursesAtStartup" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
@@ -35,7 +35,7 @@
 			</GuiElement>
 		</GuiElement>
 		<!--Layout mid-->
-		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="350px -100px" >
+		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="350px -250px" >
 			<!--Settings-->
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="enableOpenHudWithMouseGlobal" toolTipElementId="ingameMenuHelpBoxText">
 				<GuiElement type="button" profile="multiTextOptionSettingsLeft" />
@@ -61,7 +61,7 @@
 		</GuiElement>
 		<!--Layout right-->
 		
-		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="750px -100px" >
+		<GuiElement type="boxLayout" profile="ingameMenuSettingsLayout" position="750px -250px" >
 			<!--Settings-->
 		
 			<GuiElement type="multiTextOption" profile="multiTextOptionSettings" onCreate="onCreateGlobalSettingsPage" name="autoRepair" toolTipElementId="ingameMenuHelpBoxText">

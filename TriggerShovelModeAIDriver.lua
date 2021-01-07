@@ -48,6 +48,7 @@ end
 
 -- get the needed waitPoint
 function TriggerShovelModeAIDriver:validateWaitpoints()
+	self.shovelEmptyPoint = nil
 	local numWaitPoints = 0
 	for i,wp in pairs(self.vehicle.Waypoints) do
 		if wp.wait then
