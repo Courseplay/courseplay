@@ -2337,7 +2337,7 @@ end
 
 function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 1, 1 )
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 1, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver,'addFilltype', 3, 2, 1 )
 	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver, 3, 3, 4, 1)
 end
