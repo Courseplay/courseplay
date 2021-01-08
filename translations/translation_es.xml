@@ -36,7 +36,7 @@
 		<text name="COURSEPLAY_CLEAR_COURSE" 								text="Quitar ruta" />
 		<text name="COURSEPLAY_DRIVE_NOW" 									text="Conducir ahora" />
 		<text name="COURSEPLAY_DRIVE_ON_AT" 								text="Ir a ruta al:" />
-		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Drive on at less then:" />
+		<text name="COURSEPLAY_MOVE_ON_AT" 									text="Conduce en menos de lo que:" />
 		<text name="UNKNOWN" 												text="Desconocido" />
 		<text name="COURSEPLAY_HEADLAND_DIRECTION"							text="Sentido de la cabecera" />
 		<text name="COURSEPLAY_HEADLAND_BEFORE_AFTER"						text="Cabecera antes/después de ruta del campo" />
@@ -278,7 +278,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="Mover a posición de pre-descarga" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="Mover a posición de descarga" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Detenerse e ir a cargar" />
-		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="Modo trigger descarga de pala"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Empezar ruta en" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="Punto más cercano" />
@@ -338,7 +338,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4x4 Siempre + difer. trasero para trabajo de campo." />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Siempre + ambos difer. para trabajo de campo." />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="¿Quieres escanear los campos automáticamente?" />
-		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Has encontardo un bug o necesitas ayuda con courseplay, entonces mira a nuestra página: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Cálculo de uso de semillas" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Tipo de semilla: %s" />
@@ -397,10 +397,10 @@
 		<text name="COURSEPLAY_MODE10_MODE" 						    	text="Modo" />
 		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Llenando" />
-		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compactando" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Deténgase automáticamente en" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Sólo conductor courseplayer / autodrive" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="Todos los ayudantes controlados por el jugador" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Detectar tractores en el rango de " />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Velocidad máxima mientras empuja" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Altura de niveladora" />
@@ -493,16 +493,16 @@
         <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Remolques separados:" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="carga manual" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="esperando pra descargar" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="esperando a trabajador finalice en el silo" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Reparación automática" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Reparaciones automaticas en el campo" />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="No reparar" />
+		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Mantenlo a punto" />
 		
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Sigue descargando hasta el final de la línea" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="No deje de descargar la cosechadora hasta que esté vacía, síguela hasta el final de la línea" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>
