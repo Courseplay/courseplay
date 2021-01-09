@@ -473,7 +473,7 @@ function courseplay:onLoad(savegame)
 	self.cp.settings:addSetting(LevelCompactSearchRadiusSetting,self)
 	self.cp.settings:addSetting(LevelCompactShieldHeightSetting,self)
 	self.cp.settings:addSetting(BunkerSpeedSetting,self)
-	
+	self.cp.settings:addSetting(LevelCompactSiloTypSetting,self)
 	
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")

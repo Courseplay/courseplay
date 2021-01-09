@@ -39,27 +39,34 @@ clickToSwitch = {}
 
 -- let's find out if a vehicle is under the cursor by casting a ray in that direction
 function clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
-  local activeCam = getCamera()
-  if activeCam ~= nil then
-    local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(posX, posY, activeCam)
-    raycastClosest(hx, hy, hz, px, py, pz, "vehicleClickToSwitchRaycastCallback", 1000, self, 371)
-  end
+    local activeCam = getCamera()
+    if activeCam ~= nil then
+        local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(posX, posY, activeCam)
+        courseplay.debugVehicle(1,vehicle,"create a clickToSwitch raycast")
+        raycastClosest(hx, hy, hz, px, py, pz, "vehicleClickToSwitchRaycastCallback", 1000, self, 371)
+    end
 end
 
 -- this is called when the ray hits something
 function clickToSwitch:vehicleClickToSwitchRaycastCallback(hitObjectId, x, y, z, distance)
-  if hitObjectId ~= nil then
+    if hitObjectId ~= nil then
     local objectType = getRigidBodyType(hitObjectId)
-    if objectType ~= "Kinematic" then
-      local object = g_currentMission:getNodeObject(hitObjectId)    
-      if object ~= nil then
-        -- this is a valid vehicle, so enter it
-        g_currentMission:requestToEnterVehicle(object);
-      end
-      return false
+        local object = g_currentMission:getNodeObject(hitObjectId)    
+        if object ~= nil then
+            -- check if the object is a implement or trailer then get the rootVehicle 
+            local rootVehicle = object.getRootVehicle and object:getRootVehicle()
+            local enterableSpec = object.spec_enterable or rootVehicle and rootVehicle.spec_enterable
+            local targetObject = object.spec_enterable and object or rootVehicle 
+            if enterableSpec then 
+                -- this is a valid vehicle, so enter it
+                g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetObject, g_currentMission.missionInfo.playerStyle, g_currentMission.player.ownerFarmId));
+                g_currentMission.isPlayerFrozen = false;
+                courseplay.debugFormat(1,"clickToSwitch raycastCallBack: attempt to enter vehicle: %s ",nameNum(targetObject))
+                return false
+            end                
+        end
     end
-  end
-  return true
+    return true
 end
 
 -----------------------------------------------------------------------------------------

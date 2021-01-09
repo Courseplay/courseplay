@@ -335,7 +335,7 @@ function BunkerSiloManager:updateTarget(bestTarget)
 	local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
 	local x,y,z = getWorldTranslation(self.object.rootNode)
 	local distance2Target =  courseplay:distance(x,z, cx, cz) --distance from shovel to target
-	if distance2Target < 1 then
+	if math.abs(distance2Target) < 1 then
 		bestTarget.line = math.min(bestTarget.line + 1, #self.siloMap)
 	end		
 end

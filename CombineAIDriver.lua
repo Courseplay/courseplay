@@ -1722,7 +1722,8 @@ function CombineAIDriver:isProximitySlowDownEnabled(vehicle)
 	-- the proximity sensor when unloading
 	if vehicle.cp.driver and vehicle.cp.driver.isActive and vehicle.cp.driver:isActive() then return true end
 
-	if vehicle and vehicle:getIsEntered() then
+	-- vehicle:getIsControlled() is needed as this one gets synchronized 
+	if vehicle and (vehicle:getIsEntered() or vehicle:getIsControlled()) then
 		self:debugSparse('human player in nearby %s not driven by CP so do not slow down for it', nameNum(vehicle))
 		-- trust the player to avoid collisions
 		return false
