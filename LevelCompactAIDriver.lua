@@ -480,7 +480,7 @@ end
 
 function LevelCompactAIDriver:hasShieldEmpty()
 	--return self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 and self.bestTarget.line > self.firstLine
-	local tool = self:getValidBackImplement()
+	local tool = self.leveler
 	if tool:getFillUnitFillLevel(1) < 100 then
 		if self.vehicle.cp.timers.bladeEmpty == nil or self.vehicle.cp.timers.bladeEmpty == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'bladeEmpty', 3);
@@ -617,7 +617,7 @@ end
 
 
 function LevelCompactAIDriver:moveShield(moveDir,dt,fixHeight)
-	local leveler = self:getValidBackImplement()
+	local leveler = self.leveler
 	local moveFinished = false
 	if leveler.spec_attacherJointControl ~= nil then
 		local spec = leveler.spec_attacherJointControl
@@ -674,7 +674,7 @@ function LevelCompactAIDriver:setIsAlphaListrecording()
 	self.alphaList ={}
 end
 function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
-	local blade = self:getValidBackImplement()
+	local blade = self.leveler
 	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
 	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
 	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
@@ -685,7 +685,7 @@ end
 
 
 function LevelCompactAIDriver:recordAlphaList()
-	local blade = self:getValidBackImplement()
+	local blade = self.leveler
 	local spec = blade.spec_attacherJointControl
 	local jointDesc = spec.jointDesc
 	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
@@ -859,10 +859,8 @@ function LevelCompactAIDriver:getWorkWidth()
 end
 
 function LevelCompactAIDriver:getValidBackImplement()
-	if self.backImplement == nil then
-		self.backImplement = AIDriverUtil.getLastAttachedImplement(self.vehicle)
-	end
-	return self.leveler or self.backImplement
+	local backImplement = AIDriverUtil.getLastAttachedImplement(self.vehicle)
+	return self.leveler or backImplement
 end
 
 function LevelCompactAIDriver:isDebugActive()
