@@ -136,6 +136,12 @@ function DevHelper:updateProximitySensors(vehicle)
     end
 end
 
+-- Left-Alt + , (<) = mark current position as start for pathfinding
+-- Left-Alt + . (>) = mark current position as goal for pathfinding
+-- Left-Ctrl + . (>) = start pathfinding from marked start to marked goal
+-- Left-Ctrl + , (<) = mark current field as field for pathfinding
+-- Left-Alt + Space = save current vehicle position
+-- Left-Ctrl + Space = restore current vehicle position
 function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
@@ -161,6 +167,9 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         -- Left Ctrl + > find path
         self:debug('Calculate')
         self:startPathfinding()
+    elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_comma then
+        self.fieldNumForPathfinding = PathfinderUtil.getFieldNumUnderNode(self.node)
+        self:debug('Set field %d for pathfinding', self.fieldNumForPathfinding)
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_space then
         -- save vehicle position
         g_currentMission.controlledVehicle.vehiclePositionData = {}
@@ -181,10 +190,12 @@ function DevHelper:startPathfinding()
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
                 1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
-        self:debug('Starting pathfinding (no reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        self:debug('Starting pathfinding (no reverse) between %s and %s, field %d',
+                tostring(self.start), tostring(self.goal), self.fieldNumForPathfinding or 0)
         local start = State3D:copy(self.start)
 
-        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, start, self.goal, false, 0)
+        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, start, self.goal,
+                false, self.fieldNumForPathfinding or 0, {}, 10)
 
     end
 

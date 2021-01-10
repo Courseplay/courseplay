@@ -165,6 +165,9 @@ function CombineAIDriver:init(vehicle)
 	self:measureBackDistance()
 	self.vehicleIgnoredByFrontProximitySensor = CpTemporaryObject()
 	self.waitingForUnloaderAtEndOfRow = CpTemporaryObject()
+	-- if this is not nil, we have a pending rendezvous
+	---@type CpTemporaryObject
+	self.unloadAIDriverToRendezvous = CpTemporaryObject()
 end
 
 --- Get the combine object, this can be different from the vehicle in case of tools towed or mounted on a tractor
@@ -382,9 +385,9 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 			self:debug('Unloading started at end of row')
 		end
 		if not self.waitingForUnloaderAtEndOfRow:get() then
-			local unloaderWhoDidNotShowUp = self.unloadAIDriverToRendezvous
+			local unloaderWhoDidNotShowUp = self.unloadAIDriverToRendezvous:get()
 			self:cancelRendezvous()
-			unloaderWhoDidNotShowUp:onMissedRendezvous(self)
+			if unloaderWhoDidNotShowUp then unloaderWhoDidNotShowUp:onMissedRendezvous(self) end
 			self:debug('Waited for unloader at the end of the row but it did not show up, try to continue')
 			self:changeToFieldwork()
 		end
@@ -594,7 +597,7 @@ end
 
 function CombineAIDriver:checkRendezvous()
 	if self.fieldworkState == self.states.WORKING then
-		if self.agreedUnloaderRendezvousWaypointIx then
+		if self.unloadAIDriverToRendezvous:get() then
 			local d = self.fieldworkCourse:getDistanceBetweenWaypoints(self.fieldworkCourse:getCurrentWaypointIx(),
 					self.agreedUnloaderRendezvousWaypointIx)
 			if d < 10 then
@@ -609,13 +612,11 @@ function CombineAIDriver:checkRendezvous()
 				end
 			elseif self.fieldworkCourse:getCurrentWaypointIx() > self.agreedUnloaderRendezvousWaypointIx then
 				self:debug('Unloader missed the rendezvous at %d', self.agreedUnloaderRendezvousWaypointIx)
-				if self.unloadAIDriverToRendezvous then
-					local unloaderWhoDidNotShowUp = self.unloadAIDriverToRendezvous
-					-- need to call this before onMissedRendezvous as the unloader will call back to set up a new rendezvous
-					-- and we don't want to cancel that right away
-					self:cancelRendezvous()
-					unloaderWhoDidNotShowUp:onMissedRendezvous(self)
-				end
+				local unloaderWhoDidNotShowUp = self.unloadAIDriverToRendezvous:get()
+				-- need to call this before onMissedRendezvous as the unloader will call back to set up a new rendezvous
+				-- and we don't want to cancel that right away
+				self:cancelRendezvous()
+				unloaderWhoDidNotShowUp:onMissedRendezvous(self)
 			end
 			if self:isDischarging() then
 				self:debug('Discharging, cancelling unloader rendezvous')
@@ -626,14 +627,16 @@ function CombineAIDriver:checkRendezvous()
 end
 
 function CombineAIDriver:hasRendezvousWith(unloadAIDriver)
-	return self.unloadAIDriverToRendezvous == unloadAIDriver
+	return self.unloadAIDriverToRendezvous:get() == unloadAIDriver
 end
 
 function CombineAIDriver:cancelRendezvous()
-	self:debug('Rendezvous with %s at waypoint %d cancelled', nameNum(self.unloadAIDriverToRendezvous),
+	local unloader = self.unloadAIDriverToRendezvous:get()
+	self:debug('Rendezvous with %s at waypoint %d cancelled',
+			unloader and nameNum(self.unloadAIDriverToRendezvous:get() or 'N/A'),
 			self.agreedUnloaderRendezvousWaypointIx or -1)
 	self.agreedUnloaderRendezvousWaypointIx = nil
-	self.unloadAIDriverToRendezvous = nil
+	self.unloadAIDriverToRendezvous:set(nil, 0)
 end
 
 --- Before the unloader asks for a rendezvous (which may result in a lengthy pathfinding to figure out
@@ -673,7 +676,7 @@ function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsE
 	-- now check if this is a good idea
 	self.agreedUnloaderRendezvousWaypointIx = self:findBestWaypointToUnload(unloaderRendezvousWaypointIx)
 	if self.agreedUnloaderRendezvousWaypointIx then
-		self.unloadAIDriverToRendezvous = unloadAIDriver
+		self.unloadAIDriverToRendezvous:set(unloadAIDriver, 1000 * (unloaderEstimatedSecondsEnroute + 30))
 		self:debug('Rendezvous with unloader at waypoint %d in %d m', self.agreedUnloaderRendezvousWaypointIx, dToUnloaderRendezvous)
 		return self.fieldworkCourse:getWaypoint(self.agreedUnloaderRendezvousWaypointIx),
 			self.agreedUnloaderRendezvousWaypointIx, unloaderEstimatedSecondsEnroute
@@ -1566,9 +1569,9 @@ function CombineAIDriver:isManeuvering()
 			)
 end
 
-function CombineAIDriver:isOnHeadland()
-	return self.state ~= self.states.ON_FIELDWORK_COURSE and
-			self.fieldworkCourse:isOnHeadland(self.fieldworkCourse:getCurrentWaypointIx())
+function CombineAIDriver:isOnHeadland(n)
+	return self.state == self.states.ON_FIELDWORK_COURSE and
+			self.fieldworkCourse:isOnHeadland(self.fieldworkCourse:getCurrentWaypointIx(), n)
 end
 
 --- Are we ready for an unloader?
