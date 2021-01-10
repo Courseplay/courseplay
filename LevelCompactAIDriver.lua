@@ -37,6 +37,7 @@ LevelCompactAIDriver.myStates = {
 	WAITING_FOR_FREE_WAY = {},
 	CHECK_SILO = {},
 	CHECK_SHIELD = {},
+	DRIVE_TO_PRE_START_POSITION = {},
 	DRIVE_IN_SILO = {},
 	DRIVE_SILOFILLUP ={},
 	DRIVE_SILOLEVEL ={},
@@ -112,8 +113,11 @@ function LevelCompactAIDriver:drive(dt)
 		--initialized relevant shield data if needed and select the correct working mode
 		self:stopAndWait(dt)
 		if self:checkShield() then
-			self:selectMode()
+			self:changeLevelState(self.states.DRIVE_TO_PRE_START_POSITION)
+			self.tempTarget = nil
 		end
+	elseif self.levelState == self.states.DRIVE_TO_PRE_START_POSITION then
+		self:driveToPreStartPosition(dt)
 	elseif self.levelState == self.states.DRIVE_SILOFILLUP then
 		self:driveSiloFillUp(dt)
 	elseif self.levelState == self.states.DRIVE_SILOLEVEL then
@@ -144,7 +148,7 @@ function LevelCompactAIDriver:foundUnloaderInRadius(r,setWaiting)
 				local d = calcDistanceFrom(self.relevantWaypointNode.node, vehicle.rootNode)
 				--local d = courseplay:distanceToPoint(self.vehicle, relevantWaypoint.x, relevantWaypoint.y, relevantWaypoint.z)
 				if d < r then
-					local autodriveSpec = vehicle.spec_autodrive
+					local autodriveSpec = vehicle.spec_autodrive 
 					if courseplay:isAIDriverActive(vehicle) and vehicle.cp.driver.triggerHandler:isAllowedToUnloadAtBunkerSilo() then
 						--CombineUnloadAIDriver,GrainTransportAIDriver,UnloadableFieldworkAIDriver
 						local isOkayToStop = true
@@ -167,7 +171,7 @@ function LevelCompactAIDriver:foundUnloaderInRadius(r,setWaiting)
 						self:debugSparse("found cp driver : %s",nameNum(vehicle))
 						return isOkayToStop
 				--		self.unloaderAIDrivers[#self.unloaderAIDrivers+1] = vehicle
-					elseif autodriveSpec and autodriveSpec.HoldDriving and autodriveSpec.stateModule and autodriveSpec.stateModule:isActive() then 
+					elseif autodriveSpec and autodriveSpec.HoldDriving and vehicle.ad.stateModule and vehicle.ad.stateModule:isActive() then 
 						--autodrive
 						if setWaiting then
 							autodriveSpec:HoldDriving(vehicle)
@@ -387,6 +391,27 @@ function LevelCompactAIDriver:drivePull(dt)
 	end
 --	self:drawMap()
 	return pullDone
+end
+
+---make sure we start with enough distance to the first bunkersilo target, so we don't drive into the silo wall 
+---currently we just drive 10 m ahead and then start normaly drive the buker course
+function LevelCompactAIDriver:driveToPreStartPosition(dt)
+	local refSpeed = math.min(20,self.vehicle.cp.speeds.bunkerSilo)
+	self:moveShield('up',dt)
+	if self.tempTarget == nil then
+		local gx,gy,gz = localToWorld(self.vehicle.rootNode,0,0,10)
+		self.tempTarget = {}
+		self.tempTarget.x = gx
+		self.tempTarget.y = gy
+		self.tempTarget.z = gz
+	end
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, self.tempTarget.x,self.tempTarget.y,self.tempTarget.z);
+	local distX,_,distZ = localToWorld(self.vehicle.rootNode,0,0,0)
+	if math.abs(distZ-self.tempTarget.z) > 1 then
+		self:driveInDirection(dt,lx,lz,true,refSpeed,true)
+	else 
+		self:selectMode()
+	end
 end
 
 function LevelCompactAIDriver:getHasMovedToFrontLine(dt)
