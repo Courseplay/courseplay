@@ -281,7 +281,6 @@ function AIDriver:beforeStart()
 	self:setFrontMarkerNode(self.vehicle)
 
 	self:startEngineIfNeeded()
-	self:initWages()
 	self.firstReversingWheeledWorkTool = courseplay:getFirstReversingWheeledWorkTool(self.vehicle)
 	-- for now, pathfinding generated courses can't be driven by towed tools
 	self.allowReversePathfinding = self.firstReversingWheeledWorkTool == nil
@@ -1772,14 +1771,6 @@ function AIDriver:detectSlipping()
 			end
 			self.isSlipping = true
 		end
-	end
-end
-
-function AIDriver:initWages()
-	local spec = self.vehicle.spec_aiVehicle
-	if spec.startedFarmId == nil or spec.startedFarmId == 0 then
-		-- to make the wage paying in AIVehicle work it needs to have the correct farm ID
-		spec.startedFarmId = self.vehicle.controllerFarmId
 	end
 end
 
