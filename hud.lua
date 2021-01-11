@@ -661,7 +661,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end				
 				elseif entry.functionToCall == 'autoDriveMode:changeByX' then
 					--autoDriveModeSetting
-					if vehicle.cp.canDrive then
+					if vehicle.cp.canDrive and vehicle.spec_autodrive then
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.autoDriveMode)
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.autoDriveMode:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText() 

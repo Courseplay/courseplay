@@ -448,7 +448,7 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 		self:changeToUnloadOrRefill()
 		self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 	else
-		if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+		if self.vehicle.spec_autodrive and self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
 			-- Switch to AutoDrive when enabled 
 			self:rememberWaypointToContinueFieldwork()
 			self:stopWork()
@@ -471,7 +471,7 @@ function FieldworkAIDriver:isFuelLevelOk()
 end
 
 function FieldworkAIDriver:stopAndRefuel()
-	if self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+	if self.vehicle.spec_autodrive and self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() and self.vehicle.spec_autodrive.getSetting("autoRefuel", self.vehicle) then
 		-- Switch to AutoDrive when enabled 
 		self:rememberWaypointToContinueFieldwork()
 		self:stopWork()
