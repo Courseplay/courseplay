@@ -1844,6 +1844,10 @@ function AIDriver:setBackMarkerNode(vehicle)
 		backMarkerOffset = - vehicle.sizeLength / 2 + vehicle.lengthOffset
 		self:debug('Using the vehicle\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	end
+	self:placeBackMarkerNode(vehicle, referenceNode, backMarkerOffset)
+end
+
+function AIDriver:placeBackMarkerNode(vehicle, referenceNode, backMarkerOffset)
 	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
 		vehicle.cp.driver.aiDriverData.backMarkerNode = courseplay.createNode('backMarkerNode', 0, 0, 0, referenceNode)
 	else
