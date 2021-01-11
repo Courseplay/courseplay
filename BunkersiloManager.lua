@@ -78,9 +78,11 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width,isHeap)
 	widthCount =math.ceil(bunkerWidth/width)
 
 	--check if this one is still needed ?
---	if vehicle.cp.mode10.leveling and courseplay:isEven(widthCount) then
---		widthCount = widthCount+1
---	end
+	if vehicle.cp.driver.getIsModeLeveling then
+		if (vehicle.cp.driver:getIsModeLeveling() or vehicle.cp.driver:getIsModeFillUp()) and courseplay:isEven(widthCount) then
+			widthCount = widthCount+1
+		end
+	end
 
 	local heightCount = math.ceil(bunkerLength/ width)
 	local unitWidth = bunkerWidth/widthCount
@@ -335,7 +337,7 @@ function BunkerSiloManager:updateTarget(bestTarget)
 	local cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
 	local x,y,z = getWorldTranslation(self.object.rootNode)
 	local distance2Target =  courseplay:distance(x,z, cx, cz) --distance from shovel to target
-	if distance2Target < 1 then
+	if math.abs(distance2Target) < 1 then
 		bestTarget.line = math.min(bestTarget.line + 1, #self.siloMap)
 	end		
 end

@@ -3971,6 +3971,16 @@ function LevelCompactSearchRadiusSetting:getText()
 	return ('%d%s'):format(self:get(), courseplay:loc('COURSEPLAY_UNIT_METER'))
 end
 
+---@class LevelCompactSiloTypSetting : BooleanSetting
+LevelCompactSiloTypSetting = CpObject(BooleanSetting)
+function LevelCompactSiloTypSetting:init(vehicle)
+	local texts = {
+		'COURSEPLAY_MODE10_REVERSE_UNLOADING',
+		'COURSEPLAY_MODE10_DRIVINGTHROUGH'
+	}
+	BooleanSetting.init(self, 'levelCompactSiloTyp', 'COURSEPLAY_MODE10_SILO_LOADEDBY', 'COURSEPLAY_MODE10_SILO_LOADEDBY', vehicle,texts)
+end
+
 ---@class LevelCompactShieldHeightSetting : SettingList
 LevelCompactShieldHeightSetting = CpObject(SettingList)
 LevelCompactShieldHeightSetting.Automatic = -1

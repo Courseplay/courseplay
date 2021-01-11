@@ -37,6 +37,7 @@ LevelCompactAIDriver.myStates = {
 	WAITING_FOR_FREE_WAY = {},
 	CHECK_SILO = {},
 	CHECK_SHIELD = {},
+	DRIVE_TO_PRE_START_POSITION = {},
 	DRIVE_IN_SILO = {},
 	DRIVE_SILOFILLUP ={},
 	DRIVE_SILOLEVEL ={},
@@ -112,8 +113,11 @@ function LevelCompactAIDriver:drive(dt)
 		--initialized relevant shield data if needed and select the correct working mode
 		self:stopAndWait(dt)
 		if self:checkShield() then
-			self:selectMode()
+			self:changeLevelState(self.states.DRIVE_TO_PRE_START_POSITION)
+			self.tempTarget = nil
 		end
+	elseif self.levelState == self.states.DRIVE_TO_PRE_START_POSITION then
+		self:driveToPreStartPosition(dt)
 	elseif self.levelState == self.states.DRIVE_SILOFILLUP then
 		self:driveSiloFillUp(dt)
 	elseif self.levelState == self.states.DRIVE_SILOLEVEL then
@@ -137,16 +141,24 @@ function LevelCompactAIDriver:foundUnloaderInRadius(r,setWaiting)
 		x,y,z = getTranslation(self.relevantWaypointNode.node)
 		DebugUtil.drawDebugCircle(x,y+2,z, r, math.ceil(r/2))
 	end
+	local onlyStopFilledDrivers = self.vehicle.cp.settings.levelCompactSiloTyp:get()
 	if g_currentMission then
 		for _, vehicle in pairs(g_currentMission.vehicles) do
 			if vehicle ~= self.vehicle then
 				local d = calcDistanceFrom(self.relevantWaypointNode.node, vehicle.rootNode)
 				--local d = courseplay:distanceToPoint(self.vehicle, relevantWaypoint.x, relevantWaypoint.y, relevantWaypoint.z)
 				if d < r then
-					local autodriveSpec = vehicle.spec_autodrive
+					local autodriveSpec = vehicle.spec_autodrive 
 					if courseplay:isAIDriverActive(vehicle) and vehicle.cp.driver.triggerHandler:isAllowedToUnloadAtBunkerSilo() then
 						--CombineUnloadAIDriver,GrainTransportAIDriver,UnloadableFieldworkAIDriver
-						if setWaiting then 
+						local isOkayToStop = true
+						if onlyStopFilledDrivers then 
+							if vehicle.cp.totalFillLevel < 0.02 then 
+								isOkayToStop = false
+							end
+						end
+						
+						if setWaiting and isOkayToStop then 
 --							vehicle.cp.driver.triggerHandler:setWaitingForUnloadReady()
 							vehicle.cp.driver:hold()
 							vehicle.cp.driver:setInfoText("WAITING_FOR_LEVELCOMPACTAIDRIVER")
@@ -156,22 +168,23 @@ function LevelCompactAIDriver:foundUnloaderInRadius(r,setWaiting)
 							vehicle.cp.driver:enableTrafficConflictDetection()
 --							vehicle.cp.driver.triggerHandler:resetWaitingForUnloadReady()
 						end
-						self:debugSparse("found Cp Driver : %s",nameNum(vehicle))
-						return true
+						self:debugSparse("found cp driver : %s",nameNum(vehicle))
+						return isOkayToStop
 				--		self.unloaderAIDrivers[#self.unloaderAIDrivers+1] = vehicle
-					elseif vehicle.getIsEntered and vehicle:getIsEntered() and AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer) ~= nil then 
-						--Player controlled vehicle
-						if self.vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
-							--Player controlled vehicle is allowed to lookup
-							self:debugSparse("found Vehicle : %s",nameNum(vehicle))
-							return true
-						end
-					elseif autodriveSpec and autodriveSpec.HoldDriving and autodriveSpec.stateModule and autodriveSpec.stateModule:isActive() then 
+					elseif autodriveSpec and autodriveSpec.HoldDriving and vehicle.ad.stateModule and vehicle.ad.stateModule:isActive() then 
 						--autodrive
 						if setWaiting then
 							autodriveSpec:HoldDriving(vehicle)
 						end
+						self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
 						return true
+					elseif vehicle.getIsEntered and vehicle:getIsEntered() and AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer) ~= nil then 
+						--Player controlled vehicle
+						if self.vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
+							--Player controlled vehicle is allowed to lookup
+							self:debugSparse("found player driven vehicle : %s",nameNum(vehicle))
+							return true
+						end
 					end
 				end
 			end
@@ -380,6 +393,27 @@ function LevelCompactAIDriver:drivePull(dt)
 	return pullDone
 end
 
+---make sure we start with enough distance to the first bunkersilo target, so we don't drive into the silo wall 
+---currently we just drive 10 m ahead and then start normaly drive the buker course
+function LevelCompactAIDriver:driveToPreStartPosition(dt)
+	local refSpeed = math.min(20,self.vehicle.cp.speeds.bunkerSilo)
+	self:moveShield('up',dt)
+	if self.tempTarget == nil then
+		local gx,gy,gz = localToWorld(self.vehicle.rootNode,0,0,10)
+		self.tempTarget = {}
+		self.tempTarget.x = gx
+		self.tempTarget.y = gy
+		self.tempTarget.z = gz
+	end
+	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, self.tempTarget.x,self.tempTarget.y,self.tempTarget.z);
+	local distX,_,distZ = localToWorld(self.vehicle.rootNode,0,0,0)
+	if math.abs(distZ-self.tempTarget.z) > 1 then
+		self:driveInDirection(dt,lx,lz,true,refSpeed,true)
+	else 
+		self:selectMode()
+	end
+end
+
 function LevelCompactAIDriver:getHasMovedToFrontLine(dt)
 	local startUnit = self.bunkerSiloManager.siloMap[self.firstLine][1]
 	local _,ty,_ = getWorldTranslation(self.vehicle.cp.directionNode);
@@ -446,7 +480,7 @@ end
 
 function LevelCompactAIDriver:hasShieldEmpty()
 	--return self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 and self.bestTarget.line > self.firstLine
-	local tool = self:getValidFrontImplement()
+	local tool = self.leveler
 	if tool:getFillUnitFillLevel(1) < 100 then
 		if self.vehicle.cp.timers.bladeEmpty == nil or self.vehicle.cp.timers.bladeEmpty == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'bladeEmpty', 3);
@@ -552,7 +586,7 @@ function LevelCompactAIDriver:checkSilo()
 	if self.bunkerSiloManager == nil then
 		local silo = BunkerSiloManagerUtil.getTargetBunkerSilo(self.vehicle,1)
 		if silo then 
-			self.bunkerSiloManager = BunkerSiloManager(self.vehicle,silo,self:getWorkWidth(),self:getValidFrontImplement())
+			self.bunkerSiloManager = BunkerSiloManager(self.vehicle,silo,self:getWorkWidth(),self:getValidBackImplement())
 		end
 	
 	end
@@ -583,7 +617,7 @@ end
 
 
 function LevelCompactAIDriver:moveShield(moveDir,dt,fixHeight)
-	local leveler = self:getValidFrontImplement()
+	local leveler = self.leveler
 	local moveFinished = false
 	if leveler.spec_attacherJointControl ~= nil then
 		local spec = leveler.spec_attacherJointControl
@@ -640,7 +674,7 @@ function LevelCompactAIDriver:setIsAlphaListrecording()
 	self.alphaList ={}
 end
 function LevelCompactAIDriver:getDiffHeightforHeight(targetHeight)
-	local blade = self:getValidFrontImplement()
+	local blade = self.leveler
 	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
 	local bladeTerrain = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, bladeX,bladeY,bladeZ);
 	local _,_,offSetZ = worldToLocal(self.vehicle.rootNode,bladeX,bladeY,bladeZ)
@@ -651,7 +685,7 @@ end
 
 
 function LevelCompactAIDriver:recordAlphaList()
-	local blade = self:getValidFrontImplement()
+	local blade = self.leveler
 	local spec = blade.spec_attacherJointControl
 	local jointDesc = spec.jointDesc
 	local bladeX,bladeY,bladeZ = getWorldTranslation(self:getLevelerNode(blade))
@@ -727,11 +761,11 @@ function LevelCompactAIDriver:getBestTargetFillUnitCompacting(lastDrivenColumn)
 			newColumn = 1
 		end
 		local newBestTarget= {
-			line = #self.bunkerSiloManager.siloMap,
+			line = 1,
 			column = newColumn,						
 			empty = false
 			}
-		return newBestTarget, #self.bunkerSiloManager.siloMap
+		return newBestTarget, firstLine
 	end
 end
 
@@ -824,11 +858,9 @@ function LevelCompactAIDriver:getWorkWidth()
 	return math.max(self.workWidth,self.vehicle.cp.workWidth)
 end
 
-function LevelCompactAIDriver:getValidFrontImplement()
-	if self.frontImplement == nil then
-		self.frontImplement = AIDriverUtil.getFirstAttachedImplement(self.vehicle)
-	end
-	return self.leveler or self.frontImplement
+function LevelCompactAIDriver:getValidBackImplement()
+	local backImplement = AIDriverUtil.getLastAttachedImplement(self.vehicle)
+	return self.leveler or backImplement
 end
 
 function LevelCompactAIDriver:isDebugActive()

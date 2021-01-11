@@ -1195,6 +1195,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--LevelCompactSearchRadiusSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.levelCompactSearchRadius:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.levelCompactSearchRadius:getText()
+				elseif entry.functionToCall == 'levelCompactSiloTyp:changeByX' then
+					--LevelCompactSiloTypSetting
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.levelCompactSiloTyp:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.levelCompactSiloTyp:getText()
 				elseif entry.functionToCall == 'levelCompactShieldHeight:changeByX' then
 					--LevelCompactShieldHeightSetting
 					if not vehicle.cp.settings.levelCompactShieldHeight:isDisabled() then
@@ -2368,11 +2372,12 @@ function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
 
 	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactMode,'changeByX', 10, 1, 1)
 	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver,'changeByX', 10, 2, 1)
-	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactSearchRadius,'changeByX', 10, 3, 1 )
-	self:addSettingsRow(vehicle,nil,'changeBladeWorkWidth', 10, 4, 1)
-	self:setupCalculateWorkWidthButton(vehicle,10, 4)
-	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 5, 1 )
-	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactShieldHeight,'changeByX', 10, 6, 1 )
+	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSiloTyp,'changeByX', 10, 3, 1)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactSearchRadius,'changeByX', 10, 4, 1 )
+	self:addSettingsRow(vehicle,nil,'changeBladeWorkWidth', 10, 5, 1)
+	self:setupCalculateWorkWidthButton(vehicle,10, 5)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 6, 1 )
+--	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactShieldHeight,'changeByX', 10, 6, 1 )
 end
 
 
