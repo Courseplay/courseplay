@@ -38,8 +38,8 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     self.vehicle = vehicle
     self.rootVehicle = vehicle:getRootVehicle()
     self.name = vehicle.getName and vehicle:getName() or 'N/A'
-    -- distance of the sides of a rectangle from the direction node of the vehicle
-    -- in other words, the X and Z offsets of the corners from the direction node
+    -- distance of the sides of a rectangle from the root node of the vehicle
+    -- in other words, the X and Z offsets of the corners from the root node
     -- negative is to the rear and to the right
     -- this is the bounding box of the entire vehicle with all attached implements,
     -- except a towed trailer as that is calculated independently
@@ -62,6 +62,7 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
             dLeft = self.trailer.sizeWidth / 2,
             dRight = -self.trailer.sizeWidth / 2
         }
+        -- TODO: this should be the attacher joint's offset, not the back of the vehicle.
         self.trailerHitchOffset = self.dRear
         self.trailerHitchLength = AIDriverUtil.getTowBarLength(vehicle)
     courseplay.debugVehicle(7, vehicle, 'trailer for the pathfinding is %s, hitch offset is %.1f',
@@ -74,22 +75,29 @@ end
 
 --- Calculate the relative coordinates of a rectangle's corners around a reference node, representing the implement
 function PathfinderUtil.VehicleData:getRectangleForImplement(implement, referenceNode, buffer)
-    local rootToReferenceNodeDistance  = 0
+    local rootToReferenceNodeOffset = 0
     local attacherJoint = implement.object.getActiveInputAttacherJoint and implement.object:getActiveInputAttacherJoint()
     if attacherJoint and attacherJoint.node then
         -- the implement may not be aligned with the vehicle so we need to calculate this distance in two
-        -- steps, first the distance between the vehicle's direction node and the attacher joint and then
+        -- steps, first the distance between the vehicle's root node and the attacher joint and then
         -- from the attacher joint to the implement's root node
+        -- < 0 when the attacher joint is behind the reference node
         local _, _, referenceToAttacherJoint = localToLocal(attacherJoint.node, referenceNode, 0, 0, 0)
+        -- > 0 when the attacher node is in front of the implement's root node (we don't use the attacher joint node
+        -- as a reference as it may point to any direction, we know the implement's root node points forward
         local _, _, attacherJointToImplementRoot = localToLocal(attacherJoint.node, implement.object.rootNode, 0, 0, 0)
-        rootToReferenceNodeDistance = attacherJointToImplementRoot - referenceToAttacherJoint
+        -- we call this offset, and is negative when behind the reference node, positive when in front of it
+        -- (need to reverse attacherJointToImplementRoot)
+        rootToReferenceNodeOffset = - attacherJointToImplementRoot + referenceToAttacherJoint
+        courseplay.debugFormat(7, '%s: ref to attacher joint %.1f, att to implement root %.1f, impl root to ref %.1f',
+            nameNum(implement.object), referenceToAttacherJoint, attacherJointToImplementRoot, rootToReferenceNodeOffset)
     else
-        _, _, rootToReferenceNodeDistance = localToLocal(implement.object.rootNode, referenceNode, 0, 0, 0)
+        _, _, rootToReferenceNodeOffset = localToLocal(implement.object.rootNode, referenceNode, 0, 0, 0)
     end
     -- default size, used by Giants to determine the drop area when buying something
     local rectangle = {
-        dFront = rootToReferenceNodeDistance + implement.object.sizeLength / 2 + implement.object.lengthOffset + (buffer or 0),
-        dRear = rootToReferenceNodeDistance - implement.object.sizeLength / 2 - implement.object.lengthOffset - (buffer or 0),
+        dFront = rootToReferenceNodeOffset + implement.object.sizeLength / 2 + implement.object.lengthOffset + (buffer or 0),
+        dRear = rootToReferenceNodeOffset - implement.object.sizeLength / 2 + implement.object.lengthOffset - (buffer or 0),
         dLeft = implement.object.sizeWidth / 2,
         dRight = -implement.object.sizeWidth / 2
     }
@@ -121,7 +129,7 @@ end
 function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implements, buffer, rectangles)
     for _, implement in ipairs(implements) do
         --print(implement.object:getName())
-        local referenceNode = AIDriverUtil.getDirectionNode(vehicle)
+        local referenceNode = vehicle.rootNode
         if implement.object ~= self.trailer then
             -- everything else is attached to the root vehicle and calculated as it was moving with it (having
             -- the same heading)
@@ -306,7 +314,7 @@ end
 function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore, log)
     self.vehiclesToIgnore = vehiclesToIgnore or {}
     self.vehicleData = vehicleData
-    -- the box for overlapBox() is symmetric, so if our direction node is not in the middle of the vehicle rectangle,
+    -- the box for overlapBox() is symmetric, so if our root node is not in the middle of the vehicle rectangle,
     -- we have to translate it into the middle
     -- right/rear is negative
     local xOffset = vehicleData.dRight + vehicleData.dLeft

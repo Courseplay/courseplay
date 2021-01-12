@@ -1340,7 +1340,10 @@ function FieldworkAIDriver:onDraw()
 				DebugUtil.drawDebugNode(aiSizeBackMarker, object:getName() .. ' AI Size Back')
 			end
 		end
-		DebugUtil.drawDebugNode(object.cp.directionNode or object.rootNode, object:getName() .. ' root')
+		DebugUtil.drawDebugNode(object.rootNode, object:getName() .. ' root')
+		if object.cp.directionNode then
+			DebugUtil.drawDebugNode(object.cp.directionNode, object:getName() .. ' dir')
+		end
 	end
 
 	showAIMarkersOfObject(self.vehicle)

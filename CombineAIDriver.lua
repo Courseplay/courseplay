@@ -1640,8 +1640,8 @@ end
 function CombineAIDriver:measureBackDistance()
 	self.measuredBackDistance = 0
 	-- raycast from a point behind the vehicle forward towards the direction node
-	local nx, ny, nz = localDirectionToWorld(self:getDirectionNode(), 0, 0, 1)
-	local x, y, z = localToWorld(self:getDirectionNode(), 0, 1.5, - self.maxBackDistance)
+	local nx, ny, nz = localDirectionToWorld(self.vehicle.rootNode, 0, 0, 1)
+	local x, y, z = localToWorld(self.vehicle.rootNode, 0, 1.5, - self.maxBackDistance)
 	raycastAll(x, y, z, nx, ny, nz, 'raycastBackCallback', self.maxBackDistance, self)
 end
 
@@ -1660,7 +1660,6 @@ function CombineAIDriver:raycastBackCallback(hitObjectId, x, y, z, distance, nx,
 		end
 	end
 end
-
 
 function CombineAIDriver:setStrawSwath(enable)
 	local strawSwathCanBeEnabled = false
@@ -1681,6 +1680,10 @@ function CombineAIDriver:onDraw()
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	if dischargeNode then
 		DebugUtil.drawDebugNode(dischargeNode.node, 'discharge')
+	end
+
+	if self.aiDriverData.backMarkerNode then
+		DebugUtil.drawDebugNode(self.aiDriverData.backMarkerNode, 'back marker')
 	end
 
 	UnloadableFieldworkAIDriver.onDraw(self)

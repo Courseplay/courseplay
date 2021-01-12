@@ -48,12 +48,18 @@ function DevHelper:update()
         end
 
         self.vehicle = g_currentMission.controlledVehicle
-        self.node = AIDriverUtil.getDirectionNode(g_currentMission.controlledVehicle)
+        self.node = g_currentMission.controlledVehicle.rootNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
     else
         -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, -1)
+        if not self.proxySensor then
+            self.proxySensor = ProximitySensor(self.node, 180, 10, 1, 0)
+        else
+            self.proxySensor:update()
+            self.proxySensor:showDebugInfo()
+        end
     end
 
     if self.vehicleData then
@@ -243,7 +249,7 @@ end
 function DevHelper:showVehicleSize()
     local vehicle = g_currentMission.controlledVehicle
     if not vehicle then return end
-    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
+    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(vehicle.rootNode)
     local node = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     if not g_devHelper.helperNode then
         g_devHelper.helperNode = courseplay.createNode('pathfinderHelper', node.x, -node.y, 0)
@@ -251,7 +257,7 @@ function DevHelper:showVehicleSize()
     local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, node.x, 0, -node.y);
     setTranslation(g_devHelper.helperNode, node.x, y, -node.y)
     setRotation(g_devHelper.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
-   
+
     if self.vehicleData then
         for _, rectangle in ipairs(self.vehicleData.rectangles) do
             local x1,y1,z1 = localToWorld(g_devHelper.helperNode, rectangle.dRight, 2, rectangle.dFront);
@@ -259,10 +265,10 @@ function DevHelper:showVehicleSize()
             local x3,y3,z3 = localToWorld(g_devHelper.helperNode, rectangle.dRight, 2, rectangle.dRear);
             local x4,y4,z4 = localToWorld(g_devHelper.helperNode, rectangle.dLeft, 2, rectangle.dRear);
 
-            drawDebugLine(x1,y1,z1,0,0,1,x2,y2,z2,0,0,1);
-            drawDebugLine(x1,y1,z1,0,0,1,x3,y3,z3,0,0,1);
-            drawDebugLine(x2,y2,z2,0,0,1,x4,y4,z4,0,0,1);
-            drawDebugLine(x3,y3,z3,0,0,1,x4,y4,z4,0,0,1);
+            drawDebugLine(x1,y1,z1,0.2, 0.2 ,1,x2,y2,z2,0.2, 0.2,1);
+            drawDebugLine(x1,y1,z1,0.2, 0.2 ,1,x3,y3,z3,0.2, 0.2,1);
+            drawDebugLine(x2,y2,z2,0.2, 0.2 ,1,x4,y4,z4,0.2, 0.2,1);
+            drawDebugLine(x3,y3,z3,0.2, 0.2 ,1,x4,y4,z4,0.2, 0.2,1);
         end
         if self.vehicleData.trailerRectangle then
             local x, y, z = localToWorld(g_devHelper.helperNode, 0, 0, self.vehicleData.trailerHitchOffset)
@@ -283,9 +289,10 @@ function DevHelper:showVehicleSize()
         for i = 1, 4 do
             local cp = self.collisionData.corners[i]
             local pp = self.collisionData.corners[i > 1 and i - 1 or 4]
-            cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 1, 0, pp.x, pp.y + 0.4, pp.z)
+            cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 0, 0, pp.x, pp.y + 0.4, pp.z)
         end
     end
+    DebugUtil.drawDebugNode(g_devHelper.helperNode, 'devhelper')
 end
 
 function DevHelper.saveVehiclePosition(vehicle, vehiclePositionData)
