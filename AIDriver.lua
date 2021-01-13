@@ -1826,7 +1826,10 @@ function AIDriver:setBackMarkerNode(vehicle)
 		local lastImplement
 		lastImplement, backMarkerOffset = AIDriverUtil.getLastAttachedImplement(vehicle)
 		referenceNode = vehicle.rootNode
-		self:debug('Using the last implement\'s rear distance for the rear proximity sensor, %d m from root node', backMarkerOffset)
+		self:debug('Using the last implement\'s rear distance for the rear proximity sensor, %d m from root node', backMarkerOffset) 	elseif self.measuredBackDistance then
+		referenceNode = vehicle.rootNode
+		backMarkerOffset = -self.measuredBackDistance
+		self:debug('back marker node on measured back distance %.1f', self.measuredBackDistance)
 	elseif reverserNode then
 		-- if there is a reverser node, use that, mainly because that most likely will turn with an implement
 		-- or with the back component of an articulated vehicle. Just need to find out the distance correctly
@@ -1838,7 +1841,7 @@ function AIDriver:setBackMarkerNode(vehicle)
 				debugText, backMarkerOffset, dBetweenRootAndReverserNode)
 	else
 		referenceNode = vehicle.rootNode
-		backMarkerOffset = - vehicle.sizeLength / 2 - vehicle.lengthOffset
+		backMarkerOffset = - vehicle.sizeLength / 2 + vehicle.lengthOffset
 		self:debug('Using the vehicle\'s root node for the rear proximity sensor, %d m from root node', backMarkerOffset)
 	end
 	if not vehicle.cp.driver.aiDriverData.backMarkerNode then
