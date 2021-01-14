@@ -1549,8 +1549,17 @@ function CombineAIDriver:isFieldworkUnloadOrRefillStateOneOf(states)
 	return self:isStateOneOf(self.fieldworkUnloadOrRefillState, states)
 end
 
+-- TODO: this whole logic is more relevant to the unloader maybe move it there?
 function CombineAIDriver:getClosestFieldworkWaypointIx()
-	if self.course:isTemporary() then
+	if self:isTurning() then
+		if self.turnContext then
+			-- send turn start wp, unloader will decide if it needs to move it to the turn end or not
+			return self.turnContext.turnStartWpIx
+		else
+			-- if for whatever reason we don't have a turn context, current waypoint is ok
+			return self.fieldworkCourse:getCurrentWaypointIx()
+		end
+	elseif self.course:isTemporary() then
 		return self.fieldworkCourse:getLastPassedWaypointIx()
 	else
 		-- if currently on the fieldwork course, this is the best estimate
