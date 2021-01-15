@@ -63,6 +63,7 @@ function CpObject(base, init)
 end
 
 --- Object with a time to live.
+---@class CpTemporaryObject
 CpTemporaryObject = CpObject()
 
 function CpTemporaryObject:init(valueWhenExpired)
@@ -80,6 +81,8 @@ function CpTemporaryObject:set(value, ttlMs)
 	self.expiryTime = g_time + ttlMs
 end
 
+--- Get the value of the temporary object
+--- If expired, returns the default value
 function CpTemporaryObject:get()
 	if g_time > self.expiryTime then
 		-- value expired, reset it
@@ -89,6 +92,7 @@ function CpTemporaryObject:get()
 end
 
 --- Object slowly adjusting its value
+---@class CpSlowChangingObject
 CpSlowChangingObject = CpObject()
 
 function CpSlowChangingObject:init(targetValue, timeToReachTargetMs)

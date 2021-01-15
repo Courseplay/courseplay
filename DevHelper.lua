@@ -50,6 +50,8 @@ function DevHelper:update()
         self.vehicle = g_currentMission.controlledVehicle
         self.node = g_currentMission.controlledVehicle.rootNode
         lx, _, lz = localDirectionToWorld(self.node, 0, 0, 1)
+
+        self:updateProximitySensors(self.vehicle)
     else
         -- camera node looks backwards so need to flip everything by 180 degrees
         self.node = g_currentMission.player.cameraNode
@@ -82,7 +84,7 @@ function DevHelper:update()
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
     self.data.hasFruit, self.data.fruitValue, self.data.fruit = PathfinderUtil.hasFruit(self.data.x, self.data.z, 5, 3.6)
-    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 10, 10)
+    self.data.isField, self.fieldArea, self.totalFieldArea = courseplay:isField(self.data.x, self.data.z, 3, 3)
 
     self.data.landId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
@@ -121,12 +123,29 @@ function DevHelper:overlapBoxCallback(transformId)
     self.data.collidingShapes = self.data.collidingShapes .. '|' .. text
 end
 
+function DevHelper:updateProximitySensors(vehicle)
+    if vehicle and vehicle.cp.driver then
+        if vehicle.cp.driver.forwardLookingProximitySensorPack then
+            local d, otherVehicle, deg, dAvg =
+                vehicle.cp.driver.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+        end
+        if vehicle.cp.driver.backwardLookingProximitySensorPack then
+            local d, otherVehicle, deg, dAvg =
+                vehicle.cp.driver.backwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+        end
+    end
+end
 
+-- Left-Alt + , (<) = mark current position as start for pathfinding
+-- Left-Alt + . (>) = mark current position as goal for pathfinding
+-- Left-Ctrl + . (>) = start pathfinding from marked start to marked goal
+-- Left-Ctrl + , (<) = mark current field as field for pathfinding
+-- Left-Alt + Space = save current vehicle position
+-- Left-Ctrl + Space = restore current vehicle position
 function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
         -- Left Alt + < mark start
-        self.context = PathfinderUtil.Context(self.vehicleData, self.data.fieldNum, PathfinderUtil.Parameters())
         self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
         self:debug('Start %s', tostring(self.start))
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_period then
@@ -148,6 +167,9 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         -- Left Ctrl + > find path
         self:debug('Calculate')
         self:startPathfinding()
+    elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_comma then
+        self.fieldNumForPathfinding = PathfinderUtil.getFieldNumUnderNode(self.node)
+        self:debug('Set field %d for pathfinding', self.fieldNumForPathfinding)
     elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_space then
         -- save vehicle position
         g_currentMission.controlledVehicle.vehiclePositionData = {}
@@ -168,9 +190,13 @@ function DevHelper:startPathfinding()
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
                 1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
-        self:debug('Starting pathfinding (no reverse) between %s and %s', tostring(self.start), tostring(self.goal))
+        self:debug('Starting pathfinding (no reverse) between %s and %s, field %d',
+                tostring(self.start), tostring(self.goal), self.fieldNumForPathfinding or 0)
         local start = State3D:copy(self.start)
-        self.pathfinder, done, path = PathfinderUtil.startPathfinding(start, self.goal, self.context, false)
+
+        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, start, self.goal,
+                false, self.fieldNumForPathfinding or 0, {}, 10)
+
     end
 
     if done then

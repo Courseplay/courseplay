@@ -119,7 +119,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpRestartSaveGame', 'Load and start a savegame', 'restartSaveGame', self )
 	addConsoleCommand( 'cpSetLookaheadDistance', 'Set look ahead distance for the pure pursuit controller', 'setLookaheadDistance', self )
 	addConsoleCommand( 'cpCallVehicleFunction', 'Call a function on the current vehicle and print the results', 'callVehicleFunction', self )
-	addConsoleCommand( 'cpTogglePathfindingDebug', 'Toggle pathfinding visual debug info', 'togglePathfindingDebug', self )
+	addConsoleCommand( 'cpSetPathfindingDebug', 'Set pathfinding visual debug level (0-2)', 'setPathfindingDebug', self )
 	addConsoleCommand( 'cpToggleDevhelperDebug', 'Toggle development helper visual debug info', 'toggleDevhelperDebug', self )
 	addConsoleCommand( 'cpShowCombineUnloadManagerStatus', 'Show combine unload manager status', 'showCombineUnloadManagerStatus', self )
 
@@ -727,8 +727,8 @@ function CpManager:callVehicleFunction(funcName, ...)
 	return 'Error when calling vehicle:' .. funcName
 end
 
-function CpManager:togglePathfindingDebug()
-	PathfinderUtil.toggleVisualDebug()
+function CpManager:setPathfindingDebug(d)
+	PathfinderUtil.setVisualDebug(tonumber(d))
 end
 
 function CpManager:toggleDevhelperDebug()
