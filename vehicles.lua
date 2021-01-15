@@ -1699,3 +1699,102 @@ function AIDriverUtil.getCurrentNormalizedSteeringAngle(vehicle)
 		return -vehicle.rotatedTime / vehicle.minRotTime
 	end
 end
+
+--- Get all exactFillRootNodes and sort them by distance to referenceNode
+---@param object vehicle/implement/trailer to look for exactFillRootNodes
+---@param node referenceNode of the main vehicle 
+---@param table of all the exactFillRootNodes with data, like fillUnitIndex and distToNode and so on..
+function AIDriverUtil.getSortedExactFillRootNodesByDistanceToNode(object,referenceNode,exactFillRootNodesData)
+	if object.getFillUnits then
+		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
+			local fillTypeIndex = object:getFillUnitFillType(fillUnitIndex)
+			if not AIDriverUtil.isValidFuelType(object,fillTypeIndex,fillUnitIndex) then 		
+				local exactFillRootNode = object:getFillUnitExactFillRootNode(fillUnitIndex)
+				--distance to referenceNode in z
+				local node = exactFillRootNode or object.rootNode
+				local x,y,z = localToLocal(node,referenceNode,0,0,0)
+				exactFillRootNodeData = {}
+				exactFillRootNodeData.rootNode = node
+				exactFillRootNodeData.distToNode = z
+				exactFillRootNodeData.fillUnitIndex = fillUnitIndex
+				exactFillRootNodeData.object = object
+				table.insert(exactFillRootNodesData,exactFillRootNodeData)
+				--sort by distance from closest exactFillRootNode onwards
+				table.sort(exactFillRootNodesData, function(a, b)
+					return a.distToNode > b.distToNode
+				end)
+			end
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		AIDriverUtil.getSortedExactFillRootNodesByDistanceToNode(impl.object, referenceNode,exactFillRootNodesData)
+	end
+end
+
+--- Get all dischargeNodes and sort them by distance to referenceNode
+---@param object vehicle/implement/trailer to look for dischargeNodes
+---@param node referenceNode of the main vehicle 
+---@param table of all the dischargeNodes with data, like fillUnitIndex and distToNode and so on..
+function AIDriverUtil.getSortedDischargeNodesByDistanceToNode(object,referenceNode,dischargeNodesData)
+	if object.getCurrentDischargeNode then 
+		local currentDischargeNode = object:getCurrentDischargeNode()
+		local node = currentDischargeNode.trigger and currentDischargeNode.trigger.node or currentDischargeNode.node
+		if currentDischargeNode then
+			local x,y,z = localToLocal(node,referenceNode,0,0,0)
+			dischargeNodeData = {}
+			dischargeNodeData.rootNode = node
+			dischargeNodeData.distToNode = z
+			dischargeNodeData.fillUnitIndex = currentDischargeNode.fillUnitIndex
+			dischargeNodeData.object = object
+			table.insert(dischargeNodesData,dischargeNodeData)
+			--sort by distance from closest exactFillRootNode onwards
+			table.sort(dischargeNodesData, function(a, b)
+				return a.distToNode > b.distToNode
+			end)
+		end
+	end
+	for _,impl in pairs(object:getAttachedImplements()) do
+		AIDriverUtil.getSortedDischargeNodesByDistanceToNode(impl.object, referenceNode,dischargeNodesData)
+	end
+end
+
+
+---Is the fillTypeIndex a fuelType ?
+---@param object vehicle/implement/trailer 
+---@param int fillTypeIndex to check
+---@param int optional fillUnitIndex  
+function AIDriverUtil.isValidFuelType(object,fillTypeIndex,fillUnitIndex)
+	if object.getConsumerFillUnitIndex and fillTypeIndex then 
+		local index = object:getConsumerFillUnitIndex(fillTypeIndex)
+		if fillUnitIndex ~= nil then 
+			return fillUnitIndex and fillUnitIndex == index
+		end		
+		return index 
+	end
+end
+
+function AIDriverUtil.drawDebugfillOrDischargeNodesData(fillOrDischargeNodesData)
+	for i,relevantFillOrDischargeNodeData in ipairs(fillOrDischargeNodesData) do 
+		DebugUtil.drawDebugNode(relevantFillOrDischargeNodeData.rootNode,string.format("fillOrDischargeNode(%d)",i),false)
+	end
+end
+
+---Get the total no fuel capacity of all vehicle/implements/trailers
+---@param object vehicle/implement/trailer 
+---@param table return table of the total capacity
+function AIDriverUtil.getTotalFillCapacity(object,totalCapacityTable)
+	if object.spec_fillUnit then
+		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
+			local fillType = object:getFillUnitFillType(fillUnitIndex)
+			if not AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex) then 
+				local capacity = object:getFillUnitCapacity(fillUnitIndex)
+				if totalCapacityTable.capacity == nil then totalCapacityTable.capacity = 0 end
+				totalCapacityTable.capacity = totalCapacityTable.capacity + capacity
+			end
+		end
+	end
+	-- get all attached implements recursively
+	for _,impl in pairs(object:getAttachedImplements()) do
+		AIDriverUtil.getTotalFillCapacity(impl.object,totalCapacityTable)
+	end
+end

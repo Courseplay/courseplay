@@ -481,7 +481,7 @@ function ShovelModeAIDriver:almostFullObject(dischargeNode)
 end
 
 function ShovelModeAIDriver:driveIntoSilo(dt)
-	if self.bunkerSiloManager == nil then 
+	if self.bunkerSiloManager == nil or self.bestTarget == nil then 
 		return 
 	end
 	local vehicle = self.vehicle

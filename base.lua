@@ -396,9 +396,11 @@ function courseplay:onLoad(savegame)
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
 	---@type SettingsContainer
-
-	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
-
+	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
+	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
+	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
+	self.cp.courseGeneratorSettings:addSetting(ShowSeedCalculatorSetting, self)
 	courseplay.signs:updateWaypointSigns(self);
 	
 	courseplay:setAIDriver(self, self.cp.mode)

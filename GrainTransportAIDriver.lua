@@ -34,12 +34,26 @@ end
 
 function GrainTransportAIDriver:start(startingPoint)
 	self.readyToLoadManualAtStart = false
-	self.nextClosestExactFillRootNode = nil
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
+	self:setupTotalCapacity()
 	self.vehicle.cp.settings.stopAtEnd:set(false)
+	--get all exactFillRootNodes sorted from the front of the very front vehicle/implement to the last
+	self:setupExactFillRootNodes()
+end
+
+function GrainTransportAIDriver:enrichWaypoints()
+	AIDriver.enrichWaypoints(self)
+	--create WaypointNode for manual loading at the start waitPoint
 	self.firstWaypointNode = WaypointNode('firstWaypoint')
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
+end
+
+function GrainTransportAIDriver:resetEnrichedWaypoints()
+	--delete WaypointNode for manual loading at the start waitPoint
+	if self.firstWaypointNode then
+		self.firstWaypointNode:destroy()
+	end
 end
 
 function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
@@ -70,27 +84,7 @@ function GrainTransportAIDriver:drive(dt)
 	if self:getSiloSelectedFillTypeSetting():isEmpty() then 
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_MANUAL_LOADING")
 		--checking FillLevels, while loading at StartPoint 
-		if self.readyToLoadManualAtStart then 
-			self:setInfoText('REACHED_OVERLOADING_POINT')			
-			self:checkFillUnits()
-			if self.nextClosestExactFillRootNode then 
-				--drive until the closest exactFillRootNode/fillUnit is at the first Waypoint
-				self:setSpeed(3)
-				if self.nextClosestExactFillRootNodeDistance == nil then
-					 self.nextClosestExactFillRootNodeDistance = math.huge
-				end
-				local d = calcDistanceFrom(self.firstWaypointNode.node, self.nextClosestExactFillRootNode)
-				if d < self.nextClosestExactFillRootNodeDistance then 
-					self.nextClosestExactFillRootNodeDistance = d
-				else 
-					self:hold()
-				end
-			else
-				self:hold()
-			end
-		else
-			self:clearInfoText('REACHED_OVERLOADING_POINT')
-		end	
+		self:updateFillOrDischargeNodes()
 	end
 
 	if self:isNearFillPoint() then
@@ -121,8 +115,6 @@ function GrainTransportAIDriver:drive(dt)
 		self:hold()
 	end
 	
-	
-	
 	if giveUpControl then
 		self.ppc:update()
 	--	not sure might need this one for heaps on ground or backwards into bunker silo ?
@@ -136,19 +128,10 @@ function GrainTransportAIDriver:drive(dt)
 end
 
 function GrainTransportAIDriver:onWaypointPassed(ix)
-	--firstWaypoint/ start, check if we are in a LoadTrigger or FillTrigger else loading at StartPoint
+	--if SiloSelectedFillTypeSetting is empty, then do a manual loading at start
 	if ix == 1 then 
 		if self:getSiloSelectedFillTypeSetting():isEmpty() and not self.driveNow then 
-			local totalFillUnitsData = {}
-			self.totalFillCapacity = 0
-			local totalFillLevel = 0
-			self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
-			for object, objectData in pairs(totalFillUnitsData) do 
-				for fillUnitIndex, fillUnitData in pairs(objectData) do 
-					self.totalFillCapacity = self.totalFillCapacity + fillUnitData.capacity
-					totalFillLevel = totalFillLevel + fillUnitData.fillLevel
-				end
-			end
+			local totalFillLevel = self:getTotalFillLevel()
 			if not self:isFillLevelReached(totalFillLevel) then 
 				self.readyToLoadManualAtStart = true
 				self:openCovers(self.vehicle)			
@@ -182,55 +165,69 @@ function GrainTransportAIDriver:getSeparateFillTypeLoadingSetting()
 	return self.vehicle.cp.settings.separateFillTypeLoading
 end
 
+---handle manual Loading at start point
+function GrainTransportAIDriver:fillOrUnloadAtTargetPoint()
+	local relevantFillOrDischargeNodeData = self.fillOrDischargeNodesData[self.currentClosestRelevantNodeIndex]
+	self:openCover(relevantFillOrDischargeNodeData.object,relevantFillOrDischargeNodeData.fillUnitIndex)
+	local fillLevel = relevantFillOrDischargeNodeData.object:getFillUnitFillLevel(relevantFillOrDischargeNodeData.fillUnitIndex)
+	local capacity = relevantFillOrDischargeNodeData.object:getFillUnitCapacity(relevantFillOrDischargeNodeData.fillUnitIndex)
+	--if targetFillRootNode is full, then use the next exactFillRootNode
+	if self:isRelevantFillOrDischargeNodeFillLevelReached(capacity,fillLevel) then 
+		self.currentClosestRelevantNodeIndex = MathUtil.clamp(self.currentClosestRelevantNodeIndex+1,1,#self.fillOrDischargeNodesData)
+		self.nextClosestRelevantNodeDistance = math.huge
+		self:closeCover(relevantFillOrDischargeNodeData.object,relevantFillOrDischargeNodeData.fillUnitIndex)
+		return
+	end
+	self:checkFillUnits()
+end
+
+function GrainTransportAIDriver:getClosestTargetNodeAndDistance(relevantFillOrDischargeNodeData)
+	return self.firstWaypointNode.node,calcDistanceFrom(relevantFillOrDischargeNodeData.rootNode,self.firstWaypointNode.node)
+end
+
 --manuel loading at StartPoint
 function GrainTransportAIDriver:checkFillUnits()
-	local maxNeeded = self.vehicle.cp.settings.driveOnAtFillLevel:get()
-	local totalFillUnitsData = {}
-	local totalFillLevel = 0
-	local distance = math.huge
-	local nextClosestExactFillRootNode
-	self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
-	for object, objectData in pairs(totalFillUnitsData) do 
-		for fillUnitIndex, fillUnitData in pairs(objectData) do 
-			totalFillLevel = totalFillLevel + fillUnitData.fillLevel
-			--get the closest exactFillRootNode/fillUnit 
-			if fillUnitData.exactFillRootNode and fillUnitData.fillLevel/fillUnitData.capacity*100 < 99 then 
-				local d = calcDistanceFrom(self.firstWaypointNode.node, fillUnitData.exactFillRootNode)
-				if d < distance then
-					distance = d
-					nextClosestExactFillRootNode = fillUnitData.exactFillRootNode
-				end
-			end
-		end
-	end
-	if nextClosestExactFillRootNode ~= self.nextClosestExactFillRootNode then 
-		self.nextClosestExactFillRootNodeDistance = nil
-		self.nextClosestExactFillRootNode = nextClosestExactFillRootNode
-	end		
-	if g_updateLoopIndex % 2 == 0 and self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
+	local totalFillLevel = self:getTotalFillLevel()
+
+	if self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
 		self.readyToLoadManualAtStart = false
-		self.nextClosestExactFillRootNode = nil
-		local totalFillUnitsData = {}
-		self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
 		self:closeCovers(self.vehicle)
+		self:resetFillOrDischargeNodes()
 	end
 	self.lastTotalFillLevel = totalFillLevel
 end
 
+---Gets the total fillLevel of all relevant fillUnits
+function GrainTransportAIDriver:getTotalFillLevel()
+	local totalFillUnitsData = {}
+	local totalFillLevel = 0
+	self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
+	if courseplay.debugChannels[2] then
+		DebugUtil.printTableRecursively(totalFillUnitsData, '  ', 1, 2)
+	end
+	for object, objectData in pairs(totalFillUnitsData) do 
+		for fillUnitIndex, fillUnitData in pairs(objectData) do 
+			totalFillLevel = totalFillLevel + fillUnitData.fillLevel
+		end
+	end
+	return totalFillLevel
+end
+
+---Gets all the relevant fillUnits data recursive
+---@param object vehicle/implement/trailer 
+---@param table of all relevant fillUnitsData sorted by object and fillUnitIndex
 function GrainTransportAIDriver:getFillUnitInfo(object,totalFillUnitsData)
-	local spec = object.spec_fillUnit
-	if spec and object.spec_trailer then 
+	if object.getFillUnits then 
 		totalFillUnitsData[object] = {}
 		for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do 
 			local fillType = object:getFillUnitFillType(fillUnitIndex)
-			if not self:isValidFuelType(object,fillType,fillUnitIndex) then 
+			if not AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex) then 
 				totalFillUnitsData[object][fillUnitIndex] = {}
 				local capacity = object:getFillUnitCapacity(fillUnitIndex)
 				local fillLevel = object:getFillUnitFillLevel(fillUnitIndex)
 				totalFillUnitsData[object][fillUnitIndex].capacity = capacity
 				totalFillUnitsData[object][fillUnitIndex].fillLevel = fillLevel
 				totalFillUnitsData[object][fillUnitIndex].fillType = fillType
-				totalFillUnitsData[object][fillUnitIndex].exactFillRootNode = object:getFillUnitExactFillRootNode(fillUnitIndex)
 			end
 		end
 	end
@@ -241,32 +238,32 @@ function GrainTransportAIDriver:getFillUnitInfo(object,totalFillUnitsData)
 end
 
 function GrainTransportAIDriver:continue()
-	self.nextClosestExactFillRootNode = nil
 	AIDriver.continue(self)
+	self:resetFillOrDischargeNodes()
 end
 
 function GrainTransportAIDriver:setDriveNow()
 	self.driveNow = true
 	self.readyToLoadManualAtStart = false
-	self.nextClosestExactFillRootNode = nil
 	AIDriver.setDriveNow(self)
+	self:resetFillOrDischargeNodes()
 end
 
 function GrainTransportAIDriver:getCanShowDriveOnButton() 
 	return self.readyToLoadManualAtStart or AIDriver.getCanShowDriveOnButton(self)
 end
 
-function GrainTransportAIDriver:stop(stopMsg)
-	if self.firstWaypointNode then
-		self.firstWaypointNode:destroy()
-	end
-	self.nextClosestExactFillRootNode = nil
-	AIDriver.stop(self,stopMsg)
+---Gets the total capacity of all relevant fillUnits
+function GrainTransportAIDriver:setupTotalCapacity()
+	local tempCapacityTable = {}
+	AIDriverUtil.getTotalFillCapacity(self.vehicle,tempCapacityTable)
+	self.totalFillCapacity = tempCapacityTable.capacity or 0
 end
 
-function GrainTransportAIDriver:delete()
-	if self.firstWaypointNode then
-		self.firstWaypointNode:destroy()
-	end
-	AIDriver.delete(self)
+function GrainTransportAIDriver:isAllowedToStopAtTargetNode(closestTargetNodeDistance)
+	return AIDriver.isAllowedToStopAtTargetNode(self,closestTargetNodeDistance) and self.readyToLoadManualAtStart
+end
+
+function GrainTransportAIDriver:isRelevantFillOrDischargeNodeFillLevelReached(capacity,fillLevel)
+	return capacity-fillLevel < 0.02
 end

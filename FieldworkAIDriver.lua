@@ -708,6 +708,10 @@ function FieldworkAIDriver:onWaypointChange(ix)
 	-- update the legacy waypoint counter on the HUD
 	if self.state == self.states.ON_FIELDWORK_COURSE or self.states.ON_UNLOAD_OR_REFILL_COURSE then
 		courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
+		--only search triggers on unload and refill 
+		if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
+			self:updateIsInTrigger(ix)
+		end
 	end
 end
 

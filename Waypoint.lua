@@ -432,6 +432,104 @@ function Course:enrichWaypointData()
 	courseplay.debugFormat(12, 'Course with %d waypoints created/updated, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
+--Check all waypoint if they are directly near a trigger
+function Course:enrichWaypointTriggers()
+	local lastWpIx = #self.waypoints
+	local lastWp = self:getWaypoint(lastWpIx)
+	local tempWpNode = WaypointNode('tempWpNode')
+	local tempPrevWpNode = WaypointNode('tempPrevWpNode')
+	for wpIx, wp in ipairs(self.waypoints) do 
+		tempWpNode:setToWaypoint(self,wpIx)
+		tempPrevWpNode:setToWaypoint(self,lastWpIx)
+		--all trigger nodes are stored here 
+		for node,object in pairs(g_currentMission.nodeToObject) do 
+			--don't check vehicles
+			if not object.isa or not object:isa(Vehicle) then
+				--get a rectangle from the current wpIx to the lastWpIx, with 1 meter to the side 
+				--then we check if there is a trigger loading/unloading node in the rectangle 
+				local x1,_,z1 = localToWorld(tempWpNode.node,-1,0,0)
+				local x2,_,z2 = localToWorld(tempWpNode.node,1,0,0)
+				local nx1,_,nz1 = localToWorld(tempPrevWpNode.node,-1,0,0)
+				local nx2,_,nz2 = localToWorld(tempPrevWpNode.node,1,0,0)
+				local dx,_,dz = localToWorld(node,0,0,0)
+				local tx,tz = dx,dz + 0.50
+				--unloading triggers
+				if object.getFillUnitIndexFromNode then 
+					if MathUtil.hasRectangleLineIntersection2D(x2,z2,x1-x2,z1-z2,nx1-x2,nz1-z2,dx,dz,dx-tx,dz-tz) then
+						wp.hasTrigger = true
+						lastWp.hasTrigger =true
+					end
+				end
+				--loading triggers
+				if not object.getFillUnitIndexFromNode and object.triggerNode then 
+					if MathUtil.hasRectangleLineIntersection2D(x2,z2,x1-x2,z1-z2,nx1-x2,nz1-z2,dx,dz,dx-tx,dz-tz) then
+						wp.hasTrigger = true
+						lastWp.hasTrigger =true
+					end
+				end
+			end
+		end
+		lastWp = wp
+		lastWpIx = wpIx
+	end
+	tempWpNode:destroy()
+	tempPrevWpNode:destroy()
+end
+
+--create waitPointNodes for all waitPoints
+function Course:enrichWaitPoints()
+	for wpIx, wp in ipairs(self.waypoints) do 
+		local totalWaitPoints = 1
+		if self:isWaitAt(wpIx) then
+			if self.waitPointNodes == nil then
+				self.waitPointNodes = {}
+			end
+			local waitPointNode = WaypointNode(string.format('waitPoint(%d)',totalWaitPoints))
+			waitPointNode:setToWaypoint(self,wpIx)
+			totalWaitPoints = totalWaitPoints + 1
+			table.insert(self.waitPointNodes,waitPointNode)	
+		end
+	end
+end
+
+---get the closest waitPointNode to a reference node 
+---@param node targetNode to compare distance
+---@return node closest waitPointNode, float distance to the closest waitPointNode
+function Course:getClosestWaitPointNode(targetNode)
+	local closestWaitPointNode = nil
+	local closestWaitPointNodeDistance = math.huge
+	if self:hasWaitPointNodes() then 
+		for waitPointNodeIndex, waitPointNode in ipairs(self.waitPointNodes) do 
+			local distance = calcDistanceFrom(targetNode,waitPointNode.node)
+			if distance < closestWaitPointNodeDistance then
+				closestWaitPointNode = waitPointNode
+				closestWaitPointNodeDistance = distance
+			end
+		end
+	end
+	return closestWaitPointNode.node,closestWaitPointNodeDistance
+end
+
+---has the course any waitPoints and are they initialize to waitPointNodes
+---@return boolean waitPointNodes > 0
+function Course:hasWaitPointNodes()
+	return self.waitPointNodes and #self.waitPointNodes>0 or false
+end
+
+function Course:getWaitPointNodes()
+	return self:hasWaitPointNodes() and self.waitPointNodes 
+end
+
+--delete all waitPointNodes
+function Course:resetEnrichedWaitPoints()
+	if self.waitPointNodes then 
+		for waitPointNodeIndex, waitPointNode in ipairs(self.waitPointNodes) do 
+			waitPointNode:destroy()
+		end
+	end
+end
+
+
 function Course:calculateRadius(ix)
 	local deltaAngleDeg = math.abs(self:getWaypointAngleDeg(ix - 1) - self:getWaypointAngleDeg(ix))
 	return math.abs( self:getDistanceToNextWaypoint(ix) / ( 2 * math.asin( math.rad(deltaAngleDeg) / 2 )))
@@ -548,6 +646,79 @@ end
 
 function Course:isWaitAt(ix)
 	return self.waypoints[ix].interact
+end
+
+---Is there a waypoint near the trigger,
+---course has to be first enriched with 
+---Course:enrichWaypointTriggers()
+---@param int first back waypoint ix
+---@return boolean trigger near waypoint
+function Course:hasTrigger(ix)
+	return self.waypoints[ix].hasTrigger
+end
+
+---Is there a trigger in between wp 1 to wp 2 
+---@param int first back waypoint ix
+---@param int last front waypoint ix
+---@return boolean trigger found?
+function Course:hasTriggerAround(ixBackClosest,ixForwardClosest)
+	local max = math.min(ixForwardClosest,self:getNumberOfWaypoints())
+	local hasTrigger = false 
+	for ix=ixBackClosest,max do 
+		if self:hasTrigger(ix) then 
+			hasTrigger = true
+		end
+	end
+	local max = max - self:getNumberOfWaypoints()
+	if max > 0 then
+		for ix=1,max do 
+			if self:hasTrigger(ix) then 
+				hasTrigger = true
+			end
+		end
+	end
+	return hasTrigger
+end
+
+---WIP
+---Trigger raycast for FillTriggerVehicles not working for now, as
+---Giants trigger don't seem to be detected...
+
+function Course:hasTriggerWithinDistanceRaycasts(ix,distanceForwards,distanceBackwards,driverClass,driverCallback)
+	-- search backwards first
+	local d = 0
+	local i = ix-1
+	while d<math.abs(distanceBackwards) do 
+		if i<1 then 
+			i = self:getNumberOfWaypoints()
+		end
+		self:hasTriggerRaycast(i,driverClass,driverCallback)
+		d = d + self.waypoints[i].dToNext
+		i = i - 1 
+	end
+	-- search forward
+	local d = 0
+	local i = ix
+	while d<math.abs(distanceForwards) do 
+		if i>self:getNumberOfWaypoints() then 
+			i = 1
+		end
+		self:hasTriggerRaycast(i,driverClass,driverCallback)
+		d = d + self.waypoints[i].dToNext
+		i = i + 1 
+	end
+end
+
+function Course:hasTriggerRaycast(startIx,driverClass,driverCallback)
+	local x,y,z = self:getWaypoint(startIx):getPosition()
+	y = y + 5
+	local lx, lz = MathUtil.getDirectionFromYRotation(self:getWaypointYRotation(startIx))
+	local dist = self:getDistanceToNextWaypoint(startIx)
+	local dist = math.sqrt(5^2+dist^2)
+	local ly = -5
+	cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx*dist, y+ly*dist, z+lz*dist);
+	--1073741824
+	raycastAll(x, y, z, lx, ly, lz, driverCallback, dist, driverClass,1073741824,false);
 end
 
 function Course:getHeadlandNumber(ix)
@@ -834,6 +1005,17 @@ function Course:hasWaitPointWithinDistance(ix, distance)
 	return self:hasWaypointWithPropertyWithinDistance(ix, distance, function(p) return p.wait or p.interact end)
 end
 
+--- Is there a trigger within distance around ix?
+---@param int ix number waypoint index to look around
+---@param float distanceForwards number distance in meters to look forwards
+---@param float distanceBackwards number distance in meters to look backwards
+---@return boolean true if any of the waypoints are near triggers 
+---@return int index of that waypoint
+function Course:hasTriggerWithinDistance(ix, distanceForwards,distanceBackwards)
+	return self:hasWaypointWithPropertyWithinDistanceForwardsOrDistanceBackwards(ix, distanceForwards,distanceBackwards, function(p) return p.hasTrigger end)
+end
+
+
 --- Is there an turn (start or end) around ix?
 ---@param ix number waypoint index to look around
 ---@param distance number distance in meters to look around the waypoint
@@ -843,6 +1025,17 @@ function Course:hasTurnWithinDistance(ix, distance)
 end
 
 function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
+	return self:hasWaypointWithPropertyWithinDistanceForwardsOrDistanceBackwards(ix, distance, distance, hasProperty)
+end
+
+---Is there a waypoint with property in the distanceForwards or distanceBackwards ?
+---@param ix number waypoint index to look around
+---@param distanceForwards number distance in meters to look forwards
+---@param distanceBackwards number distance in meters to look backwards
+---@return boolean true if any of the waypoints are turn start/end point
+function Course:hasWaypointWithPropertyWithinDistanceForwardsOrDistanceBackwards(ix, distanceForwards, distanceBackwards, hasProperty)
+	distanceForwards = math.abs(distanceForwards)
+	distanceBackwards = math.abs(distanceBackwards)
 	-- search backwards first
 	local d = 0
 	for i = math.max(1, ix - 1), 1, -1 do
@@ -850,7 +1043,7 @@ function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 			return true, i
 		end
 		d = d + self.waypoints[i].dToNext
-		if d > distance then break end
+		if d > distanceBackwards then break end
 	end
 	-- search forward
 	d = 0
@@ -859,11 +1052,10 @@ function Course:hasWaypointWithPropertyWithinDistance(ix, distance, hasProperty)
 			return true, i
 		end
 		d = d + self.waypoints[i].dToNext
-		if d > distance then break end
+		if d > distanceForwards then break end
 	end
 	return false
 end
-
 
 --- Get the index of the first waypoint from ix which is at least distance meters away
 ---@param backward boolean search backward if true
@@ -1554,3 +1746,12 @@ function Course:getProgress(ix)
 	end
 end
 
+CourseUtil = {}
+
+function CourseUtil.drawDebugWaitPointsNodes(course)
+	if course:hasWaitPointNodes() then 
+		for ix,waitPointNode in ipairs(course.waitPointNodes) do 
+			DebugUtil.drawDebugNode(waitPointNode.node,string.format("waitPointNode(%d)",ix),false)
+		end
+	end
+end

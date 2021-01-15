@@ -248,6 +248,7 @@ end
 function AIDriver:delete()
 	self:debug('delete AIDriver')
 	self:deleteCollisionDetector()
+	self:resetEnrichedWaypoints()
 end
 
 function AIDriver:deleteCollisionDetector()
@@ -313,6 +314,16 @@ function AIDriver:start(startingPoint)
 	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
 			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
 	self:startCourseWithAlignment(self.mainCourse, ix)
+	self:enrichWaypoints()
+end
+
+---go throw all waypoints and check if there are triggers close
+function AIDriver:enrichWaypoints()
+	self.mainCourse:enrichWaypointTriggers()
+end
+
+function AIDriver:resetEnrichedWaypoints()
+	--override
 end
 
 --- Dismiss the driver
@@ -343,6 +354,7 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
+	self:resetEnrichedWaypoints()
 end
 
 --- Stop the driver when the work is done. Could just dismiss at this point,
@@ -465,13 +477,8 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 
-	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
---	if self:getIsInFilltrigger() or self:hasTipTrigger() then-- or isInTrigger then
-	if isInTrigger then
+	if self:isInTrigger() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
-		if isAugerWagonTrigger then
-			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
-		end
 	end
 
 	self:slowDownForWaitPoints()
@@ -493,6 +500,49 @@ function AIDriver:driveCourse(dt)
 	end
 end
 
+---currentlyInTrigger is related to waypoints, self.course:hasTriggerWithinDistance()
+---self.triggerHandler:isInTrigger() is old code from somewhere that's still needed
+function AIDriver:isInTrigger()
+	--temp for testing
+--	local newIx = self.ppc:getRelevantWaypointIx()
+--	local backOffset = self:getBackMarkerOffset(self.vehicle) + 2
+--	self.course:hasTriggerWithinDistanceRaycasts(newIx,20,backOffset,self,"hasTriggerRaycastCallback")
+	
+	return (self.currentlyInTrigger or self.triggerHandler:isInTrigger()) and self.bunkerSiloManager == nil or false
+end
+
+function AIDriver:setIsInTrigger()
+	self.currentlyInTrigger = true
+end
+
+
+
+function AIDriver:hasTriggerRaycastCallback(transformId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
+	local object = g_currentMission:getNodeObject(transformId)
+	if object then 
+		if object:isa(Vehicle) then 
+			if object:isa(FillTriggerVehicle) then 
+				self:setIsInTrigger()
+				print(string.format("hasTriggerRaycastCallback,FillTriggerVehicle object: %s",nameNum(object)))
+			else
+				print(string.format("hasTriggerRaycastCallback,objectVehicle: %s",nameNum(object)))
+			end
+		else 
+			print(string.format("hasTriggerRaycastCallback,object: %s, transformId: %s",nameNum(object),transformId))
+		end
+	end
+	return false
+end
+
+---Check 15 m ahead and all the way to the backMarker for triggers
+function AIDriver:updateIsInTrigger(newIx)
+	local backOffset = self:getBackMarkerOffset(self.vehicle) + 2
+	self.currentlyInTrigger = self.course:hasTriggerWithinDistance(newIx,20,backOffset) or false
+	--should be used for FillTriggerVehicles, but it's not working at the moment..
+--	if not self.currentlyInTrigger then 
+	--	self.course:hasTriggerWithinDistanceRaycasts(newIx,20,backOffset,self,"hasTriggerRaycastCallback")
+--	end
+end
 
 --- Drive to a local position. This is the simplest driving mode towards the goal point
 function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, gx, gz, maxSpeed)
@@ -716,6 +766,7 @@ end
 function AIDriver:onWaypointChange(newIx)
 	-- for backwards compatibility, we keep the legacy CP waypoint index up to date
 	courseplay:setWaypointIndex(self.vehicle, self.ppc:getCurrentOriginalWaypointIx())
+	self:updateIsInTrigger(newIx)
 	-- rest is implemented by the derived classes
 end
 
@@ -1856,10 +1907,15 @@ function AIDriver:placeBackMarkerNode(vehicle, referenceNode, backMarkerOffset)
 		link(referenceNode, vehicle.cp.driver.aiDriverData.backMarkerNode)
 	end
 	setTranslation(vehicle.cp.driver.aiDriverData.backMarkerNode, 0, 0, backMarkerOffset)
+	vehicle.cp.driver.aiDriverData.backMarkerOffset = backMarkerOffset
 end
 
 function AIDriver:getBackMarkerNode(vehicle)
 	return vehicle.cp.driver.aiDriverData.backMarkerNode
+end
+
+function AIDriver:getBackMarkerOffset(vehicle)
+	return vehicle.cp.driver.aiDriverData.backMarkerOffset
 end
 
 -- Put a node on the front of the vehicle for easy distance checks use this instead of the root/direction node
@@ -2101,13 +2157,7 @@ function AIDriver:isFuelLevelOk()
 end
 
 function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
-	if object.getConsumerFillUnitIndex then 
-		local index = object:getConsumerFillUnitIndex(fillType)
-		if fillUnitIndex ~= nil then 
-			return fillUnitIndex and fillUnitIndex == index
-		end		
-		return index 
-	end
+	return AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex)
 end
 
 function AIDriver:getFuelLevelPercentage()
@@ -2138,37 +2188,134 @@ function AIDriver:getCanShowDriveOnButton()
 	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaiting()
 end
 
---if validFillType ~= nil, then only open the first valid fillUnit for this fillType,
---else open all possible covers
-function AIDriver:openCovers(object,validFillType)	
-	if object.spec_cover then
-		if not validFillType then
-			if object.getFillUnits then
-				for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
-					SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",nil,fillUnitIndex,1)
-				end
-			end
-		else
-			local validFillUnitIndex = object:getFirstValidFillUnitToFill(validFillType)
-			SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",validFillType,validFillUnitIndex,1)
-		end
-	end
+---Is automated cover closing allowed
+---return boolean automaticCoverHandling == true
+function AIDriver:isClosingCoverAllowed()
+	return self.vehicle.cp.settings.automaticCoverHandling:is(true)
+end
+
+---Open all covers for object and it's implements/trailers 
+---@param object vehicle/trailer/implement
+---@param int optional fillUnitIndex to specify the covers
+---@param int optional fillTypeIndex to specify the covers
+function AIDriver:openCovers(object,fillUnitIndex,validFillType)	
+	self:openCover(object,fillUnitIndex,validFillType)
 	for _,impl in pairs(object:getAttachedImplements()) do
 		self:openCovers(impl.object,validFillType)
 	end
 end
 
---close all covers
-function AIDriver:closeCovers(object)
-	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
+---open cover of object
+---@param object vehicle/trailer/implement
+---@param int optional fillUnitIndex to specify the covers
+---@param int optional fillTypeIndex to specify the covers
+function AIDriver:openCover(object,fillUnitIndex,validFillType)
+	if object.spec_cover then
+		---open a single cover for a fillType or fillUnitIndex
+		if validFillType or fillUnitIndex then
+			if fillUnitIndex then 
+				local fillType = validFillType or object:getFillUnitFillType(fillUnitIndex)
+				SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,fillUnitIndex,1)
+			else
+				local validFillUnitIndex = object:getFirstValidFillUnitToFill(validFillType)
+				SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",validFillType,validFillUnitIndex,1)
+			end
+		---open all covers 
+		else 
+			if object.getFillUnits then
+				for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
+					SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",nil,fillUnitIndex,1)
+				end
+			end
+		end
+	end
+end
+
+---close all covers of the vehicle and it's implements/trailers ..
+---@param object vehicle/trailer/implement
+---@param boolean forceClose used to override automaticCoverHandling
+function AIDriver:closeCovers(object,forceClose)
+	self:closeCover(object,forceClose)
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:closeCovers(impl.object,forceClose)
+	end
+end
+
+---close cover of object 
+---@param object vehicle/trailer/implement
+---@param boolean forceClose used to override automaticCoverHandling
+function AIDriver:closeCover(object,forceClose)
+	if not self:isClosingCoverAllowed() and not forceClose then
 		return
 	end
 	if object.spec_cover then
-		SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
+		local spec = object.spec_fillUnit 
+		local fillTriggersLeftOver = spec.fillTrigger and #spec.fillTrigger.triggers or 0
+		SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",fillTriggersLeftOver)
 	end
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:closeCovers(impl.object)
+end
+
+---update closest waitPointNode and set the speed 
+---also calls "self:fillOrUnloadAtTargetPoint()" every 5 ticks, if we are allowed to stop
+function AIDriver:updateFillOrDischargeNodes()
+	AIDriverUtil.drawDebugfillOrDischargeNodesData(self.fillOrDischargeNodesData)
+	--current relevant relevantFillOrDischargeNodeData, which we are targeting
+	local relevantFillOrDischargeNodeData = self.fillOrDischargeNodesData[self.currentClosestRelevantNodeIndex]
+	local closestTargetNode,closestTargetNodeDistance = self:getClosestTargetNodeAndDistance(relevantFillOrDischargeNodeData)	
+	--check if the distance to the target waitPoint has changed 
+	self:setSpeed(MathUtil.clamp(closestTargetNodeDistance,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
+	if closestTargetNodeDistance < self.nextClosestRelevantNodeDistance then 
+		self.nextClosestRelevantNodeDistance = closestTargetNodeDistance
+	elseif self:isAllowedToStopAtTargetNode(closestTargetNodeDistance) then -- backup check in case the course is like a snake setup
+		self:setSpeed(0)
+		--only update every 5 frames to make sure the fillLevel change can be detected
+		if g_updateLoopIndex % 5 == 0 then 
+			--handle the loading 
+			self:fillOrUnloadAtTargetPoint(relevantFillOrDischargeNodeData.object,relevantFillOrDischargeNodeData.fillUnitIndex)
+		end
+		self:setInfoText('REACHED_REFILLING_POINT')
+	else 
+		self:clearInfoText('REACHED_REFILLING_POINT')
 	end
+end
+
+---Stopping at TargetNode allowed, get overwritten by other drivers
+---@param float closestTargetNodeDistance
+---@return boolean allowed to stop at waitPoint
+function AIDriver:isAllowedToStopAtTargetNode(closestTargetNodeDistance)
+	return closestTargetNodeDistance < 5
+end
+
+function AIDriver:fillOrUnloadAtTargetPoint()
+	--override
+end
+
+function AIDriver:setupExactFillRootNodes()
+	--get all exactFillRootNodes sorted from the front of the very front vehicle/implement to the last
+	self.fillOrDischargeNodesData = {}
+	self.currentClosestRelevantNodeIndex = 1
+	self.nextClosestRelevantNodeDistance = math.huge
+	AIDriverUtil.getSortedExactFillRootNodesByDistanceToNode(self.vehicle,self:getFrontMarkerNode(self.vehicle),self.fillOrDischargeNodesData)
+	if courseplay.debugChannels[2] then
+		DebugUtil.printTableRecursively(self.fillOrDischargeNodesData, '  ', 1, 2)
+	end
+end
+
+function AIDriver:setupDischargeRootNodes()
+	--get all dischargeNodes sorted from the front of the very front vehicle/implement to the last
+	self.fillOrDischargeNodesData = {}
+	self.currentClosestRelevantNodeIndex = 1
+	self.nextClosestRelevantNodeDistance = math.huge
+	AIDriverUtil.getSortedDischargeNodesByDistanceToNode(self.vehicle,self:getFrontMarkerNode(self.vehicle),self.fillOrDischargeNodesData)
+	if courseplay.debugChannels[2] then
+		DebugUtil.printTableRecursively(self.fillOrDischargeNodesData, '  ', 1, 2)
+	end
+end
+
+---Reset to the first ordered node 
+function AIDriver:resetFillOrDischargeNodes()
+	self.currentClosestRelevantNodeIndex = 1
+	self.nextClosestRelevantNodeDistance = math.huge
 end
 
 --disable detaching, while CP is driving

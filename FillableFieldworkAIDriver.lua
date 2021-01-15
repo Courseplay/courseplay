@@ -41,6 +41,27 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.lastTotalFillLevel = math.huge
 end
 
+function FillableFieldworkAIDriver:start(startingPoint)
+	FieldworkAIDriver.start(self,startingPoint)
+	self:enrichWaypoints()
+	self:setupExactFillRootNodes()
+end
+
+function FillableFieldworkAIDriver:enrichWaypoints()
+	--create WaypointNodes for all waitPoints
+	if self.unloadRefillCourse then
+		self.unloadRefillCourse:enrichWaitPoints()
+		self.unloadRefillCourse:enrichWaypointTriggers()
+	end
+end
+
+function FillableFieldworkAIDriver:resetEnrichedWaypoints()
+	--delete all WaypointNodes, which where created for waitPoints
+	if self.unloadRefillCourse then
+		self.unloadRefillCourse:resetEnrichedWaitPoints()
+	end
+end
+
 function FillableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
 	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)
@@ -67,55 +88,53 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	else
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
-	--this one is used to disable loading at the unloading stations,
-	--might be better to disable the triggerID for loading
-	self:enableFillTypeLoading(isNearWaitPoint)
+
+	self.triggerHandler:enableFillTypeLoading()
+	self.triggerHandler:disableFillTypeUnloading()
+
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
-	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
-		-- should be reworked and be similar to mode 1 loading at start 
-		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)
-		self:setSpeed(MathUtil.clamp(distanceToWait,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
-		if distanceToWait < 1 then
-			self:fillAtWaitPoint()
-		end	
-	else
-		if self.triggerHandler:isLoading() then 
-			self:fillAtWaitPoint()	
-		else 
-			self:clearInfoText('REACHED_REFILLING_POINT')
+	elseif self.refillState == self.states.TO_BE_REFILLED then
+		--the course has waitPoints
+		if self.course:hasWaitPointNodes() then
+			self:updateFillOrDischargeNodes()
+			if courseplay.debugChannels[2] then
+				CourseUtil.drawDebugWaitPointsNodes(self.unloadRefillCourse)
+			end
 		end
-		-- just drive normally
-		self:setSpeed(self:getRecordedSpeed())
-		self:closePipeIfNeeded(isNearWaitPoint)
-	end	
-end
-
-function FillableFieldworkAIDriver:enableFillTypeLoading(isInWaitPointRange)
-	self.triggerHandler:enableFillTypeLoading()
-	self.triggerHandler:disableFillTypeUnloading()
-end
-
-function FillableFieldworkAIDriver:needsFillTypeLoading()
-	if self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		return true
+	else 
+		self:clearInfoText('REACHED_REFILLING_POINT')
 	end
 end
 
-function FillableFieldworkAIDriver:closePipeIfNeeded(isInWaitPointRange) 
-	--override
+function FillableFieldworkAIDriver:getClosestTargetNodeAndDistance(relevantFillOrDischargeNodeData)
+	return self.unloadRefillCourse:getClosestWaitPointNode(relevantFillOrDischargeNodeData.rootNode)
 end
 
-function FillableFieldworkAIDriver:fillAtWaitPoint()
+--Override to always close cover and not check AutomaticCoverHandlingSetting.
+function FillableFieldworkAIDriver:isClosingCoverAllowed()
+	return true
+end
+
+---handle Loading at waitPoint
+function FillableFieldworkAIDriver:fillOrUnloadAtTargetPoint()
+	local relevantFillOrDischargeNodeData = self.fillOrDischargeNodesData[self.currentClosestRelevantNodeIndex]
+	self:openCover(relevantFillOrDischargeNodeData.object,relevantFillOrDischargeNodeData.fillUnitIndex)
+	local fillLevel = relevantFillOrDischargeNodeData.object:getFillUnitFillLevel(relevantFillOrDischargeNodeData.fillUnitIndex)
+	local capacity = relevantFillOrDischargeNodeData.object:getFillUnitCapacity(relevantFillOrDischargeNodeData.fillUnitIndex)
+	if capacity-fillLevel < 0.02 then 
+		self.currentClosestRelevantNodeIndex = MathUtil.clamp(self.currentClosestRelevantNodeIndex+1,1,#self.fillOrDischargeNodesData)
+		self.nextClosestRelevantNodeDistance = math.huge
+		self:closeCover(relevantFillOrDischargeNodeData.object,relevantFillOrDischargeNodeData.fillUnitIndex)
+		return
+	end
 	local fillLevelInfo = {}
 	self:getAllFillLevels(self.vehicle, fillLevelInfo)
 	local fillTypeData, fillTypeDataSize= self.triggerHandler:getSiloSelectedFillTypeData()
 	if fillTypeData == nil then
 		return
 	end
-	self:setSpeed(0)
 	local minFillLevelIsOk = true
 	for _,data in ipairs(fillTypeData) do 
 		for fillType, info in pairs(fillLevelInfo) do
@@ -126,26 +145,9 @@ function FillableFieldworkAIDriver:fillAtWaitPoint()
 			end
 		end
 	end
-	if g_updateLoopIndex % 5 == 0 and self:areFillLevelsOk(fillLevelInfo,true) and minFillLevelIsOk then 
+	if self:areFillLevelsOk(fillLevelInfo,true) and minFillLevelIsOk then 
 		self:continue()
-	end
-	self:setInfoText('REACHED_REFILLING_POINT')
-	
-end
-
---TODO might change this one 
-function FillableFieldworkAIDriver:levelDidNotChange(fillLevelPercent)
-	--fillLevel changed in last loop-> start timer
-	if self.prevFillLevelPct == nil or self.prevFillLevelPct ~= fillLevelPercent then
-		self.prevFillLevelPct = fillLevelPercent
-		courseplay:setCustomTimer(self.vehicle, "fillLevelChange", 3)
-	end
-	--if time is up and no fillLevel change happend, return true
-	if courseplay:timerIsThrough(self.vehicle, "fillLevelChange",false) then
-		if self.prevFillLevelPct == fillLevelPercent then
-			return true
-		end
-		courseplay:resetCustomTimer(self.vehicle, "fillLevelChange",nil)
+		self:closeCovers(self.vehicle)
 	end
 end
 
@@ -153,6 +155,7 @@ function FillableFieldworkAIDriver:continue()
 	AIDriver.continue(self)
 	self.refillState = self.states.REFILL_DONE	
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
+	self:resetFillOrDischargeNodes()
 end
 
 -- is the fill level ok to continue? With fillable tools we need to stop working when we are out
@@ -294,4 +297,10 @@ function FillableFieldworkAIDriver:getTurnEndForwardOffset()
 	end
 end
 
+function FillableFieldworkAIDriver:isNearWaitPointNode()
+	return self.course:hasWaitPointNodes() and (self.nextClosestRelevantNodeDistance == math.huge or self.nextClosestRelevantNodeDistance<15) or false
+end
 
+function FillableFieldworkAIDriver:isProximitySwerveEnabled()
+	return FieldWorkAIDriver.isProximitySwerveEnabled(self) and not self:isNearWaitPointNode()
+end
