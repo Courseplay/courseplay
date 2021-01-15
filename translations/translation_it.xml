@@ -277,7 +277,7 @@
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" 		text="muovi in posizione di pre svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 			text="muovi in posizione di svuotamento" />
 		<text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 							text="Caricamento Stop &amp; Go" />
-		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
+		<text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="modalità pala attiva"/>
 
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Avviare il percorso al" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="punto più vicino" />
@@ -337,7 +337,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 						text="4WD Sempre + diff. post. attivo in campo" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4WD Sempre + diff. attivi in campo" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN" 							text="Vuoi analizzare i campi automaticamente?" />
-		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Have you found a bug or need help with courseplay, then please have a look at: https://github.com/Courseplay/courseplay" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Hai trovato un bug o hai bisogno di aiuto con courseplay, quindi dai un'occhiata a: https://github.com/Courseplay/courseplay" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilizzo dei semi" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Campo: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Tipo di seme: %s" />
@@ -395,12 +395,12 @@
 		<text name="COURSEPLAY_MOUSE_BUTTON_NR" 							text="Pulsante %d del mouse" />
 
 		<text name="COURSEPLAY_MODE10_MODE" 								text="Modalità" />
-		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Leveling" />
+		<text name="COURSEPLAY_MODE10_MODE_LEVELING"                   		text="Livellamento" />
 		<text name="COURSEPLAY_MODE10_MODE_BUILDUP"                     	text="Riempimento" />
-		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compacting" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Automaticly stop for" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Just courseplayer/autodrive driver" />
-		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="All player controlled unloaders" />
+		<text name="COURSEPLAY_MODE10_MODE_COMPACTING"                		text="Compattazione" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE"                     		text="Fermati automaticamente per" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_CP"                   	text="Solo autista courseplayer/autodrive" />
+		<text name="COURSEPLAY_MODE10_SEARCH_MODE_ALL"                  	text="Tutti gli scaricatori controllati dal giocatore" />
 		<text name="COURSEPLAY_MODE10_SEARCHRADIUS" 						text="Rilevare i veicoli nel raggio di" />
 		<text name="COURSEPLAY_MODE10_MAX_BUNKERSPEED" 						text="Velocità massima mentre si spinge" />
 		<text name="COURSEPLAY_MODE10_BLADE_HEIGHT" 						text="Altezza lama" />
@@ -495,16 +495,16 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantita da scaricare" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Caricamento manuale" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="waiting for unloaders" />
-		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="waiting for Siloworker" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="in attesa dei scaricatori" />
+		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="in attesa del compattatore del bunker" />
 
-		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatic repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Repairs automatically on the Field." />
-		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Don't repair" />
-		<text name="COURSEPLAY_AUTOREPAIR_ALWAYS"							text="Keep it healthy" />
+		<text name="COURSEPLAY_AUTOREPAIR"									text="Riparazione automatica" />
+		<text name="COURSEPLAY_AUTOREPAIR_TOOLTIP"							text="Riparazione automatica su lcampo." />
+		<text name="COURSEPLAY_AUTOREPAIR_OFF"								text="Non riparare" />
+		<text name="COURSEPALY_AUTOREPAIR_ALWAYS"							text="Mantieni riparato" />
 		
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
-		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Continuare a scaricare fino alla fine della fila" />
+		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Non smettere di scaricare la mietitrebbia quando è vuota, seguila fino alla fine della fila" />
 		<!-- Replace marker, do not remove! -->
-</texts>
+	</texts>
 </l10n>
