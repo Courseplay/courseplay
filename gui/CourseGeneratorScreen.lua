@@ -520,6 +520,9 @@ function CourseGeneratorScreen:draw()
 		self.coursePlot:setSize(self.ingameMap.size[1], self.ingameMap.size[2])
 		self.coursePlot:draw()
 	end
+	if self.vehicle.cp.courseGeneratorSettings.showSeedCalculator:is(true) then
+		self:drawSeedCalculator(self.ingameMap.absPosition[ 1 ],self.ingameMap.absPosition[2]+0.025)
+	end
 end
 
 function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
@@ -547,6 +550,71 @@ function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
 		setting:setToIx(setting:getGuiElement():getState())
 	end
 end
+
+function CourseGeneratorScreen:onOpenShowSeedCalculator( element, parameter )
+	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
+	setting:setGuiElement(element)
+	element:setTexts(setting:getGuiElementTexts())
+	element:setState(setting:getGuiElementState())
+end
+
+function CourseGeneratorScreen:onClickShowSeedCalculator(state)
+	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
+	if setting:getGuiElement() then
+		setting:setToIx(setting:getGuiElement():getState())
+	end
+end
+
+---a very basic and simple seed calculator in the course generator
+function CourseGeneratorScreen:drawSeedCalculator(xPos,yPos)
+	-- do have a valid field selected ?
+	local currentFieldNumber = self.vehicle.cp.fieldEdge.selectedField.fieldNum
+	if currentFieldNumber ~= 0 then 
+		local fieldAreaHa = courseplay.fields.fieldData[currentFieldNumber].areaHa
+		local fieldAreaSqm = courseplay.fields.fieldData[currentFieldNumber].areaSqm
+		setTextBold(true)
+		local textFontSize = 0.02
+		local shadowOffset = textFontSize * 0.03
+		--shadow color
+		local rShadow,gShadow,bShadow,aShadow = 1, 0, 0, 0.8
+		--text color
+		local r,g,b,a = 1, 0.2, 0, 1
+		-- draw shadow
+		setTextColor(rShadow,gShadow,bShadow,aShadow)
+		renderText(self.ingameMap.absPosition[ 1 ]+shadowOffset,self.ingameMap.absPosition[ 2 ]-shadowOffset,textFontSize,string.format("Field size: %.2f Ha",fieldAreaHa))
+		-- draw field size at the bottom
+		setTextColor(r,g,b,a)
+		renderText(self.ingameMap.absPosition[ 1 ],self.ingameMap.absPosition[ 2 ],textFontSize,string.format("Field size: %.2f Ha",fieldAreaHa))
+		-- draw all the sprayTypes and fruitType  
+		for _,sprayType in pairs(g_sprayTypeManager:getSprayTypes()) do
+			local litersPerSecond = sprayType.litersPerSecond
+			local totalLiters = litersPerSecond*fieldAreaHa*36000
+			local name = sprayType.fillType.title
+			-- draw shadow
+			setTextColor(rShadow,gShadow,bShadow,aShadow)
+			renderText(xPos+shadowOffset,yPos-shadowOffset,textFontSize,string.format("%s : %d %s",name,math.ceil(totalLiters),g_i18n:getText("unit_liter")))
+			--draw text
+			setTextColor(r,g,b,a)
+			renderText(xPos,yPos,textFontSize,string.format("%s : %d %s",name,math.ceil(totalLiters),g_i18n:getText("unit_liter")))
+			yPos = yPos+0.025
+		end
+		for _,fruitType in pairs(g_fruitTypeManager:getFruitTypes()) do
+			if fruitType.allowsSeeding then
+				local seedUsagePerSqm = fruitType.seedUsagePerSqm
+				local totalSeedUsage = seedUsagePerSqm*fieldAreaSqm
+				local name = fruitType.fillType.title
+				-- draw shadow
+				setTextColor(rShadow,gShadow,bShadow,aShadow)
+				renderText(xPos+shadowOffset,yPos-shadowOffset,textFontSize,string.format("%s : %d %s",name,math.ceil(totalSeedUsage),g_i18n:getText("unit_liter")))
+				-- draw text
+				setTextColor(r,g,b,a)
+				renderText(xPos,yPos,textFontSize,string.format("%s : %d %s",name,math.ceil(totalSeedUsage),g_i18n:getText("unit_liter")))
+				yPos = yPos+0.025
+			end        
+		end
+	end
+end
+
 
 function CourseGeneratorScreen:isOverElement( x, y, element )
 	if x < element.absPosition[ 1 ] or x > element.absPosition[ 1 ] + element.size[ 1 ] or

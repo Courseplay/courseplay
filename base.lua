@@ -480,7 +480,7 @@ function courseplay:onLoad(savegame)
 	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
 	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
-	
+	self.cp.courseGeneratorSettings:addSetting(ShowSeedCalculatorSetting, self)
 	courseplay.signs:updateWaypointSigns(self);
 	
 	courseplay:setAIDriver(self, self.cp.mode)
@@ -503,7 +503,12 @@ function courseplay:onLeaveVehicle()
 end
 
 function courseplay:onEnterVehicle()
-  courseEditor:reset()
+	--if the vehicle is attached to another vehicle, disable cp
+	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+		return 
+	end  
+	
+	courseEditor:reset()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
@@ -517,7 +522,12 @@ function courseplay:onEnterVehicle()
 end
 
 function courseplay:onDraw()
-  courseEditor:draw(self, self.cp.directionNode)
+	--if the vehicle is attached to another vehicle, disable cp
+	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+		return 
+	end
+	
+	courseEditor:draw(self, self.cp.directionNode)
 
 	courseplay:showAIMarkers(self)
 	courseplay:showTemporaryMarkers(self)
@@ -759,7 +769,10 @@ function courseplay:drawWaypointsLines(vehicle)
 end;
 
 function courseplay:onUpdate(dt)	
-
+	--if the vehicle is attached to another vehicle, disable cp
+	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+		return 
+	end
 	if self.cp.infoText ~= nil then
 		self.cp.infoText = nil
 	end
@@ -831,7 +844,10 @@ end;
 
 function courseplay:onUpdateTick(dt)
 	--print("base:courseplay:updateTick(dt)")
-
+	--if the vehicle is attached to another vehicle, disable cp
+	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+		return 
+	end
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
 		courseplay:createFieldEdgeButtons(self);
 	end;

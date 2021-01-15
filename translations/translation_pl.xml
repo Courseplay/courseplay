@@ -337,7 +337,7 @@
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_3" 					 	text="4x4 zawsze &amp; zabl. tylny dyf. (praca w polu)" />
 		<text name="COURSEPLAY_DRIVECONTROL_MODE_4" 					 	text="4x4 zawsze &amp; zabl. oba dyf. (praca w polu)" />
 		<text name="COURSEPLAY_YES_NO_FIELDSCAN"						 	text="Czy chcesz, aby pola były skanowane automatycznie?" />
-		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Znalazłeś błąd lub potrzebujesz pomocy z Courseplay? Zajrzyj na: https://github.com/Courseplay/courseplay" />
+		<text name="COURSEPLAY_SUPPORT_INFO" 								text="Znalazłeś błąd lub potrzebujesz pomocy z Courseplay? Zajrzyj na: https://github.com/Courseplay/courseplay or https://courseplay.github.io/courseplay/en/index.html" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR"						 	text="Kalkulator zużycia nasion" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD"				 	text="Pole: %d (%s %s)" />
 		<text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE"			 	text="Typ nasion: %s" />

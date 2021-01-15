@@ -133,23 +133,29 @@
 							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"/>
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
-
-
 					</GuiElement>
 
 					<!-- ugly hack to position this box directly to have the width multitext and auto width side by side
 					     tried to use nested box layouts but that did not work out well -->
-					<GuiElement type="boxLayout" profile="cpSettingsLayout" position="0px -510px" flowDirection="horizontal" id="boxLayoutBottom">
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false">
-							<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 130px" position="0px -510px" id="boxLayoutBottomMain">
+						<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 50px" flowDirection="horizontal" id="boxLayoutBottom">
+							<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false">
+								<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
+								<GuiElement type="button" profile="cpMultiTextOptionRight"/>
+								<GuiElement type="text" profile="cpMultiTextOptionText" />
+								<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
+								<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
+							</GuiElement>
+							<GuiElement type="button" profile="cpWidthButton2" text="auto" onOpen="onOpenAutoWidth" onClick="onClickAutoWidth" id="autoWidth"/>
+						</GuiElement>
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="showSeedCalculator" toolTip="$$l10n_COURSEPLAY_SEEDUSAGECALCULATOR" onOpen="onOpenShowSeedCalculator" onClick="onClickShowSeedCalculator">
+							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SEEDUSAGECALCULATOR"/>
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
-						<GuiElement type="button" profile="cpWidthButton2" text="auto" onOpen="onOpenAutoWidth" onClick="onClickAutoWidth" id="autoWidth"/>
 					</GuiElement>
-
 
 				<GuiElement type="flowLayout" profile="buttonBoxDocked" screenAlign="bottomLeft" positionOrigin="bottomLeft" id="buttonsPanel">
 					<!-- these are standard buttons with standard callbacks according to the action assigned to them in inputActions.xml and

@@ -1999,6 +1999,13 @@ function HeadlandOverlapPercent:init(vehicle)
 	self:set(7)
 end
 
+---@class ShowSeedCalculatorSetting : BooleanSetting
+ShowSeedCalculatorSetting = CpObject(BooleanSetting)
+function ShowSeedCalculatorSetting:init(vehicle)
+	BooleanSetting.init(self, 'showSeedCalculator', 'COURSEPLAY_SEEDUSAGECALCULATOR','COURSEPLAY_SEEDUSAGECALCULATOR', vehicle)
+	self:set(false)
+end
+
 --- Course generator settings (read from the XML, may be added to the UI later when needed):
 ---
 --- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
