@@ -2132,7 +2132,8 @@ function TurnContext:createCorner(vehicle, r, sideOffset)
 	local endAngleDeg = self:getAverageEndAngleDeg()
 	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
-	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r, sideOffset or vehicle.cp.toolOffsetX)
+	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r,
+			sideOffset or vehicle.cp.settings.toolOffsetX:get())
 end
 
 --- Create a turn ending course using the vehicle's current position and the front marker node (where the vehicle must

@@ -178,8 +178,8 @@ function GrainTransportAIDriver:getSiloSelectedFillTypeSetting()
 	return self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver
 end
 
-function GrainTransportAIDriver:getSeperateFillTypeLoadingSetting()
-	return self.vehicle.cp.settings.seperateFillTypeLoading
+function GrainTransportAIDriver:getSeparateFillTypeLoadingSetting()
+	return self.vehicle.cp.settings.separateFillTypeLoading
 end
 
 --manuel loading at StartPoint

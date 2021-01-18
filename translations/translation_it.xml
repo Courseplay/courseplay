@@ -490,8 +490,8 @@
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Scaricare la mietitrice sul primo promontorio" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Consentire lo scarico di una mietitrice in movimento sul primo promontorio, lo scaricatore guida fuori dal campo." />
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Ultimo conteggio = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Caricamento prodotti separati" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Rimorchio separato:" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="Caricamento prodotti separati" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="Rimorchio separato:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Quantita da scaricare" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Caricamento manuale" />
 

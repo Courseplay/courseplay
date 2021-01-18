@@ -249,19 +249,19 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 end;
 
 function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetX = force or (courseplay:round(vehicle.cp.toolOffsetX, 1) + changeBy*0.1);
-	if abs(vehicle.cp.toolOffsetX) < 0.1 then
-		vehicle.cp.toolOffsetX = 0;
+	local toolOffsetX = force or (courseplay:round(vehicle.cp.settings.toolOffsetX:get(), 1) + changeBy * 0.1)
+	if abs(toolOffsetX) < 0.1 then
+		toolOffsetX = 0;
 	end;
-	vehicle.cp.totalOffsetX = vehicle.cp.toolOffsetX;
+	vehicle.cp.settings.toolOffsetX:set(toolOffsetX)
+	vehicle.cp.totalOffsetX = toolOffsetX;
 	if not noDraw then
 		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 	end;
 end;
 
 function courseplay:setAutoToolOffsetX(vehicle)
-	-- set the auto tool offset if exists or 0
-	self:changeToolOffsetX(vehicle, nil, vehicle.cp.automaticToolOffsetX and vehicle.cp.automaticToolOffsetX or 0)
+	vehicle.cp.settings.toolOffsetX:setToConfiguredValue(vehicle)
 end
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
@@ -2145,6 +2145,35 @@ function ReturnToFirstPointSetting:isReleaseDriverActive()
 	return self:get() == self.RELEASE_DRIVER or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
 
+---@class ToolOffsetXSetting : FloatSetting
+ToolOffsetXSetting = CpObject(FloatSetting)
+function ToolOffsetXSetting:init(vehicle)
+	FloatSetting.init(self, 'toolOffsetX', 'COURSEPLAY_TOOL_OFFSET_X', 'COURSEPLAY_TOOL_OFFSET_X', vehicle, 0)
+end
+
+--- Set to the configured value if exists, 0 otherwise
+function ToolOffsetXSetting:setToConfiguredValue()
+	-- set the auto tool offset if exists or 0
+	self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
+end
+
+function ToolOffsetXSetting:getText()
+	if self.value ~= 0 then
+		return ('%.1f%s (%s)'):format(
+				abs(self.value),
+				courseplay:loc('COURSEPLAY_UNIT_METER'),
+				courseplay:loc(self.value > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'))
+	else
+		return '---'
+	end
+end
+
+--- Reset according to the current configuration. If there's a tool with a configured offset, set it to that
+--- offset, otherwise 0
+function ToolOffsetXSetting:validateCurrentValue()
+	self:setToConfiguredValue()
+end
+
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
@@ -3092,10 +3121,10 @@ function MoveOnAtFillLevelSetting:init(vehicle)
 	self:set(5)
 end
 
---seperate SiloSelectedFillTypeSettings to save their current state
+--separate SiloSelectedFillTypeSettings to save their current state
 --and disable runCounter for FillableFieldWorkDriver and FieldSupplyDriver
 
---TODO: figure out how to implement maxFillLevel for seperate FillTypes in mode 1 
+--TODO: figure out how to implement maxFillLevel for separate FillTypes in mode 1 
 ---@class GrainTransportDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
 GrainTransportDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
 function GrainTransportDriver_SiloSelectedFillTypeSetting:init(vehicle)
@@ -3149,47 +3178,47 @@ function ShovelModeAIDriverTriggerHandlerIsActive:onChange()
 	BooleanSetting.onChange(self)
 end
 
----@class SeperateFillTypeLoadingSetting : SettingList
-SeperateFillTypeLoadingSetting = CpObject(SettingList)
-SeperateFillTypeLoadingSetting.DEACTIVED = 0
-function SeperateFillTypeLoadingSetting:init(vehicle)
-	SettingList.init(self, 'seperateFillTypeLoading', 'COURSEPLAY_LOADING_SEPERATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPERATE_FILLTYPES', vehicle,
+---@class SeparateFillTypeLoadingSetting : SettingList
+SeparateFillTypeLoadingSetting = CpObject(SettingList)
+SeparateFillTypeLoadingSetting.DEACTIVED = 0
+function SeparateFillTypeLoadingSetting:init(vehicle)
+	SettingList.init(self, 'separateFillTypeLoading', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', vehicle,
 		{ 
-			SeperateFillTypeLoadingSetting.DEACTIVED,
+			SeparateFillTypeLoadingSetting.DEACTIVED,
 			2,
 			3
 		},
 		{ 	
 			'COURSEPLAY_DEACTIVATED',
-			'COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS',
-			'COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS'
+			'COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS',
+			'COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS'
 		}
 		)
 	self:set(1)
 end
 
-function SeperateFillTypeLoadingSetting:hasDiffFillTypes()
+function SeparateFillTypeLoadingSetting:hasDiffFillTypes()
 	return self.current>1
 end
 
-function SeperateFillTypeLoadingSetting:checkAndSetValidValue(new)
+function SeparateFillTypeLoadingSetting:checkAndSetValidValue(new)
 	local diff = new<1 and #self.values or new
-	if diff > self:getSeperateFillUnits()  then 
+	if diff > self:getSeparateFillUnits()  then 
 		return 1
 	else 
 		return SettingList.checkAndSetValidValue(self, new)
 	end
 end
 
---gets seperate FillUnits example Wilson == 2
-function SeperateFillTypeLoadingSetting:getSeperateFillUnits()
+--gets separate FillUnits example Wilson == 2
+function SeparateFillTypeLoadingSetting:getSeparateFillUnits()
 	local TrailerInfo = {}
 	TrailerInfo.fillUnits = 0
 	self:getTrailerFillUnitCount(self.vehicle,TrailerInfo)
 	return TrailerInfo.fillUnits
 end
 
-function SeperateFillTypeLoadingSetting:getTrailerFillUnitCount(object,TrailerInfo)
+function SeparateFillTypeLoadingSetting:getTrailerFillUnitCount(object,TrailerInfo)
 	if self:hasNeededSpec(object,Dischargeable) and self:hasNeededSpec(object,Trailer) and not self:hasNeededSpec(object,Pipe) then 
 		if object.getFillUnits then 
 			for _, fillUnit in pairs(object:getFillUnits()) do
@@ -3202,17 +3231,17 @@ function SeperateFillTypeLoadingSetting:getTrailerFillUnitCount(object,TrailerIn
 	end
 end
 
-function SeperateFillTypeLoadingSetting:hasNeededSpec(object,spec)
+function SeparateFillTypeLoadingSetting:hasNeededSpec(object,spec)
 	if SpecializationUtil.hasSpecialization(spec, object.specializations) then
 		return true
 	end
 end
 
-function SeperateFillTypeLoadingSetting:getText()
+function SeparateFillTypeLoadingSetting:getText()
 	return self.current>1 and courseplay:loc(self.texts[self.current])..self:get() or SettingList.getText(self)
 end
 
-function SeperateFillTypeLoadingSetting:isActive()
+function SeparateFillTypeLoadingSetting:isActive()
 	if self.vehicle.cp.driver:is_a(GrainTransportAIDriver) and not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() then 
 		return true
 	end
@@ -3282,15 +3311,18 @@ end
 
 ---@class BunkerSpeedSetting : SpeedSetting
 BunkerSpeedSetting = CpObject(SpeedSetting)
-function BunkerSpeedSetting:init(vehicle)
-	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,5,20) 
+---@param vehicle table
+---@param levelCompactModeSetting LevelCompactModeSetting
+function BunkerSpeedSetting:init(vehicle, levelCompactModeSetting)
+	self.levelCompactModeSetting = levelCompactModeSetting
+	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,5,20)
 	self:set(10)
 	self.MAX_SPEED_LEVELING = 10
 end
 
 function BunkerSpeedSetting:checkAndSetValidValue(x)
 	local new = SettingList.checkAndSetValidValue(self, x)
-	if self.vehicle.cp.settings.levelCompactMode:hasLeveler() then
+	if self.levelCompactModeSetting:hasLeveler() then
 		if new > self.MAX_SPEED_LEVELING then 
 			return 10
 		end
@@ -4124,6 +4156,87 @@ function SettingsContainer.createGlobalPathfinderSettings()
 	local container = SettingsContainer('globalPathfinderSettings')
 	container:addSetting(MaxDeltaAngleAtGoal)
 	container:addSetting(DeltaAngleRelaxFactor)
+	return container
+end
+
+function SettingsContainer.createVehicleSpecificSettings(vehicle)
+	---@type SettingsContainer
+	local container = SettingsContainer("settings")
+	container:addSetting(SearchCombineOnFieldSetting, vehicle)
+	container:addSetting(SelectedCombineToUnloadSetting)
+	container:addSetting(ReturnToFirstPointSetting, vehicle)
+	container:addSetting(UseAITurnsSetting, vehicle)
+	container:addSetting(UsePathfindingInTurnsSetting, vehicle)
+	container:addSetting(AllowReverseForPathfindingInTurnsSetting, vehicle)
+	container:addSetting(ImplementRaiseTimeSetting, vehicle)
+	container:addSetting(ImplementLowerTimeSetting, vehicle)
+	container:addSetting(AutoDriveModeSetting, vehicle)
+	container:addSetting(StartingPointSetting, vehicle)
+	container:addSetting(SymmetricLaneChangeSetting, vehicle)
+	container:addSetting(PipeAlwaysUnfoldSetting, vehicle)
+	container:addSetting(RidgeMarkersAutomatic, vehicle)
+	container:addSetting(KeepCurrentSteering, vehicle)
+	container:addSetting(StopForUnloadSetting, vehicle)
+	container:addSetting(StrawSwathSetting, vehicle)
+	container:addSetting(AllowUnloadOnFirstHeadlandSetting, vehicle)
+	container:addSetting(SowingMachineFertilizerEnabled, vehicle)
+	container:addSetting(EnableOpenHudWithMouseVehicle, vehicle)
+	container:addSetting(EnableVisualWaypointsTemporary, vehicle)
+	container:addSetting(StopAtEndSetting, vehicle)
+	container:addSetting(AutomaticCoverHandlingSetting, vehicle)
+	container:addSetting(AutomaticUnloadingOnFieldSetting, vehicle)
+	container:addSetting(DriverPriorityUseFillLevelSetting, vehicle)
+	container:addSetting(UseRecordingSpeedSetting, vehicle)
+	container:addSetting(WarningLightsModeSetting, vehicle)
+	container:addSetting(ShowMapHotspotSetting, vehicle)
+	container:addSetting(SaveFuelOptionSetting, vehicle)
+	container:addSetting(AlwaysSearchFuelSetting, vehicle)
+	container:addSetting(RealisticDrivingSetting, vehicle)
+	container:addSetting(DriveUnloadNowSetting, vehicle)
+	container:addSetting(CombineWantsCourseplayerSetting, vehicle)
+	container:addSetting(TurnOnFieldSetting, vehicle)
+	container:addSetting(TurnStageSetting, vehicle)
+	container:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, vehicle)
+	container:addSetting(DriveOnAtFillLevelSetting, vehicle)
+	container:addSetting(MoveOnAtFillLevelSetting, vehicle)
+	container:addSetting(RefillUntilPctSetting, vehicle)
+	container:addSetting(FollowAtFillLevelSetting,vehicle)
+	container:addSetting(ForcedToStopSetting,vehicle)
+	container:addSetting(SeparateFillTypeLoadingSetting,vehicle)
+	container:addSetting(ReverseSpeedSetting, vehicle)
+	container:addSetting(TurnSpeedSetting, vehicle)
+	container:addSetting(FieldSpeedSettting,vehicle)
+	container:addSetting(StreetSpeedSetting,vehicle)
+	container:addSetting(ShowVisualWaypointsSetting,vehicle)
+	container:addSetting(ShowVisualWaypointsCrossPointSetting,vehicle)
+	container:addSetting(OppositeTurnModeSetting,vehicle)
+	container:addSetting(FoldImplementAtEndSetting, vehicle)
+	container:addSetting(ConvoyActiveSetting,vehicle)
+	container:addSetting(ConvoyMinDistanceSetting,vehicle)
+	container:addSetting(ConvoyMaxDistanceSetting,vehicle) -- do we need this one ?
+	container:addSetting(FrontloaderToolPositionsSetting,vehicle)
+	container:addSetting(AugerPipeToolPositionsSetting,vehicle)
+	container:addSetting(ShovelStopAndGoSetting,vehicle)
+	container:addSetting(LevelCompactModeSetting,vehicle)
+	container:addSetting(LevelCompactSearchOnlyAutomatedDriverSetting,vehicle)
+	container:addSetting(LevelCompactSearchRadiusSetting,vehicle)
+	container:addSetting(LevelCompactShieldHeightSetting,vehicle)
+	container:addSetting(BunkerSpeedSetting,vehicle, container.levelCompactMode)
+	container:addSetting(LevelCompactSiloTypSetting,vehicle)
+	container:addSetting(ToolOffsetXSetting, vehicle)
+	return container
+end
+
+function SettingsContainer.createCourseGeneratorSettings(vehicle)
+	local container = SettingsContainer("courseGeneratorSettings")
+	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
+	container:addSetting(CenterModeSetting, vehicle)
+	container:addSetting(HeadlandOverlapPercent, vehicle)
+	container:addSetting(ShowSeedCalculatorSetting, vehicle)
 	return container
 end
 

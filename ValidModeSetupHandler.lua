@@ -11,11 +11,11 @@ end
 function ValidModeSetupHandler:loadFromXml()
 	local modeSetup = {}
 	local validModeSetupKey = "ValidModeSetup"
-	local filePath = Utils.getFilename('ValidModeSetup.xml', courseplay.path);
+	local filePath = Utils.getFilename('config/ValidModeSetup.xml', courseplay.path);
 	self.xmlFile = loadXMLFile('modeSetup', filePath);
 	if self.xmlFile and hasXMLProperty(self.xmlFile, validModeSetupKey) then
 		local i = 0
-		--go throw all cp modes
+		--go through all cp modes
 		while true do
 			local modeKey = string.format("%s.%s(%d)",validModeSetupKey,"Mode",i)
 			if not hasXMLProperty(self.xmlFile, modeKey) then

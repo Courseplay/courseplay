@@ -885,11 +885,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeToolOffsetX' then
 					--Tool horizontal offset
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
-					if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
-						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = '---';
-					end;
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetX:getText()
 				elseif entry.functionToCall == 'changeToolOffsetZ' then
 					--Tool vertical offset
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
@@ -933,7 +929,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'driveOnAtFillLevel:changeByX' then
 					--DriveOnAtFillLevelSetting
-					if not vehicle.cp.settings.seperateFillTypeLoading:isActive() then
+					if not vehicle.cp.settings.separateFillTypeLoading:isActive() then
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.driveOnAtFillLevel:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.driveOnAtFillLevel:getText()
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.driveOnAtFillLevel)
@@ -942,7 +938,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'moveOnAtFillLevel:changeByX' then
 					--DriveOnAtFillLevelSetting
-					if not vehicle.cp.settings.seperateFillTypeLoading:isActive() then
+					if not vehicle.cp.settings.separateFillTypeLoading:isActive() then
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.moveOnAtFillLevel:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.moveOnAtFillLevel:getText()
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.moveOnAtFillLevel)
@@ -1149,14 +1145,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--AllowUnloadOnFirstHeadlandSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.allowUnloadOnFirstHeadland:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.allowUnloadOnFirstHeadland:getText()
-				elseif entry.functionToCall == 'seperateFillTypeLoading:changeByX' then					
-					--SeperateFillTypeLoadingSetting
-					if vehicle.cp.settings.seperateFillTypeLoading:isActive() then
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.seperateFillTypeLoading:getLabel() 
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.seperateFillTypeLoading:getText()
-						self:enableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.seperateFillTypeLoading)
+				elseif entry.functionToCall == 'separateFillTypeLoading:changeByX' then
+					--SeparateFillTypeLoadingSetting
+					if vehicle.cp.settings.separateFillTypeLoading:isActive() then
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.separateFillTypeLoading:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.separateFillTypeLoading:getText()
+						self:enableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					else
-						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.seperateFillTypeLoading)
+						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					end
 				elseif entry.functionToCall == 'automaticUnloadingOnField:toggle' then
 					--not used right now!
@@ -2214,7 +2210,7 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	--page 3 
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 1, 1 )
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.seperateFillTypeLoading,'changeByX', 3, 1, 3)
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.separateFillTypeLoading,'changeByX', 3, 1, 3)
 	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver,'addFilltype', 3, 2, 1 )
 	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver, 3, 3, 7, 1,true)
 	--page 7 

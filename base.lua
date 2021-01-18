@@ -274,7 +274,6 @@ function courseplay:onLoad(savegame)
 
 	--Offset
 	self.cp.laneOffset = 0;
-	self.cp.toolOffsetX = 0;
 	self.cp.toolOffsetZ = 0;
 	self.cp.totalOffsetX = 0;
 	self.cp.loadUnloadOffsetX = 0;
@@ -403,84 +402,13 @@ function courseplay:onLoad(savegame)
 
 	courseplay:validateCanSwitchMode(self);
 
-	-- TODO: all vehicle specific settings (HUD or advanced settings dialog) should be moved here
-	-- TODO: make sure every non global setting, has the vehicle table (self) for multiplayer sync 
 	---@type SettingsContainer
-	self.cp.settings = SettingsContainer("settings")
-	self.cp.settings:addSetting(SearchCombineOnFieldSetting, self)
-	self.cp.settings:addSetting(SelectedCombineToUnloadSetting)
-	self.cp.settings:addSetting(ReturnToFirstPointSetting, self)
-	self.cp.settings:addSetting(UseAITurnsSetting, self)
-	self.cp.settings:addSetting(UsePathfindingInTurnsSetting, self)
-	self.cp.settings:addSetting(AllowReverseForPathfindingInTurnsSetting, self)
-	self.cp.settings:addSetting(ImplementRaiseTimeSetting, self)
-	self.cp.settings:addSetting(ImplementLowerTimeSetting, self)
-	self.cp.settings:addSetting(AutoDriveModeSetting, self)
-	self.cp.settings:addSetting(SelfUnloadSetting, self)
-	self.cp.settings:addSetting(StartingPointSetting, self)
-	self.cp.settings:addSetting(SymmetricLaneChangeSetting, self)
-	self.cp.settings:addSetting(PipeAlwaysUnfoldSetting, self)
-	self.cp.settings:addSetting(RidgeMarkersAutomatic, self)
-  	self.cp.settings:addSetting(KeepCurrentSteering, self)
-	self.cp.settings:addSetting(StopForUnloadSetting, self)
-	self.cp.settings:addSetting(StrawSwathSetting, self)
-	self.cp.settings:addSetting(AllowUnloadOnFirstHeadlandSetting, self)
-	self.cp.settings:addSetting(SowingMachineFertilizerEnabled, self)
-	self.cp.settings:addSetting(EnableOpenHudWithMouseVehicle, self)
-	self.cp.settings:addSetting(EnableVisualWaypointsTemporary, self)
+	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
-	self.cp.settings:addSetting(StopAtEndSetting, self)
-	self.cp.settings:addSetting(AutomaticCoverHandlingSetting, self)
-	self.cp.settings:addSetting(AutomaticUnloadingOnFieldSetting, self)
-	self.cp.settings:addSetting(DriverPriorityUseFillLevelSetting, self)
-	self.cp.settings:addSetting(UseRecordingSpeedSetting, self)
-	self.cp.settings:addSetting(WarningLightsModeSetting, self)
-	self.cp.settings:addSetting(ShowMapHotspotSetting, self)
-	self.cp.settings:addSetting(SaveFuelOptionSetting, self)
-	self.cp.settings:addSetting(AlwaysSearchFuelSetting, self)
-	self.cp.settings:addSetting(RealisticDrivingSetting, self)
-	self.cp.settings:addSetting(DriveUnloadNowSetting, self)
-	self.cp.settings:addSetting(CombineWantsCourseplayerSetting, self)
-	self.cp.settings:addSetting(TurnOnFieldSetting, self)
-	self.cp.settings:addSetting(TurnStageSetting, self)
-	self.cp.settings:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, self)
-	self.cp.settings:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, self)
-	self.cp.settings:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, self)
-	self.cp.settings:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, self)
-	self.cp.settings:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, self)
-	self.cp.settings:addSetting(DriveOnAtFillLevelSetting, self)
-	self.cp.settings:addSetting(MoveOnAtFillLevelSetting, self)
-	self.cp.settings:addSetting(RefillUntilPctSetting, self)
-	self.cp.settings:addSetting(FollowAtFillLevelSetting,self)
-	self.cp.settings:addSetting(ForcedToStopSetting,self)
-	self.cp.settings:addSetting(SeperateFillTypeLoadingSetting,self)
-	self.cp.settings:addSetting(ReverseSpeedSetting, self)
-	self.cp.settings:addSetting(TurnSpeedSetting, self)
-	self.cp.settings:addSetting(FieldSpeedSettting,self)
-	self.cp.settings:addSetting(StreetSpeedSetting,self)
-	self.cp.settings:addSetting(ShowVisualWaypointsSetting,self)
-	self.cp.settings:addSetting(ShowVisualWaypointsCrossPointSetting,self)
-	self.cp.settings:addSetting(OppositeTurnModeSetting,self)
-	self.cp.settings:addSetting(FoldImplementAtEndSetting, self)
-	self.cp.settings:addSetting(ConvoyActiveSetting,self)
-	self.cp.settings:addSetting(ConvoyMinDistanceSetting,self)
-	self.cp.settings:addSetting(ConvoyMaxDistanceSetting,self) -- do we need this one ?
-	self.cp.settings:addSetting(FrontloaderToolPositionsSetting,self)
-	self.cp.settings:addSetting(AugerPipeToolPositionsSetting,self)
-	self.cp.settings:addSetting(ShovelStopAndGoSetting,self)
-	self.cp.settings:addSetting(LevelCompactModeSetting,self)
-	self.cp.settings:addSetting(LevelCompactSearchOnlyAutomatedDriverSetting,self)
-	self.cp.settings:addSetting(LevelCompactSearchRadiusSetting,self)
-	self.cp.settings:addSetting(LevelCompactShieldHeightSetting,self)
-	self.cp.settings:addSetting(BunkerSpeedSetting,self)
-	self.cp.settings:addSetting(LevelCompactSiloTypSetting,self)
-	
 	---@type SettingsContainer
-	self.cp.courseGeneratorSettings = SettingsContainer("courseGeneratorSettings")
-	self.cp.courseGeneratorSettings:addSetting(CenterModeSetting, self)
-	self.cp.courseGeneratorSettings:addSetting(NumberOfRowsPerLandSetting, self)
-	self.cp.courseGeneratorSettings:addSetting(HeadlandOverlapPercent, self)
-	self.cp.courseGeneratorSettings:addSetting(ShowSeedCalculatorSetting, self)
+
+	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
+
 	courseplay.signs:updateWaypointSigns(self);
 	
 	courseplay:setAIDriver(self, self.cp.mode)
@@ -700,7 +628,7 @@ function courseplay:onDraw()
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
-	local offsX, offsZ = vehicle.cp.toolOffsetX or 0, vehicle.cp.toolOffsetZ or 0;
+	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.toolOffsetZ or 0;
 
 	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
 	local right = (vehicle.cp.workWidth * -0.5) + offsX;
@@ -1350,7 +1278,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".driving #alignment", tostring(self.cp.alignment.enabled))
 	
 	--field work settings
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.toolOffsetX, self.cp.toolOffsetZ, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.settings.toolOffsetX:get(), self.cp.toolOffsetZ, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))

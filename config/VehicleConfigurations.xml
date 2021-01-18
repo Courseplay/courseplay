@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<!--
+
+This file is used to customize Courseplay for specific vehicles and implements.
+
+Typically you'd include a vehicle/implement here if it needs some special treatment
+to work correctly with Courseplay. For instance, some implements are offset to the
+left or right side (like bale loaders), so when doing fieldwork, you want do drive
+on the left or right of the actual course so the bale loader's pickup is aligned
+with the course.
+
+This file is the global configuration coming with your copy of Courseplay. If you
+want your own vehicle config, you can create a file called
+courseplayVehicleConfigurations.xml in your save game folder. Settings defined in
+that file will override the settings defined here.
+
+Custom settings are listed per vehicle, the vehicle is identified by its XML file
+name (you can find this in the game's folder under data/vehicles/<make>/<model>/
+
+A vehicle may have multiple implements attached. If multiple implements have the
+same attribute defined here, Courseplay just uses the first value it finds, which
+can be any of the multiple values.
+
+You can define the following custom settings:
+
+- toolOffsetX: offset of the tool's centerline relative to the course, left +, right -.
+               For example, if your tool is 2 meters right use "-2.0" here.
+
+-->
+<VehicleConfigurations>
+    <Vehicle name="arcusinFSX6372.xml"
+             toolOffsetX="-2.4"
+    />
+    <Vehicle name="ursusT127.xml"
+             toolOffsetX="-2.4"
+    />
+</VehicleConfigurations>

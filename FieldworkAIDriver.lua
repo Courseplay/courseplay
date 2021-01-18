@@ -798,7 +798,7 @@ function FieldworkAIDriver:setUpCourses()
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
 	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX, self.vehicle.cp.toolOffsetZ)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get(), self.vehicle.cp.toolOffsetZ)
 	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
 	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
 	if self.vehicle.cp.multiTools > 1 then
@@ -830,7 +830,7 @@ end
 function FieldworkAIDriver:updateFieldworkOffset()
 	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
 	-- to the PPC to drive)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
+	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get() + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
 		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
 end
 
