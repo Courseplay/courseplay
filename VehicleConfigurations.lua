@@ -36,11 +36,18 @@ end
 
 function VehicleConfigurations:loadFromXml()
     self.xmlFileName = Utils.getFilename('config/VehicleConfigurations.xml', courseplay.path)
-    self:loadXmlFile(self.xmlFileName)
-    self.userXmlFileName =
-    getUserProfileAppPath() .. 'savegame' .. g_currentMission.missionInfo.savegameIndex ..
+    self.xmlFile = self:loadXmlFile(self.xmlFileName)
+    self.userXmlFileName = getUserProfileAppPath() .. 'savegame' .. g_currentMission.missionInfo.savegameIndex ..
             '/courseplayVehicleConfigurations.xml'
-    self:loadXmlFile(self.userXmlFileName)
+    self.userXmlFile = self:loadXmlFile(self.userXmlFileName)
+end
+
+-- write the user config back to the savegame (the Giants engine does not persist files in the savegame,
+-- if you don't write it when saving the game, it is lost.
+function VehicleConfigurations:saveToXml()
+    if self.userXmlFile then
+        saveXMLFile(self.userXmlFile)
+    end
 end
 
 function VehicleConfigurations:addAttribute(vehicleConfiguration, xmlFile, vehicleElement, attribute, getXmlFunction)
@@ -77,6 +84,7 @@ function VehicleConfigurations:loadXmlFile(fileName)
                 end
                 i = i + 1
             end
+            return xmlFile
         end
     end
 end

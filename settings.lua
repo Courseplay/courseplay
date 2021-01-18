@@ -1160,27 +1160,6 @@ function courseplay:setSlippingStage(vehicle, stage)
 	end;
 end;
 
---old code ????
-function courseplay:setAttachedCombine(vehicle)
-	--- If vehicle do not have courseplay spec, then skip it.
-	if not vehicle.hasCourseplaySpec then
-		return
-	end
-
-	courseplay:debug(('%s: setAttachedCombine()'):format(nameNum(vehicle)), 6);
-	vehicle.cp.attachedCombine = nil;
-	if not (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable or vehicle.cp.isSugarBeetLoader) and vehicle.attachedImplements then
-		for _,impl in pairs(vehicle:getAttachedImplements()) do
-			if impl.object and courseplay:isAttachedCombine(impl.object) then
-				vehicle.cp.attachedCombine = impl.object;
-				courseplay:debug(('    attachedCombine=%s, attachedCombine .cp=%s'):format(nameNum(impl.object), tostring(impl.object.cp)), 6);
-				break;
-			end;
-		end;
-	end;
-
-end;
-
 function courseplay:getIsEngineReady(vehicle)
 	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
@@ -2166,12 +2145,6 @@ function ToolOffsetXSetting:getText()
 	else
 		return '---'
 	end
-end
-
---- Reset according to the current configuration. If there's a tool with a configured offset, set it to that
---- offset, otherwise 0
-function ToolOffsetXSetting:validateCurrentValue()
-	self:setToConfiguredValue()
 end
 
 --- Setting to select a field

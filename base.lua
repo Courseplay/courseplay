@@ -152,7 +152,6 @@ function courseplay:onLoad(savegame)
 		max = self:getCruiseControlMaxSpeed() or 60;
 	};
 
-	self.cp.tooIsDirty = false
 	self.cp.orgRpm = nil;
 
 	-- data basis for the Course list
@@ -780,12 +779,11 @@ function courseplay:onUpdateTick(dt)
 		courseplay:createFieldEdgeButtons(self);
 	end;
 
-	--attached or detached implement?
-	if self.cp.tooIsDirty then
-		self.cpTrafficCollisionIgnoreList = {}			-- clear local colli list, will be updated inside resetTools(self) again
-		courseplay:resetTools(self)
+	if self.cp.toolsDirty then
+		courseplay:updateOnAttachOrDetach(self)
+		self.cp.toolsDirty = nil
 	end
-	
+
 	if self.cp.isDriving and g_server ~= nil then
 		local status, err = xpcall(self.cp.driver.updateTick, function(err) printCallstack(); return err end, self.cp.driver, dt)
 		if not status then

@@ -1,54 +1,49 @@
 local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
 local _;
 -- ##### MANAGING TOOLS ##### --
-function courseplay:attachImplement(implement) 
-	-- Update Vehicle
-	if implement.className ~= 'RailroadVehicle' then
-		if implement ~= nil then
-			local attacherVehicle = implement:getAttacherVehicle()
-			if attacherVehicle.spec_aiVehicle then 
-				attacherVehicle.cp.tooIsDirty = true; 
-			end;
-			
-			if attacherVehicle.getAttacherVehicle then
-				local firstAttacherVehicle =  attacherVehicle:getAttacherVehicle()
-				if firstAttacherVehicle~= nil and firstAttacherVehicle.spec_aiVehicle then
-					firstAttacherVehicle.cp.tooIsDirty = true; 
-				end;				
-			end
-			local rootVehicle = attacherVehicle:getRootVehicle()
-			if rootVehicle then 
-				if rootVehicle.cp.settings then 
-					rootVehicle.cp.settings:validateCurrentValues()
-				end
-				if rootVehicle.cp.driver then 
-					rootVehicle.cp.driver:refreshHUD()
-				end
-			end
-		end
-		courseplay:setAttachedCombine(self);
+function courseplay:attachImplement(implement)
+	local rootVehicle = implement:getRootVehicle()
+	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+		courseplay.debugVehicle(6, rootVehicle, '%s attached', nameNum(implement))
+		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
-end;
+end
 
+-- We need to add a hook here as onPostAttachImplement is not called for the vehicle when an implement is attached
+-- to another implement (and not directly to the vehicle)
 AttacherJoints.attachImplement = Utils.appendedFunction(AttacherJoints.attachImplement, courseplay.attachImplement);
 
-function courseplay:onPostDetachImplement(implementIndex)
-	--- Update Vehicle
-	self.cp.tooIsDirty = true;
-	local sAI= self:getAttachedImplements()
-	if sAI[implementIndex].object == self.cp.attachedCombine then
-		self.cp.attachedCombine = nil;
-	end
-	local rootVehicle = self:getRootVehicle()
-	if rootVehicle then 
-		if rootVehicle.cp.settings then 
-			rootVehicle.cp.settings:validateCurrentValues()
-		end
-		if rootVehicle.cp.driver then 
-			rootVehicle.cp.driver:refreshHUD()
+function courseplay:detachImplement(implementIndex)
+	local spec = self.spec_attacherJoints
+	local implement = spec.attachedImplements[implementIndex]
+	if implement then
+		local rootVehicle = implement.object:getRootVehicle()
+		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+			courseplay.debugVehicle(6, rootVehicle, '%s detached', nameNum(implement.object))
+			-- do not update yet as the implement is still attached to the vehicle.
+			-- defer the update until the next updateTick(), by that time things settle down
+			rootVehicle.cp.toolsDirty = true
 		end
 	end
-end;
+end
+
+-- Same here, we want to also know when an implement is detached from another implement. Prepend means we'll be
+-- called before the implement is detached so we'll be able to find the root vehicle.
+AttacherJoints.detachImplement = Utils.prependedFunction(AttacherJoints.detachImplement, courseplay.detachImplement);
+
+function courseplay:updateOnAttachOrDetach(vehicle)
+	-- TODO: refactor this (if it is even still needed), this ignore list is all over the place...
+	vehicle.cpTrafficCollisionIgnoreList = {}
+
+	if vehicle.cp and vehicle.cp.settings then
+		vehicle.cp.settings:validateCurrentValues()
+		if vehicle.cp.driver then
+			vehicle.cp.driver:refreshHUD()
+		end
+	end
+
+	courseplay:resetTools(vehicle)
+end
 
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
@@ -59,26 +54,13 @@ function courseplay:resetTools(vehicle)
 	if not vehicle.cp.workToolAttached and not vehicle.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
 	end
-	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
-	-- Reset fill type.
-	--[[
-	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
-		if vehicle.cp.siloSelectedFillType ==  FillType.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  FillType.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
-			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
-			print("toolManager(41): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
-		end;
-	else
-		vehicle.cp.siloSelectedFillType =  FillType.UNKNOWN;
-		print("toolManager(45): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
-	end;]]
-	
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
 	
 	courseplay:calculateWorkWidth(vehicle, true);
-	
 
-	vehicle.cp.tooIsDirty = false;
+	-- reset tool offset to the preconfigured value if exists
+	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
 end;
 
 function courseplay:isAttachedCombine(workTool)

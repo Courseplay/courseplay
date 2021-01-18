@@ -1518,8 +1518,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.HUD4savedCombineName = "";
 
 	]]
-	vehicle.cp.attachedCombine = nil;
-	
+
 	local mouseWheelArea = {
 		x = self.contentMinX,
 		w = self.contentMaxWidth,
