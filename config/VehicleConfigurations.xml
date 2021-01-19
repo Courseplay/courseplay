@@ -11,8 +11,8 @@ with the course.
 
 This file is the global configuration coming with your copy of Courseplay. If you
 want your own vehicle config, you can create a file called
-courseplayVehicleConfigurations.xml in your save game folder. Settings defined in
-that file will override the settings defined here.
+vehicleConfigurations.xml in your modsSettings/Courseplay folder. Settings defined
+in that file will override the settings defined here.
 
 Custom settings are listed per vehicle, the vehicle is identified by its XML file
 name (you can find this in the game's folder under data/vehicles/<make>/<model>/
@@ -66,10 +66,6 @@ You can define the following custom settings:
         <!--\vehicles\kuhn-->
         <Vehicle name="kuhnSW4014.xml"
                 toolOffsetX="-2.5"
-                noReverse="true"
-        />
-        <!--\vehicles\agrisem [TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail]-->
-        <Vehicle name="agrisemCultiplowPlatinum8m.xml"
                 noReverse="true"
         />
         <!--\vehicles\salford-->
