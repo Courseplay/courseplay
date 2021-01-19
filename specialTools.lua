@@ -212,18 +212,15 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'rootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.specialWorkWidth = 2.9
 	
 	elseif workTool.cp.xmlFileName == 'keiler2.xml' then
 		workTool.cp.isRopaKeiler2 = true;
 		workTool.cp.isHarvesterAttachable = true;
-		--workTool.cp.notToBeReversed = true;
 
 	elseif workTool.cp.xmlFileName == 'SE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.specialWorkWidth = 1.6
 		
 	elseif workTool.cp.xmlFileName == 'mex5.xml' then
@@ -234,7 +231,6 @@ function courseplay:setNameVariable(workTool)
 	-- SWT7 [Giants DLC]
 	elseif workTool.cp.xmlFileName == 'SWT7.xml' then
 		workTool.cp.isTraileredChopper = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 9;
 		workTool.cp.isSWT7 = true;
 		
@@ -298,15 +294,9 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isUrsusT127 = true;
 		workTool.cp.baleRowWidth = 1.5
 
-	-- Ursus Z586 (Bale Wrapper) [Giants]
-	elseif workTool.cp.xmlFileName == 'ursusZ586.xml' then
-		workTool.cp.isUrsusZ586 = true;
-		workTool.cp.notToBeReversed = true;
-
 	-- Kuhn SW4014 (Bale Wrapper) [Giants Kuhn DLC]
 	elseif workTool.cp.xmlFileName == 'kuhnSW4014.xml' then
 		workTool.cp.isKuhnSW4014 = true;
-		workTool.cp.notToBeReversed = true;
 
 	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
 	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
@@ -355,7 +345,6 @@ function courseplay:setNameVariable(workTool)
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
-		workTool.cp.notToBeReversed = false; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
 		workTool.cp.overwriteTurnRadius = 7;
 		
 	--Bednar SM 180000 [Giants Big Bud DLC]
@@ -370,7 +359,6 @@ function courseplay:setNameVariable(workTool)
 	-- Salford 4204 [Giants]
 	elseif workTool.cp.xmlFileName == 'salford4204.xml' then
 		workTool.cp.isSalford4204 = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 3;
 
 	-- Salford 8312 [Giants]
@@ -383,13 +371,11 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'titan11.xml' then
 		workTool.cp.isLemkenTitan18 = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.overwriteTurnRadius = 4.5;
 
 	-- Gregoire Besson SPSL 9 [Giants]
 	elseif workTool.cp.xmlFileName == 'SPSL9.xml' then
 		workTool.cp.isGregoireBessonSPSL9 = true;
-		workTool.cp.notToBeReversed = true;
 		workTool.cp.implementWheelAlwaysOnGround = true;
 		workTool.cp.overwriteTurnRadius = 10;
 		workTool.cp.specialWorkWidth = 10.5
@@ -403,25 +389,19 @@ function courseplay:setNameVariable(workTool)
 	--Seed Kawk 980 Air Cart [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'seedHawk980AirCart.xml' then
 		workTool.cp.isSeedHawk980AirCart = true;
-		workTool.cp.notToBeReversed = true;
 
 	--Hatzenbichler TH1400 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'th1400.xml' then
 		workTool.cp.isHatzenbichlerTH1400 = true;
-		workTool.cp.notToBeReversed = true;
 
 	--Htzenbichler Terminator 18 [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'terminator18.xml' then
 		workTool.cp.isHatzenbichlerTerminator18 = true;
 
-	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC]
+	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC] new .xml xlAirDrill84.xml
 	elseif	 workTool.cp.xmlFileName == 'seedHawkXLAirDrill84.xml' then
 		workTool.cp.isSeedHawkXLAirDrill84 = true;
 		workTool.cp.overwriteTurnRadius = 10;
-
-	--Great Plains YP2425A [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'yp2425A.xml' then
-		workTool.cp.notToBeReversed = true;
 
 	end;
 	-- ###########################################################

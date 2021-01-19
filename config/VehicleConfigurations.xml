@@ -42,7 +42,7 @@ You can define the following custom settings:
         <!-- Harvesters -->
         <!--\vehicles\ropa-->
         <Vehicle name="tiger6.xml"
-                 crabSteeringModeIndex="1"
+                crabSteeringModeIndex="1"
         />
 
         <!-- Implements -->
@@ -68,7 +68,7 @@ You can define the following custom settings:
                 toolOffsetX="-2.5"
                 noReverse="true"
         />
-        <!--\vehicles\agrisem-->
+        <!--\vehicles\agrisem [TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail]-->
         <Vehicle name="agrisemCultiplowPlatinum8m.xml"
                 noReverse="true"
         />
@@ -80,7 +80,7 @@ You can define the following custom settings:
         <Vehicle name="titan11.xml"
                 noReverse="true"
         />
-        <!--vehicles\gregoireBesson\-->
+        <!--vehicles\gregoireBesson-->
         <Vehicle name="SPSL9.xml"
                 toolOffsetX="2.1"
         />
@@ -89,7 +89,7 @@ You can define the following custom settings:
                 toolOffsetX="-2.2"
                 noReverse="false"
         />
-        <!--vehicles\seedHawk\-->
+        <!--vehicles\seedHawk-->
         <Vehicle name="980AirCart.xml"
                 noReverse="true"
         />
@@ -105,7 +105,7 @@ You can define the following custom settings:
         />
         <!--\vehicles\greatPlains-->
         <Vehicle name="yp2425A.xml"
-             noReverse="true"
+                noReverse="true"
         />        
     <!--[DLC]-->
         <!--Harvester-->
