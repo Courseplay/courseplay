@@ -54,61 +54,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	end
 end
 
---[[function courseplay:setNextPrevModeVars(vehicle)
-	local curMode = vehicle.cp.mode;
-	local nextMode, prevMode, nextModeTest, prevModeTest = nil, nil, curMode + 1, curMode - 1;
-
-	if curMode > courseplay.MODE_GRAIN_TRANSPORT then
-		while prevModeTest >= courseplay.MODE_GRAIN_TRANSPORT do
-			if courseplay:getCanVehicleUseMode(vehicle, prevModeTest) then
-				prevMode = prevModeTest;
-				break;
-			else
-				-- invalid mode --> skip
-				prevModeTest = prevModeTest - 1;
-			end;
-		end;
-	end;
-	vehicle.cp.prevMode = prevMode;
-
-	if curMode < courseplay.NUM_MODES then
-		while nextModeTest <= courseplay.NUM_MODES do
-			if courseplay:getCanVehicleUseMode(vehicle, nextModeTest) then
-				nextMode = nextModeTest;
-				break;
-			else
-				-- invalid mode --> skip
-				nextModeTest = nextModeTest + 1;
-			end;
-		end;
-	end;
-	vehicle.cp.nextMode = nextMode;
-end;]]
-
---[[function courseplay:getCanVehicleUseMode(vehicle, mode)
-	if not CpManager.isDeveloper then
-		if mode == courseplay.MODE_OVERLOADER
-		or mode == courseplay.MODE_COMBINE_SELF_UNLOADING
-		or mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT
-		or mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY
-		or mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		return false;
-		end
-	end	
-	if mode == courseplay.MODE_COMBINE_SELF_UNLOADING and not vehicle.cp.isCombine and not vehicle.cp.isChopper and not vehicle.cp.isHarvesterSteerable then
-		return false;
-	elseif (vehicle.cp.isCombine or vehicle.cp.isChopper or vehicle.cp.isHarvesterSteerable) and (mode ~= courseplay.MODE_TRANSPORT and mode ~= courseplay.MODE_FIELDWORK ) then -- and mode ~= courseplay.MODE_COMBINE_SELF_UNLOADING) then
-		return false;
-	elseif mode ~= courseplay.MODE_TRANSPORT and (vehicle.cp.isWoodHarvester or vehicle.cp.isWoodForwarder) then
-		return false;
-	end;
-
-	return true;
-end;]]
-
---TODO: call AIDriver directly
 function courseplay:setDriveNow(vehicle)
---	courseplay:setDriveUnloadNow(vehicle, true);
 	vehicle.cp.driver:setDriveNow()
 end
 
@@ -4144,6 +4090,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ImplementRaiseTimeSetting, vehicle)
 	container:addSetting(ImplementLowerTimeSetting, vehicle)
 	container:addSetting(AutoDriveModeSetting, vehicle)
+	container:addSetting(SelfUnloadSetting, vehicle)
 	container:addSetting(StartingPointSetting, vehicle)
 	container:addSetting(SymmetricLaneChangeSetting, vehicle)
 	container:addSetting(PipeAlwaysUnfoldSetting, vehicle)

@@ -25,6 +25,8 @@ VehicleConfigurations = CpObject()
 
 VehicleConfigurations.attributes = {
     {name = 'toolOffsetX', getXmlFunction = getXMLFloat},
+    {name = 'noReverse', getXmlFunction = getXMLBool},
+    {name = 'crabSteeringModeIndex', getXmlFunction = getXMLInt}
 }
 
 function VehicleConfigurations:init()
@@ -43,7 +45,8 @@ function VehicleConfigurations:loadFromXml()
 end
 
 -- write the user config back to the savegame (the Giants engine does not persist files in the savegame,
--- if you don't write it when saving the game, it is lost.
+-- if you don't write it when saving the game, it is lost.)
+-- TODO: should it be rather saved where the courses are?
 function VehicleConfigurations:saveToXml()
     if self.userXmlFile then
         saveXMLFile(self.userXmlFile)
@@ -54,7 +57,7 @@ function VehicleConfigurations:addAttribute(vehicleConfiguration, xmlFile, vehic
     local configValue = getXmlFunction(xmlFile, vehicleElement .. '#' .. attribute)
     if configValue then
         vehicleConfiguration[attribute] = configValue
-        courseplay.info('\\__ %s = %s', attribute, configValue)
+        courseplay.info('\\__ %s = %s', attribute, tostring(configValue))
     end
 end
 

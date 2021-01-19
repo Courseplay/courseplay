@@ -14,21 +14,13 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 	-- TODO: move this to TurnContext?
 	local realDirectionNode					= AIDriverUtil.getDirectionNode(vehicle)
-	local allowedToDrive 					= true;
 	local moveForwards 						= true;
-	local refSpeed 							= vehicle.cp.speeds.turn;
-	local directionForce 					= 1;
 	local lx, lz 							= 0, 1;
 	local dtpX, dtpZ						= 0, 1;
-	local turnOutTimer 						= 1500;
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
 	local reverseWPChangeDistanceWithTool	= 3;
 	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle), false);
-	local allowedAngle						= vehicle.cp.changeDirAngle or isHarvester and 15 or 3; -- Used for changing direction if the vehicle or vehicle and tool angle difference are below that.
-	if vehicle.cp.noStopOnEdge then
-		turnOutTimer = 0;
-	end;
 
 	--- This is in case we use manually recorded fieldswork course and not generated.
 	if not vehicle.cp.courseWorkWidth then
@@ -37,10 +29,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 	end;
 
 	--- Get front and back markers
-	local frontMarker = Utils.getNoNil(vehicle.cp.aiFrontMarker, -3);
-	local backMarker = Utils.getNoNil(vehicle.cp.backMarkerOffset,0);
+	local frontMarker = turnContext.frontMarkerDistance
+	local backMarker = turnContext.backMarkerDistance
 
-	local vehicleX, vehicleY, vehicleZ = getWorldTranslation(realDirectionNode);
+	local _, vehicleY, _ = getWorldTranslation(realDirectionNode);
 
 	----------------------------------------------------------
 	-- Debug prints
@@ -334,7 +326,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 		if courseplay:isWheelloader(vehicle) then
 			dtpZ = dtpZ * 0.5; -- wheel loaders need to turn more
 		end;
-		--print( ("dtp %.1f, %.1f, %.1f"):format( dtpX, dtpZ, refSpeed ))
 
 		lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, posX, vehicleY, posZ);
 		if curTurnTarget.turnReverse then
@@ -1827,13 +1818,16 @@ TurnContext = CpObject()
 --- node so when the vehicle's root node reaches the vehicleAtTurnEndNode, the front of the work area will exactly be on the
 --- turn end node. (The vehicle must be steered to the vehicleAtTurnEndNode instead of the turn end node so the implements
 --- reach exactly the row end)
+---@param backMarkerDistance number distance of the rearmost work area from the vehicle's root node. Will only be used
+--- to pass in to turn generator code and should be reviewed if it is needed at all.
 ---@param turnEndSideOffset number offset of the turn end in meters to left (>0) or right (<0) to end the turn left or
 --- right of the turn end node. Used when there's an offset to consider, for example because the implement is not
 --- in the middle, like plows.
 ---@param turnEndForwardOffset number offset of the turn end in meters forward (>0) or back (<0), additional to the
 --- frontMarkerDistance. This can be used to compensate for edge cases like sprayers where the working width is
 --- much bigger than the turning diameter so the implement's tip on the turn inside is ahead of the vehicle.
-function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMarkerDistance, turnEndSideOffset, turnEndForwardOffset)
+function TurnContext:init(course, turnStartIx, aiDriverData, workWidth,
+						  frontMarkerDistance, backMarkerDistance, turnEndSideOffset, turnEndForwardOffset)
 	self.debugChannel = 14
 	self.workWidth = workWidth
 
@@ -1853,8 +1847,9 @@ function TurnContext:init(course, turnStartIx, aiDriverData, workWidth, frontMar
 
 	self:setupTurnStart(course, aiDriverData)
 
-	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn start
 	self.frontMarkerDistance = frontMarkerDistance or 0
+	self.backMarkerDistance = backMarkerDistance or 0
+	-- this is the node the vehicle's root node must be at so the front of the work area is exactly at the turn start
 	if not aiDriverData.vehicleAtTurnStartNode then
 		aiDriverData.vehicleAtTurnStartNode = courseplay.createNode( 'vehicleAtTurnStart', 0, 0, 0, self.workEndNode )
 	end

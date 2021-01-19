@@ -84,41 +84,10 @@ function courseplay:setNameVariable(workTool)
 		end
 		if workTool.cp.xmlFileName == 'horschTitan34UW.xml' then
 			workTool.cp.isHorschTitan34UW = true;
-			workTool.cp.foldPipeAtWaitPoint = true;
 		end;
 	elseif workTool.cp.hasSpecializationOverloader and not workTool.cp.hasSpecializationCutter then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.hasSpecializationOverloaderV2 = workTool.overloaderVersion ~= nil and workTool.overloaderVersion >= 2;
-	elseif workTool.cp.hasSpecializationAgrolinerTUW20 then
-		workTool.cp.isAugerWagon = true;
-		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
-			workTool.cp.isAgrolinerTUW20 = true;
-			workTool.cp.foldPipeAtWaitPoint = true;
-		end;
-	elseif workTool.cp.hasSpecializationOvercharge then
-		workTool.cp.isAugerWagon = true;
-		if workTool.cp.xmlFileName == 'AgrolinerTUW20.xml' then
-			workTool.cp.isAgrolinerTUW20 = true;
-			workTool.cp.foldPipeAtWaitPoint = true;
-		elseif workTool.cp.xmlFileName == 'HaweULW2600T.xml' then
-			workTool.cp.isHaweULW2600T = true;
-			workTool.cp.foldPipeAtWaitPoint = true;
-		elseif workTool.cp.xmlFileName == 'HaweULW3000T.xml' then
-			workTool.cp.isHaweULW3000T = true;
-			workTool.cp.foldPipeAtWaitPoint = true;
-		end;
-	elseif workTool.cp.hasSpecializationHaweSUW then
-		workTool.cp.isAugerWagon = true;
-		if workTool.cp.xmlFileName == 'Hawe_SUW_4000.xml' then
-			workTool.cp.isHaweSUW4000 = true;
-		elseif workTool.cp.xmlFileName == 'Hawe_SUW_5000.xml' then
-			workTool.cp.isHaweSUW5000 = true;
-		end;
-	elseif workTool.cp.hasSpecializationBigBear then
-		workTool.cp.isAugerWagon = true;
-		workTool.cp.isRopaBigBear = true;
-		workTool.cp.foldPipeAtWaitPoint = true;
-		workTool.cp.hasSpecializationBigBearV2 = workTool.setUnloading ~= nil and workTool.setWorkMode~= nil and workTool.setActiveWorkMode ~= nil;
 	elseif workTool.animationParts ~= nil and workTool.animationParts[2] ~= nil and workTool.toggleUnloadingState ~= nil and workTool.setUnloadingState ~= nil then
 		workTool.cp.isAugerWagon = true;
 		workTool.cp.isTaarupShuttle = true;
@@ -159,13 +128,7 @@ function courseplay:setNameVariable(workTool)
 
 	-- [2] MOD TRACTORS
 
-	if workTool.cp.xmlFileName ==  'KirovetsK700A.xml' then
-		workTool.cp.isKirovetsK700A = true;
-		--workTool.cp.steeringAngleCorrection = 10;
-		--workTool.cp.directionNodeZOffset = 1.644;
-		--workTool.cp.componentNumAsDirectionNode = 2;
-
-		-- ###########################################################
+	-- ##########################################################
 
 	-- [3] MOD TRAILERS
 	
@@ -182,7 +145,7 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [6] MOD BALING
-	elseif workTool.cp.xmlFileName == 'KroneUltimaCF155XC.xml' then
+	if workTool.cp.xmlFileName == 'KroneUltimaCF155XC.xml' then
 		workTool.cp.isKroneUltimaCF155XC = true
 		if not workTool.cp.ultimaSpec then
 			for index,name in pairs (workTool.specializationNames) do
@@ -218,10 +181,8 @@ function courseplay:setNameVariable(workTool)
 
 	elseif workTool.cp.xmlFileName == 'terraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
-		workTool.cp.useCrabSteeringMode = 1;
+		workTool.cp.use = 1;
 		workTool.cp.isHarvesterSteerable = true;
-		workTool.cp.pipeSide = 1;
-		workTool.cp.ridgeMarkerIndex = 6;
 	elseif workTool.cp.xmlFileName == 'tiger6.xml' then
 		workTool.cp.isRopaTiger6 = true;
 		workTool.cp.isHarvesterSteerable = true;
@@ -245,8 +206,6 @@ function courseplay:setNameVariable(workTool)
 		
 	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
 		workTool.cp.isCaseIHA8800MR = true;
-		workTool.cp.fixedCombineOffset = 5.3
-		workTool.cp.fixedChopperOffset = 5.3
 		workTool.cp.isHarvesterSteerable = true;
 		
 	-- Harvesters (attachable) [Giants]
@@ -254,16 +213,13 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
 		workTool.cp.notToBeReversed = true;
-		workTool.cp.fixedCombineOffset = -4.5
-		workTool.cp.fixedChopperOffset = -4.5
 		workTool.cp.specialWorkWidth = 2.9
 	
 	elseif workTool.cp.xmlFileName == 'keiler2.xml' then
 		workTool.cp.isRopaKeiler2 = true;
 		workTool.cp.isHarvesterAttachable = true;
 		--workTool.cp.notToBeReversed = true;
-		workTool.cp.fixedCombineOffset = 5.5
-			
+
 	elseif workTool.cp.xmlFileName == 'SE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
@@ -273,7 +229,6 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'mex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
-		workTool.cp.fixedCombineOffset = 5.5
 		workTool.cp.fixedChopperOffset = 5.5
 	
 	-- SWT7 [Giants DLC]
@@ -289,11 +244,6 @@ function courseplay:setNameVariable(workTool)
 	-- Valtra T Series [Giants]
 	elseif workTool.cp.xmlFileName == 'valtraTSeries.xml' then
 		workTool.cp.overwriteTurnRadius = 4.5;
-
-	-- Terra Variant 600 eco [Giants Mod: Holmer Pack]
-	elseif workTool.cp.xmlFileName == 'holmerTerraVariant.xml' then
-		workTool.cp.isHolmerTerraVariant = true;
-		workTool.cp.ridgeMarkerIndex = 1 ;
 
 	-- New Holland SP.400F (Sprayer) [Giants]
 	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
@@ -367,8 +317,7 @@ function courseplay:setNameVariable(workTool)
 	elseif 	workTool.cp.xmlFileName == 'premos5000.xml' then
 		workTool.cp.isKronePremos5000 = true;	
 		workTool.cp.isAttachedCombine = true;
-		workTool.cp.fixedCombineOffset = -4.8;
-		
+
 	elseif 	workTool.cp.xmlFileName == 'comprimaV180XC.xml' then
 		workTool.cp.isKroneComprimaV180XC = true;
 		workTool.cp.isStrawHarvestAddonBaler = true;
@@ -406,7 +355,7 @@ function courseplay:setNameVariable(workTool)
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
 	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
-		workTool.cp.notToBeReversed = true; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
+		workTool.cp.notToBeReversed = false; --TODO Fix reverseing with this tool. The distances on this tool are calculated incorrectly causeing the reverse turn to fail
 		workTool.cp.overwriteTurnRadius = 7;
 		
 	--Bednar SM 180000 [Giants Big Bud DLC]
@@ -567,33 +516,10 @@ end;
 
 ------------------------------------------------------------------------------------------
 
-function courseplay:isSpecialSowingMachine(workTool)
-	return false;
-end;
-
-function courseplay:isSpecialSprayer(workTool)
-	return false;
-end;
-
-function courseplay:isSpecialMower(workTool)
-	return false;
-end
-
 function courseplay:isSpecialBaler(workTool)
 	if workTool.cp.isKroneUltimaCF155XC then
 		return true;
 	end
-	return false;
-end;
-
-function courseplay:isSpecialRoundBaler(workTool)
-	return false;
-end;
-
-function courseplay:isSpecialBaleLoader(workTool)
-	if workTool.cp.isSpecialBaleLoader or workTool.isSpecialBaleLoader then
-		return true;
-	end;
 	return false;
 end;
 
@@ -606,15 +532,6 @@ function courseplay:isSpecialCombine(workTool, specialType, fileNames)
 	if workTool.cp.isKronePremos5000 then
 		return true;
 	end
-	--[[if fileNames ~= nil and #fileNames > 0 then
-		for i=1, #fileNames do
-			if workTool.cp.xmlFileName == fileNames[i] .. '.xml' then
-				return true;
-			end;
-		end;
-		return false;
-	end;]]
-
 	return false;
 end
 
@@ -624,157 +541,21 @@ end
 function courseplay:askForSpecialSettings(self, object)
 	--- SPECIAL VARIABLES THAT CAN BE USED:
 	--
-	-- automaticToolOffsetX:					(Distance in meters)	Used to automatically set the tool horizontal offset. Negagive value = left, Positive value = right.
-	-- object.cp.backMarkerOffsetCorrection:		(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise and/or turn off the work tool
-	--																	Positive value, moves it forward, Negative value moves it backwards.
-	-- object.cp.frontMarkerOffsetCorrection:	(Distance in meters)	If the implement starts to early or to late, you can specify then it needs to lower and/or turn on the work tool
-	--																	Positive value, moves it forward, Negative value moves it backwards.
-	-- object.cp.haveInversedRidgeMarkerState:	(Boolean)				If the ridmarker is using the wrong side in auto mode, set this value to true
-	-- object.cp.realUnfoldDirectionIsReversed:	(Boolean)				If the tool unfolds when driving roads and folds when working fields, then set this one to true to reverse the folding order.
 	-- object.cp.specialUnloadDistance:			(Distance in meters)	Able to set the distance to the waiting point when it needs to unload. Used by bale loaders. Distance from trailer's turning point to the rear unloading point.
-	-- self.cp.changeDirAngle					(Angle in Degrees)		Overwrite the default automatic direction change angle, used in turn maneuvers.
-	-- self.cp.noStopOnEdge:                    (Boolean)               Set this to true if it dont need to stop the work tool while turning.
-	--																	Some work tool types automatically set this to true.
-	-- self.cp.noStopOnTurn:					(Boolean)				Set this to true if the work tool don't need to stop for 1½ sec before turning.
-	--																	Some work tool types automatically set this to true.
-	-- self.cp.backMarkerOffset:				(Distance in meters)	If the implement stops to early or to late, you can specify then it needs to raise/lower or turn on/off the work tool
-	-- object.cp.noWorkArea						(Boolean)				Some implement have workarea that don't work. This will have set markers skip over thoses tools
-	-- TODO: Add description for all the special varialbes that is usable here.
 
 	courseplay:debug(('%s: askForSpecialSettings(..., %q)'):format(nameNum(self), nameNum(object)), 6);
 
-	local automaticToolOffsetX;
-	-- VEHICLES
-	if self.cp.isGrimmeTectron415 then
-		self.cp.changeDirAngle = 5;
-		self.cp.noStopOnTurn = true;
-		self.cp.noStopOnEdge = true;
-		self.isStrawEnabled = false;
-
-	elseif self.cp.isHolmerTerraDosT4_40 then
-		self.cp.changeDirAngle = 20;
-		self.cp.noStopOnTurn = true;
-		self.cp.noStopOnEdge = true;
-		self.cp.backMarkerOffset = 4.5;
-		self.isStrawEnabled = false;
-	elseif self.cp.isCaseIHA8800MR then
-		self.cp.changeDirAngle = 1;
-	end;
-
-	-- OBJECTS
-	if object.cp.isSP400F then
-		object.cp.backMarkerOffsetCorrection = 0.5;
-		object.cp.frontMarkerOffsetCorrection = -0.25;
-
-	elseif object.cp.isUrsusT127 then
+	if object.cp.isUrsusT127 then
 		object.cp.specialUnloadDistance = -1.8;
-		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
 
-	elseif object.cp.isRopaKeiler2 then	
-		automaticToolOffsetX = -2; -- ToolOffsetX is 2 meters to the left
-		
 	elseif object.cp.isArcusinFSX6372 then
 		object.cp.specialUnloadDistance = -3.8;
-		automaticToolOffsetX = -2.4; -- ToolOffsetX is 0.2 meters to the left
-
-	elseif object.cp.isAgromaszPOH5 then
-		automaticToolOffsetX = 0.5; -- ToolOffsetX is 0.5 -- meters to the right
-
-	elseif object.cp.isSalford4204 then
-		automaticToolOffsetX = -0.2; -- ToolOffsetX is 0.2 meters to the left
-
-	elseif object.cp.isSalford8312 then
-		automaticToolOffsetX = 0.4; -- ToolOffsetX is 0.4 meters to the right
-		object.cp.backMarkerOffsetCorrection = -7.5;
-		object.cp.frontMarkerOffsetCorrection = -10;
-
-	elseif object.cp.isLemkenTitan18 then
-		automaticToolOffsetX = 0.8; -- ToolOffsetX is 0.8 meters to the right
 
 	elseif object.cp.isAugerWagon then
-		if object.cp.foldPipeAtWaitPoint then
-			object.cp.forwardPointsFoldPipe = 0;
-			if object.foldAnimTime ~= nil then
-				object.cp.lastFoldAnimTime = object.foldAnimTime;
-			end;
-		end;
 		object.cp.lastFillLevel = object.cp.fillLevel;
 
-		if object.cp.isHaweSUW4000 or object.cp.isHaweSUW5000 or object.cp.isHaweULW2600T or object.cp.isHaweULW3000T then
-			object.cp.hasPipeLight = object.B3 and object.B3.work and object.B3.work[1];
-			if object.cp.hasPipeLight then
-				object.cp.pipeLight = object.B3.work[1];
-			end;
-		elseif object.cp.hasSpecializationBigBear then
-			if (self.cp.mode == 2 or self.cp.mode == 3) and not object.workMode then
-				if object.cp.hasSpecializationBigBearV2 then
-					object:setWorkMode(true);
-				else
-					object.workMode = true;
-					object.cp.needsEvent = true;
-				end;
-			end;
-		end;
-
-	elseif object.cp.isGrimmeSE260 then
-		automaticToolOffsetX = -1.8
-
-	elseif object.cp.isUrsusZ586 then
-		self.cp.noStopOnEdge = true
-		self.cp.noStopOnTurn = true
-		automaticToolOffsetX = -2.5;
-
-	elseif object.cp.isKuhnSW4014 then
-		self.cp.noStopOnEdge = true
-		self.cp.noStopOnTurn = true
-		automaticToolOffsetX = -2.5;
-
-	elseif object.cp.isZunhammerVibro  then
-		local tractor = object.attacherVehicle; 
-		if tractor.cp.noStopOnEdge then
-			tractor.cp.noStopOnEdge = false;
-			tractor.cp.noStopOnTurn = false;
-		end
-
-	elseif object.cp.isHolmerHR9 then
-		object.cp.frontMarkerOffsetCorrection = 2;
-
-	elseif object.cp.isKuhnDiscolanderXM52 then
-		object.cp.frontMarkerOffsetCorrection = 5.6;
-		object.cp.backMarkerOffsetCorrection = -4.5;
-
-	elseif object.cp.isHatzenbichlerTerminator18 then
-		object.cp.frontMarkerOffsetCorrection = -6.5;
-		object.cp.backMarkerOffsetCorrection = -6.5;
-
-	elseif object.cp.isHatzenbichlerTH1400 then
-		object.cp.noWorkArea = true;
-
-	elseif object.cp.isGregoireBessonSPSL9 then
-		automaticToolOffsetX = 2.1;
-
-	elseif object.cp.isBednarSM18000 then
-		object.cp.backMarkerOffsetCorrection = -3.25;
-		
-	elseif object.cp.isSWT7 then
-		automaticToolOffsetX = -2.2;
-
-	end;
---[[
-	if self.cp.mode == courseplay.MODE_LIQUIDMANURE_TRANSPORT then
-		object.cp.lastFillLevel = object.cp.fillLevel;
-	end;
-]]
-	-- if we never set the auto tool offset yet (after startup?) do it now once
-	if automaticToolOffsetX ~= nil and self.cp.automaticToolOffsetX == nil then
-		self.cp.automaticToolOffsetX = automaticToolOffsetX
-		courseplay:changeToolOffsetX(self, nil, automaticToolOffsetX, true);
 	end;
 
-	-- Debug Prints
-	if self.cp.backMarkerOffset and type(self.cp.backMarkerOffset) == "number" then
-		courseplay:debug(("%s backMarkerOffset set to %.1fm"):format(self.name, self.cp.backMarkerOffset),6);
-	end;
 end
 
 function courseplay:getSpecialWorkWidth(workTool)
@@ -791,105 +572,3 @@ function courseplay:getSpecialWorkWidth(workTool)
 	return specialWorkWidth;
 end;
 
-function courseplay:handleSpecialSprayer(self, activeTool, fillLevelPct, driveOn, allowedToDrive, lx, lz, dt, pumpDir)
-	return false, allowedToDrive,lx,lz;
-end
-
-function courseplay:moveSingleTool(vehicle, activeTool, toolIndex, x,y,z, dt)
-	--local toolRot = activeTool.spec_cylindered.movingTools[9].curRot[3]
-	local tool = activeTool.spec_cylindered.movingTools[toolIndex];
-	local rotSpeed = 0.0033;
-	local targetRot = {x,y,z}
-	local done = true;
-	local changed = false;
-	if dt == nil then dt = g_physicsDt; end;
-	if tool.rotSpeed ~= nil then
-		rotSpeed = tool.rotSpeed * dt;
-	end;
-	for i=1, 3 do
-		local oldRot = tool.curRot[i];
-		local target = targetRot[i]
-		local newRot;
-		if target ~= oldRot then
-			done = false
-		end
-		local dir = targetRot[i] - oldRot;
-		dir = math.abs(dir)/dir;
-
-		if tool.node ~= nil and tool.rotMin ~= nil and tool.rotMax ~= nil and dir ~= nil and dir ~= 0 then
-			newRot = MathUtil.clamp(oldRot + (rotSpeed * dir), tool.rotMin, tool.rotMax);
-			if (dir == 1 and newRot > targetRot[i]) or (dir == -1 and newRot < targetRot[i]) then
-				newRot = targetRot[i];
-			end;
-			if newRot ~= oldRot and newRot >= tool.rotMin and newRot <= tool.rotMax then
-				tool.curRot[i] = newRot;
-				setRotation(tool.node, unpack(tool.curRot));
-				changed = true;
-			end;
-		end;
-	end;
-
-	if changed then
-		Cylindered.setDirty(vehicle, tool);
-		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
-	end;
-
-	return done
-
-end
-
---- rotateSingleTool Usage
---- @param vehicle 		[Object] 			The vehicle it self.
---- @param activeTool 	[Object] 			The working tool or vehicle it self.
---- @param toolIndex 	[Number] 			The moving tool index from the activeTool.movingTools
---- @param rotatePos 	[Boolean or Number]	If boolean, then it will rotate to max or min position based on true or false.
----											If Number, then rotate to that position in degree.
---- @param dt			[Number or Nil]		The time in ms since last update. If nil, then it use the global dt from the game.
-function courseplay:rotateSingleTool(vehicle, activeTool, toolIndex, rotatePos, dt)
-	if vehicle == nil or activeTool == nil or toolIndex == nil or rotatePos == nil then
-		return;
-	end;
-
-	dt = dt or g_physicsDt;
-
-	local mt = activeTool.spec_cylindered.movingTools[toolIndex];
-	local changed = false;
-
-	local curRot = mt.curRot[mt.rotationAxis];
-	local targetRot = mt.invertAxis and mt.rotMax or mt.rotMin;
-
-	if type(rotatePos) == 'boolean' then
-		if rotatePos then
-			targetRot = mt.invertAxis and mt.rotMin or mt.rotMax;
-		end;
-	elseif type(rotatePos) == 'number' then
-		targetRot = MathUtil.clamp(math.rad(rotatePos), mt.rotMin, mt.rotMax);
-	else
-		-- Unsupported rotatePos format, so we returns.
-		return;
-	end;
-
-	if courseplay:round(curRot, 4) ~= courseplay:round(targetRot, 4) then
-		local newRot;
-
-		local rotDir = MathUtil.sign(targetRot - curRot);
-
-		if mt.node and mt.rotMin and mt.rotMax and rotDir ~= 0 then
-			local rotChange = mt.rotSpeed ~= nil and (mt.rotSpeed * dt) or (0.2/dt);
-			newRot = MathUtil.clamp(curRot + (rotChange * rotDir), mt.rotMin, mt.rotMax);
-			if (rotDir == 1 and newRot > targetRot) or (rotDir == -1 and newRot < targetRot) then
-				newRot = targetRot;
-			end;
-			if newRot ~= curRot and newRot >= mt.rotMin and newRot <= mt.rotMax then
-				mt.curRot[mt.rotationAxis] = newRot;
-				setRotation(mt.node, unpack(mt.curRot));
-				changed = true;
-			end;
-		end;
-	end;
-
-	if changed then
-		Cylindered.setDirty(vehicle, mt);
-		vehicle:raiseDirtyFlags(vehicle.cylinderedDirtyFlag);
-	end;
-end;

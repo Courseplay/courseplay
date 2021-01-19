@@ -241,7 +241,6 @@ function courseplay:stop(self)
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
 	self.cp.aiTurnNoBackward = false
-	self.cp.noStopOnEdge = false
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	-- deactivate beacon and hazard lights

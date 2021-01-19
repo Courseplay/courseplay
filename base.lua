@@ -42,11 +42,6 @@ function courseplay:onLoad(savegame)
 	self.cp.waitForTurnTime = 0.00   --float
 	self.cp.aiTurnNoBackward = false --bool
 	self.cp.canBeReversed = nil --bool
-	self.cp.backMarkerOffset = nil --float
-	self.cp.aiFrontMarker = nil --float
-	self.cp.noStopOnEdge = false --bool
-	self.cp.noStopOnTurn = false --bool
-	self.cp.noWorkArea = false -- bool
 
 	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
@@ -632,12 +627,13 @@ function courseplay:showWorkWidth(vehicle)
 	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
 	local right = (vehicle.cp.workWidth * -0.5) + offsX;
 
-
-	if vehicle.cp.directionNode and vehicle.cp.backMarkerOffset and vehicle.cp.aiFrontMarker then
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.backMarkerOffset - offsZ);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.directionNode, right, 1.6, vehicle.cp.aiFrontMarker - offsZ);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.directionNode, left,  1.6, vehicle.cp.aiFrontMarker - offsZ);
+	-- TODO: refactor this, move showWorkWidth into the AIDriver?
+	if vehicle.cp.directionNode and vehicle.cp.driver.getMarkers then
+		local f, b = vehicle.cp.driver.getMarkers()
+		local p1x, p1y, p1z = localToWorld(vehicle.cp.directionNode, left,  1.6, b - offsZ);
+		local p2x, p2y, p2z = localToWorld(vehicle.cp.directionNode, right, 1.6, b - offsZ);
+		local p3x, p3y, p3z = localToWorld(vehicle.cp.directionNode, right, 1.6, f - offsZ);
+		local p4x, p4y, p4z = localToWorld(vehicle.cp.directionNode, left,  1.6, f - offsZ);
 
 		cpDebug:drawPoint(p1x, p1y, p1z, 1, 1, 0);
 		cpDebug:drawPoint(p2x, p2y, p2z, 1, 1, 0);

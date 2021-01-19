@@ -1129,7 +1129,8 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
@@ -1183,12 +1184,13 @@ function FieldworkAIDriver:setMarkers()
 			backMarkerDistance = d
 		end
 	end
-	-- set these up for turn.lua. TODO: pass in with the turn context and get rid of the aiFrontMarker and backMarkerOffset completely
-	self.vehicle.cp.aiFrontMarker = frontMarkerDistance
 	self.frontMarkerDistance = frontMarkerDistance
-	self.vehicle.cp.backMarkerOffset = backMarkerDistance
 	self.backMarkerDistance = backMarkerDistance
 	self:debug('front marker: %.1f, back marker: %.1f', frontMarkerDistance, backMarkerDistance)
+end
+
+function FieldworkAIDriver:getMarkers()
+	return self.frontMarkerDistance, self.backMarkerDistance
 end
 
 function FieldworkAIDriver:getAIMarkers(object, suppressLog)

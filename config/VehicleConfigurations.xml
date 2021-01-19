@@ -23,15 +23,51 @@ can be any of the multiple values.
 
 You can define the following custom settings:
 
-- toolOffsetX: offset of the tool's centerline relative to the course, left +, right -.
-               For example, if your tool is 2 meters right use "-2.0" here.
+- toolOffsetX: number
+    Offset of the tool's centerline relative to the course, left +, right -.
+    For example, if your tool is 2 meters right use "-2.0" here.
+
+- noReverse: boolean
+    This implement can't be reversed. Will not use any turn maneuvers which needs
+    reversing.
+
+- crabSteeringModeIndex: number
+    Crab steering mode to use by Courseplay for this vehicle. See the vehicle's
+    XML for which one is which. If this is not given, CP will use the aiSteeringModeIndex
+    in the crabSteering section of the vehicle's XML
 
 -->
 <VehicleConfigurations>
+    <!-- Harvesters -->
+    <Vehicle name="tiger6.xml"
+             crabSteeringModeIndex="1"
+    />
+
+    <!-- Implements -->
     <Vehicle name="arcusinFSX6372.xml"
              toolOffsetX="-2.4"
     />
+    <Vehicle name="keiler2.xml"
+             toolOffsetX="-2.0"
+    />
     <Vehicle name="ursusT127.xml"
              toolOffsetX="-2.4"
+    />
+    <Vehicle name="SE260.xml"
+             toolOffsetX="-1.8"
+    />
+    <Vehicle name="ursusZ586.xml"
+             toolOffsetX="-2.5"
+    />
+    <Vehicle name="kuhnSW4014.xml"
+             toolOffsetX="-2.5"
+    />
+    <!-- Gregoire Besson -->
+    <Vehicle name="SPSL9.xml"
+             toolOffsetX="2.1"
+    />
+    <Vehicle name="SWT7.xml"
+             toolOffsetX="-2.2"
+             noReverse="false"
     />
 </VehicleConfigurations>

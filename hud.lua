@@ -375,15 +375,6 @@ end;
 -- set the content cyclic
 function courseplay.hud:setContent(vehicle)
 	-- self = courseplay.hud
-	if vehicle.cp.hud.firstTimeSetContent then
-		--- Reset tools
-		-- This is to show the silo filltype line on first time opening the hud and the mode is Grain Transport.
-		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
-			--courseplay:resetTools(vehicle); TODO Tommi shouldn't be needed anymore
-		end;
-		vehicle.cp.hud.firstTimeSetContent = false
-	end;
-
 	-- BOTTOM GLOBAL INFO
 	-- mode icon
 	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.NUM_MODES;
@@ -1433,7 +1424,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		currentPage = 1;
 		show = false;
 		showMiniHud = true;
-		firstTimeSetContent = true;
 		content = {
 			bottomInfo = {};
 			pages = {};

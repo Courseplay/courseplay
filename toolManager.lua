@@ -45,6 +45,7 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	courseplay:resetTools(vehicle)
 end
 
+--- Set up tool configuration after something is attached or detached
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
@@ -113,19 +114,19 @@ function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
 function courseplay:isMower(workTool)
-	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
+	return workTool.cp.hasSpecializationMower
 end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.spec_baler ~= nil and (workTool.spec_baler.baleCloseAnimationName ~= nil and workTool.spec_baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
+	return workTool.cp.hasSpecializationSowingMachine
 end;
 function courseplay:isSpecialChopper(workTool)
 	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5 or workTool.cp.isTraileredChopper
 end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
+	return workTool.cp.hasSpecializationSprayer
 end;
 function courseplay:isWheelloader(workTool)
 	return workTool.typeName:match("wheelLoader");
@@ -188,19 +189,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	-- MODE 4: FERTILIZER AND SEEDING
 	if vehicle.cp.mode == 4 then
 		if isAllowedOkay and isDisallowedOkay then
-			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
-			local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-			vehicle.cp.noStopOnEdge = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
-			vehicle.cp.noStopOnTurn = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 		end;
 	-- MODE 6: FIELDWORK
 	elseif vehicle.cp.mode == 6 then
 		if isAllowedOkay and isDisallowedOkay then
-			courseplay:setMarkers(vehicle, workTool);
-			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
-			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
-			if courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
+			if courseplay:isBaleLoader(workTool) then
 				vehicle.cp.hasBaleLoader = true;
 				if vehicle.cp.lastValidTipDistance == nil then
 					vehicle.cp.lastValidTipDistance = 0
@@ -351,154 +345,6 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
---- Create two markers (offset distances from the root/direction node of the vehicle):
--- frontMarker: distance of the outermost work area limit from the root/direction node.
--- backMarker: distance of the innermost work area limit from the root/direction node.
-function courseplay:setMarkers(vehicle, object)
-
-	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is a combine -> not setting work areas', tostring(object.name))
-		return;
-	end
-
-	if object.cp.noWorkArea then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is special tool configured for no work areas', tostring(object.name))
-		return;
-	end;
-
-	local realDirectionNode		= AIDriverUtil.getDirectionNode(vehicle)
-	local aLittleBitMore 		= 1;
-	local pivotJointNode 		= courseplay:getPivotJointNode(object);
-	object.cp.backMarkerOffset 	= nil;
-	object.cp.aiFrontMarker 	= nil;
-
-	-- Get and set vehicle distances if not set
-	local vehicleDistances = vehicle.cp.distances or courseplay:getDistances(vehicle);
-	-- Get and set object distances if not set
-	local objectDistances = object.cp.distances or courseplay:getDistances(object);
-
-	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	 
-
-	local activeInputAttacherJoint = object.getActiveInputAttacherJoint and object:getActiveInputAttacherJoint()
-	if not activeInputAttacherJoint then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): no attacher joints')
-		return
-	end
-
-	if not courseplay:hasWorkAreas(object) then
-		if courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-			-- Calculate the offset based on the distances
-			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1;
-
-			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorrection, 0);
-			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
-				vehicle.cp.backMarkerOffset = abs(backMarkerCorrection) > 0 and ztt + backMarkerCorrection or 0;
-			end
-
-			local frontMarkerCorrection = Utils.getNoNil(object.cp.frontMarkerOffsetCorrection, 0);
-			if vehicle.cp.aiFrontMarker == nil or (abs(frontMarkerCorrection) > 0 and  ztt + frontMarkerCorrection < vehicle.cp.aiFrontMarker) then
-				vehicle.cp.aiFrontMarker = abs(frontMarkerCorrection) > 0 and ztt + frontMarkerCorrection or -3;
-			end
-
-			courseplay.debugVehicle(6, vehicle, '(%s) setMarkers(), no work area: cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
-				nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
-		else
-			--- Set front and back marker to default values, so we don't check again.
-			if vehicle.cp.backMarkerOffset == nil then
-				vehicle.cp.backMarkerOffset = 0;
-			end
-			if vehicle.cp.aiFrontMarker == nil then
-				vehicle.cp.aiFrontMarker = -3;
-			end
-			courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		end;
-		return;
-	end
-
-	local backMarkerAreaType, frontMarkerAreaType
-	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem to exist anymore
-	local avoidType = {
-		[WorkAreaType.RIDGEMARKER] = true
-	}
-	for k, area in courseplay:workAreaIterator(object) do
-		if not avoidType[area.type] then
-			for j,node in pairs(area) do
-				if j == "start" or j == "height" or j == "width" then
-					local x, y, z;
-					local ztt = 0;
-					local type;
-
-					if pivotJointNode and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-						type = "Pivot Trailer";
-						-- TODO: use localToLocal instead of a getWorldTranslation and a worldToLocal
-						x, y, z = getWorldTranslation(pivotJointNode);
-
-						-- Get the marker offset from the pivot node.
-						_, _, ztt = worldToLocal(node, x, y, z);
-
-						-- Calculate the offset based on the distances
-						 ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt; 
-
-					 elseif courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-						type = "Trailer";
-						x, y, z = getWorldTranslation(activeInputAttacherJoint.node) 
-
-						-- Get the marker offset from the pivot node.
-						_, _, ztt = worldToLocal(node, x, y, z);
-
-						-- Calculate the offset based on the distances
-						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1) - ztt; 
-
-					else
-						type = "Vehicle";
-						x, y, z = getWorldTranslation(node);
-						_, _, ztt = worldToLocal(realDirectionNode, x, y, z);
-					end;
-
-					courseplay.debugVehicle(6, vehicle, '%s %s (%s) %s: ztt = %.2f',
-						object:getName(), type, g_workAreaTypeManager.workAreaTypes[area.type].name, tostring(j), ztt)
-					if object.cp.backMarkerOffset == nil or ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) > object.cp.backMarkerOffset then
-						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
-						backMarkerAreaType = area.type
-					end
-					if object.cp.aiFrontMarker == nil or ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) < object.cp.aiFrontMarker then
-						object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
-						frontMarkerAreaType = area.type
-					end
-				end
-			end
-		else
-			courseplay.debugVehicle(6, vehicle, "Avoiding workArea Type %s", g_workAreaTypeManager.workAreaTypes[area.type].name)
-		end;
-	end
-
-	if vehicle.cp.backMarkerOffset == nil or object.cp.backMarkerOffset < (vehicle.cp.backMarkerOffset + aLittleBitMore) then
-		vehicle.cp.backMarkerOffset = object.cp.backMarkerOffset - aLittleBitMore;
-	end
-
-	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > (vehicle.cp.aiFrontMarker - aLittleBitMore) then
-		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
-	end
-
-	-- Sprayers have a rectangular work area but the spray is at an angle so the front of the area is not covered.
-	-- Also, some sprayers have multiple work areas depending on the configuration and fill type which can also
-	-- move the front or back markers.
-	-- This leads to little unsprayed rectangles at the row ends as the turn code turns off the sprayer when the back
-	-- marker (which is actually in the front when the implement is attached to the back of the vehicle) reaches the
-	-- field edge.
-	-- So, if both the front and back markers are from sprayer work areas, move the back marker to where the front
-	-- marker is which will result turning off the sprayer later.
-	if frontMarkerAreaType and backMarkerAreaType and
-		frontMarkerAreaType == WorkAreaType.SPRAYER and
-		backMarkerAreaType == WorkAreaType.SPRAYER then
-		courseplay.debugVehicle(6, vehicle, "Forcing backmarker to frontmarker for sprayer")
-		vehicle.cp.backMarkerOffset = vehicle.cp.aiFrontMarker
-	end
-
-	courseplay.debugVehicle(6, vehicle, '(%s), setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
-		nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
-end;
 
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
@@ -508,10 +354,6 @@ function courseplay:setFoldedStates(object)
 		object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection;
 		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.spec_foldable.turnOnFoldDirection then
 			object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
-		end;
-
-		if object.cp.realUnfoldDirectionIsReversed then
-			object.cp.realUnfoldDirection = -object.cp.realUnfoldDirection;
 		end;
 
 		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), 17);
