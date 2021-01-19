@@ -47,20 +47,71 @@ You can define the following custom settings:
     <Vehicle name="arcusinFSX6372.xml"
              toolOffsetX="-2.4"
     />
+    <Vehicle name="rootster604.xml"
+             noReverse="true"
+    />
     <Vehicle name="keiler2.xml"
              toolOffsetX="-2.0"
+             noReverse="ture"
     />
+    <!--Mod: Ursus T-127 (Bale Collector)-->
     <Vehicle name="ursusT127.xml"
              toolOffsetX="-2.4"
+             noReverse="true"
+    />
+    <!--Mod: Ursus Z586 (Bale Wrapper)-->
+    <Vehicle name="z586.xml"
+             noReverse="true"
     />
     <Vehicle name="SE260.xml"
              toolOffsetX="-1.8"
+             noReverse="true"
     />
     <Vehicle name="ursusZ586.xml"
              toolOffsetX="-2.5"
     />
     <Vehicle name="kuhnSW4014.xml"
              toolOffsetX="-2.5"
+             noReverse="true"
+    />
+    <Vehicle name="agrisemCultiplowPlatinum8m.xml"
+             noReverse="true"
+    />
+    <Vehicle name="salford4204.xml"
+             noReverse="true"
+    />
+    <Vehicle name="titan11.xml"
+             noReverse="true"
+    />
+    <Vehicle name="SPSL9.xml"
+             noReverse="true"
+    />
+    <Vehicle name="980AirCart.xml"
+             noReverse="true"
+    />
+    <Vehicle name="xlAirDrill84.xml"
+             noReverse="true"
+    />
+    <Vehicle name="terminator18.xml"
+             noReverse="true"
+    />
+    <Vehicle name="th1400.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series3320.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series7950b.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series3420.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series71300.xml"
+             noReverse="true"
+    />
+    <Vehicle name="yp2425A.xml"
+             noReverse="true"
     />
     <!-- Gregoire Besson -->
     <Vehicle name="SPSL9.xml"
