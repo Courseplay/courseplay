@@ -44,7 +44,16 @@ You can define the following custom settings:
 -->
 <VehicleConfigurations>
     <!--[GIANTS]-->
+
     <!-- Harvesters -->
+    <!--\vehicles\holmer-->
+    <Vehicle name="terraDosT4_40.xml"
+            isHarvesterSteerable="true"
+    />
+    <!--\vehicles\ropa-->
+    <Vehicle name="tiger6.xml"
+            isHarvesterSteerable="true"
+    />
 
     <!-- Implements -->
     <!--\vehicles\arcusin-->
@@ -85,7 +94,6 @@ You can define the following custom settings:
              implementWheelAlwaysOnGround = "true"
     />
     <!--vehicles\gregoireBesson-->
-    <!---->
     <Vehicle name="SPSL9.xml"
              toolOffsetX="2.1"
              turnRadius = "10"
@@ -128,9 +136,11 @@ You can define the following custom settings:
     <!--Tractors-->
 
     <!--[DLC]-->
+
     <!--Harvester-->
 
     <!--Implements-->
+
     <!--Bourgault-->
     <Vehicle name="series3320.xml"
              noReverse="true"
@@ -145,9 +155,11 @@ You can define the following custom settings:
              noReverse="true"
     />
     <!--[MODS]-->
+
     <!--Harvester-->
 
     <!--Implements-->
+
     <!--Mod: Ursus T-127 (Bale Collector)-->
     <Vehicle name="ursusT127.xml"
              toolOffsetX="-2.4"
@@ -159,6 +171,7 @@ You can define the following custom settings:
              noReverse="true"
     />
     <!--Tractors and Others-->
+
     <!--Mod: Big Bud 747-->
     <Vehicle name="bigBud747.xml"
              turnRadius = "9"

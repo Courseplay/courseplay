@@ -183,11 +183,9 @@ function courseplay:setNameVariable(workTool)
 	elseif workTool.cp.xmlFileName == 'terraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.use = 1;
-		workTool.cp.isHarvesterSteerable = true;
 	-- What of this is still needed ?
 	elseif workTool.cp.xmlFileName == 'tiger6.xml' then
-		workTool.cp.isRopaTiger6 = true;
-		workTool.cp.isHarvesterSteerable = true;	
+		workTool.cp.isRopaTiger6 = true;	
 	-- Harvester head, Mod
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
@@ -200,7 +198,7 @@ function courseplay:setNameVariable(workTool)
 	-- Only as Mod, .xml unclear, not rly needed as we don't have an AIDriver for this
 	elseif workTool.cp.xmlFileName ==  'ropaNawaRoMaus.xml' then
 		workTool.cp.isRopaNawaRoMaus = true;
-	-- What is still needed ? New .xml (Basegeme) caseIHA8800MRCrawlerBelt.xml
+	-- What is still needed ? New .xml (Basegeme, must find correct .xml)
 	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
 		workTool.cp.isCaseIHA8800MR = true;
 		workTool.cp.isHarvesterSteerable = true;
