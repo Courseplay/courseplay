@@ -203,9 +203,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			if courseplay:isHarvesterAttachable(workTool) then
 				vehicle.cp.hasHarvesterAttachable = true;
 			end;
-			if courseplay:isSpecialChopper(workTool) then
-				vehicle.cp.hasSpecialChopper = true;
-			end;
 		end;
 	end	
 	--belongs to mode3 but should be considered even if the mode is not set correctely
@@ -232,14 +229,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	-- REVERSE PROPERTIES
 	courseplay:getReverseProperties(vehicle, workTool);
-
-	-- aiTurnNoBackward
-	if isImplement and hasWorkTool then
-		if not vehicle.cp.aiTurnNoBackward and workTool.cp.notToBeReversed then
-			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
-		end;
-	end;
 
 	-- TRAFFIC COLLISION IGNORE LIST
 	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);

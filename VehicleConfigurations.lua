@@ -18,7 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --- A container for custom vehicle configurations.
 ---
---- Allows to customize vehicle data an in XML file.
+--- Allows to customize vehicle data XML file(s). A standard configuration is installed with Courseplay,
+--- custom user configs can be placed in <your save game folder>/modsSettings/Courseplay/vehicleConfigurations.xml
+---
+--- Custom configs are read last and override the standard config when exist.
+---
+--- You can use the cpReadVehicleConfigurations console command to reload these files in-game.
 ---
 ---@class VehicleConfigurations : CpObject
 VehicleConfigurations = CpObject()
@@ -39,25 +44,22 @@ end
 function VehicleConfigurations:loadFromXml()
     self.xmlFileName = Utils.getFilename('config/VehicleConfigurations.xml', courseplay.path)
     self.xmlFile = self:loadXmlFile(self.xmlFileName)
-    self.userXmlFileName = getUserProfileAppPath() .. 'savegame' .. g_currentMission.missionInfo.savegameIndex ..
-            '/courseplayVehicleConfigurations.xml'
-    self.userXmlFile = self:loadXmlFile(self.userXmlFileName)
-end
+    self.userXmlFileName = getUserProfileAppPath() .. 'modsSettings/Courseplay/vehicleConfigurations.xml'
 
--- write the user config back to the savegame (the Giants engine does not persist files in the savegame,
--- if you don't write it when saving the game, it is lost.)
--- TODO: should it be rather saved where the courses are?
-function VehicleConfigurations:saveToXml()
-    if self.userXmlFile then
-        saveXMLFile(self.userXmlFile)
-    end
+    self.userXmlFile = self:loadXmlFile(self.userXmlFileName)
 end
 
 function VehicleConfigurations:addAttribute(vehicleConfiguration, xmlFile, vehicleElement, attribute, getXmlFunction)
     local configValue = getXmlFunction(xmlFile, vehicleElement .. '#' .. attribute)
     if configValue then
         vehicleConfiguration[attribute] = configValue
-        courseplay.info('\\__ %s = %s', attribute, tostring(configValue))
+        local valueAsString = ''
+        if type(configValue) == 'number' then
+            valueAsString = string.format('%.1f', configValue)
+        else
+            valueAsString = string.format('%s', tostring(configValue))
+        end
+        courseplay.info('\\__ %s = %s', attribute, valueAsString)
     end
 end
 
@@ -65,14 +67,14 @@ function VehicleConfigurations:readVehicle(xmlFile, vehicleElement)
     local vehicleConfiguration = {}
     local name = getXMLString(xmlFile, vehicleElement .. "#name")
     courseplay.info('Reading configuration for %s', name)
-    for _, attribute in pairs(self.attributes) do
+    for _, attribute in ipairs(self.attributes) do
         self:addAttribute(vehicleConfiguration, xmlFile, vehicleElement, attribute.name, attribute.getXmlFunction)
     end
     self.vehicleConfigurations[name] = vehicleConfiguration
 end
 
 function VehicleConfigurations:loadXmlFile(fileName)
-    courseplay.info('Loading vehicle configuration from %s', fileName)
+    courseplay.info('Loading vehicle configuration from %s ...', fileName)
     if fileExists(fileName) then
         local xmlFile = loadXMLFile('vehicleConfigurations', fileName);
         local rootElement = 'VehicleConfigurations'
@@ -89,6 +91,8 @@ function VehicleConfigurations:loadXmlFile(fileName)
             end
             return xmlFile
         end
+    else
+        courseplay.info('Vehicle configuration file %s does not exist.', fileName)
     end
 end
 

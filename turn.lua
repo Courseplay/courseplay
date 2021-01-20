@@ -145,6 +145,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 			turnInfo.extraAlignLength			= turnInfo.extraAlignLength + directionNodeToTurnNodeLength * 2;
 		end;
 		turnInfo.isHarvester					= isHarvester;
+		turnInfo.noReverse						= g_vehicleConfigurations:getRecursively(vehicle, 'noReverse')
 
 		-- headland turn data
 		vehicle.cp.headlandTurn = turnContext:isHeadlandCorner() and {} or nil
@@ -218,7 +219,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		if turnInfo.frontMarker > 0 and turnInfo.backMarker > 0 then
 			offset = -turnInfo.zOffset - turnInfo.frontMarker;
 		end;
-		if turnInfo.turnOnField and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward then
+		if turnInfo.turnOnField and not turnInfo.isHarvester and not turnInfo.noReverse then
 			turnInfo.reverseOffset = max((turnInfo.turnRadius + turnInfo.halfVehicleWidth - turnInfo.headlandHeight), offset);
 		elseif turnInfo.isHarvester and turnInfo.frontMarker > 0 then
 			-- without fully understanding this reverseOffset, correct it for combines so they don't make
@@ -235,7 +236,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 		courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), 14);
 		courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), 14);
 		courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), 14);
-		courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester)), 14);
+		courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q, noReverse=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester), tostring(turnInfo.noReverse)), 14);
 
 
 		if not turnContext:isHeadlandCorner() then
@@ -272,7 +273,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 					end;
 
 					--- Ohm Turn
-					if useOhmTurn or turnInfo.isHarvester or vehicle.cp.aiTurnNoBackward or not turnInfo.turnOnField then
+					if useOhmTurn or turnInfo.isHarvester or turnInfo.noReverse or not turnInfo.turnOnField then
 						courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo);
 					else
 						--- Questionmark Turn
@@ -350,7 +351,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	end;
 
 	--- Get the center height offset
-	if not turnInfo.haveHeadlands and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
+	if not turnInfo.haveHeadlands and not turnInfo.isHarvester and not turnInfo.noReverse and turnInfo.turnOnField then
 		turnInfo.reverseOffset = turnInfo.reverseOffset + abs(turnInfo.targetDeltaZ * 0.75);
 	end;
 
@@ -362,7 +363,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	end;
 
 	--- Extra WP 1 - Reverse back so we can turn inside the field (Only if we can't turn inside the headlands)
-	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
+	if not canTurnOnHeadland and not turnInfo.isHarvester and not turnInfo.noReverse and turnInfo.turnOnField then
 		-- Reverse back
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, 0, 0, -directionNodeToTurnNodeLength);
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.directionNode, 0, 0, turnInfo.zOffset - turnInfo.reverseOffset - directionNodeToTurnNodeLength - turnInfo.reverseWPChangeDistance);
@@ -392,7 +393,7 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	courseplay:generateTurnCircle(vehicle, center2, intersect2, stopDir, turnInfo.turnRadius, turnInfo.direction, true);
 
 	--- Extra WP 2 - Reverse back to field edge
-	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
+	if not canTurnOnHeadland and not turnInfo.isHarvester and not turnInfo.noReverse and turnInfo.turnOnField then
 		-- Move a bit more forward
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, nil, nil, nil, true);
@@ -438,7 +439,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	end;
 
 	--- Extra WP 1 - Reverse back so we can turn inside the field (Only if we can't turn inside the headlands)
-	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
+	if not canTurnOnHeadland and not turnInfo.isHarvester and not turnInfo.noReverse and turnInfo.turnOnField then
 		-- Reverse back
 		fromPoint.x, _, fromPoint.z = localToWorld(turnInfo.directionNode, 0, 0, -directionNodeToTurnNodeLength);
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.directionNode, 0, 0, turnInfo.zOffset - turnInfo.reverseOffset - directionNodeToTurnNodeLength - turnInfo.reverseWPChangeDistance);
@@ -511,7 +512,7 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	end;
 
 	--- Extra WP 2 - Reverse back to field edge
-	if not canTurnOnHeadland and not turnInfo.isHarvester and not vehicle.cp.aiTurnNoBackward and turnInfo.turnOnField then
+	if not canTurnOnHeadland and not turnInfo.isHarvester and not turnInfo.noReverse and turnInfo.turnOnField then
 		-- Move a bit more forward
 		toPoint.x, _, toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, turnInfo.reverseOffset + directionNodeToTurnNodeLength + turnInfo.extraAlignLength + turnInfo.wpChangeDistance);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, nil, nil, nil, true);
