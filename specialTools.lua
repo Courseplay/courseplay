@@ -194,15 +194,12 @@ function courseplay:setNameVariable(workTool)
 	-- Basegame, still needed ?
 	elseif workTool.cp.xmlFileName ==  'terraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
-		workTool.cp.isSugarBeetLoader = true
 	-- Basegame, we don't have an AI Driver for this
 	elseif workTool.cp.xmlFileName ==  'maus5.xml' then
 		workTool.cp.isRopaMaus5 = true;
-		workTool.cp.isSugarBeetLoader = true
 	-- Only as Mod, .xml unclear, not rly needed as we don't have an AIDriver for this
 	elseif workTool.cp.xmlFileName ==  'ropaNawaRoMaus.xml' then
 		workTool.cp.isRopaNawaRoMaus = true;
-		workTool.cp.isSugarBeetLoader = true
 	-- What is still needed ? New .xml (Basegeme) caseIHA8800MRCrawlerBelt.xml
 	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
 		workTool.cp.isCaseIHA8800MR = true;
