@@ -194,31 +194,21 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 
 end;
 
-function courseplay:changeToolOffsetX(vehicle, changeBy, force, noDraw)
-	local toolOffsetX = force or (courseplay:round(vehicle.cp.settings.toolOffsetX:get(), 1) + changeBy * 0.1)
-	if abs(toolOffsetX) < 0.1 then
-		toolOffsetX = 0;
-	end;
-	vehicle.cp.settings.toolOffsetX:set(toolOffsetX)
-	vehicle.cp.totalOffsetX = toolOffsetX;
-	if not noDraw then
-		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-	end;
-end;
+function courseplay:changeToolOffsetX(vehicle, changeBy)
+	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1)
+	vehicle.cp.totalOffsetX = vehicle.cp.settings.toolOffsetX:get();
+	-- show new setting for a few seconds on the screen
+	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
+end
 
 function courseplay:setAutoToolOffsetX(vehicle)
 	vehicle.cp.settings.toolOffsetX:setToConfiguredValue(vehicle)
 end
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
-	vehicle.cp.toolOffsetZ = force or (courseplay:round(vehicle.cp.toolOffsetZ, 1) + changeBy*0.1);
-	if abs(vehicle.cp.toolOffsetZ) < 0.1 then
-		vehicle.cp.toolOffsetZ = 0;
-	end;
-
-	if not noDraw then
-		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-	end;
+	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1)
+	-- show new setting for a few seconds on the screen
+	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 end;
 
 function courseplay:changeLoadUnloadOffsetX(vehicle, changeBy, force)
@@ -2070,10 +2060,25 @@ function ReturnToFirstPointSetting:isReleaseDriverActive()
 	return self:get() == self.RELEASE_DRIVER or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
 
----@class ToolOffsetXSetting : FloatSetting
-ToolOffsetXSetting = CpObject(FloatSetting)
+--- Generic offset setting with increment/decrement
+---@class OffsetSetting : FloatSetting
+OffsetSetting = CpObject(FloatSetting)
+function OffsetSetting:init(name, label, toolTip, vehicle, value)
+	FloatSetting.init(self, name, label, toolTip, vehicle, value)
+end
+
+-- increment/decrement offset
+function OffsetSetting:changeBy(changeBy)
+	self.value = courseplay:round(self.value, 1) + changeBy
+	if abs(self.value) < 0.1 then
+		self.value = 0
+	end
+end
+
+---@class ToolOffsetXSetting : OffsetSetting
+ToolOffsetXSetting = CpObject(OffsetSetting)
 function ToolOffsetXSetting:init(vehicle)
-	FloatSetting.init(self, 'toolOffsetX', 'COURSEPLAY_TOOL_OFFSET_X', 'COURSEPLAY_TOOL_OFFSET_X', vehicle, 0)
+	OffsetSetting.init(self, 'toolOffsetX', 'COURSEPLAY_TOOL_OFFSET_X', 'COURSEPLAY_TOOL_OFFSET_X', vehicle, 0)
 end
 
 --- Set to the configured value if exists, 0 otherwise
@@ -2088,6 +2093,29 @@ function ToolOffsetXSetting:getText()
 				abs(self.value),
 				courseplay:loc('COURSEPLAY_UNIT_METER'),
 				courseplay:loc(self.value > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'))
+	else
+		return '---'
+	end
+end
+
+---@class ToolOffsetZSetting : OffsetSetting
+ToolOffsetZSetting = CpObject(OffsetSetting)
+function ToolOffsetZSetting:init(vehicle)
+	OffsetSetting.init(self, 'toolOffsetZ', 'COURSEPLAY_TOOL_OFFSET_Z', 'COURSEPLAY_TOOL_OFFSET_Z', vehicle, 0)
+end
+
+--- Set to the configured value if exists, 0 otherwise
+function ToolOffsetZSetting:setToConfiguredValue()
+	-- set the auto tool offset if exists or 0
+	self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
+end
+
+function ToolOffsetZSetting:getText()
+	if self.value ~= 0 then
+		return ('%.1f%s (%s)'):format(
+				abs(self.value),
+				courseplay:loc('COURSEPLAY_UNIT_METER'),
+				courseplay:loc(self.value > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'))
 	else
 		return '---'
 	end
@@ -4063,6 +4091,18 @@ function SettingsContainer:validateSetting(setting)
 	return true
 end
 
+function SettingsContainer.createGlobalSettings()
+	container = SettingsContainer("globalSettings")
+	container:addSetting(LoadCoursesAtStartupSetting)
+	container:addSetting(AutoFieldScanSetting)
+	container:addSetting(WorkerWagesSetting)
+	container:addSetting(ClickToSwitchSetting)
+	container:addSetting(ShowMiniHudSetting)
+	container:addSetting(EnableOpenHudWithMouseGlobalSetting)
+	container:addSetting(AutoRepairSetting)
+	return container
+end
+
 function SettingsContainer.createGlobalCourseGeneratorSettings()
 	local container = SettingsContainer('globalCourseGeneratorSettings')
 	container:addSetting(HeadlandLaneChangeMinRadius)
@@ -4148,6 +4188,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(BunkerSpeedSetting,vehicle, container.levelCompactMode)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
+	container:addSetting(ToolOffsetZSetting, vehicle)
 	return container
 end
 
@@ -4159,6 +4200,7 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
 	return container
 end
+
 
 -- do not remove this comment
 -- vim: set noexpandtab:

@@ -880,11 +880,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeToolOffsetZ' then
 					--Tool vertical offset
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
-					if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
-						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = '---';
-					end;
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetZ:getText()
 				elseif entry.functionToCall == 'changeWaitTime' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
 					local str;

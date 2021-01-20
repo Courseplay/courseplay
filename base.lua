@@ -264,7 +264,6 @@ function courseplay:onLoad(savegame)
 
 	--Offset
 	self.cp.laneOffset = 0;
-	self.cp.toolOffsetZ = 0;
 	self.cp.totalOffsetX = 0;
 	self.cp.loadUnloadOffsetX = 0;
 	self.cp.loadUnloadOffsetZ = 0;
@@ -618,7 +617,7 @@ function courseplay:onDraw()
 end; --END draw()
 
 function courseplay:showWorkWidth(vehicle)
-	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.toolOffsetZ or 0;
+	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.settings.toolOffsetZ:get() or 0;
 
 	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
 	local right = (vehicle.cp.workWidth * -0.5) + offsX;
@@ -1208,8 +1207,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = StringUtil.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
-		courseplay:changeToolOffsetX(self, nil, tonumber(offsetData[2]), true);
-		courseplay:changeToolOffsetZ(self, nil, tonumber(offsetData[3]), true);
 
 		if not offsetData[5] then offsetData[5] = 0; end;
 		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
@@ -1268,7 +1265,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLString(xmlFile, newKey..".driving #alignment", tostring(self.cp.alignment.enabled))
 	
 	--field work settings
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, self.cp.settings.toolOffsetX:get(), self.cp.toolOffsetZ, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, 0, 0, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
