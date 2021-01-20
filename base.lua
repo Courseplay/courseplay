@@ -32,7 +32,6 @@ function courseplay:onLoad(savegame)
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
 	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
-	self.cp.isSugarBeetLoader = courseplay:isSpecialCombine(self, "sugarBeetLoader");
 	self.cp.hasHarvesterAttachable = false;
 
 	self.cp.speedDebugLine = "no speed info"

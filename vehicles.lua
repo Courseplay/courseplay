@@ -778,31 +778,6 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 	return workTool.cp.unloadOrFillNode;
 end;
 
-function courseplay:getHighestToolTurnDiameter(object)
-	local turnDiameter = 0;
-
-	-- Tool attached to Steerable
-	for _, implement in ipairs(object:getAttachedImplements()) do
-		local workTool = implement.object;
-
-		if courseplay:isRearAttached(object, implement.jointDescIndex) then
-			local ttr =  courseplay:getToolTurnRadius(workTool);
-			turnDiameter = ttr * 2;
-			courseplay:debug(('%s: toolTurnDiameter=%.2fm'):format(nameNum(workTool), turnDiameter), 6);
-
-			-- Check rear attached tools for turnDiameters
-			if workTool.getAttachedImplements and workTool:getAttachedImplements() ~= {} then
-				local ttd = courseplay:getHighestToolTurnDiameter(workTool);
-				if ttd > turnDiameter then
-					turnDiameter = ttd;
-				end;
-			end;
-		end;
-	end;
-
-	return turnDiameter;
-end;
-
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
 
@@ -1183,14 +1158,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		end;
 	end;
 
-	-- If an offset is set in setNameVariable() then apply it
-	if vehicle.cp.directionNodeZOffset and vehicle.cp.directionNodeZOffset ~= 0 then
-		offset = offset + vehicle.cp.directionNodeZOffset;
-	end;
-
-	--if offset ~= 0 then
-	--	print(("Offset set to %.2fm"):format(offset));
-	--end;
+	offset = offset + g_vehicleConfigurations:get(vehicle, 'directionNodeOffsetZ') or 0
 
 	return offset, isTruck;
 end;
@@ -1323,7 +1291,9 @@ function courseplay:isWheeledWorkTool(workTool)
 			-- Trailers
 			if (activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
 			-- Implements with pivot and wheels that do not lift the wheels from the ground.
-			or (node ~= workTool.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and (not activeInputAttacherJoint.topReferenceNode or workTool.cp.implementWheelAlwaysOnGround))
+			or (node ~= workTool.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and
+					(not activeInputAttacherJoint.topReferenceNode or
+							g_vehicleConfigurations:get(workTool, 'implementWheelAlwaysOnGround')))
 			then
 				return true;
 			end;
@@ -1332,10 +1302,6 @@ function courseplay:isWheeledWorkTool(workTool)
 
 	return false;
 end;
-
-
--- vim: set noexpandtab:
-
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z

@@ -20,7 +20,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
 	local reverseWPChangeDistanceWithTool	= 3;
-	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle) or courseplay:isHarvesterSteerable(vehicle), false);
+	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or
+			courseplay:isChopper(vehicle) or
+			courseplay:isHarvesterSteerable(vehicle), false);
 
 	--- This is in case we use manually recorded fieldswork course and not generated.
 	if not vehicle.cp.courseWorkWidth then
