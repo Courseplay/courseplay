@@ -31,7 +31,7 @@ VehicleConfigurations = CpObject()
 VehicleConfigurations.attributes = {
     {name = 'toolOffsetX', getXmlFunction = getXMLFloat},
     {name = 'noReverse', getXmlFunction = getXMLBool},
-    {name = 'crabSteeringModeIndex', getXmlFunction = getXMLInt}
+    {name = 'implementWheelAlwaysOnGround', getXmlFunction = getXMLBool}
 }
 
 function VehicleConfigurations:init()

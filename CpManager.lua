@@ -452,9 +452,6 @@ function CpManager.saveXmlSettings(self)
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
 
-		-- write the user vehicle config back to the savegam
-		g_vehicleConfigurations:saveToXml()
-
 	else
 		print(("COURSEPLAY ERROR: unable to load or create file -> %s"):format(CpManager.cpSettingsXmlFilePath));
 	end;

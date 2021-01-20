@@ -71,7 +71,7 @@ You can define the following custom settings:
     <!--\vehicles\ropa-->
     <Vehicle name="keiler2.xml"
              toolOffsetX="-2.0"
-             noReverse="ture"
+             noReverse="true"
     />
     <!--\vehicles\kuhn-->
     <Vehicle name="kuhnSW4014.xml"
