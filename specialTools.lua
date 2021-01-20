@@ -145,24 +145,24 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 
 	-- [6] MOD BALING
-	if workTool.cp.xmlFileName == 'KroneUltimaCF155XC.xml' then
-		workTool.cp.isKroneUltimaCF155XC = true
-		if not workTool.cp.ultimaSpec then
-			for index,name in pairs (workTool.specializationNames) do
-				if name == "FS17_KroneUltimaCF155XC.Ultima" then
-					workTool.cp.ultimaSpec = workTool.specializations[index]
-					break
-				end
-			end
-		end
+	--if workTool.cp.xmlFileName == 'KroneUltimaCF155XC.xml' then
+		--workTool.cp.isKroneUltimaCF155XC = true
+		--if not workTool.cp.ultimaSpec then
+			--for index,name in pairs (workTool.specializationNames) do
+				--if name == "FS17_KroneUltimaCF155XC.Ultima" then
+					--workTool.cp.ultimaSpec = workTool.specializations[index]
+					--break
+				--end
+			--end
+		--end
 	
-	elseif workTool.cp.xmlFileName == 'kuhnFBP3135.xml' then
-		workTool.cp.iskuhnFBP3135 = true
+	--elseif workTool.cp.xmlFileName == 'kuhnFBP3135.xml' then
+		--workTool.cp.iskuhnFBP3135 = true
 		
 	-- ###########################################################
 
 	-- [7] MOD OTHER TOOLS
-	elseif workTool.cp.xmlFileName == 'kuhnTF1500.xml' then
+	if workTool.cp.xmlFileName == 'kuhnTF1500.xml' then
 		workTool.cp.isKuhnTF1500 = true;
 		workTool.cp.specialWorkWidth = 0;
 	-- ###########################################################
@@ -174,93 +174,99 @@ function courseplay:setNameVariable(workTool)
 	-- GIANTS DEFAULT / DLC / MOD
 	-- ###########################################################
 	-- [1] COMBINES / CUTTERS
-	-- Combines / Harvesters [Giants]
+	-- Combines / Harvesters [Giants] 
+	-- Only as Mod, .xml Name unclear
 	elseif workTool.cp.xmlFileName == 'grimmeTectron415.xml' then
 		workTool.cp.isGrimmeTectron415 = true;
 		workTool.cp.isHarvesterSteerable = true;
-
+	-- Basegame, but is this still needed ?
 	elseif workTool.cp.xmlFileName == 'terraDosT4_40.xml' then
 		workTool.cp.isHolmerTerraDosT4_40 = true;
 		workTool.cp.use = 1;
 		workTool.cp.isHarvesterSteerable = true;
+	-- What of this is still needed ?
 	elseif workTool.cp.xmlFileName == 'tiger6.xml' then
 		workTool.cp.isRopaTiger6 = true;
-		workTool.cp.isHarvesterSteerable = true;
-		workTool.cp.useCrabSteeringMode = 1;
-		
-		
+		workTool.cp.isHarvesterSteerable = true;	
+	-- Harvester head, Mod
 	elseif workTool.cp.xmlFileName == 'holmerHR9.xml' then
 		workTool.cp.isHolmerHR9 = true;
-
+	-- Basegame, still needed ?
 	elseif workTool.cp.xmlFileName ==  'terraFelis2.xml' then
 		workTool.cp.isHolmerTerraFelis2 = true;
 		workTool.cp.isSugarBeetLoader = true
-
+	-- Basegame, we don't have an AI Driver for this
 	elseif workTool.cp.xmlFileName ==  'maus5.xml' then
 		workTool.cp.isRopaMaus5 = true;
 		workTool.cp.isSugarBeetLoader = true
-
+	-- Only as Mod, .xml unclear, not rly needed as we don't have an AIDriver for this
 	elseif workTool.cp.xmlFileName ==  'ropaNawaRoMaus.xml' then
 		workTool.cp.isRopaNawaRoMaus = true;
 		workTool.cp.isSugarBeetLoader = true
-		
+	-- What is still needed ? New .xml (Basegeme) caseIHA8800MRCrawlerBelt.xml
 	elseif workTool.cp.xmlFileName ==  'CaseIHA8800MR.xml' then
 		workTool.cp.isCaseIHA8800MR = true;
 		workTool.cp.isHarvesterSteerable = true;
 		
 	-- Harvesters (attachable) [Giants]
+	-- Special WorkWidth still correct and needed ?
 	elseif workTool.cp.xmlFileName == 'rootster604.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeRootster604 = true;
 		workTool.cp.specialWorkWidth = 2.9
-	
+	-- What else is needed here ?
 	elseif workTool.cp.xmlFileName == 'keiler2.xml' then
 		workTool.cp.isRopaKeiler2 = true;
 		workTool.cp.isHarvesterAttachable = true;
-
+	-- Special WorkWidth still correct and needed ?
 	elseif workTool.cp.xmlFileName == 'SE260.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isGrimmeSE260 = true;
 		workTool.cp.specialWorkWidth = 1.6
-		
+	-- What is chopper offset ? Not sure if this is needed...	
 	elseif workTool.cp.xmlFileName == 'mex5.xml' then
 		workTool.cp.isHarvesterAttachable = true;
 		workTool.cp.isPoettingerMex5 = true;
 		workTool.cp.fixedChopperOffset = 5.5
 	
 	-- SWT7 [Giants DLC]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'SWT7.xml' then
 		workTool.cp.isTraileredChopper = true;
-		workTool.cp.overwriteTurnRadius = 9;
 		workTool.cp.isSWT7 = true;
 		
 
 	-- ###########################################################
 	-- [2] STEERABLE VEHICLES
 	-- Valtra T Series [Giants]
+	-- If needed, this one got a new .xml file TSeries.xml Note: overWriteTurnRadius would be nice to have a better preset turnradius for some tools, as some are a bit to smal
 	elseif workTool.cp.xmlFileName == 'valtraTSeries.xml' then
 		workTool.cp.overwriteTurnRadius = 4.5;
 
 	-- New Holland SP.400F (Sprayer) [Giants]
+	-- Not a Basegame Vehicle, maybe Mod, not sure (.xml unclear ofc)
 	elseif workTool.cp.xmlFileName == 'SP400F.xml' then
 		workTool.cp.isSP400F = true;
 		workTool.cp.directionNodeZOffset = 2.15;
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	--Big Bud 747 [Giants Big Bud DLC]
-	elseif workTool.cp.xmlFileName == 'bigBud747.xml' then
-		workTool.cp.overwriteTurnRadius = 9;
+	-- Now as Mod
+	--elseif workTool.cp.xmlFileName == 'bigBud747.xml' then
 
 	-- [4] FERTILIZER EQUIPMENT
 	-- Zunhammer TV [Giants Mod: Holmer Pack]
+	-- Not Basegame anymore, also not DLC (yet) not sure about Mod and what .xml what is needed here anyway ?
 	elseif workTool.cp.xmlFileName == 'zunhammerTV.xml' then
 		workTool.cp.isLiquidManureOverloader = true;
 	
 	-- Zunhammer Vibro [Giants Mod: Holmer Pack]
+	-- Not Basegame anymore, also not DLC (yet) not sure about Mod and what .xml what is needed here anyway ?
 	elseif workTool.cp.xmlFileName == 'zunhammerVibro.xml' then
 		workTool.cp.isZunhammerVibro = true;
 
 	-- Bergmann TSW A 19 TV [Giants Mod: Holmer Pack]
+	-- Not Basegame, but as Mod from GIANTS, tsw6240w.xml the file is in a folder path inside the .zip file.
 	elseif workTool.cp.xmlFileName == 'bergmannTSWA19.xml' then
 		workTool.cp.mode9TrafficIgnoreVehicle = true
 		if workTool.attacherVehicle ~= nil then
@@ -268,50 +274,59 @@ function courseplay:setNameVariable(workTool)
 		end
 
 	-- Joskin Modulo 2 [Giants]
+	-- Still needed? New .xml modulo.xml
 	elseif workTool.cp.xmlFileName == 'joskinModulo.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Veenhuis Premium Integral II [Giants]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'premiumIntegral30000.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Amazone UF 1201 [Giants]
+	-- Not Basegame, still needed ? Maybe mod somewhere, .xml unclear
 	elseif workTool.cp.xmlFileName == 'amazoneUF1201.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Caruelle Nicolas Stilla 460 [Giants]
+	-- Not found in Basegame, still needed ? Maybe New .xml but haven't found yet
 	elseif workTool.cp.xmlFileName == 'caruelleNicolasStilla460.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- Einboeck Aerostar-Rotation 1200 [Giants]
+	-- Still needed ? New .xml rotation1200.xml
 	elseif workTool.cp.xmlFileName == 'einboeckRotation1200.xml' then
 		workTool.cp.widthWillCollideOnTurn = true;
 
 	-- ###########################################################
 	-- [5] BALING
 	-- Ursus T127 (Bale Loader) [Giants]
+	-- Now as Mod, what else is needed here ?
 	elseif workTool.cp.xmlFileName == 'ursusT127.xml' then
 		workTool.cp.isUrsusT127 = true;
 		workTool.cp.baleRowWidth = 1.5
 
 	-- Kuhn SW4014 (Bale Wrapper) [Giants Kuhn DLC]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'kuhnSW4014.xml' then
 		workTool.cp.isKuhnSW4014 = true;
 
 	-- Arcusin FSX 63.72 (Bale Loader) [Giants]
+	-- What else is needed ? baleRowWidth ? Node: What about a Custom Bale Distance to unload Bales ? Might help at different Bale Loader to tell what distance we need to existing bale stacks(offset)
 	elseif workTool.cp.xmlFileName == 'arcusinFSX6372.xml' then
 		workTool.cp.isArcusinFSX6372 = true;
 		workTool.cp.baleRowWidth = 3
 		
 	--Krone Premos5000 [strawHarvestAddon]
+	-- Now as strawHarvestAddon Mod and will need some special attention...
 	elseif 	workTool.cp.xmlFileName == 'premos5000.xml' then
 		workTool.cp.isKronePremos5000 = true;	
 		workTool.cp.isAttachedCombine = true;
-
+	-- Still needed ? strawHarvestAddon Mod
 	elseif 	workTool.cp.xmlFileName == 'comprimaV180XC.xml' then
 		workTool.cp.isKroneComprimaV180XC = true;
 		workTool.cp.isStrawHarvestAddonBaler = true;
-	
+	-- Still needed ? strawHarvestAddon Mod
 	elseif 	workTool.cp.xmlFileName == 'bigPack1290HDPII.xml' then
 		workTool.cp.isKroneBigPack1290HDPII = true;
 		workTool.cp.isStrawHarvestAddonBaler = true;	
@@ -319,89 +334,96 @@ function courseplay:setNameVariable(workTool)
 	-- ###########################################################
 	-- [6] OTHER TOOLS
 	-- WHEEL LOADERS [Giants]
-	-- JCB 435S [Giants]
-	elseif workTool.cp.xmlFileName == 'jcb435s.xml' then
-		workTool.cp.directionNodeZOffset = -0.705;
+	-- JCB 435S [Giants] Now as Mod from GIANTS
+	--elseif workTool.cp.xmlFileName == 'jcb435s.xml' then
+
 
 	-- CULTIVATORS [Giants]
 	-- Horsch Tiger 10 LT [Giants]
+	-- Not sure if still needed, not Basegame anymore, maybe as Mod somewhere... .xml unclear
 	elseif workTool.cp.xmlFileName == 'horschTiger10LT.xml' then
 		workTool.cp.realTurnNodeOffsetZ = -2.231;
 		workTool.cp.overwriteTurnRadius = 6;
 
 	-- Kuhn HR4004 [Giants Kuhn DLC]
+	-- Basegame, still needed ?
 	elseif workTool.cp.xmlFileName == 'kuhnHR4004.xml' then
 		workTool.cp.isKuhnHR4004 = true;
 
 	-- Kuhn DC401 [Giants Kuhn DLC]
+	-- Basegame now, still needed ?
 	elseif workTool.cp.xmlFileName == 'kuhnDC401.xml' then
 		workTool.cp.isKuhnDC401 = true;
 
 	-- Flexi Coil ST 820 [Giants Big Bud DLC]
+	-- Basegame now, new .xml st820.xml
 	elseif workTool.cp.xmlFileName == 'flexicoilST820.xml' then
 		workTool.cp.isFlexicoilST820 = true;
-		workTool.cp.overwriteTurnRadius = 7;
 
 	--Cultiplow Platinum 8m [Giants Big Bud DLC]
+	-- Basegame now
 	elseif workTool.cp.xmlFileName == 'agrisemCultiplowPlatinum8m.xml' then
 		workTool.cp.isAgrisemCultiplowPlatinum8m = true;
-		workTool.cp.overwriteTurnRadius = 7;
 		
 	--Bednar SM 180000 [Giants Big Bud DLC]
+	--Not Basegame anymore, maybe as Mod somewhere, .xml unsure, still needed anyway ?
 	elseif workTool.cp.xmlFileName == 'BednarSM18000.xml' then
 		workTool.cp.isBednarSM18000 = true
 
 	-- PLOWS [Giants]
 		-- Agromasz POH 5 [Giants]
+	--Still needed ?
 	elseif workTool.cp.xmlFileName == 'agromaszPOH5.xml' then
 		workTool.cp.isAgromaszPOH5 = true;
 
 	-- Salford 4204 [Giants]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'salford4204.xml' then
 		workTool.cp.isSalford4204 = true;
-		workTool.cp.overwriteTurnRadius = 3;
 
 	-- Salford 8312 [Giants]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'salford8312.xml' then
-		workTool.cp.isSalford8312 = true;
-		workTool.cp.notToBeReversed = true;
-		workTool.cp.overwriteTurnRadius = 9;
+		workTool.cp.isSalford8312 = true;		
 
 	-- Lemken Titan 18 [Giants]
+	-- Still needed ?
 	elseif workTool.cp.xmlFileName == 'titan11.xml' then
 		workTool.cp.isLemkenTitan18 = true;
-		workTool.cp.implementWheelAlwaysOnGround = true;
-		workTool.cp.overwriteTurnRadius = 4.5;
-
+				
 	-- Gregoire Besson SPSL 9 [Giants]
+	-- Still needed ? specialWorkwidth ?
 	elseif workTool.cp.xmlFileName == 'SPSL9.xml' then
 		workTool.cp.isGregoireBessonSPSL9 = true;
-		workTool.cp.implementWheelAlwaysOnGround = true;
-		workTool.cp.overwriteTurnRadius = 10;
 		workTool.cp.specialWorkWidth = 10.5
 
 	-- Kuhn Discolander XM52 [Giants Kuhn DLC]
+	--Still needed ?
 	elseif workTool.cp.xmlFileName == 'kuhnDiscolanderXM.xml' then
 		workTool.cp.isKuhnDiscolanderXM52 = true;
 
 	-- SEEDERS [Giants]
 
 	--Seed Kawk 980 Air Cart [Giants Big Bud DLC]
+	-- Basegame now, still needed ? New .xml 980AirCart.xml
 	elseif workTool.cp.xmlFileName == 'seedHawk980AirCart.xml' then
 		workTool.cp.isSeedHawk980AirCart = true;
 
 	--Hatzenbichler TH1400 [Giants Big Bud DLC]
+	-- Basegame now, still needed ?
 	elseif workTool.cp.xmlFileName == 'th1400.xml' then
 		workTool.cp.isHatzenbichlerTH1400 = true;
 
 	--Htzenbichler Terminator 18 [Giants Big Bud DLC]
+	-- Basegame now, still needed ?
 	elseif workTool.cp.xmlFileName == 'terminator18.xml' then
 		workTool.cp.isHatzenbichlerTerminator18 = true;
 
 	--Seed Hawk XL Toolbar 84ft [Giants Big Bud DLC] new .xml xlAirDrill84.xml
+	-- Basegame now, still needed ? new .xml xlAirDrill84.xml
 	elseif	 workTool.cp.xmlFileName == 'seedHawkXLAirDrill84.xml' then
 		workTool.cp.isSeedHawkXLAirDrill84 = true;
-		workTool.cp.overwriteTurnRadius = 10;
+		
 
 	end;
 	-- ###########################################################

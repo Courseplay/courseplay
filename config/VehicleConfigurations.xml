@@ -69,18 +69,29 @@ You can define the following custom settings:
                 noReverse="true"
         />
         <!--\vehicles\salford-->
+        <!--workTool.cp.overwriteTurnRadius = 3;-->
         <Vehicle name="salford4204.xml"
                 noReverse="true"
         />
+        <!--workTool.cp.overwriteTurnRadius = 9;-->
+        <Vehicle name="salford8312.xml"
+                noReverse="true"
+        />
         <!--\vehicles\lemken-->
+        <!--workTool.cp.implementWheelAlwaysOnGround = true;-->
+        <!--workTool.cp.overwriteTurnRadius = 4.5;-->
         <Vehicle name="titan11.xml"
                 noReverse="true"
         />
         <!--vehicles\gregoireBesson-->
+        <!--workTool.cp.implementWheelAlwaysOnGround = true;-->
+        <!--workTool.cp.overwriteTurnRadius = 10;-->
+        <!---->
         <Vehicle name="SPSL9.xml"
                 toolOffsetX="2.1"
         />
         <!--\vehicles\lizard-->
+        <!--workTool.cp.overwriteTurnRadius = 9;-->
         <Vehicle name="SWT7.xml"
                 toolOffsetX="-2.2"
                 noReverse="false"
@@ -89,6 +100,7 @@ You can define the following custom settings:
         <Vehicle name="980AirCart.xml"
                 noReverse="true"
         />
+        <!--workTool.cp.overwriteTurnRadius = 10;-->
         <Vehicle name="xlAirDrill84.xml"
                 noReverse="true"
         />
@@ -102,7 +114,18 @@ You can define the following custom settings:
         <!--\vehicles\greatPlains-->
         <Vehicle name="yp2425A.xml"
                 noReverse="true"
-        />        
+        />
+        <!--\vehicles\flexicoil-->
+        <!--workTool.cp.overwriteTurnRadius = 7;-->
+        <Vehicle name="st820.xml"
+        />
+        <!--\vehicles\agrisem-->
+        <!--workTool.cp.overwriteTurnRadius = 7;-->
+        <Vehicle name="agrisemCultiplowPlatinum8m.xml"
+        />
+
+        <!--Tractors-->
+
     <!--[DLC]-->
         <!--Harvester-->
 
@@ -133,5 +156,14 @@ You can define the following custom settings:
         <Vehicle name="z586.xml"
                 toolOffsetX="-2.5"
                 noReverse="true"
+        />
+        <!--Tractors and Others-->
+        <!--Mod: Big Bud 747-->
+        <!--workTool.cp.overwriteTurnRadius = 9;-->
+        <Vehicle name="bigBud747.xml"
+        />
+        <!--Mod: JCB 435S-->
+        <!--workTool.cp.directionNodeZOffset = -0.705;-->
+        <Vehicle name="jcb435s.xml"
         />
 </VehicleConfigurations>
