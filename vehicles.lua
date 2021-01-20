@@ -1158,7 +1158,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		end;
 	end;
 
-	offset = offset + g_vehicleConfigurations:get(vehicle, 'directionNodeOffsetZ') or 0
+	offset = offset + (g_vehicleConfigurations:get(vehicle, 'directionNodeOffsetZ') or 0)
 
 	return offset, isTruck;
 end;
