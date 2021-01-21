@@ -1923,6 +1923,9 @@ function TurnContext:setupTurnEnd(course, aiDriverData, turnEndSideOffset)
 		-- the turn end node
 		setTranslation(aiDriverData.workStartNode, 0, 0, - self.workWidth / 2 - overshoot)
 		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, self.workWidth)
+	else
+		setTranslation(aiDriverData.workStartNode, 0, 0, 0)
+		setTranslation(aiDriverData.lateWorkStartNode, 0, 0, 0)
 	end
 	self.workStartNode = aiDriverData.workStartNode
 	self.lateWorkStartNode = aiDriverData.lateWorkStartNode
