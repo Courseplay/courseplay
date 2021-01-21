@@ -2,10 +2,8 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
 	-- Input binding debug
 	local vehicle = g_currentMission.controlledVehicle			
-	if not vehicle or not vehicle.hasCourseplaySpec then return end
-
-	--if the vehicle is attached to another vehicle, disable mouse input 
-	if vehicle.spec_attachable and vehicle.spec_attachable.attacherVehicle then 
+	
+	if not courseplay.isEnabled(vehicle) then
 		return 
 	end
  	courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)

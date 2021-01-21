@@ -504,9 +504,9 @@ end
 
 function courseplay:onEnterVehicle()
 	--if the vehicle is attached to another vehicle, disable cp
-	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+	if not courseplay.isEnabled(self) then
 		return 
-	end  
+	end 
 	
 	courseEditor:reset()
 	if self.cp.mouseCursorActive then
@@ -523,7 +523,7 @@ end
 
 function courseplay:onDraw()
 	--if the vehicle is attached to another vehicle, disable cp
-	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+	if not courseplay.isEnabled(self) then
 		return 
 	end
 	
@@ -770,7 +770,7 @@ end;
 
 function courseplay:onUpdate(dt)	
 	--if the vehicle is attached to another vehicle, disable cp
-	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+	if not courseplay.isEnabled(self) then
 		return 
 	end
 	if self.cp.infoText ~= nil then
@@ -845,7 +845,7 @@ end;
 function courseplay:onUpdateTick(dt)
 	--print("base:courseplay:updateTick(dt)")
 	--if the vehicle is attached to another vehicle, disable cp
-	if self.spec_attachable and self.spec_attachable.attacherVehicle then 
+	if not courseplay.isEnabled(self) then
 		return 
 	end
 	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
@@ -1509,6 +1509,12 @@ function courseplay:onStopCpAIDriver()
 	
 	--legancy
 	self:setIsCourseplayDriving(false)
+end
+
+---vehicle is not attached to another one and vehicle has CourseplaySpec 
+function courseplay.isEnabled(vehicle)
+	local vehicle = vehicle
+	return vehicle and vehicle.hasCourseplaySpec and not (vehicle.spec_attachable and vehicle.spec_attachable.attacherVehicle)
 end
 
 -- do not remove this comment

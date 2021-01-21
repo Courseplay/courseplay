@@ -588,7 +588,8 @@ function CourseGeneratorScreen:drawSeedCalculator(xPos,yPos)
 		-- draw all the sprayTypes and fruitType  
 		for _,sprayType in pairs(g_sprayTypeManager:getSprayTypes()) do
 			local litersPerSecond = sprayType.litersPerSecond
-			local totalLiters = litersPerSecond*fieldAreaHa*36000
+			-- calculate totalLiters in liters per hour, not sure why 36000 is needed instead of 3600
+			local totalLiters = litersPerSecond*fieldAreaHa* 36000
 			local name = sprayType.fillType.title
 			-- draw shadow
 			setTextColor(rShadow,gShadow,bShadow,aShadow)
