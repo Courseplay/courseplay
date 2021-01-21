@@ -93,12 +93,18 @@ function TriggerShovelModeAIDriver:drive(dt)
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
 		self:driveWaitForTarget(dt)
 		self.triggerHandler:disableFillTypeLoading()
-	-- drive to the unload trigger/ trailer
+	-- drive to the unload trigger
 	elseif self.shovelState == self.states.STATE_START_UNLOAD then
 		notAllowedToDrive =	self:driveStartUnload(dt)
-	-- handle unloading
+	-- handle unloading at trigger
 	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY then
 		self:driveWaitForUnloadReady(dt)
+	-- drive to the unload at trailer
+	elseif self.shovelState == self.states.STATE_START_UNLOAD_TRAILER then
+		notAllowedToDrive =	self:driveStartUnloadTrailer(dt)
+	-- handle unloading at trailer 
+	elseif self.shovelState == self.states.STATE_WAIT_FOR_UNLOADREADY_TRAILER then
+		self:driveWaitForUnloadReadyTrailer(dt)	
 	-- reverse back to the course
 	elseif self.shovelState == self.states.STATE_GO_BACK_FROM_EMPTYPOINT then
 		self:driveGoBackFromEmptyPoint(dt)

@@ -1,9 +1,12 @@
 function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	--RIGHT CLICK
 	-- Input binding debug
-	local vehicle = g_currentMission.controlledVehicle		
-	if not vehicle or not vehicle.hasCourseplaySpec then return end
-  courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
+	local vehicle = g_currentMission.controlledVehicle			
+	
+	if not courseplay.isEnabled(vehicle) then
+		return 
+	end
+ 	courseEditor:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	
 	--print(string.format('courseplay:mouseEvent(posX(%s), posY(%s), isDown(%s), isUp(%s), mouseButton(%s))', tostring(posX), tostring(posY), tostring(isDown), tostring(isUp), tostring(mouseButton) ))
 	--print(string.format("if isUp(%s) and mouseButton(%s) == courseplay.inputBindings.mouse.secondaryButtonId(%s) and Enterable.getIsEntered(self)(%s) then"
