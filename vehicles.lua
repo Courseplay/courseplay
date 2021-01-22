@@ -1083,7 +1083,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 
 	-- Make sure we are not some standard combine/crawler/articulated vehicle
 	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine
-			or vehicle.cp.hasSpecializationCrawler) then
+			or SpecializationUtil.hasSpecialization(Crawler, vehicle.specializations)) then
 	    local isAllWheelStering = false;
 		local haveStraitWheels = false;
 		local haveTurningWheels = false;

@@ -8,21 +8,13 @@ function courseplay:setNameVariable(workTool)
 	-- TODO: is this even needed? Why not use the workTool.spec_* directly? Do we really need our own table?
 	-- Only default specs!
 	for i,spec in pairs(workTool.specializations) do
-		if     spec == AnimatedVehicle 	   then workTool.cp.hasSpecializationAnimatedVehicle 	 = true;
-		elseif spec == BaleLoader 		   then workTool.cp.hasSpecializationBaleLoader 		 = true;
-		elseif spec == Baler 			   then workTool.cp.hasSpecializationBaler 				 = true;
-		elseif spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
-		elseif spec == Crawler 			   then workTool.cp.hasSpecializationCrawler			 = true;
+		if spec == Combine 			   then workTool.cp.hasSpecializationCombine 			 = true;
 		elseif spec == Cutter 			   then workTool.cp.hasSpecializationCutter 			 = true;
 		elseif spec == Drivable 		   then workTool.cp.hasSpecializationDrivable 			 = true;
 		elseif spec == FillUnit 		   then workTool.cp.hasSpecializationFillUnit 			 = true;
 		elseif spec == FillVolume 		   then workTool.cp.hasSpecializationFillVolume			 = true;
-		elseif spec == Foldable 		   then workTool.cp.hasSpecializationFoldable 			 = true;
 		elseif spec == MixerWagon 		   then workTool.cp.hasSpecializationMixerWagon 		 = true;
-		elseif spec == ReverseDriving	   then workTool.cp.hasSpecializationReverseDriving		 = true;
 		elseif spec == Shovel 			   then workTool.cp.hasSpecializationShovel 			 = true;
-		elseif spec == SowingMachine 	   then workTool.cp.hasSpecializationSowingMachine 		 = true;
-		elseif spec == Sprayer 			   then workTool.cp.hasSpecializationSprayer 			 = true;
 		elseif spec == Leveler 		   	   then workTool.cp.hasSpecializationLeveler 			 = true;
 		elseif spec == Overloading 		   then workTool.cp.hasSpecializationOverloader			 = true;
 		elseif spec == Trailer	 		   then workTool.cp.hasSpecializationTrailer			 = true;

@@ -57,7 +57,7 @@ function courseplay:resetTools(vehicle)
 	end
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
-	
+
 	courseplay:calculateWorkWidth(vehicle, true);
 
 	-- reset tool offset to the preconfigured value if exists
@@ -75,19 +75,22 @@ function courseplay:isAttacherModule(workTool)
 	return false;
 end;
 function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
-	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
+	return SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or
+			(workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
-	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil
+	return SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or
+			workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000;
+	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return workTool.cp.hasSpecializationFoldable and  workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
+	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) and
+			workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
 end;
 function courseplay:isFrontloader(workTool)
     return Utils.getNoNil(workTool.typeName == "attachableFrontloader", false);
@@ -102,14 +105,16 @@ end
 function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
+
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.spec_baler ~= nil and (workTool.spec_baler.baleCloseAnimationName ~= nil and workTool.spec_baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine
+	return SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations)
 end;
+
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return workTool.cp.hasSpecializationSprayer
+	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations)
 end;
 function courseplay:isWheelloader(workTool)
 	return workTool.typeName:match("wheelLoader");
@@ -119,17 +124,12 @@ function courseplay:hasShovel(workTool)
 		return true
 	end
 end
-function courseplay:hasLeveler(workTool) 
-	if workTool.cp.hasSpecializationLeveler then	
+function courseplay:hasLeveler(workTool)
+	if workTool.cp.hasSpecializationLeveler then
 		return true
 	end
 end
 
-function courseplay:hasBunkerSiloCompacter(workTool)
-	if workTool.cp.hasSpecializationBunkerSiloCompacter then	
-		return true
-	end
-end
 function courseplay:isTrailer(workTool)
 	return workTool.typeName:match("trailer");
 end;
@@ -156,7 +156,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
 	if isAllowedOkay and isDisallowedOkay then
-		if vehicle.cp.mode == 5 then 
+		if vehicle.cp.mode == 5 then
 			-- For reversing purpose ?? still needed ?
 			if isImplement then
 				hasWorkTool = true;
@@ -167,7 +167,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
 	end
-	
+
 
 	-- MODE 4: FERTILIZER AND SEEDING
 	if vehicle.cp.mode == 4 then
@@ -184,15 +184,15 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 				end;
 			end;
 		end;
-	end	
+	end
 	--belongs to mode3 but should be considered even if the mode is not set correctely
 	if workTool.cp.isAugerWagon then
 		vehicle.cp.hasAugerWagon = true;
 	end;
 
-	
+
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
-	
+
 	if hasWorkTool then
 		courseplay:debug(('%s: workTool %q added to workTools (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.cp.workTools), 6);
 	end;
@@ -287,7 +287,7 @@ function courseplay:setTipRefOffset(vehicle)
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].rootNode, tipperX, tipperY, tipperZ);
 					courseplay:debug(string.format("point%s : tipRefPointX (%s), tipRefPointY (%s), tipRefPointZ(%s)",tostring(n),tostring(tipRefPointX),tostring(tipRefPointY),tostring( tipRefPointZ)),13)
 					tipRefPointX = abs(tipRefPointX);
-					if tipRefPointX > vehicle.cp.tipRefOffset then  
+					if tipRefPointX > vehicle.cp.tipRefOffset then
 						if tipRefPointX > 0.1 then
 							vehicle.cp.tipRefOffset = tipRefPointX;
 						else
@@ -404,7 +404,7 @@ function courseplay:workAreaIterator(object)
 	end
 end
 
-function courseplay:hasWorkAreas(object) 
+function courseplay:hasWorkAreas(object)
 	return object and object.getWorkAreaByIndex and object:getWorkAreaByIndex(1)
 end
 
