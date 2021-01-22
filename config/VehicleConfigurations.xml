@@ -14,6 +14,9 @@ want your own vehicle config, you can create a file called
 vehicleConfigurations.xml in your modsSettings/Courseplay folder. Settings defined
 in that file will override the settings defined here.
 
+You can use the cpReadVehicleConfigurations console command to reload these files
+in-game.
+
 Custom settings are listed per vehicle, the vehicle is identified by its XML file
 name (you can find this in the game's folder under data/vehicles/<make>/<model>/
 
@@ -35,6 +38,10 @@ You can define the following custom settings:
     Override the turn radius configured by the vehicle author or calculated by
     Courseplay and use this value instead, in meters.
 
+- balerUnloadDistance: number
+    Able to set the distance to the waiting point when it needs to unload. Used by bale loaders.
+    Distance from trailer's turning point to the rear unloading point in meters.
+
 - directionNodeOffsetZ:	number
 	If set, then the Direction Node will be offset by this value in meters. (Only usable for Enterables)
 
@@ -46,19 +53,11 @@ You can define the following custom settings:
     <!--[GIANTS]-->
 
     <!-- Harvesters -->
-    <!--\vehicles\holmer-->
-    <Vehicle name="terraDosT4_40.xml"
-            isHarvesterSteerable="true"
-    />
-    <!--\vehicles\ropa-->
-    <Vehicle name="tiger6.xml"
-            isHarvesterSteerable="true"
-    />
-
     <!-- Implements -->
     <!--\vehicles\arcusin-->
     <Vehicle name="arcusinFSX6372.xml"
              toolOffsetX="-2.4"
+             balerUnloadDistance="-3.8"
     />
     <!--\vehicles\grimme-->
     <Vehicle name="rootster604.xml"
@@ -164,6 +163,7 @@ You can define the following custom settings:
     <Vehicle name="ursusT127.xml"
              toolOffsetX="-2.4"
              noReverse="true"
+             balerUnloadDistance="-1.8"
     />
     <!--Mod: Ursus Z586 (Bale Wrapper)-->
     <Vehicle name="z586.xml"

@@ -20,9 +20,10 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local wpChangeDistance 					= 3;
 	local reverseWPChangeDistance			= 5;
 	local reverseWPChangeDistanceWithTool	= 3;
-	local isHarvester						= Utils.getNoNil(courseplay:isCombine(vehicle) or
+	local isHarvester						= Utils.getNoNil(
+			courseplay:isCombine(vehicle) or
 			courseplay:isChopper(vehicle) or
-			courseplay:isHarvesterSteerable(vehicle), false);
+			vehicle.cp.driver.isACombineAIDriver, false);
 
 	--- This is in case we use manually recorded fieldswork course and not generated.
 	if not vehicle.cp.courseWorkWidth then
@@ -194,14 +195,6 @@ function courseplay:turn(vehicle, dt, turnContext)
 		else
 			if turnInfo.targetDeltaX > 0 then
 				turnInfo.direction = 1;
-			end;
-		end
-
-		--- Check if tool width will collide on turn (Value is set in askForSpecialSettings)
-		for i=1, #(vehicle.cp.workTools) do
-			local workTool = vehicle.cp.workTools[i];
-			if workTool.cp.widthWillCollideOnTurn and vehicle.cp.courseWorkWidth and (vehicle.cp.workWidth / 2) > turnInfo.halfVehicleWidth then
-				turnInfo.halfVehicleWidth = vehicle.cp.workWidth / 2;
 			end;
 		end
 
@@ -853,7 +846,7 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	-- like combines or tractors with implements mounted on the 3 point hitch. Those should make the same turn (fishtail or K-turn)
 	-- as combines do as it takes up a lot less space on the headland. Our calculation of how much space is needed is still off a bit
 	-- so you may have to turn off 'turn on field' for this to work for tractors.
-	if not ((courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and not courseplay:isHarvesterSteerable(vehicle)) and
+	if not (courseplay:isCombine(vehicle) or courseplay:isChopper(vehicle)) and
 		not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
 
 		local targetDeltaZ = turnInfo.targetDeltaZ;
@@ -967,8 +960,6 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		--- Finish the turn
 		toPoint.x,_,toPoint.z = localToWorld(turnInfo.targetNode, 0, 0, abs(turnInfo.frontMarker) + 5);
 		courseplay:generateTurnStraightPoints(vehicle, stopDir, toPoint, false, true);
-
-		-- make sure implement is lowered by the time we get to the up/down row, so start lowering well before
 	end;
 end;
 

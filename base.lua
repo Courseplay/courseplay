@@ -31,8 +31,6 @@ function courseplay:onLoad(savegame)
 	courseplay:setNameVariable(self);
 	self.cp.isCombine = courseplay:isCombine(self);
 	self.cp.isChopper = courseplay:isChopper(self);
-	self.cp.isHarvesterSteerable = courseplay:isHarvesterSteerable(self);
-	self.cp.hasHarvesterAttachable = false;
 
 	self.cp.speedDebugLine = "no speed info"
 
@@ -235,8 +233,6 @@ function courseplay:onLoad(savegame)
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
 
-
-	courseplay:askForSpecialSettings(self,self)
 	courseplay:setOwnFillLevelsAndCapacities(self)
 
 	-- workTools

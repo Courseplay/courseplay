@@ -64,12 +64,6 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
 end;
 
-function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) 
-			or (not workTool.cp.hasSpecializationDrivable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader)
-			or courseplay:isSpecialChopper(workTool)
-			or workTool.cp.isAttachedCombine
-end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
@@ -84,13 +78,13 @@ function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
 	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
-	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
+	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil
 end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000 or courseplay:isSpecialChopper(workTool);
+	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000;
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return workTool.cp.hasSpecializationFoldable and  workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
@@ -98,12 +92,7 @@ end;
 function courseplay:isFrontloader(workTool)
     return Utils.getNoNil(workTool.typeName == "attachableFrontloader", false);
 end;
-function courseplay:isHarvesterSteerable(workTool)
-	return Utils.getNoNil(workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable, false);
-end;
-function courseplay:isHarvesterAttachable(workTool)
-	return Utils.getNoNil(workTool.cp.isHarvesterAttachable, false);
-end;
+
 function courseplay:isHookLift(workTool)
 	if workTool.spec_attacherJoints.attacherJoint then
 		return workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_HOOKLIFT;
@@ -113,18 +102,12 @@ end
 function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
-function courseplay:isMower(workTool)
-	return workTool.cp.hasSpecializationMower
-end;
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.spec_baler ~= nil and (workTool.spec_baler.baleCloseAnimationName ~= nil and workTool.spec_baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
 	return workTool.cp.hasSpecializationSowingMachine
 end;
-function courseplay:isSpecialChopper(workTool)
-	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5 or workTool.cp.isTraileredChopper
-end
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
 	return workTool.cp.hasSpecializationSprayer
 end;
@@ -200,9 +183,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 					vehicle.cp.lastValidTipDistance = 0
 				end;
 			end;
-			if courseplay:isHarvesterAttachable(workTool) then
-				vehicle.cp.hasHarvesterAttachable = true;
-			end;
 		end;
 	end	
 	--belongs to mode3 but should be considered even if the mode is not set correctely
@@ -220,9 +200,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	--------------------------------------------------
 
 	if not isImplement or hasWorkTool or workTool.cp.isNonTippersHandledWorkTool then
-		-- SPECIAL SETTINGS ?? is this one needed any more ? 
-		courseplay:askForSpecialSettings(vehicle, workTool);
-
 		--FOLDING PARTS: isFolded/isUnfolded states
 		courseplay:setFoldedStates(workTool);
 	end;
@@ -445,12 +422,7 @@ function courseplay:getWorkWidth(thing, logPrefix)
 	if implements then
 		-- get width of all implements
 		for _, implement in ipairs(implements) do
-			local specialWorkWidth = courseplay:getSpecialWorkWidth(implement.object);
-			if specialWorkWidth and type(specialWorkWidth) == "number" then
-				width = math.max( width, specialWorkWidth);
-			else
-				width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
-			end;
+			width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
 		end
 	end
 	courseplay.debugFormat(6, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)

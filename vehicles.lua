@@ -627,11 +627,6 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), 6);
 			end;
 
-			if object.cp.realTurnNodeOffsetZ and type(object.cp.realTurnNodeOffsetZ) == "number" then
-				Distance = Distance + object.cp.realTurnNodeOffsetZ;
-				courseplay:debug(('%s: getRealTurningNode(): Special turn node offset set: realTurnNodeOffsetZ=%2f, New Distance=%2f'):format(nameNum(object), object.cp.realTurnNodeOffsetZ, Distance), 6);
-			end;
-
 			if Distance ~= 0 then
 				setTranslation(node, 0, 0, Distance);
 			end;
@@ -742,13 +737,12 @@ end;
 function courseplay:getRealUnloadOrFillNode(workTool)
 	if workTool.cp.unloadOrFillNode == nil then
 		-- BALELOADERS and STRAWBLOWERS
-		if courseplay:isBaleLoader(workTool) or workTool.cp.isStrawBlower then
+		if courseplay:isBaleLoader(workTool) then
 			-- Create the new node and link it to realTurningNode
 			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", courseplay:getRealTurningNode(workTool));
 
 			-- make sure we set the node distance position
-			local Distance = workTool.cp.specialUnloadDistance or -5;
-			setTranslation(node, 0, 0, Distance);
+			setTranslation(node, 0, 0, g_vehicleConfigurations:get(workTool, 'balerUnloadDistance') or -5);
 
 			workTool.cp.unloadOrFillNode = node;
 
@@ -781,9 +775,9 @@ end;
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
 
-	if workTool.cp.overwriteTurnRadius and type(workTool.cp.overwriteTurnRadius) == "number" then
-		turnRadius = workTool.cp.overwriteTurnRadius;
-		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(workTool), turnRadius), 6);
+	if g_vehicleConfigurations:get(workTool, 'turnRadius') then
+		turnRadius = g_vehicleConfigurations:get(workTool, 'turnRadius')
+		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(workTool), turnRadius), 6);
 	elseif courseplay:isWheeledWorkTool(workTool) then
 		local radiusMultiplier = 1.05; -- Used to add a little bit to the radius, for safer turns.
 
@@ -1030,17 +1024,11 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	-- Make sure the turning node have been updated (Script will only run once)
 	courseplay:getRealTurningNode(vehicle);
 
-	if vehicle.cp.overwriteTurnRadius and type(vehicle.cp.overwriteTurnRadius) == "number" then
-		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.cp.overwriteTurnRadius), 6);
-		return vehicle.cp.overwriteTurnRadius;
-
-	-- Giants have provided us with maxTurningRadius, so use it.
-	--elseif vehicle.maxTurningRadius then
-	--	courseplay:debug(('%s -> TurnRadius: Useing Giants value: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
-	--	return vehicle.maxTurningRadius
-
-	-- We need to calculate it our self.
+	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), 6);
+		return g_vehicleConfigurations:get(vehicle, 'turnRadius')
 	else
+		-- We need to calculate it ourself.
 		-- ArticulatedAxis Steering
 		if vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMax then
 			wheelBase = courseplay:getWheelBase(vehicle);
@@ -1094,7 +1082,8 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 	end;
 
 	-- Make sure we are not some standard combine/crawler/articulated vehicle
-	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
+	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine
+			or vehicle.cp.hasSpecializationCrawler) then
 	    local isAllWheelStering = false;
 		local haveStraitWheels = false;
 		local haveTurningWheels = false;

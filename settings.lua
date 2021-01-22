@@ -2104,12 +2104,6 @@ function ToolOffsetZSetting:init(vehicle)
 	OffsetSetting.init(self, 'toolOffsetZ', 'COURSEPLAY_TOOL_OFFSET_Z', 'COURSEPLAY_TOOL_OFFSET_Z', vehicle, 0)
 end
 
---- Set to the configured value if exists, 0 otherwise
-function ToolOffsetZSetting:setToConfiguredValue()
-	-- set the auto tool offset if exists or 0
-	self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
-end
-
 function ToolOffsetZSetting:getText()
 	if self.value ~= 0 then
 		return ('%.1f%s (%s)'):format(
