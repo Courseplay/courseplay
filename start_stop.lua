@@ -66,13 +66,6 @@ function courseplay:start(self)
 	local isReversePossible = true;
 	local tailerCount = 0;
 	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
-		if courseplay:isFolding(workTool) then
-			if  self.setLowered ~= nil then
-				workTool:setLowered(true)
-			elseif self.setFoldState ~= nil then
-				self:setFoldState(-1, true)
-			end
-		end;
 		--DrivingLine spec: set lane numbers
 		if self.cp.mode == 4 and not setLaneNumber and workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
 			setLaneNumber = true;

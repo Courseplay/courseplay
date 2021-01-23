@@ -91,6 +91,11 @@ function FieldworkAIDriver.register()
 				return true
 			elseif SpecializationUtil.hasSpecialization(Pickup, self.specializations) then
 				return true
+			elseif SpecializationUtil.hasSpecialization(Cutter, self.specializations) then
+				-- this is to make the straw pickup headers for choppers work as they are
+				-- not recognized as AI Implements since they don't have AI markers
+				-- so they don't unfold on the AI start line event
+				return true
 			elseif strawHarvestBaleCollectSpec and SpecializationUtil.hasSpecialization(strawHarvestBaleCollectSpec, self.specializations) then
 				return true
 			elseif superFunc ~= nil then
@@ -1191,7 +1196,7 @@ function FieldworkAIDriver:getAIMarkers(object, suppressLog)
 	if object.getAIMarkers then
 		aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
 	end
-	if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
+	if not aiLeftMarker or not aiRightMarker or not aiBackMarker then
 		-- use the root node if there are no AI markers
 		if not suppressLog then
 			self:debug('%s has no AI markers, try work areas', nameNum(object))
