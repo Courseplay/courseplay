@@ -92,10 +92,10 @@ function CombineAIDriver:init(vehicle)
 	self:setUpPipe()
 	self:checkMarkers()
 
-	-- distance to keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 5
-	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
-	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
+	-- distance to keep to the right (>0) or left (<0) when pulling back to make room for the tractor
+	self.pullBackRightSideOffset = math.abs(self.pipeOffsetX) - self.vehicle.cp.workWidth / 2 + 5
+	self.pullBackRightSideOffset = self.pipeOnLeftSide and self.pullBackRightSideOffset or -self.pullBackRightSideOffset
+	-- should be at pullBackRightSideOffset to the right or left at pullBackDistanceStart
 	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
 	-- and back up another bit
 	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
@@ -496,7 +496,7 @@ function CombineAIDriver:onNextCourse(ix)
 			self:debug('Reversed, now start making a pocket to waypoint %d', self.unloadInPocketIx)
 			self:lowerImplements()
 			self.fieldworkUnloadOrRefillState = self.states.MAKING_POCKET
-			self.aiDriverOffsetX = self.pullBackSideOffset
+			self.aiDriverOffsetX = self.pullBackRightSideOffset
 		end
 	elseif self.fieldworkState == self.states.TURNING then
 		self.ppc:setNormalLookaheadDistance()
@@ -867,8 +867,8 @@ function CombineAIDriver:createPullBackCourse()
 	self.returnPoint.rotation = MathUtil.getYRotationFromDirection(dx, dz)
 	dx,_,dz = localDirectionToWorld(self:getDirectionNode(), 0, 0, -1)
 
-	local x1, _, z1 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceStart)
-	local x2, _, z2 = localToWorld(self:getDirectionNode(), -self.pullBackSideOffset, 0, -self.pullBackDistanceEnd)
+	local x1, _, z1 = localToWorld(self:getDirectionNode(), -self.pullBackRightSideOffset, 0, -self.pullBackDistanceStart)
+	local x2, _, z2 = localToWorld(self:getDirectionNode(), -self.pullBackRightSideOffset, 0, -self.pullBackDistanceEnd)
 	-- both points must be on the field
 	if courseplay:isField(x1, z1) and courseplay:isField(x2, z2) then
 
@@ -882,7 +882,7 @@ function CombineAIDriver:createPullBackCourse()
 		-- don't make this too complicated, just create a straight line on the left/right side (depending on
 		-- where the pipe is and rely on the PPC, no need for generating fancy curves
 		return Course.createFromNode(self.vehicle, referenceNode,
-				-self.pullBackSideOffset, 0, -self.pullBackDistanceEnd, -2, true)
+				-self.pullBackRightSideOffset, 0, -self.pullBackDistanceEnd, -2, true)
 	else
 		self:debug("Pull back course would be outside of the field")
 		return nil
