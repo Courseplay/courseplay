@@ -1118,7 +1118,8 @@ end
 function FieldworkAIDriver:finishRow(ix)
 	self:setMarkers()
 	self.turnContext = RowFinishingContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
-			self.frontMarkerDistance, self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
+			self.frontMarkerDistance, self.backMarkerDistance,
+			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	self.aiTurn = FinishRowOnly(self.vehicle, self, self.turnContext)
 	self.fieldworkState = self.states.TURNING
 end
