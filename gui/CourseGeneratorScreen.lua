@@ -476,6 +476,7 @@ function CourseGeneratorScreen:onOpenHeadlandFirst( element, parameter )
 	element:setTexts( texts )
 	local state = self.vehicle.cp.headland.orderBefore and 1 or 2
 	element:setState( state )
+	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
 end
 
 function CourseGeneratorScreen:onClickHeadlandFirst( state )
@@ -483,6 +484,14 @@ function CourseGeneratorScreen:onClickHeadlandFirst( state )
 		-- must call this in order to update the bitmap in the HUD, that is apparently not being taken care of by reload
 		courseplay:toggleHeadlandOrder( self.vehicle )
 	end
+	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
+end
+
+function CourseGeneratorScreen:setStartingLocationLabel(headlandFirst)
+	local label = headlandFirst and
+			courseplay:loc('COURSEPLAY_STARTING_LOCATION') or
+			courseplay:loc('COURSEPLAY_ENDING_LOCATION')
+	self.startingLocation.labelElement.text = label
 end
 
 -----------------------------------------------------------------------------------------------------
