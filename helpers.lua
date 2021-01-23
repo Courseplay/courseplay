@@ -1198,6 +1198,7 @@ function courseplay:printMeThisTable(t,level,maxlevel,upperPath)
 end
 
 
+
 function courseplay:segmentsIntersection(A1x, A1y, A2x, A2y, B1x, B1y, B2x, B2y) --@src: http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect#comment19248344_1968345
 	local s1_x, s1_y, s2_x, s2_y;
 	s1_x = A2x - A1x;
@@ -1247,3 +1248,69 @@ function courseplay:getClosestPolyPoint(poly, x, z)
 	return closestPointIndex;
 end;
 
+HelperUtil = {}
+
+---Prints a table to an xml File recursively.
+---Basically has the same function as DebugUtil.printTableRecursively() except for saving the prints to an xml file
+---@param int/float/.. value is the last relevant value from parent table
+---@param int depth is the current depth of the iteration
+---@param int maxDepth represent the max iterations 
+---@param xmlFile to save in
+---@param string baseKey parent key 
+function HelperUtil.printTableRecursivelyToXML(value, depth, maxDepth,xmlFile,baseKey)
+	depth = depth or 0
+	maxDepth = maxDepth or 3
+	if depth > maxDepth then
+		return
+	end
+	local key = string.format('%s.depth:%d',baseKey,depth)
+	local k = 0
+	for i,j in pairs(value) do
+		local key = string.format('%s(%d)',key,k)
+		local valueType = type(j) 
+		setXMLString(xmlFile, key .. '#valueType', tostring(valueType))
+		setXMLString(xmlFile, key .. '#index', tostring(i))
+		setXMLString(xmlFile, key .. '#value', tostring(j))
+		if valueType == "table" then
+			HelperUtil.printTableRecursivelyToXML(j,depth+1, maxDepth,xmlFile,key)
+		end
+		k = k + 1
+	end
+end
+
+---Prints a global variable to an xml File.
+---@param int/float/.. global variable to print to xmlFile
+---@param int maxDepth represent the max iterations 
+function HelperUtil.printVariableToXML(variableName, maxDepth)
+	local baseKey = 'CpDebugPrint'
+	local xmlFile = createXMLFile("xmlFile", CpManager.cpDebugPrintXmlFilePath, baseKey);
+	local xmlFileValid = xmlFile and xmlFile ~= 0 or false
+	if not xmlFileValid then
+		courseplay.error("Xml File not valid!")
+		return 
+	end
+	setXMLString(xmlFile, baseKey .. '#maxDepth', tostring(maxDepth))
+	local depth = maxDepth and math.max(1, tonumber(maxDepth)) or 1
+	local value = CpManager:getVariable(variableName)
+	local valueType = type(value)
+	if value then
+		local key = string.format('%s.depth:%d',baseKey,0)
+		setXMLString(xmlFile, key .. '#valueType', tostring(valueType))
+		setXMLString(xmlFile, key .. '#variableName', tostring(variableName))
+		if valueType == 'table' then		
+			HelperUtil.printTableRecursivelyToXML(value,1,depth,xmlFile,key)
+			local mt = getmetatable(value)
+			if mt and type(mt) == 'table' then
+				HelperUtil.printTableRecursivelyToXML(mt,1,depth,xmlFile,key..'-metaTable')
+			end
+		else 
+			setXMLString(xmlFile, key .. '#valueType', tostring(valueType))
+			setXMLString(xmlFile, key .. '#value', tostring(value))
+		end
+	else 
+		setXMLString(xmlFile, key .. '#value', tostring(value))
+	end
+	saveXMLFile(xmlFile)
+	delete(xmlFile)
+	courseplay.info("Finished printing to courseplayDebugPrint.xml")
+end
