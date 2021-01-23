@@ -89,6 +89,29 @@ function CombineAIDriver:init(vehicle)
 		end
 	end
 
+	self:setUpPipe()
+	self:checkMarkers()
+
+	-- distance to keep to the right when pulling back to make room for the tractor
+	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 5
+	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
+	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
+	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
+	-- and back up another bit
+	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
+	-- when making a pocket, how far to back up before changing to forward
+	self.pocketReverseDistance = 25
+	-- register ourselves at our boss
+	g_combineUnloadManager:addCombineToList(self.vehicle, self)
+	self:measureBackDistance()
+	self.vehicleIgnoredByFrontProximitySensor = CpTemporaryObject()
+	self.waitingForUnloaderAtEndOfRow = CpTemporaryObject()
+	-- if this is not nil, we have a pending rendezvous
+	---@type CpTemporaryObject
+	self.unloadAIDriverToRendezvous = CpTemporaryObject()
+end
+
+function CombineAIDriver:setUpPipe()
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
 		self.objectWithPipe = self.vehicle
@@ -150,24 +173,17 @@ function CombineAIDriver:init(vehicle)
 		self.pipeOffsetX, self.pipeOffsetZ = 0, 0
 		self.pipeOnLeftSide = true
 	end
+end
 
-	-- distance to keep to the right when pulling back to make room for the tractor
-	self.pullBackSideOffset = self.pipeOffsetX - self.vehicle.cp.workWidth / 2 + 5
-	self.pullBackSideOffset = self.pipeOnLeftSide and self.pullBackSideOffset or -self.pullBackSideOffset
-	-- should be at pullBackSideOffset to the right at pullBackDistanceStart
-	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
-	-- and back up another bit
-	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
-	-- when making a pocket, how far to back up before changing to forward
-	self.pocketReverseDistance = 25
-	-- register ourselves at our boss
-	g_combineUnloadManager:addCombineToList(self.vehicle, self)
-	self:measureBackDistance()
-	self.vehicleIgnoredByFrontProximitySensor = CpTemporaryObject()
-	self.waitingForUnloaderAtEndOfRow = CpTemporaryObject()
-	-- if this is not nil, we have a pending rendezvous
-	---@type CpTemporaryObject
-	self.unloadAIDriverToRendezvous = CpTemporaryObject()
+-- This part of an ugly workaround to make the chopper pickups work
+function CombineAIDriver:checkMarkers()
+	for _, implement in pairs( self:getAllAIImplements(self.vehicle)) do
+		local aiLeftMarker, aiRightMarker, aiBackMarker = implement.object:getAIMarkers()
+		if not aiLeftMarker or not aiRightMarker or not aiBackMarker then
+			self.notAllImplementsHaveAiMarkers = true
+			return
+		end
+	end
 end
 
 --- Get the combine object, this can be different from the vehicle in case of tools towed or mounted on a tractor
@@ -553,7 +569,15 @@ function CombineAIDriver:checkFruit()
 	dx = dx / length
 	dz = dz / length
 	self.vehicle.aiDriveDirection = {dx, dz}
-	self.fruitLeft, self.fruitRight = AIVehicleUtil.getValidityOfTurnDirections(self.vehicle)
+	-- getValidityOfTurnDirections works only if all AI Implements have aiMarkers. Since
+	-- we make all Cutters AI implements, even the ones which do not have AI markers (such as the
+	-- chopper pickups which do not work with the Giants helper) we have to make sure we don't call
+	-- getValidityOfTurnDirections for those
+	if self.notAllImplementsHaveAiMarkers then
+		self.fruitLeft, self.fruitRight = 0, 0
+	else
+		self.fruitLeft, self.fruitRight = AIVehicleUtil.getValidityOfTurnDirections(self.vehicle)
+	end
 	local x, _, z = localToWorld(self:getDirectionNode(), self.vehicle.cp.workWidth, 0, 0)
 	self.fieldOnLeft = courseplay:isField(x, z, 1, 1)
 	x, _, z = localToWorld(self:getDirectionNode(), -self.vehicle.cp.workWidth, 0, 0)
