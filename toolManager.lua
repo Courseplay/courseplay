@@ -1,55 +1,51 @@
 local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, math.max, math.deg;
 local _;
 -- ##### MANAGING TOOLS ##### --
-function courseplay:attachImplement(implement) 
-	-- Update Vehicle
-	if implement.className ~= 'RailroadVehicle' then
-		if implement ~= nil then
-			local attacherVehicle = implement:getAttacherVehicle()
-			if attacherVehicle.spec_aiVehicle then 
-				attacherVehicle.cp.tooIsDirty = true; 
-			end;
-			
-			if attacherVehicle.getAttacherVehicle then
-				local firstAttacherVehicle =  attacherVehicle:getAttacherVehicle()
-				if firstAttacherVehicle~= nil and firstAttacherVehicle.spec_aiVehicle then
-					firstAttacherVehicle.cp.tooIsDirty = true; 
-				end;				
-			end
-			local rootVehicle = attacherVehicle:getRootVehicle()
-			if rootVehicle then 
-				if rootVehicle.cp.settings then 
-					rootVehicle.cp.settings:validateCurrentValues()
-				end
-				if rootVehicle.cp.driver then 
-					rootVehicle.cp.driver:refreshHUD()
-				end
-			end
-		end
-		courseplay:setAttachedCombine(self);
+function courseplay:attachImplement(implement)
+	local rootVehicle = implement:getRootVehicle()
+	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+		courseplay.debugVehicle(6, rootVehicle, '%s attached', nameNum(implement))
+		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
-end;
+end
 
+-- We need to add a hook here as onPostAttachImplement is not called for the vehicle when an implement is attached
+-- to another implement (and not directly to the vehicle)
 AttacherJoints.attachImplement = Utils.appendedFunction(AttacherJoints.attachImplement, courseplay.attachImplement);
 
-function courseplay:onPostDetachImplement(implementIndex)
-	--- Update Vehicle
-	self.cp.tooIsDirty = true;
-	local sAI= self:getAttachedImplements()
-	if sAI[implementIndex].object == self.cp.attachedCombine then
-		self.cp.attachedCombine = nil;
-	end
-	local rootVehicle = self:getRootVehicle()
-	if rootVehicle then 
-		if rootVehicle.cp.settings then 
-			rootVehicle.cp.settings:validateCurrentValues()
-		end
-		if rootVehicle.cp.driver then 
-			rootVehicle.cp.driver:refreshHUD()
+function courseplay:detachImplement(implementIndex)
+	local spec = self.spec_attacherJoints
+	local implement = spec.attachedImplements[implementIndex]
+	if implement then
+		local rootVehicle = implement.object:getRootVehicle()
+		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+			courseplay.debugVehicle(6, rootVehicle, '%s detached', nameNum(implement.object))
+			-- do not update yet as the implement is still attached to the vehicle.
+			-- defer the update until the next updateTick(), by that time things settle down
+			rootVehicle.cp.toolsDirty = true
 		end
 	end
-end;
+end
 
+-- Same here, we want to also know when an implement is detached from another implement. Prepend means we'll be
+-- called before the implement is detached so we'll be able to find the root vehicle.
+AttacherJoints.detachImplement = Utils.prependedFunction(AttacherJoints.detachImplement, courseplay.detachImplement);
+
+function courseplay:updateOnAttachOrDetach(vehicle)
+	-- TODO: refactor this (if it is even still needed), this ignore list is all over the place...
+	vehicle.cpTrafficCollisionIgnoreList = {}
+
+	if vehicle.cp and vehicle.cp.settings then
+		vehicle.cp.settings:validateCurrentValues()
+		if vehicle.cp.driver then
+			vehicle.cp.driver:refreshHUD()
+		end
+	end
+
+	courseplay:resetTools(vehicle)
+end
+
+--- Set up tool configuration after something is attached or detached
 function courseplay:resetTools(vehicle)
 	vehicle.cp.workTools = {}
 	-- are there any tippers?
@@ -59,34 +55,15 @@ function courseplay:resetTools(vehicle)
 	if not vehicle.cp.workToolAttached and not vehicle.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
 	end
-	-- Ryan prints fillTypeManager table. Nice cause it prints out all the fillTypes print_r(g_fillTypeManager)
-	-- Reset fill type.
-	--[[
-	if #vehicle.cp.workTools > 0 and vehicle.cp.workTools[1].cp.hasSpecializationFillable and vehicle.cp.workTools[1].allowFillFromAir and vehicle.cp.workTools[1].allowTipDischarge then
-		if vehicle.cp.siloSelectedFillType ==  FillType.UNKNOWN or (vehicle.cp.siloSelectedFillType ~=  FillType.UNKNOWN and not vehicle.cp.workTools[1]:allowFillType(vehicle.cp.siloSelectedFillType)) then
-			vehicle.cp.siloSelectedFillType = vehicle.cp.workTools[1]:getFirstEnabledFillType();
-			print("toolManager(41): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
-		end;
-	else
-		vehicle.cp.siloSelectedFillType =  FillType.UNKNOWN;
-		print("toolManager(45): setting siloSelectedFillType to "..tostring(vehicle.cp.siloSelectedFillType))
-	end;]]
-	
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
-	
+
 	courseplay:calculateWorkWidth(vehicle, true);
-	
 
-	vehicle.cp.tooIsDirty = false;
+	-- reset tool offset to the preconfigured value if exists
+	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
 end;
 
-function courseplay:isAttachedCombine(workTool)
-	return (workTool.typeName~= nil and (workTool.typeName == 'attachableCombine' or workTool.typeName == 'attachableCombine_mouseControlled')) 
-			or (not workTool.cp.hasSpecializationDrivable and workTool.hasPipe and not workTool.cp.isAugerWagon and not workTool.cp.isLiquidManureOverloader)
-			or courseplay:isSpecialChopper(workTool)
-			or workTool.cp.isAttachedCombine
-end;
 function courseplay:isAttachedMixer(workTool)
 	return workTool.typeName == "mixerWagon" or (not workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
@@ -98,29 +75,27 @@ function courseplay:isAttacherModule(workTool)
 	return false;
 end;
 function courseplay:isBaleLoader(workTool) -- is the tool a bale loader?
-	return workTool.cp.hasSpecializationBaleLoader or (workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
+	return SpecializationUtil.hasSpecialization(BaleLoader, workTool.specializations) or
+			(workTool.balesToLoad ~= nil and workTool.baleGrabber ~=nil and workTool.grabberIsMoving~= nil);
 end;
 function courseplay:isBaler(workTool) -- is the tool a baler?
-	return workTool.cp.hasSpecializationBaler or workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
+	return SpecializationUtil.hasSpecialization(Baler, workTool.specializations) or
+			workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
 function courseplay:isChopper(workTool)
-	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000 or courseplay:isSpecialChopper(workTool);
+	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000
 end;
 function courseplay:isFoldable(workTool) --is the tool foldable?
-	return workTool.cp.hasSpecializationFoldable and  workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
+	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) and
+			workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
 end;
 function courseplay:isFrontloader(workTool)
     return Utils.getNoNil(workTool.typeName == "attachableFrontloader", false);
 end;
-function courseplay:isHarvesterSteerable(workTool)
-	return Utils.getNoNil(workTool.typeName == "selfPropelledPotatoHarvester" or workTool.cp.isHarvesterSteerable, false);
-end;
-function courseplay:isHarvesterAttachable(workTool)
-	return Utils.getNoNil(workTool.cp.isHarvesterAttachable, false);
-end;
+
 function courseplay:isHookLift(workTool)
 	if workTool.spec_attacherJoints.attacherJoint then
 		return workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_HOOKLIFT;
@@ -130,20 +105,16 @@ end
 function courseplay:isMixer(workTool)
 	return workTool.typeName == "selfPropelledMixerWagon" or (workTool.cp.hasSpecializationDrivable and  workTool.cp.hasSpecializationMixerWagon)
 end;
-function courseplay:isMower(workTool)
-	return workTool.cp.hasSpecializationMower or courseplay:isSpecialMower(workTool);
-end;
+
 function courseplay:isRoundbaler(workTool) -- is the tool a roundbaler?
 	return courseplay:isBaler(workTool) and workTool.spec_baler ~= nil and (workTool.spec_baler.baleCloseAnimationName ~= nil and workTool.spec_baler.baleUnloadAnimationName ~= nil or courseplay:isSpecialRoundBaler(workTool));
 end;
 function courseplay:isSowingMachine(workTool) -- is the tool a sowing machine?
-	return workTool.cp.hasSpecializationSowingMachine or courseplay:isSpecialSowingMachine(workTool);
+	return SpecializationUtil.hasSpecialization(SowingMachine, workTool.specializations)
 end;
-function courseplay:isSpecialChopper(workTool)
-	return workTool.typeName == "woodCrusherTrailer" or workTool.cp.isPoettingerMex5 or workTool.cp.isTraileredChopper
-end
+
 function courseplay:isSprayer(workTool) -- is the tool a sprayer/spreader?
-	return workTool.cp.hasSpecializationSprayer or courseplay:isSpecialSprayer(workTool)
+	return SpecializationUtil.hasSpecialization(Sprayer, workTool.specializations)
 end;
 function courseplay:isWheelloader(workTool)
 	return workTool.typeName:match("wheelLoader");
@@ -153,17 +124,12 @@ function courseplay:hasShovel(workTool)
 		return true
 	end
 end
-function courseplay:hasLeveler(workTool) 
-	if workTool.cp.hasSpecializationLeveler then	
+function courseplay:hasLeveler(workTool)
+	if workTool.cp.hasSpecializationLeveler then
 		return true
 	end
 end
 
-function courseplay:hasBunkerSiloCompacter(workTool)
-	if workTool.cp.hasSpecializationBunkerSiloCompacter then	
-		return true
-	end
-end
 function courseplay:isTrailer(workTool)
 	return workTool.typeName:match("trailer");
 end;
@@ -190,7 +156,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
 	if isAllowedOkay and isDisallowedOkay then
-		if vehicle.cp.mode == 5 then 
+		if vehicle.cp.mode == 5 then
 			-- For reversing purpose ?? still needed ?
 			if isImplement then
 				hasWorkTool = true;
@@ -201,45 +167,32 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			vehicle.cp.workTools[#vehicle.cp.workTools + 1] = workTool;
 		end
 	end
-	
+
 
 	-- MODE 4: FERTILIZER AND SEEDING
 	if vehicle.cp.mode == 4 then
 		if isAllowedOkay and isDisallowedOkay then
-			courseplay:setMarkers(vehicle, workTool)
 			vehicle.cp.hasMachinetoFill = true;
-			local isSprayer, isSowingMachine = courseplay:isSprayer(workTool), courseplay:isSowingMachine(workTool);
-			vehicle.cp.noStopOnEdge = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
-			vehicle.cp.noStopOnTurn = isSprayer and not (isSowingMachine or workTool.cp.isTreePlanter);
 		end;
 	-- MODE 6: FIELDWORK
 	elseif vehicle.cp.mode == 6 then
 		if isAllowedOkay and isDisallowedOkay then
-			courseplay:setMarkers(vehicle, workTool);
-			vehicle.cp.noStopOnTurn = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
-			vehicle.cp.noStopOnEdge = courseplay:isBaler(workTool) or courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) or workTool.cp.hasSpecializationCutter;
-			if courseplay:isBaleLoader(workTool) or courseplay:isSpecialBaleLoader(workTool) then
+			if courseplay:isBaleLoader(workTool) then
 				vehicle.cp.hasBaleLoader = true;
 				if vehicle.cp.lastValidTipDistance == nil then
 					vehicle.cp.lastValidTipDistance = 0
 				end;
 			end;
-			if courseplay:isHarvesterAttachable(workTool) then
-				vehicle.cp.hasHarvesterAttachable = true;
-			end;
-			if courseplay:isSpecialChopper(workTool) then
-				vehicle.cp.hasSpecialChopper = true;
-			end;
 		end;
-	end	
+	end
 	--belongs to mode3 but should be considered even if the mode is not set correctely
 	if workTool.cp.isAugerWagon then
 		vehicle.cp.hasAugerWagon = true;
 	end;
 
-	
+
 	vehicle.cp.hasWaterTrailer = hasWaterTrailer
-	
+
 	if hasWorkTool then
 		courseplay:debug(('%s: workTool %q added to workTools (index %d)'):format(nameNum(vehicle), nameNum(workTool), #vehicle.cp.workTools), 6);
 	end;
@@ -247,23 +200,12 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	--------------------------------------------------
 
 	if not isImplement or hasWorkTool or workTool.cp.isNonTippersHandledWorkTool then
-		-- SPECIAL SETTINGS ?? is this one needed any more ? 
-		courseplay:askForSpecialSettings(vehicle, workTool);
-
 		--FOLDING PARTS: isFolded/isUnfolded states
 		courseplay:setFoldedStates(workTool);
 	end;
 
 	-- REVERSE PROPERTIES
 	courseplay:getReverseProperties(vehicle, workTool);
-
-	-- aiTurnNoBackward
-	if isImplement and hasWorkTool then
-		if not vehicle.cp.aiTurnNoBackward and workTool.cp.notToBeReversed then
-			vehicle.cp.aiTurnNoBackward = true;
-			courseplay:debug(('%s: workTool.cp.notToBeReversed == true --> vehicle.cp.aiTurnNoBackward = true'):format(nameNum(workTool)), 6);
-		end;
-	end;
 
 	-- TRAFFIC COLLISION IGNORE LIST
 	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
@@ -345,7 +287,7 @@ function courseplay:setTipRefOffset(vehicle)
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].rootNode, tipperX, tipperY, tipperZ);
 					courseplay:debug(string.format("point%s : tipRefPointX (%s), tipRefPointY (%s), tipRefPointZ(%s)",tostring(n),tostring(tipRefPointX),tostring(tipRefPointY),tostring( tipRefPointZ)),13)
 					tipRefPointX = abs(tipRefPointX);
-					if tipRefPointX > vehicle.cp.tipRefOffset then  
+					if tipRefPointX > vehicle.cp.tipRefOffset then
 						if tipRefPointX > 0.1 then
 							vehicle.cp.tipRefOffset = tipRefPointX;
 						else
@@ -369,154 +311,6 @@ function courseplay:setTipRefOffset(vehicle)
 	end;
 end;
 
---- Create two markers (offset distances from the root/direction node of the vehicle):
--- frontMarker: distance of the outermost work area limit from the root/direction node.
--- backMarker: distance of the innermost work area limit from the root/direction node.
-function courseplay:setMarkers(vehicle, object)
-
-	if object.cp.attachedCuttersVar ~= nil and not object.cp.hasSpecializationFruitPreparer and not courseplay:isAttachedCombine(object) then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is a combine -> not setting work areas', tostring(object.name))
-		return;
-	end
-
-	if object.cp.noWorkArea then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): %s is special tool configured for no work areas', tostring(object.name))
-		return;
-	end;
-
-	local realDirectionNode		= AIDriverUtil.getDirectionNode(vehicle)
-	local aLittleBitMore 		= 1;
-	local pivotJointNode 		= courseplay:getPivotJointNode(object);
-	object.cp.backMarkerOffset 	= nil;
-	object.cp.aiFrontMarker 	= nil;
-
-	-- Get and set vehicle distances if not set
-	local vehicleDistances = vehicle.cp.distances or courseplay:getDistances(vehicle);
-	-- Get and set object distances if not set
-	local objectDistances = object.cp.distances or courseplay:getDistances(object);
-
-	-- get the behindest and the frontest  points :-) ( as offset to root node)
-	 
-
-	local activeInputAttacherJoint = object.getActiveInputAttacherJoint and object:getActiveInputAttacherJoint()
-	if not activeInputAttacherJoint then
-		courseplay.debugVehicle(6, vehicle, 'setMarkers(): no attacher joints')
-		return
-	end
-
-	if not courseplay:hasWorkAreas(object) then
-		if courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-			-- Calculate the offset based on the distances
-			local ztt = vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1;
-
-			local backMarkerCorrection = Utils.getNoNil(object.cp.backMarkerOffsetCorrection, 0);
-			if vehicle.cp.backMarkerOffset == nil or (abs(backMarkerCorrection) > 0 and  ztt + backMarkerCorrection > vehicle.cp.backMarkerOffset) then
-				vehicle.cp.backMarkerOffset = abs(backMarkerCorrection) > 0 and ztt + backMarkerCorrection or 0;
-			end
-
-			local frontMarkerCorrection = Utils.getNoNil(object.cp.frontMarkerOffsetCorrection, 0);
-			if vehicle.cp.aiFrontMarker == nil or (abs(frontMarkerCorrection) > 0 and  ztt + frontMarkerCorrection < vehicle.cp.aiFrontMarker) then
-				vehicle.cp.aiFrontMarker = abs(frontMarkerCorrection) > 0 and ztt + frontMarkerCorrection or -3;
-			end
-
-			courseplay.debugVehicle(6, vehicle, '(%s) setMarkers(), no work area: cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
-				nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
-		else
-			--- Set front and back marker to default values, so we don't check again.
-			if vehicle.cp.backMarkerOffset == nil then
-				vehicle.cp.backMarkerOffset = 0;
-			end
-			if vehicle.cp.aiFrontMarker == nil then
-				vehicle.cp.aiFrontMarker = -3;
-			end
-			courseplay:debug(('%s: setMarkers(): %s has no workAreas -> return '):format(nameNum(vehicle), tostring(object.name)), 6);
-		end;
-		return;
-	end
-
-	local backMarkerAreaType, frontMarkerAreaType
-	-- TODO: figure out what other types to avoid, the FS17 types ending with DROP do not seem to exist anymore
-	local avoidType = {
-		[WorkAreaType.RIDGEMARKER] = true
-	}
-	for k, area in courseplay:workAreaIterator(object) do
-		if not avoidType[area.type] then
-			for j,node in pairs(area) do
-				if j == "start" or j == "height" or j == "width" then
-					local x, y, z;
-					local ztt = 0;
-					local type;
-
-					if pivotJointNode and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-						type = "Pivot Trailer";
-						-- TODO: use localToLocal instead of a getWorldTranslation and a worldToLocal
-						x, y, z = getWorldTranslation(pivotJointNode);
-
-						-- Get the marker offset from the pivot node.
-						_, _, ztt = worldToLocal(node, x, y, z);
-
-						-- Calculate the offset based on the distances
-						 ztt = ((vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] + objectDistances.attacherJointToPivot) * -1) - ztt; 
-
-					 elseif courseplay:isWheeledWorkTool(object) and activeInputAttacherJoint.jointType and vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] then 
-						type = "Trailer";
-						x, y, z = getWorldTranslation(activeInputAttacherJoint.node) 
-
-						-- Get the marker offset from the pivot node.
-						_, _, ztt = worldToLocal(node, x, y, z);
-
-						-- Calculate the offset based on the distances
-						ztt = (vehicleDistances.turningNodeToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType] * -1) - ztt; 
-
-					else
-						type = "Vehicle";
-						x, y, z = getWorldTranslation(node);
-						_, _, ztt = worldToLocal(realDirectionNode, x, y, z);
-					end;
-
-					courseplay.debugVehicle(6, vehicle, '%s %s (%s) %s: ztt = %.2f',
-						object:getName(), type, g_workAreaTypeManager.workAreaTypes[area.type].name, tostring(j), ztt)
-					if object.cp.backMarkerOffset == nil or ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0) > object.cp.backMarkerOffset then
-						object.cp.backMarkerOffset = ztt + Utils.getNoNil(object.cp.backMarkerOffsetCorection, 0);
-						backMarkerAreaType = area.type
-					end
-					if object.cp.aiFrontMarker == nil or ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0) < object.cp.aiFrontMarker then
-						object.cp.aiFrontMarker = ztt + Utils.getNoNil(object.cp.frontMarkerOffsetCorection, 0);
-						frontMarkerAreaType = area.type
-					end
-				end
-			end
-		else
-			courseplay.debugVehicle(6, vehicle, "Avoiding workArea Type %s", g_workAreaTypeManager.workAreaTypes[area.type].name)
-		end;
-	end
-
-	if vehicle.cp.backMarkerOffset == nil or object.cp.backMarkerOffset < (vehicle.cp.backMarkerOffset + aLittleBitMore) then
-		vehicle.cp.backMarkerOffset = object.cp.backMarkerOffset - aLittleBitMore;
-	end
-
-	if vehicle.cp.aiFrontMarker == nil or object.cp.aiFrontMarker > (vehicle.cp.aiFrontMarker - aLittleBitMore) then
-		vehicle.cp.aiFrontMarker = object.cp.aiFrontMarker + aLittleBitMore * 0.75;
-	end
-
-	-- Sprayers have a rectangular work area but the spray is at an angle so the front of the area is not covered.
-	-- Also, some sprayers have multiple work areas depending on the configuration and fill type which can also
-	-- move the front or back markers.
-	-- This leads to little unsprayed rectangles at the row ends as the turn code turns off the sprayer when the back
-	-- marker (which is actually in the front when the implement is attached to the back of the vehicle) reaches the
-	-- field edge.
-	-- So, if both the front and back markers are from sprayer work areas, move the back marker to where the front
-	-- marker is which will result turning off the sprayer later.
-	if frontMarkerAreaType and backMarkerAreaType and
-		frontMarkerAreaType == WorkAreaType.SPRAYER and
-		backMarkerAreaType == WorkAreaType.SPRAYER then
-		courseplay.debugVehicle(6, vehicle, "Forcing backmarker to frontmarker for sprayer")
-		vehicle.cp.backMarkerOffset = vehicle.cp.aiFrontMarker
-	end
-
-	courseplay.debugVehicle(6, vehicle, '(%s), setMarkers(): cp.backMarkerOffset = %s, cp.aiFrontMarker = %s',
-		nameNum(object), tostring(vehicle.cp.backMarkerOffset), tostring(vehicle.cp.aiFrontMarker))
-end;
 
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
@@ -526,10 +320,6 @@ function courseplay:setFoldedStates(object)
 		object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection;
 		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.spec_foldable.turnOnFoldDirection then
 			object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
-		end;
-
-		if object.cp.realUnfoldDirectionIsReversed then
-			object.cp.realUnfoldDirection = -object.cp.realUnfoldDirection;
 		end;
 
 		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), 17);
@@ -614,7 +404,7 @@ function courseplay:workAreaIterator(object)
 	end
 end
 
-function courseplay:hasWorkAreas(object) 
+function courseplay:hasWorkAreas(object)
 	return object and object.getWorkAreaByIndex and object:getWorkAreaByIndex(1)
 end
 
@@ -632,12 +422,7 @@ function courseplay:getWorkWidth(thing, logPrefix)
 	if implements then
 		-- get width of all implements
 		for _, implement in ipairs(implements) do
-			local specialWorkWidth = courseplay:getSpecialWorkWidth(implement.object);
-			if specialWorkWidth and type(specialWorkWidth) == "number" then
-				width = math.max( width, specialWorkWidth);
-			else
-				width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
-			end;
+			width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
 		end
 	end
 	courseplay.debugFormat(6, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)

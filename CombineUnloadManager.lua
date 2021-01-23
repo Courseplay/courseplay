@@ -518,16 +518,6 @@ end
 function CombineUnloadManager:getOnFieldSituation(combine)
 	local offset = self:getPipeOffset(combine)
 
-	-- glad we were able to re-use this super confusing notation, jeez, tractor is the combine now or what are we
-	-- trying to do here? Handle a towed or tractor attached harvester? And if so, what does it matter if we
-	-- check the tractor's sides or the towed/attached harvester's side for fruit?
-	local tractor = combine;
-	if courseplay:isAttachedCombine(combine) then
-		tractor = combine:getAttacherVehicle();
-	end;
-
-	-- get world directions
-
 	local node = combine.cp.directionNode or combine.rootNode;
 	local straightDirX,_,straightDirZ = localDirectionToWorld(node, 0, 0, 1);
 	local leftDirX,_,leftDirZ = localDirectionToWorld(node, 1, 0, 0);
@@ -537,10 +527,9 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local boxLength = 6 + combine.cp.workWidth/2;
 	--to get the box centered divide the measurements by 2
 	local boxWidthCenter = boxWidth/2
-	local boxLengthCenter = boxLength/2
 
 	--get the coords of the 3 left box points
-	local x, y, z = localToWorld(tractor.cp.directionNode, 0, 0, 0)-- -boxLengthCenter+);
+	local x, y, z = localToWorld(node, 0, 0, 0)-- -boxLengthCenter+);
 	local lStartX = x + (leftDirX * (math.abs(offset)-boxWidthCenter))
 	local lStartZ = z + (leftDirZ * (math.abs(offset)-boxWidthCenter))
 	local lWidthX = lStartX + (leftDirX*boxWidth);
@@ -604,6 +593,7 @@ function CombineUnloadManager:getPossibleCombines(vehicle)
 end
 
 g_combineUnloadManager = CombineUnloadManager()
+
 
 
 

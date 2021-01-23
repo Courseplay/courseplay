@@ -230,8 +230,6 @@ function courseGenerator.generate( vehicle )
 		CourseplayEvent.sendEvent(vehicle, "self.cp.courseWorkWidth", vehicle.cp.courseWorkWidth) -- need a setting for this one
 		CourseplayEvent.sendEvent(vehicle, "self.cp.workWidth", vehicle.cp.workWidth) -- need a setting for this one
 		CourseplayEvent.sendEvent(vehicle, "self.cp.laneNumber", vehicle.cp.laneNumber) -- need a setting for this one
-		CourseplayEvent.sendEvent(vehicle, "self.cp.toolOffsetX", vehicle.cp.toolOffsetX) -- need a setting for this one
-		CourseplayEvent.sendEvent(vehicle, "self.cp.toolOffsetZ", vehicle.cp.toolOffsetZ) -- need a setting for this one
 		--setMultiTools
 	end
 	

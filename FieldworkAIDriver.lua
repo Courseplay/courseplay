@@ -798,7 +798,7 @@ function FieldworkAIDriver:setUpCourses()
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
 	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX, self.vehicle.cp.toolOffsetZ)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get(), self.vehicle.cp.settings.toolOffsetZ:get())
 	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
 	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
 	if self.vehicle.cp.multiTools > 1 then
@@ -830,8 +830,8 @@ end
 function FieldworkAIDriver:updateFieldworkOffset()
 	-- (as lua passes tables by reference, we can directly change self.fieldworkCourse even if we passed self.course
 	-- to the PPC to drive)
-	self.fieldworkCourse:setOffset(self.vehicle.cp.toolOffsetX + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
-		self.vehicle.cp.toolOffsetZ + self.aiDriverOffsetZ)
+	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get() + self.aiDriverOffsetX + (self.tightTurnOffset or 0),
+		self.vehicle.cp.settings.toolOffsetZ:get() + self.aiDriverOffsetZ)
 end
 
 function FieldworkAIDriver:hasSameCourse(otherVehicle)
@@ -1129,7 +1129,8 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth, self.frontMarkerDistance,
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
 		if self:startAiTurn(ix) then
@@ -1183,12 +1184,16 @@ function FieldworkAIDriver:setMarkers()
 			backMarkerDistance = d
 		end
 	end
-	-- set these up for turn.lua. TODO: pass in with the turn context and get rid of the aiFrontMarker and backMarkerOffset completely
-	self.vehicle.cp.aiFrontMarker = frontMarkerDistance
 	self.frontMarkerDistance = frontMarkerDistance
-	self.vehicle.cp.backMarkerOffset = backMarkerDistance
 	self.backMarkerDistance = backMarkerDistance
 	self:debug('front marker: %.1f, back marker: %.1f', frontMarkerDistance, backMarkerDistance)
+end
+
+function FieldworkAIDriver:getMarkers()
+	if not self.frontMarkerDistance then
+		self:setMarkers()
+	end
+	return self.frontMarkerDistance, self.backMarkerDistance
 end
 
 function FieldworkAIDriver:getAIMarkers(object, suppressLog)

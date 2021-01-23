@@ -121,7 +121,7 @@ end
 TriggerHandler.debugLoadingCallbackData = {}
 TriggerHandler.debugLoadingCallbackData[0] = "MAX_REACHED"
 TriggerHandler.debugLoadingCallbackData[1] = "RUN_COUNTER_NOT_REACHED"
-TriggerHandler.debugLoadingCallbackData[2] = "SEPERATE_FILLTYPE_NOT_ALLOWED"
+TriggerHandler.debugLoadingCallbackData[2] = "SEPARATE_FILLTYPE_NOT_ALLOWED"
 TriggerHandler.debugLoadingCallbackData[3] = "MIN_NOT_REACHED"
 TriggerHandler.debugLoadingCallbackData[4] = "OK to load"
 TriggerHandler.debugLoadingCallbackData[5] = "SKIP_LOADING"
@@ -538,7 +538,7 @@ end
 TriggerHandler.CALLBACK = {}
 TriggerHandler.CALLBACK.MAX_REACHED = 0
 TriggerHandler.CALLBACK.RUN_COUNTER_NOT_REACHED = 1
-TriggerHandler.CALLBACK.SEPERATE_FILLTYPE_NOT_ALLOWED = 2
+TriggerHandler.CALLBACK.SEPARATE_FILLTYPE_NOT_ALLOWED = 2
 TriggerHandler.CALLBACK.MIN_NOT_REACHED = 3
 TriggerHandler.CALLBACK.OK = 4
 TriggerHandler.CALLBACK.SKIP_LOADING = 5
@@ -551,10 +551,10 @@ function TriggerHandler:triggerCanStartLoading(trigger,object,fillUnitIndex,trig
 	if self:maxFillLevelNotReached(object,fillUnitIndex,data.maxFillLevel,fillType) then 
 		--if runCounter activated and runCounter > 0
 		if self:isRunCounterValid(data.runCounter,data.fillType) then 	
-			-- is seperateFillTypeLoading not activated or seperateFillType not loaded yet
-			if self:isAllowedToLoadSeperateFillType(object,dataLength,fillType) or object:getFillUnitFillLevel(fillUnitIndex) > 1 then
-				local seperateFillTypeLoading = self.driver:getSeperateFillTypeLoadingSetting()
-				if seperateFillTypeLoading and not seperateFillTypeLoading:hasDiffFillTypes() then  
+			-- is separateFillTypeLoading not activated or separateFillType not loaded yet
+			if self:isAllowedToLoadSeparateFillType(object,dataLength,fillType) or object:getFillUnitFillLevel(fillUnitIndex) > 1 then
+				local separateFillTypeLoading = self.driver:getSeparateFillTypeLoadingSetting()
+				if separateFillTypeLoading and not separateFillTypeLoading:hasDiffFillTypes() then
 					if self.lastLoadedFillTypes[1] and fillType~= self.lastLoadedFillTypes[1] then 
 						callback = self.CALLBACK.SKIP_LOADING
 						return callback
@@ -589,7 +589,7 @@ function TriggerHandler:triggerCanStartLoading(trigger,object,fillUnitIndex,trig
 					end
 				end
 			else
-				callback = self.CALLBACK.SEPERATE_FILLTYPE_NOT_ALLOWED
+				callback = self.CALLBACK.SEPARATE_FILLTYPE_NOT_ALLOWED
 			end
 		else
 			callback = self.CALLBACK.RUN_COUNTER_NOT_REACHED
@@ -622,18 +622,18 @@ function TriggerHandler:isRunCounterValid(runCounter,fillType)
 	return runCounter and runCounter>0 or runCounter == nil
 end
 
---check seperateFillTypes
-function TriggerHandler:isAllowedToLoadSeperateFillType(object,dataLength,fillTypeIndex)
-	local seperateFillTypeLoading = self.driver:getSeperateFillTypeLoadingSetting()
-	if seperateFillTypeLoading and seperateFillTypeLoading:hasDiffFillTypes() and dataLength > 1 then 
+--check separateFillTypes
+function TriggerHandler:isAllowedToLoadSeparateFillType(object,dataLength,fillTypeIndex)
+	local separateFillTypeLoading = self.driver:getSeparateFillTypeLoadingSetting()
+	if separateFillTypeLoading and separateFillTypeLoading:hasDiffFillTypes() and dataLength > 1 then
 		for _,fillType in pairs(self.lastLoadedFillTypes) do 
-			if fillType == fillTypeIndex and #self.lastLoadedFillTypes < seperateFillTypeLoading:get() then 
+			if fillType == fillTypeIndex and #self.lastLoadedFillTypes < separateFillTypeLoading:get() then
 				self:debugSparse(object,"fillType: "..fillTypeIndex.." already loaded")
 				return false
 			end
 		end
 	end
-	self:debugSparse(object,"isAllowedToLoadSeperateFillType true")
+	self:debugSparse(object,"isAllowedToLoadSeparateFillType true")
 	return true
 end
 
@@ -838,7 +838,7 @@ function TriggerHandler:handleLoadingCallback(trigger,object,fillUnitIndex,loadi
 		self:debugSparse(object, 'last runCounter=0, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title)
 		return
 	end
-	if lastCallbackData and (lastCallbackData.callback == TriggerHandler.CALLBACK.SKIP_LOADING or lastCallbackData.callback == TriggerHandler.CALLBACK.SEPERATE_FILLTYPE_NOT_ALLOWED) then 
+	if lastCallbackData and (lastCallbackData.callback == TriggerHandler.CALLBACK.SKIP_LOADING or lastCallbackData.callback == TriggerHandler.CALLBACK.SEPARATE_FILLTYPE_NOT_ALLOWED) then
 		--not enough fillTypes loaded!!
 		self:setLoadingState()
 		CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');

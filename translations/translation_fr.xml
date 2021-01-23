@@ -492,8 +492,8 @@
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Vider en roulant dans 1ère fourrière" />
     <text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Permet à la remorque d'aller vider en roulant, en passant à l'extérieur de la parcelle, lorsque la batteuse est dans son premier tour de fourrière" />
     <text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text=": Transport terminé, nombre de tours à 0" />
-    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Chargement différent par benne" />
-    <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
+    <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="Chargement différent par benne" />
+    <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="Multi-bennes:" />
     <text name="COURSEPLAY_MANUAL_LOADING"								text="Chargement manuel" />
 	
     <text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="est à son point d'attente" />

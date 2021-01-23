@@ -438,7 +438,7 @@ function courseplay:getReverseProperties(vehicle, workTool)
 
 	workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
 
-	if attacherVehicle == vehicle or vehicle.cp.isHookLiftTrailer or attacherVehicle.cp.isAttacherModule then
+	if attacherVehicle == vehicle or attacherVehicle.cp.isAttacherModule then
 		workTool.cp.frontNode = courseplay:getRealTrailerFrontNode(workTool);
 	else
 		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(attacherVehicle);

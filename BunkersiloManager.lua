@@ -96,7 +96,7 @@ function BunkerSiloManager:createBunkerSiloMap(vehicle, Silo, width,isHeap)
 	local unitWidth = bunkerWidth/widthCount
 	local unitHeigth = bunkerLength/heightCount
 	
-	--width/height in 2D(x and z seperated) of silo
+	--width/height in 2D(x and z separated) of silo
 
 	local heightLengthX = (hx-sx)/heightCount
 	local heightLengthZ = (hz-sz)/heightCount

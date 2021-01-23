@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<!--
+
+This file is used to customize Courseplay for specific vehicles and implements.
+
+Typically you'd include a vehicle/implement here if it needs some special treatment
+to work correctly with Courseplay. For instance, some implements are offset to the
+left or right side (like bale loaders), so when doing fieldwork, you want do drive
+on the left or right of the actual course so the bale loader's pickup is aligned
+with the course.
+
+This file is the global configuration coming with your copy of Courseplay. If you
+want your own vehicle config, you can create a file called
+vehicleConfigurations.xml in your modsSettings/Courseplay folder. Settings defined
+in that file will override the settings defined here.
+
+You can use the cpReadVehicleConfigurations console command to reload these files
+in-game.
+
+Custom settings are listed per vehicle, the vehicle is identified by its XML file
+name (you can find this in the game's folder under data/vehicles/<make>/<model>/
+
+A vehicle may have multiple implements attached. If multiple implements have the
+same attribute defined here, Courseplay just uses the first value it finds, which
+can be any of the multiple values.
+
+You can define the following custom settings:
+
+- toolOffsetX: number
+    Offset of the tool's centerline relative to the course, left +, right -.
+    For example, if your tool is 2 meters right use "-2.0" here.
+
+- noReverse: boolean
+    This implement can't be reversed. Will not use any turn maneuvers which needs
+    reversing.
+
+- turnRadius: number
+    Override the turn radius configured by the vehicle author or calculated by
+    Courseplay and use this value instead, in meters.
+
+- balerUnloadDistance: number
+    Able to set the distance to the waiting point when it needs to unload. Used by bale loaders.
+    Distance from trailer's turning point to the rear unloading point in meters.
+
+- directionNodeOffsetZ:	number
+	If set, then the Direction Node will be offset by this value in meters. (Only usable for Enterables)
+
+- implementWheelAlwaysOnGround:	boolean
+    Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
+
+-->
+<VehicleConfigurations>
+    <!--[GIANTS]-->
+
+    <!-- Harvesters -->
+    <!-- Implements -->
+    <!--\vehicles\arcusin-->
+    <Vehicle name="arcusinFSX6372.xml"
+             toolOffsetX="-2.4"
+             balerUnloadDistance="-3.8"
+    />
+    <!--\vehicles\grimme-->
+    <Vehicle name="rootster604.xml"
+             noReverse="true"
+    />
+    <Vehicle name="SE260.xml"
+             toolOffsetX="-1.8"
+             noReverse="true"
+    />
+    <!--\vehicles\ropa-->
+    <Vehicle name="keiler2.xml"
+             toolOffsetX="-2.0"
+             noReverse="true"
+    />
+    <!--\vehicles\kuhn-->
+    <Vehicle name="kuhnSW4014.xml"
+             toolOffsetX="-2.5"
+             noReverse="true"
+    />
+    <!--\vehicles\salford-->
+    <Vehicle name="salford4204.xml"
+             noReverse="true"
+             turnRadius = "3"
+    />
+    <Vehicle name="salford8312.xml"
+             noReverse="true"
+             turnRadius = "9"
+    />
+    <!--\vehicles\lemken-->
+    <Vehicle name="titan11.xml"
+             noReverse="true"
+             turnRadius = "4.5"
+             implementWheelAlwaysOnGround = "true"
+    />
+    <!--vehicles\gregoireBesson-->
+    <Vehicle name="SPSL9.xml"
+             toolOffsetX="2.1"
+             turnRadius = "10"
+             implementWheelAlwaysOnGround = "true"
+    />
+    <!--\vehicles\lizard-->
+    <Vehicle name="SWT7.xml"
+             toolOffsetX="-2.2"
+             noReverse="false"
+             turnRadius = "9"
+    />
+    <!--vehicles\seedHawk-->
+    <Vehicle name="980AirCart.xml"
+             noReverse="true"
+    />
+    <Vehicle name="xlAirDrill84.xml"
+             noReverse="true"
+             turnRadius = "10"
+    />
+    <!--\vehicles\hatzenbichler-->
+    <Vehicle name="terminator18.xml"
+             noReverse="true"
+    />
+    <Vehicle name="th1400.xml"
+             noReverse="true"
+    />
+    <!--\vehicles\greatPlains-->
+    <Vehicle name="yp2425A.xml"
+             noReverse="true"
+    />
+    <!--\vehicles\flexicoil-->
+    <Vehicle name="st820.xml"
+             turnRadius = "7"
+    />
+    <!--\vehicles\agrisem-->
+    <Vehicle name="agrisemCultiplowPlatinum8m.xml"
+             turnRadius = "7"
+    />
+
+    <!--Tractors-->
+
+    <!--[DLC]-->
+
+    <!--Harvester-->
+
+    <!--Implements-->
+
+    <!--Bourgault-->
+    <Vehicle name="series3320.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series7950b.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series3420.xml"
+             noReverse="true"
+    />
+    <Vehicle name="series71300.xml"
+             noReverse="true"
+    />
+    <!--[MODS]-->
+
+    <!--Harvester-->
+
+    <!--Implements-->
+
+    <!--Mod: Ursus T-127 (Bale Collector)-->
+    <Vehicle name="ursusT127.xml"
+             toolOffsetX="-2.4"
+             noReverse="true"
+             balerUnloadDistance="-1.8"
+    />
+    <!--Mod: Ursus Z586 (Bale Wrapper)-->
+    <Vehicle name="z586.xml"
+             toolOffsetX="-2.5"
+             noReverse="true"
+    />
+    <!--Tractors and Others-->
+
+    <!--Mod: Big Bud 747-->
+    <Vehicle name="bigBud747.xml"
+             turnRadius = "9"
+    />
+    <!--Mod: JCB 435S-->
+    <Vehicle name="jcb435s.xml"
+             directionNodeOffsetZ="-0.705"
+    />
+</VehicleConfigurations>

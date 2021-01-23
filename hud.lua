@@ -375,15 +375,6 @@ end;
 -- set the content cyclic
 function courseplay.hud:setContent(vehicle)
 	-- self = courseplay.hud
-	if vehicle.cp.hud.firstTimeSetContent then
-		--- Reset tools
-		-- This is to show the silo filltype line on first time opening the hud and the mode is Grain Transport.
-		if vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT then
-			--courseplay:resetTools(vehicle); TODO Tommi shouldn't be needed anymore
-		end;
-		vehicle.cp.hud.firstTimeSetContent = false
-	end;
-
 	-- BOTTOM GLOBAL INFO
 	-- mode icon
 	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.NUM_MODES;
@@ -885,19 +876,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'changeToolOffsetX' then
 					--Tool horizontal offset
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_X');
-					if vehicle.cp.toolOffsetX and vehicle.cp.toolOffsetX ~= 0 then
-						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetX), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetX > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = '---';
-					end;
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetX:getText()
 				elseif entry.functionToCall == 'changeToolOffsetZ' then
 					--Tool vertical offset
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z');
-					if vehicle.cp.toolOffsetZ and vehicle.cp.toolOffsetZ ~= 0 then
-						vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.toolOffsetZ), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.toolOffsetZ > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'));
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = '---';
-					end;
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetZ:getText()
 				elseif entry.functionToCall == 'changeWaitTime' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WAITING_TIME');
 					local str;
@@ -933,7 +916,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'driveOnAtFillLevel:changeByX' then
 					--DriveOnAtFillLevelSetting
-					if not vehicle.cp.settings.seperateFillTypeLoading:isActive() then
+					if not vehicle.cp.settings.separateFillTypeLoading:isActive() then
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.driveOnAtFillLevel:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.driveOnAtFillLevel:getText()
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.driveOnAtFillLevel)
@@ -942,7 +925,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'moveOnAtFillLevel:changeByX' then
 					--DriveOnAtFillLevelSetting
-					if not vehicle.cp.settings.seperateFillTypeLoading:isActive() then
+					if not vehicle.cp.settings.separateFillTypeLoading:isActive() then
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.moveOnAtFillLevel:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.moveOnAtFillLevel:getText()
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.moveOnAtFillLevel)
@@ -1149,14 +1132,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--AllowUnloadOnFirstHeadlandSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.allowUnloadOnFirstHeadland:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.allowUnloadOnFirstHeadland:getText()
-				elseif entry.functionToCall == 'seperateFillTypeLoading:changeByX' then					
-					--SeperateFillTypeLoadingSetting
-					if vehicle.cp.settings.seperateFillTypeLoading:isActive() then
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.seperateFillTypeLoading:getLabel() 
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.seperateFillTypeLoading:getText()
-						self:enableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.seperateFillTypeLoading)
+				elseif entry.functionToCall == 'separateFillTypeLoading:changeByX' then
+					--SeparateFillTypeLoadingSetting
+					if vehicle.cp.settings.separateFillTypeLoading:isActive() then
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.separateFillTypeLoading:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.separateFillTypeLoading:getText()
+						self:enableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					else
-						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.seperateFillTypeLoading)
+						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					end
 				elseif entry.functionToCall == 'automaticUnloadingOnField:toggle' then
 					--not used right now!
@@ -1266,117 +1249,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		self:showShowWaypointsButtons(vehicle, false)
 	end
 		
---[[
-
-
-
-	--PAGE 1: COURSEPLAY CONTROL
-	elseif page == self.PAGE_CP_CONTROL then
-
-		if vehicle.cp.canDrive then
-			if not vehicle:getIsCourseplayDriving() then -- only 6 lines available, as the mode buttons are in lines 7 and 8!
-				
-				if vehicle.cp.hasAugerWagon and not vehicle.cp.hasSugarCaneAugerWagon and (vehicle.cp.mode == courseplay.MODE_OVERLOADER or vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT) then
-					vehicle.cp.hud.content.pages[1][4][1].text = courseplay:loc('COURSEPLAY_SAVE_PIPE_POSITION');
-					if vehicle.cp.pipeWorkToolIndex ~= nil then
-						vehicle.cp.hud.content.pages[1][4][2].text = 'OK';
-					else
-						vehicle.cp.hud.content.pages[1][4][2].text = courseplay:loc('UNKNOWN');
-					end
-				end
-	
-	
-		if vehicle.cp.lastValidTipDistance ~= nil then
-			vehicle.cp.hud.content.pages[3][6][1].text = courseplay:loc('COURSEPLAY_LAST_VAILD_TIP_DIST');
-			vehicle.cp.hud.content.pages[3][6][2].text = ('%.1fm'):format(vehicle.cp.lastValidTipDistance);
-		end;
-	
-	--PAGE 3: MODE 2 SETTINGS
-	elseif page == self.PAGE_COMBI_MODE then
-		
-	-- PAGE 8: COURSE GENERATION
-	elseif page == self.PAGE_COURSE_GENERATION then
-		-- line 1 = field edge path
-		vehicle.cp.hud.content.pages[8][1][1].text = courseplay:loc('COURSEPLAY_FIELD_EDGE_PATH');
-		if courseplay.fields.numAvailableFields > 0 and vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
-			vehicle.cp.hud.content.pages[8][1][2].text = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name;
-		elseif vehicle.cp.numWaypoints >= 4 then
-			vehicle.cp.hud.content.pages[8][1][2].text = courseplay:loc('COURSEPLAY_CURRENTLY_LOADED_COURSE');
-		else
-			vehicle.cp.hud.content.pages[8][1][2].text = '---';
-		end;
-
-		-- line 2 = work width
-		vehicle.cp.hud.content.pages[8][2][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
-		if vehicle.cp.manualWorkWidth then 
-			vehicle.cp.hud.content.pages[8][2][2].text = string.format('%.1fm (mnl)', vehicle.cp.workWidth);
-		else
-			vehicle.cp.hud.content.pages[8][2][2].text = vehicle.cp.workWidth ~= nil and string.format('%.1fm', vehicle.cp.workWidth) or '---';
-		end
-		-- line 3 = starting corner
-		if vehicle.cp.isNewCourseGenSelected() and not vehicle.cp.headland.orderBefore then
-			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_ENDING_LOCATION');
-		else
-			vehicle.cp.hud.content.pages[8][3][1].text = courseplay:loc('COURSEPLAY_STARTING_LOCATION');
-		end
-		-- 1 = SW, 2 = NW, 3 = NE, 4 = SE
-		if vehicle.cp.hasStartingCorner then
-			vehicle.cp.hud.content.pages[8][3][2].text = courseplay:loc(string.format('COURSEPLAY_CORNER_%d', vehicle.cp.startingCorner)); -- NE/SE/SW/NW
-			if vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION and vehicle.cp.generationPosition.hasSavedPosition then
-				vehicle.cp.hud.content.pages[8][3][2].text = vehicle.cp.hud.content.pages[8][3][2].text..string.format(" (%s %d)",courseplay:loc('COURSEPLAY_FIELD'),vehicle.cp.generationPosition.fieldNum);
-			end
-		else
-			vehicle.cp.hud.content.pages[8][3][2].text = '---';
-		end;
-
-		-- line 4 = starting direction
-		vehicle.cp.hud.content.pages[8][4][1].text = courseplay:loc('COURSEPLAY_STARTING_DIRECTION');
-		-- 1 = North, 2 = East, 3 = South, 4 = West
-		if vehicle.cp.hasStartingDirection then
-			vehicle.cp.hud.content.pages[8][4][2].text = courseplay:loc(string.format('COURSEPLAY_DIRECTION_%d', vehicle.cp.startingDirection)); -- East/South/West/North
-			-- only allow for the new course generator
-			if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then
-				vehicle.cp.hud.content.pages[8][4][3].text = tostring( courseGenerator.getCompassAngleDeg( vehicle.cp.rowDirectionDeg )) .. '°' .. 
-					' (' .. courseplay:loc( courseGenerator.getCompassDirectionText( vehicle.cp.rowDirectionDeg )) .. ')'
-			else
-				--vehicle.cp.hud.content.pages[8][4][3].text = '---'
-			end
-		else
-			vehicle.cp.hud.content.pages[8][4][2].text = '---';
-		end;
-
-		
-		-- line 5 = return to first point
-		vehicle.cp.hud.content.pages[8][5][1].text = courseplay:loc('COURSEPLAY_RETURN_TO_FIRST_POINT');
-
-		-- line 6 = headland
-		vehicle.cp.hud.content.pages[8][6][1].text = courseplay:loc('COURSEPLAY_HEADLAND');
-		if vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
-			vehicle.cp.hud.content.pages[8][6][3].text = courseplay:loc('COURSEPLAY_HEADLAND_MODE_NARROW_FIELD');
-		else
-			vehicle.cp.hud.content.pages[8][6][3].text = vehicle.cp.headland.getNumLanes() ~= 0 and tostring(vehicle.cp.headland.numLanes) or '-';
-		end
-		-- only allow for the new course generator
-		if vehicle.cp.headland.exists() and vehicle.cp.isNewCourseGenSelected() then
-			vehicle.cp.hud.content.pages[8][6][2].text = courseplay:loc( courseplay.cornerTypeText[ vehicle.cp.headland.turnType ])
-		else
-			vehicle.cp.hud.content.pages[8][6][2].text = '---'
-		end
-
-		-- line 7 = bypass islands
-		vehicle.cp.hud.content.pages[8][7][1].text = courseplay:loc('COURSEPLAY_BYPASS_ISLANDS');
-		-- only allow for the new course generator
-		if vehicle.cp.isNewCourseGenSelected() then
-			vehicle.cp.hud.content.pages[8][7][2].text = courseplay:loc( Island.bypassModeText[ vehicle.cp.oldCourseGeneratorSettings.islandBypassMode ]);
-		else
-			vehicle.cp.hud.content.pages[8][7][2].text = '---'
-		end
-
-		-- line 8 Multiple Tools
-		vehicle.cp.hud.content.pages[8][8][1].text = courseplay:loc('COURSEPLAY_MULTI_TOOLS');
-		vehicle.cp.hud.content.pages[8][8][2].text = string.format("%d (%.1f%s)",vehicle.cp.multiTools,vehicle.cp.multiTools*vehicle.cp.workWidth,courseplay:loc('COURSEPLAY_UNIT_METER'));
-	
-]]
 	-- make sure AutoDrive mode has all options currently available for the vehicle
 	vehicle.cp.settings.autoDriveMode:update()
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
@@ -1437,7 +1309,6 @@ function courseplay.hud:setupVehicleHud(vehicle)
 		currentPage = 1;
 		show = false;
 		showMiniHud = true;
-		firstTimeSetContent = true;
 		content = {
 			bottomInfo = {};
 			pages = {};
@@ -1522,8 +1393,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	vehicle.cp.HUD4savedCombineName = "";
 
 	]]
-	vehicle.cp.attachedCombine = nil;
-	
+
 	local mouseWheelArea = {
 		x = self.contentMinX,
 		w = self.contentMaxWidth,
@@ -2214,7 +2084,7 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	--page 3 
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 1, 1 )
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.seperateFillTypeLoading,'changeByX', 3, 1, 3)
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.separateFillTypeLoading,'changeByX', 3, 1, 3)
 	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver,'addFilltype', 3, 2, 1 )
 	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver, 3, 3, 7, 1,true)
 	--page 7 

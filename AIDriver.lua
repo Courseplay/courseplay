@@ -2126,7 +2126,7 @@ function AIDriver:getSiloSelectedFillTypeSetting()
 
 end
 
-function AIDriver:getSeperateFillTypeLoadingSetting()
+function AIDriver:getSeparateFillTypeLoadingSetting()
 
 end
 

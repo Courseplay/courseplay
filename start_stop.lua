@@ -154,12 +154,6 @@ function courseplay:start(self)
 	self.cp.aiLightsTypesMaskBackup  = self.spec_lights.aiLightsTypesMask
 	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
 
-	--check Crab Steering mode and set it to default
-	if self.crabSteering and (self.crabSteering.state ~= self.crabSteering.aiSteeringModeIndex or self.cp.useCrabSteeringMode ~= nil) then
-		local crabSteeringMode = self.cp.useCrabSteeringMode or self.crabSteering.aiSteeringModeIndex;
-		self:setCrabSteering(crabSteeringMode);
-	end
-
 	-- ok i am near the waypoint, let's go
 	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
@@ -240,8 +234,6 @@ function courseplay:stop(self)
 	courseplay:setRecordingIsPaused(self, false);
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
-	self.cp.aiTurnNoBackward = false
-	self.cp.noStopOnEdge = false
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 	-- deactivate beacon and hazard lights

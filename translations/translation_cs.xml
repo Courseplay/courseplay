@@ -490,8 +490,8 @@
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="在第一岬角上卸载收割机" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="允许在第一个岬角上卸下正在移动的收割机，卸车机将其从田野中驶出." />
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="最后一次运行 = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="加载单独的填充类型" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="独立拖车:" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="加载单独的填充类型" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="独立拖车:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="卸货量 %d 的 %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="手动加载" />
 

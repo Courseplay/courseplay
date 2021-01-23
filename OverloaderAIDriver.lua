@@ -183,7 +183,7 @@ function OverloaderAIDriver:isMoveOnFillLevelReached()
     return true
 end
 
---override this as mode 3 unloading works seperate without triggerHandler
+--override this as mode 3 unloading works separate without triggerHandler
 function OverloaderAIDriver:enableFillTypeUnloading()
 	
 end

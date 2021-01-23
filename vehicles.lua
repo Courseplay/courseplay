@@ -627,11 +627,6 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), 6);
 			end;
 
-			if object.cp.realTurnNodeOffsetZ and type(object.cp.realTurnNodeOffsetZ) == "number" then
-				Distance = Distance + object.cp.realTurnNodeOffsetZ;
-				courseplay:debug(('%s: getRealTurningNode(): Special turn node offset set: realTurnNodeOffsetZ=%2f, New Distance=%2f'):format(nameNum(object), object.cp.realTurnNodeOffsetZ, Distance), 6);
-			end;
-
 			if Distance ~= 0 then
 				setTranslation(node, 0, 0, Distance);
 			end;
@@ -742,13 +737,12 @@ end;
 function courseplay:getRealUnloadOrFillNode(workTool)
 	if workTool.cp.unloadOrFillNode == nil then
 		-- BALELOADERS and STRAWBLOWERS
-		if courseplay:isBaleLoader(workTool) or (courseplay:isSpecialBaleLoader(workTool) and workTool.cp.specialUnloadDistance) or workTool.cp.isStrawBlower then
+		if courseplay:isBaleLoader(workTool) then
 			-- Create the new node and link it to realTurningNode
 			local node = courseplay:createNewLinkedNode(workTool, "UnloadOrFillNode", courseplay:getRealTurningNode(workTool));
 
 			-- make sure we set the node distance position
-			local Distance = workTool.cp.specialUnloadDistance or -5;
-			setTranslation(node, 0, 0, Distance);
+			setTranslation(node, 0, 0, g_vehicleConfigurations:get(workTool, 'balerUnloadDistance') or -5);
 
 			workTool.cp.unloadOrFillNode = node;
 
@@ -778,37 +772,12 @@ function courseplay:getRealUnloadOrFillNode(workTool)
 	return workTool.cp.unloadOrFillNode;
 end;
 
-function courseplay:getHighestToolTurnDiameter(object)
-	local turnDiameter = 0;
-
-	-- Tool attached to Steerable
-	for _, implement in ipairs(object:getAttachedImplements()) do
-		local workTool = implement.object;
-
-		if courseplay:isRearAttached(object, implement.jointDescIndex) then
-			local ttr =  courseplay:getToolTurnRadius(workTool);
-			turnDiameter = ttr * 2;
-			courseplay:debug(('%s: toolTurnDiameter=%.2fm'):format(nameNum(workTool), turnDiameter), 6);
-
-			-- Check rear attached tools for turnDiameters
-			if workTool.getAttachedImplements and workTool:getAttachedImplements() ~= {} then
-				local ttd = courseplay:getHighestToolTurnDiameter(workTool);
-				if ttd > turnDiameter then
-					turnDiameter = ttd;
-				end;
-			end;
-		end;
-	end;
-
-	return turnDiameter;
-end;
-
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
 
-	if workTool.cp.overwriteTurnRadius and type(workTool.cp.overwriteTurnRadius) == "number" then
-		turnRadius = workTool.cp.overwriteTurnRadius;
-		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(workTool), turnRadius), 6);
+	if g_vehicleConfigurations:get(workTool, 'turnRadius') then
+		turnRadius = g_vehicleConfigurations:get(workTool, 'turnRadius')
+		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(workTool), turnRadius), 6);
 	elseif courseplay:isWheeledWorkTool(workTool) then
 		local radiusMultiplier = 1.05; -- Used to add a little bit to the radius, for safer turns.
 
@@ -1055,17 +1024,11 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	-- Make sure the turning node have been updated (Script will only run once)
 	courseplay:getRealTurningNode(vehicle);
 
-	if vehicle.cp.overwriteTurnRadius and type(vehicle.cp.overwriteTurnRadius) == "number" then
-		courseplay:debug(('%s -> TurnRadius: overwriteTurnRadius is set: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.cp.overwriteTurnRadius), 6);
-		return vehicle.cp.overwriteTurnRadius;
-
-	-- Giants have provided us with maxTurningRadius, so use it.
-	--elseif vehicle.maxTurningRadius then
-	--	courseplay:debug(('%s -> TurnRadius: Useing Giants value: turnRadius set to %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
-	--	return vehicle.maxTurningRadius
-
-	-- We need to calculate it our self.
+	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), 6);
+		return g_vehicleConfigurations:get(vehicle, 'turnRadius')
 	else
+		-- We need to calculate it ourself.
 		-- ArticulatedAxis Steering
 		if vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMax then
 			wheelBase = courseplay:getWheelBase(vehicle);
@@ -1119,7 +1082,8 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 	end;
 
 	-- Make sure we are not some standard combine/crawler/articulated vehicle
-	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine or vehicle.cp.hasSpecializationCrawler or courseplay:isHarvesterSteerable(vehicle)) then
+	if not ((vehicle.spec_articulatedAxis and vehicle.spec_articulatedAxis.rotMin) or vehicle.cp.hasSpecializationCombine
+			or SpecializationUtil.hasSpecialization(Crawler, vehicle.specializations)) then
 	    local isAllWheelStering = false;
 		local haveStraitWheels = false;
 		local haveTurningWheels = false;
@@ -1183,14 +1147,7 @@ function courseplay:getVehicleDirectionNodeOffset(vehicle, directionNode)
 		end;
 	end;
 
-	-- If an offset is set in setNameVariable() then apply it
-	if vehicle.cp.directionNodeZOffset and vehicle.cp.directionNodeZOffset ~= 0 then
-		offset = offset + vehicle.cp.directionNodeZOffset;
-	end;
-
-	--if offset ~= 0 then
-	--	print(("Offset set to %.2fm"):format(offset));
-	--end;
+	offset = offset + (g_vehicleConfigurations:get(vehicle, 'directionNodeOffsetZ') or 0)
 
 	return offset, isTruck;
 end;
@@ -1323,7 +1280,9 @@ function courseplay:isWheeledWorkTool(workTool)
 			-- Trailers
 			if (activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT)
 			-- Implements with pivot and wheels that do not lift the wheels from the ground.
-			or (node ~= workTool.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and (not activeInputAttacherJoint.topReferenceNode or workTool.cp.implementWheelAlwaysOnGround))
+			or (node ~= workTool.rootNode and activeInputAttacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT and
+					(not activeInputAttacherJoint.topReferenceNode or
+							g_vehicleConfigurations:get(workTool, 'implementWheelAlwaysOnGround')))
 			then
 				return true;
 			end;
@@ -1332,10 +1291,6 @@ function courseplay:isWheeledWorkTool(workTool)
 
 	return false;
 end;
-
-
--- vim: set noexpandtab:
-
 
 function courseplay:getTipTriggerRaycastDirection(vehicle,lx,lz,distance)
 	--get raycast direction x and z

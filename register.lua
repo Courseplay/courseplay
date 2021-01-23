@@ -16,7 +16,6 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onLeaveVehicle", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onDelete", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onRegisterActionEvents", courseplay)
-	SpecializationUtil.registerEventListener(vehicleType, "onPostDetachImplement", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onReadStream", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", courseplay)
@@ -93,15 +92,6 @@ function courseplay:attachablePostLoad(xmlFile)
 
 	--SET SPECIALIZATION VARIABLE
 	courseplay:setNameVariable(self);
-	courseplay:setCustomSpecVariables(self);
-
-	if courseplay.liquidManureOverloaders == nil then
-		courseplay.liquidManureOverloaders ={}
-	end
-	if self.cp.isLiquidManureOverloader then
-		courseplay.liquidManureOverloaders[self.rootNode] = self
-	end
-
 
 	--SEARCH AND SET OBJECT'S self.name IF NOT EXISTING
 	if self.name == nil then
@@ -120,14 +110,6 @@ function courseplay:articulatedAxisOnLoad()
 end
 ArticulatedAxis.onLoad = Utils.appendedFunction(ArticulatedAxis.onLoad, courseplay.articulatedAxisOnLoad)
 
-function courseplay:attachableDelete()
-	if self.cp ~= nil then
-		if self.cp.isLiquidManureOverloader then
-			courseplay.liquidManureOverloaders[self.rootNode] = nil
-		end
-	end;
-end;
-Attachable.delete = Utils.prependedFunction(Attachable.delete, courseplay.attachableDelete);
 
 function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 	local loadingState = superFunc(self, ...);

@@ -491,8 +491,8 @@
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Rozładuj kombajn na pierwszym uwrociu" />
 		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Zezwala na rozładunek poruszającego się kombajnu na pierwszym uwrociu, kierowca po rozładunku zjedzie z pola." />
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Poprzedni runCounter = 0" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES"                  text="Załadunek oddzielnych typów ładunków" />
-        <text name="COURSEPLAY_LOADING_SEPERATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="Załadunek oddzielnych typów ładunków" />
+        <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="Oddzielne przyczepy:" />
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Suma rozładunku %d z %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="Rozładunek ręczny" />
 
