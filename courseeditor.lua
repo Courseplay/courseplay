@@ -561,8 +561,9 @@ function courseEditor:draw(vehicle)
 						if wp.generated and wp.speed == 0 then
 							saction = string.format("%d:auto:%s", i, sign)
 						else
+							local speed = wp.speed and string.format('%d', wp.speed) or '--'
 							local speedUnit = utf8ToUpper(g_i18n:getSpeedMeasuringUnit())
-							saction = string.format("%d:%d %s:%s", i, wp.speed, speedUnit, sign)
+							saction = string.format("%d:%s %s:%s", i, speed, speedUnit, sign)
 						end
 						if wp.lane then
 							saction = saction .. string.format(' (%s: %d)', g_i18n:getText('COURSEPLAY_HEADLAND'), -wp.lane)
