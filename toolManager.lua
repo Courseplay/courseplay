@@ -136,6 +136,13 @@ end;
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
+
+	-- temporary band aid until we figure out what exactly is causing this
+	if not vehicle.cp.mode then
+		vehicle.cp.mode = courseplay.MODE_TRANSPORT
+		courseplay.infoVehicle(vehicle, ' no CP mode set, worktool %s, forcing mode 5', nameNum(workTool))
+	end
+
 	if not isImplement then
 		cpPrintLine(6, 3);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool), vehicle.cp.mode), 6);
