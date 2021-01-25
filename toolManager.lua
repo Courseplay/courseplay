@@ -54,7 +54,7 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.hasAugerWagon = false;
 
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
-	if not vehicle.cp.workToolAttached and not vehicle.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then
+	if not vehicle.cp.workToolAttached and vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER then
 		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
 	end
 
@@ -477,7 +477,7 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 	end
 end
 
---this one enable the buttons and allowes the user to change the mode
+--this one enable the buttons and allows the user to change the mode
 function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	--5 is always valid
 	if cpModeToCheck == 5 then 
@@ -493,7 +493,7 @@ function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 end
 
 function courseplay:getIsToolValidForCpMode(object, mode, callback)
-	isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(mode,object)
+	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(mode,object)
 	callback.isAllowedOkay = callback.isAllowedOkay or isAllowedOkay
 	callback.isDisallowedOkay = callback.isDisallowedOkay and isDisallowedOkay
 	for _,impl in pairs(object:getAttachedImplements()) do

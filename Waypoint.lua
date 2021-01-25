@@ -266,7 +266,6 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	self.currentWaypoint = 1
 	self.length = 0
 	self.headlandLength = 0
-	self.nHeadlandWaypoints = 0
 	self.totalTurns = 0
 	self:enrichWaypointData()
 end
@@ -276,6 +275,7 @@ function Course.createFromGeneratedCourse(vehicle, waypoints, temporary, first, 
 	for i = first or 1, last or #waypoints do
 		table.insert(course.waypoints, Waypoint.initFromGeneratedWp(waypoints[i], i))
 	end
+	course:enrichWaypointData()
 	return course
 end
 
@@ -350,24 +350,24 @@ end
 function Course:enrichWaypointData()
 	if #self.waypoints < 2 then return end
 	self.length = 0
-	self.nHeadlandWaypoints = 0
 	self.headlandLength = 0
 	self.firstHeadlandWpIx = nil
 	self.firstCenterWpIx = nil
+	local dOnHeadland = 0
 	for i = 1, #self.waypoints - 1 do
 		local cx, _, cz = self:getWaypointPosition(i)
-		local nx, _, nz = self:getWaypointPosition( i + 1)
+		local nx, _, nz = self:getWaypointPosition(i + 1)
 		local dToNext = courseplay:distance(cx, cz, nx, nz)
 		self.length = self.length + dToNext
 		if self:isOnHeadland(i) then
-			self.nHeadlandWaypoints = self.nHeadlandWaypoints + 1
 			self.headlandLength = self.headlandLength + dToNext
 			self.firstHeadlandWpIx = self.firstHeadlandWpIx or i
+			dOnHeadland = dOnHeadland + dToNext
 		else
 			-- TODO: this and firstHeadlandWpIx works only if there is one block on the field and 
 			-- no islands, as then we have more than one group of headlands. But these are only 
 			-- for the convoy mode anyway so it is ok if it does not work in all possible situations
-			self.firstCenterWpIx = self.firstCenterWpIx or i	
+			self.firstCenterWpIx = self.firstCenterWpIx or i
 		end
 		if self:isTurnStartAtIx(i) then self.totalTurns = self.totalTurns + 1 end
 		if self:isTurnEndAtIx(i) then
@@ -377,6 +377,7 @@ function Course:enrichWaypointData()
 		end
 		self.waypoints[i].dToNext = dToNext
 		self.waypoints[i].dToHere = self.length
+		self.waypoints[i].dToHereOnHeadland = dOnHeadland
 		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		local dx, dz = MathUtil.vector2Normalize(nx - cx, nz - cz)
@@ -405,6 +406,9 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 	self.waypoints[#self.waypoints].dToNext = 0
 	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
+	self.waypoints[#self.waypoints].dToHereOnHeadland = self:isOnHeadland(#self.waypoints - 1) and
+			self.waypoints[#self.waypoints - 1].dToHereOnHeadland + self.waypoints[#self.waypoints - 1].dToNext or
+			self.waypoints[#self.waypoints - 1].dToHereOnHeadland
 	self.waypoints[#self.waypoints].turnsToHere = self.totalTurns
 	self.waypoints[#self.waypoints].calculatedRadius = self:calculateRadius(#self.waypoints)
 	self.waypoints[#self.waypoints].reverseOffset = self:isReverseAt(#self.waypoints)
@@ -1390,6 +1394,20 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 			end
 		end
 	end
+	courseplay.debugFormat(7, 'Original headland length %.0f m, new headland length %.0f m (%.1f %%, %.1f m)',
+			self.headlandLength, offsetCourse.headlandLength, 100 * offsetCourse.headlandLength / self.headlandLength,
+			offsetCourse.headlandLength - self.headlandLength)
+	local originalNonHeadlandLength = self.length - self.headlandLength
+	local offsetNonHeadlandLength = offsetCourse.length - offsetCourse.headlandLength
+	courseplay.debugFormat(7, 'Original non-headland length %.0f m, new non-headland length %.0f m (%.1f %%, %.1f m)',
+			originalNonHeadlandLength, offsetNonHeadlandLength,
+			100 * offsetNonHeadlandLength / originalNonHeadlandLength,
+			offsetNonHeadlandLength - originalNonHeadlandLength)
+	-- remember this for the convoy progress calculation
+	offsetCourse.headlandLengthRatio = self.headlandLength / offsetCourse.headlandLength
+	offsetCourse.nonHeadlandLengthRatio = originalNonHeadlandLength / offsetNonHeadlandLength
+	offsetCourse.originalCourseLength = offsetCourse.nonHeadlandLengthRatio * offsetNonHeadlandLength
+			+ offsetCourse.headlandLengthRatio * offsetCourse.headlandLength
 	-- apply tool offset to new course
 	offsetCourse:setOffset(self.offsetX, self.offsetZ)
 	return offsetCourse
@@ -1519,6 +1537,20 @@ end
 
 function Course:getProgress(ix)
 	ix = ix or self:getCurrentWaypointIx()
-	return self.waypoints[ix].dToHere / self.length
+	if self.originalCourseLength then
+		-- this is an offset course, measure progress in the original course
+		-- we assume that the non-headland part of the course is the same as the original ...
+		local dToHereOnNonHeadland = self.waypoints[ix].dToHere - self.waypoints[ix].dToHereOnHeadland
+		-- however, the headland part is shorter or longer for the inner and outer offsets (when using multiple tools
+		-- on the same field in a group, for example 3 combines, one on the original course, on on the left, one on
+		-- the right. When working clockwise, the headland for one on the right is shorter.
+		-- So, we project the distance elapsed on the actual offset headland back to the distance elapsed on the
+		-- original headland.
+		local dToHere = self.nonHeadlandLengthRatio * dToHereOnNonHeadland +
+				self.headlandLengthRatio * self.waypoints[ix].dToHereOnHeadland
+		return dToHere / self.originalCourseLength
+	else
+		return self.waypoints[ix].dToHere / self.length
+	end
 end
 

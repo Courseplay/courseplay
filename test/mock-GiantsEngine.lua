@@ -91,3 +91,5 @@ function giantsVehicle.getSpeedLimit()
 end
 
 function giantsVehicle.setCruiseControlMaxSpeed() end
+
+g_time = 0
