@@ -1768,7 +1768,7 @@ function CombineAIDriver:isProximitySlowDownEnabled(vehicle)
 	if vehicle.cp.driver and vehicle.cp.driver.isActive and vehicle.cp.driver:isActive() then return true end
 
 	-- vehicle:getIsControlled() is needed as this one gets synchronized 
-	if vehicle and (vehicle:getIsEntered() or vehicle:getIsControlled()) then
+	if vehicle and vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) then
 		self:debugSparse('human player in nearby %s not driven by CP so do not slow down for it', nameNum(vehicle))
 		-- trust the player to avoid collisions
 		return false

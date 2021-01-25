@@ -88,7 +88,7 @@ function calculateHeadlandTrack( polygon, mode, isClockwise, targetOffset, minDi
 	-- limit of the number of recursions based on how far we want to go
 	-- TODO: this may be linked to the factor for calculating the deltaOffset below
 	-- also, make sure there's a minimum (for example when we are generating a dummy headland with 0 offset
-	local recursionLimit = math.max( math.floor( targetOffset * 20 ), 300 )
+	local recursionLimit = math.max( math.floor( targetOffset * 20 ), 600 )
 	if n > recursionLimit then
 		courseGenerator.info( "Recursion limit of %d reached for headland generation", recursionLimit )
 		-- this will throw an exception but that's better than silently generating wrong tracks
