@@ -19,6 +19,11 @@ function courseplay:onLoad(savegame)
 	end;
 
 	if self.cp == nil then self.cp = {}; end;
+
+	-- TODO: some mods won't install properly as vehicle types and thus the courseplay event listeners are not
+	-- installed for those. In that case, they'll have the Courseplay spec (as checked with hasSpecialization()) but
+	-- onLoad is not called so they do not have a full CP setup, so as of now, we need this to verify if courseplay
+	-- was correctly installed in this vehicle
 	self.hasCourseplaySpec = true;
 
 	self.cp.varMemory = {};

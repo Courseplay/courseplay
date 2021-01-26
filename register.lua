@@ -6,7 +6,7 @@
 g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
 
 function courseplay.registerEventListeners(vehicleType)
-	--print(string.format( "courseplay:registerEventListeners(%s)",tostring(vehicleType)))
+	print(string.format( "## Courseplay: Registering event listeners for %s", vehicleType.name))
 	SpecializationUtil.registerEventListener(vehicleType, "onDraw", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onUpdate", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onUpdateTick", courseplay)

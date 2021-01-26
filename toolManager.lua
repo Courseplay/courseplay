@@ -3,7 +3,8 @@ local _;
 -- ##### MANAGING TOOLS ##### --
 function courseplay:attachImplement(implement)
 	local rootVehicle = implement:getRootVehicle()
-	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
+		rootVehicle.hasCourseplaySpec then
 		courseplay.debugVehicle(6, rootVehicle, '%s attached', nameNum(implement))
 		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
@@ -18,7 +19,8 @@ function courseplay:detachImplement(implementIndex)
 	local implement = spec.attachedImplements[implementIndex]
 	if implement then
 		local rootVehicle = implement.object:getRootVehicle()
-		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) then
+		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
+			rootVehicle.hasCourseplaySpec then
 			courseplay.debugVehicle(6, rootVehicle, '%s detached', nameNum(implement.object))
 			-- do not update yet as the implement is still attached to the vehicle.
 			-- defer the update until the next updateTick(), by that time things settle down
