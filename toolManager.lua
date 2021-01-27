@@ -427,7 +427,7 @@ function courseplay:getWorkWidth(thing, logPrefix)
 	local width = g_vehicleConfigurations:get(thing, 'workingWidth')
 	if not width then
 		-- no manual config, check AI markers
-		courseplay:getAIMarkerWidth(thing, logPrefix)
+		width = courseplay:getAIMarkerWidth(thing, logPrefix)
 	end
 	if not width then
 		-- no AI markers, check work areas
