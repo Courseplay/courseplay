@@ -23,9 +23,9 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 	local mouseIsInHudArea = vehicle.cp.mouseCursorActive and courseplay:mouseIsInArea(posX, posY, hudGfx.x1, hudGfx.x2, hudGfx.y1,  hudGfx.y2);
 	-- if not mouseIsInHudArea then return; end;
 
-	-- should we switch vehicles? Removed condition: vehicle.cp.mouseCursorActive <- is it important that it have to be CP mouseCursor ?
+	-- should we switch vehicles? Option must be active, must be in a vehicle, must not be in CP HUD Area (for AD, not sure how to add) and must have any mouse course active.
 	if courseplay.globalSettings.clickToSwitch:is(true) and vehicle:getIsEntered() and not mouseIsInHudArea and
-		mouseButton == courseplay.inputBindings.mouse.primaryButtonId then
+		mouseButton == courseplay.inputBindings.mouse.primaryButtonId and (g_inputBinding:getShowMouseCursor() == true) then
 			clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouseButton)
 	end
 
