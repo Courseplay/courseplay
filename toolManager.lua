@@ -419,12 +419,18 @@ end
 
 --- Get the working width of thing. Will return the maximum of the working width of thing and
 -- all of its implements
+-- TODO: consolidate this with the logic in FieldworkAIDriver:setMarkers()
 function courseplay:getWorkWidth(thing, logPrefix)
 	logPrefix = logPrefix and logPrefix .. '  ' or ''
 	courseplay.debugFormat(6,'%s%s: getting working width...', logPrefix, nameNum(thing))
-	-- our own width
-	local width = courseplay:getAIMarkerWidth(thing, logPrefix)
+	-- check if we have a manually configured working width
+	local width = g_vehicleConfigurations:get(thing, 'workingWidth')
 	if not width then
+		-- no manual config, check AI markers
+		courseplay:getAIMarkerWidth(thing, logPrefix)
+	end
+	if not width then
+		-- no AI markers, check work areas
 		width = courseplay:getWorkAreaWidth(thing, logPrefix)
 	end
 	local implements = thing:getAttachedImplements()

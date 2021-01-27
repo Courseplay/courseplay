@@ -38,6 +38,12 @@ You can define the following custom settings:
     Override the turn radius configured by the vehicle author or calculated by
     Courseplay and use this value instead, in meters.
 
+- workingWidth: number
+	Working width (in meters) to use instead of the width calculated from the vehicle/implement
+	data. Courseplay uses the AI markers, or if the do not exist, the work areas to determine the
+	working width. Some tools, especially folding plows also fold their markers and work areas,
+	preventing us from getting the correct length.
+
 - balerUnloadDistance: number
     Able to set the distance to the waiting point when it needs to unload. Used by bale loaders.
     Distance from trailer's turning point to the rear unloading point in meters.
@@ -97,6 +103,7 @@ You can define the following custom settings:
              toolOffsetX="2.1"
              turnRadius = "10"
              implementWheelAlwaysOnGround = "true"
+			 workingWidth = "10.5"
     />
     <!--\vehicles\lizard-->
     <Vehicle name="SWT7.xml"
