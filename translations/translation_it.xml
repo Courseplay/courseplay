@@ -487,8 +487,8 @@
 		<text name="COURSEPLAY_REACHED_REFILL_POINT"						text="aggiungi nuovo prodotto" />
 		<text name="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"					text="Prodotto errato per il deposito." />
 
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Scaricare la mietitrice sul primo promontorio" />
-		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Consentire lo scarico di una mietitrice in movimento sul primo promontorio, lo scaricatore guida fuori dal campo." />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND"				text="Scaricare la mietitrebbia a fine campo" />
+		<text name="COURSEPLAY_ALLOW_UNLOAD_ON_FIRST_HEADLAND_TOOLTIP"		text="Consentire lo scarico delle mietitrebbia a fine campo, lo scaricatore guida fuori dal campo." />
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="Ultimo conteggio = 0" />
         <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="Caricamento prodotti separati" />
         <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="Rimorchio separato:" />
