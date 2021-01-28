@@ -40,6 +40,7 @@ FieldworkAIDriver.myStates = {
 	WAITING_FOR_LOWER = {},
 	WAITING_FOR_LOWER_DELAYED = {},
 	WAITING_FOR_STOP = {},
+	WAITING_FOR_WEATHER = {},
 	TURNING = {},
 	TEMPORARY = {},
 }
@@ -426,6 +427,9 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkState == self.states.ON_CONNECTING_TRACK then
 		self:setSpeed(self:getFieldSpeed())
+	elseif self.fieldworkState == self.states.WAITING_FOR_WEATHER then
+		self:setSpeed(0)
+		self:checkWeather()
 	elseif self.fieldworkState == self.states.TURNING and self.aiTurn then
 		iAmDriving = self.aiTurn:drive(dt)
 	end
@@ -962,11 +966,18 @@ end
 
 function FieldworkAIDriver:checkWeather()
 	if self.vehicle.getIsThreshingAllowed and not self.vehicle:getIsThreshingAllowed() then
-		self:debugSparse('No threshing in rain...')
-		self:setSpeed(0)
-		self:setInfoText('WEATHER')
+		if self.fieldworkState ~= self.states.WAITING_FOR_WEATHER then
+			self:info('No threshing in rain or when fields are wet...')
+			self:stopWork()
+			self:setInfoText('WEATHER')
+			self.fieldworkState = self.states.WAITING_FOR_WEATHER
+		end
 	else
 		self:clearInfoText('WEATHER')
+		if self.fieldworkState == self.states.WAITING_FOR_WEATHER then
+			self:info('Rain stopped/fields dry, continue work')
+			self:changeToFieldwork()
+		end
 	end
 end
 
