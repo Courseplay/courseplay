@@ -353,19 +353,20 @@ function Course:enrichWaypointData()
 	self.headlandLength = 0
 	self.firstHeadlandWpIx = nil
 	self.firstCenterWpIx = nil
-	local dOnHeadland = 0
 	for i = 1, #self.waypoints - 1 do
+		self.waypoints[i].dToHere = self.length
+		self.waypoints[i].dToHereOnHeadland = self.headlandLength
 		local cx, _, cz = self:getWaypointPosition(i)
 		local nx, _, nz = self:getWaypointPosition(i + 1)
 		local dToNext = courseplay:distance(cx, cz, nx, nz)
+		self.waypoints[i].dToNext = dToNext
 		self.length = self.length + dToNext
 		if self:isOnHeadland(i) then
 			self.headlandLength = self.headlandLength + dToNext
 			self.firstHeadlandWpIx = self.firstHeadlandWpIx or i
-			dOnHeadland = dOnHeadland + dToNext
 		else
-			-- TODO: this and firstHeadlandWpIx works only if there is one block on the field and 
-			-- no islands, as then we have more than one group of headlands. But these are only 
+			-- TODO: this and firstHeadlandWpIx works only if there is one block on the field and
+			-- no islands, as then we have more than one group of headlands. But these are only
 			-- for the convoy mode anyway so it is ok if it does not work in all possible situations
 			self.firstCenterWpIx = self.firstCenterWpIx or i
 		end
@@ -375,9 +376,6 @@ function Course:enrichWaypointData()
 		elseif self.dFromLastTurn then
 			self.dFromLastTurn = self.dFromLastTurn + dToNext
 		end
-		self.waypoints[i].dToNext = dToNext
-		self.waypoints[i].dToHere = self.length
-		self.waypoints[i].dToHereOnHeadland = dOnHeadland
 		self.waypoints[i].turnsToHere = self.totalTurns
 		self.waypoints[i].dx, _, self.waypoints[i].dz, _ = courseplay:getWorldDirection(cx, 0, cz, nx, 0, nz)
 		local dx, dz = MathUtil.vector2Normalize(nx - cx, nz - cz)
@@ -405,7 +403,7 @@ function Course:enrichWaypointData()
 	self.waypoints[#self.waypoints].dx = self.waypoints[#self.waypoints - 1].dx
 	self.waypoints[#self.waypoints].dz = self.waypoints[#self.waypoints - 1].dz
 	self.waypoints[#self.waypoints].dToNext = 0
-	self.waypoints[#self.waypoints].dToHere = self.length + self.waypoints[#self.waypoints - 1].dToNext
+	self.waypoints[#self.waypoints].dToHere = self.length
 	self.waypoints[#self.waypoints].dToHereOnHeadland = self:isOnHeadland(#self.waypoints - 1) and
 			self.waypoints[#self.waypoints - 1].dToHereOnHeadland + self.waypoints[#self.waypoints - 1].dToNext or
 			self.waypoints[#self.waypoints - 1].dToHereOnHeadland
