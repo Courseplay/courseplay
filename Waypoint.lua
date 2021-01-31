@@ -1548,9 +1548,9 @@ function Course:getProgress(ix)
 		-- original headland.
 		local dToHere = self.nonHeadlandLengthRatio * dToHereOnNonHeadland +
 				self.headlandLengthRatio * self.waypoints[ix].dToHereOnHeadland
-		return dToHere / self.originalCourseLength
+		return dToHere / self.originalCourseLength, ix
 	else
-		return self.waypoints[ix].dToHere / self.length
+		return self.waypoints[ix].dToHere / self.length, ix
 	end
 end
 

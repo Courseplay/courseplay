@@ -863,11 +863,12 @@ function FieldworkAIDriver:manageConvoy()
 	local closestDistance = math.huge
 	for _, otherVehicle in pairs(CpManager.activeCoursePlayers) do
 		if otherVehicle ~= self.vehicle and otherVehicle.cp.settings.convoyActive:is(true) and self:hasSameCourse(otherVehicle) then
-			local myProgress = self:getProgress()
+			local myProgress, myWpIx = self:getProgress()
 			local length = self.fieldworkCourse:getLength()
-			local otherProgress = otherVehicle.cp.driver:getProgress()
-			self:debugSparse('convoy: my progress %.1f%%, other progress %.1f%%, 100%% %d', 
-					myProgress * 100, otherProgress * 100, length)
+			local otherProgress, otherWpIx = otherVehicle.cp.driver:getProgress()
+			self:debugSparse(
+				'convoy: my progress at waypoint %d is %.3f%%, %s progress at waypoint %d is %.3f%%, 100%% %d m',
+					myWpIx, myProgress * 100, nameNum(otherVehicle), otherWpIx, otherProgress * 100, length)
 			total = total + 1
 			if myProgress < otherProgress then
 				position = position + 1
@@ -875,6 +876,8 @@ function FieldworkAIDriver:manageConvoy()
 				if distance < closestDistance then
 					closestDistance = distance
 				end
+				self:debugSparse('convoy: my position %d, calculated distance from %s is %.3f m',
+					position, nameNum(otherVehicle), distance)
 			end
 		end
 	end
@@ -882,7 +885,8 @@ function FieldworkAIDriver:manageConvoy()
 	-- stop when I'm too close to the combine in front of me
 	if position > 1 then
 		if closestDistance <  self.vehicle.cp.settings.convoyMinDistance:get() then
-			self:debugSparse('too close (%.1f) to other vehicles in convoy, holding.', closestDistance)
+			self:debugSparse('too close (%.1f m < %.1f) to other vehicles in convoy, holding.',
+				closestDistance, self.vehicle.cp.settings.convoyMinDistance:get())
 			self:setSpeed(0)
 			self:overrideAutoEngineStop()
 		end
@@ -890,7 +894,6 @@ function FieldworkAIDriver:manageConvoy()
 		closestDistance = 0
 	end
 
-	-- TODO: check for change should be handled by setCpVar()
 	self.convoyCurrentDistance=closestDistance
 	self.convoyCurrentPosition=position
 	self.convoyTotalMembers=total
