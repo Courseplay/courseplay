@@ -41,8 +41,8 @@ function FillableFieldworkAIDriver:init(vehicle)
 	self.lastTotalFillLevel = math.huge
 end
 
-function FillableFieldworkAIDriver:start(startingPoint)
-	FieldworkAIDriver.start(self,startingPoint)
+function FillableFieldworkAIDriver:onStart()
+	FieldworkAIDriver.onStart(self)
 	self:enrichWaypoints()
 	self:setupExactFillRootNodes()
 end

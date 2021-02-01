@@ -174,7 +174,7 @@ function courseplay:start(self)
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
 	StartStopEvent:sendStartEvent(self)
-	self.cp.driver:start(self.cp.settings.startingPoint)
+	self.cp.driver:onStart()
 end;
 
 -- stops driving the course
@@ -184,7 +184,7 @@ function courseplay:stop(self)
 	end
 	-- Stop AI Driver
 	if self.cp.driver then
-		self.cp.driver:dismiss()
+		self.cp.driver:onStop()
 	end
 	
 

@@ -19,12 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ---@class GrainTransportAIDriver : AIDriver
 GrainTransportAIDriver = CpObject(AIDriver)
 
+GrainTransportAIDriver.myStates = {
+	NEEDS_LOADING = {},
+	NEEDS_UNLOADING = {}
+}
+
 --- Constructor
 function GrainTransportAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
+	self:initStates(GrainTransportAIDriver.myStates)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
 	self.totalFillCapacity = 0
+	self:changeLoadingAtStartState(self.states.NEEDS_LOADING)
 end
 
 function GrainTransportAIDriver:setHudContent()
@@ -33,13 +40,17 @@ function GrainTransportAIDriver:setHudContent()
 end
 
 function GrainTransportAIDriver:start(startingPoint)
-	self.readyToLoadManualAtStart = false
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
-	self:setupTotalCapacity()
 	self.vehicle.cp.settings.stopAtEnd:set(false)
+end
+
+function GrainTransportAIDriver:onStart()
+	AIDriver.onStart(self)
+	self:setupTotalCapacity()
 	--get all exactFillRootNodes sorted from the front of the very front vehicle/implement to the last
 	self:setupExactFillRootNodes()
+	self:changeLoadingAtStartState(self.states.NEEDS_LOADING)
 end
 
 function GrainTransportAIDriver:enrichWaypoints()
@@ -85,19 +96,14 @@ function GrainTransportAIDriver:drive(dt)
 		courseplay:setInfoText(self.vehicle, "COURSEPLAY_MANUAL_LOADING")
 		--checking FillLevels, while loading at StartPoint 
 		self:updateFillOrDischargeNodes()
-	end
-
-	if self:isNearFillPoint() then
-		if not self:getSiloSelectedFillTypeSetting():isEmpty() then
-			self.triggerHandler:enableFillTypeLoading()
-		else 
-			self.triggerHandler:disableFillTypeLoading()
-		end
-		self.triggerHandler:disableFillTypeUnloading()
+		self:disableFillTypeLoading()
 	else 
-		self.triggerHandler:enableFillTypeUnloading()
-		self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
-		self.triggerHandler:disableFillTypeLoading()
+
+		if self:isNearFillPoint() then
+			self:enableFillTypeLoading()
+		else 
+			self:disableFillTypeLoading()
+		end
 	end
 		-- TODO: are these checks really necessary?
 	if self.vehicle.cp.totalFillLevel ~= nil
@@ -127,25 +133,28 @@ function GrainTransportAIDriver:drive(dt)
 	end
 end
 
-function GrainTransportAIDriver:onWaypointPassed(ix)
-	--if SiloSelectedFillTypeSetting is empty, then do a manual loading at start
-	if ix == 1 then 
-		if self:getSiloSelectedFillTypeSetting():isEmpty() and not self.driveNow then 
-			local totalFillLevel = self:getTotalFillLevel()
-			if not self:isFillLevelReached(totalFillLevel) then 
-				self.readyToLoadManualAtStart = true
-				self:openCovers(self.vehicle)			
-			end
-		end
-	elseif ix>1 then 
-		self.driveNow=false
-	end
-	AIDriver.onWaypointPassed(self,ix)
+---Enables loading and disables unloading
+function GrainTransportAIDriver:enableFillTypeLoading()
+	self.triggerHandler:enableFillTypeLoading()
+	self.triggerHandler:disableFillTypeLoading()
+	self.triggerHandler:disableFillTypeUnloading()
 end
 
+---Enables unloading and disables loading
+function GrainTransportAIDriver:disableFillTypeLoading()
+	self.triggerHandler:enableFillTypeUnloading()
+	self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
+	self.triggerHandler:disableFillTypeLoading()
+end
+
+---Is fillLevel reached to continue, loading at start
+---@param float totalFillLevel of all trailers/ relevant fillUnits
+---@return boolean is driveOnAtFillLevel reached ?
 function GrainTransportAIDriver:isFillLevelReached(totalFillLevel)
 	if totalFillLevel/self.totalFillCapacity*100 >= self:getMaxFillLevel() then 
 		return true
+	else 
+		return false
 	end
 end
 
@@ -190,9 +199,11 @@ function GrainTransportAIDriver:checkFillUnits()
 	local totalFillLevel = self:getTotalFillLevel()
 
 	if self:isFillLevelReached(totalFillLevel) and self.lastTotalFillLevel and self.lastTotalFillLevel == totalFillLevel then 
-		self.readyToLoadManualAtStart = false
+		self:changeLoadingAtStartState(self.states.NEEDS_UNLOADING)
 		self:closeCovers(self.vehicle)
 		self:resetFillOrDischargeNodes()
+	else 
+		self:changeLoadingAtStartState(self.states.NEEDS_LOADING)
 	end
 	self.lastTotalFillLevel = totalFillLevel
 end
@@ -202,9 +213,6 @@ function GrainTransportAIDriver:getTotalFillLevel()
 	local totalFillUnitsData = {}
 	local totalFillLevel = 0
 	self:getFillUnitInfo(self.vehicle,totalFillUnitsData)
-	if courseplay.debugChannels[2] then
-		DebugUtil.printTableRecursively(totalFillUnitsData, '  ', 1, 2)
-	end
 	for object, objectData in pairs(totalFillUnitsData) do 
 		for fillUnitIndex, fillUnitData in pairs(objectData) do 
 			totalFillLevel = totalFillLevel + fillUnitData.fillLevel
@@ -239,18 +247,18 @@ end
 
 function GrainTransportAIDriver:continue()
 	AIDriver.continue(self)
+	self:changeLoadingAtStartState(self.states.NEEDS_UNLOADING)
 	self:resetFillOrDischargeNodes()
 end
 
 function GrainTransportAIDriver:setDriveNow()
-	self.driveNow = true
-	self.readyToLoadManualAtStart = false
+	self:changeLoadingAtStartState(self.states.NEEDS_UNLOADING)
 	AIDriver.setDriveNow(self)
 	self:resetFillOrDischargeNodes()
 end
 
 function GrainTransportAIDriver:getCanShowDriveOnButton() 
-	return self.readyToLoadManualAtStart or AIDriver.getCanShowDriveOnButton(self)
+	return self.loadingAtStartState == self.states.NEEDS_LOADING or AIDriver.getCanShowDriveOnButton(self)
 end
 
 ---Gets the total capacity of all relevant fillUnits
@@ -260,10 +268,13 @@ function GrainTransportAIDriver:setupTotalCapacity()
 	self.totalFillCapacity = tempCapacityTable.capacity or 0
 end
 
-function GrainTransportAIDriver:isAllowedToStopAtTargetNode(closestTargetNodeDistance)
-	return AIDriver.isAllowedToStopAtTargetNode(self,closestTargetNodeDistance) and self.readyToLoadManualAtStart
-end
-
 function GrainTransportAIDriver:isRelevantFillOrDischargeNodeFillLevelReached(capacity,fillLevel)
 	return capacity-fillLevel < 0.02
+end
+
+function GrainTransportAIDriver:changeLoadingAtStartState(state)
+	if state ~= self.loadingAtStartState then
+		self.loadingAtStartState = state
+		print("loadingAtStartState => "..tostring(state.name))
+	end
 end

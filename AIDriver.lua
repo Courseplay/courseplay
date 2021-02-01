@@ -184,6 +184,18 @@ function AIDriver:init(vehicle)
 	self.triggerHandler:enableFuelLoading()
 end
 
+---onStartListener from the hud button/startStop.lua
+function AIDriver:onStart()
+	local startingPoint = self.vehicle.cp.settings.startingPoint
+	self:start(startingPoint)
+	self:enrichWaypoints()
+end
+
+---onStopListener from the hud button/startStop.lua
+function AIDriver:onStop()
+	self:dismiss()
+end
+
 function AIDriver:updateLoadingText()
 	local fillableObject = self.triggerHandler.fillableObject
 	if fillableObject then
@@ -314,7 +326,6 @@ function AIDriver:start(startingPoint)
 	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
 			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
 	self:startCourseWithAlignment(self.mainCourse, ix)
-	self:enrichWaypoints()
 end
 
 ---go throw all waypoints and check if there are triggers close
@@ -2258,7 +2269,9 @@ end
 ---update closest waitPointNode and set the speed 
 ---also calls "self:fillOrUnloadAtTargetPoint()" every 5 ticks, if we are allowed to stop
 function AIDriver:updateFillOrDischargeNodes()
-	AIDriverUtil.drawDebugfillOrDischargeNodesData(self.fillOrDischargeNodesData)
+	if courseplay.debugChannels[2] then
+		AIDriverUtil.drawDebugfillOrDischargeNodesData(self.fillOrDischargeNodesData,self.currentClosestRelevantNodeIndex)
+	end
 	--current relevant relevantFillOrDischargeNodeData, which we are targeting
 	local relevantFillOrDischargeNodeData = self.fillOrDischargeNodesData[self.currentClosestRelevantNodeIndex]
 	local closestTargetNode,closestTargetNodeDistance = self:getClosestTargetNodeAndDistance(relevantFillOrDischargeNodeData)	
@@ -2299,6 +2312,9 @@ function AIDriver:setupExactFillRootNodes()
 	if courseplay.debugChannels[2] then
 		DebugUtil.printTableRecursively(self.fillOrDischargeNodesData, '  ', 1, 2)
 	end
+	local firstFillOrDischargeNodeData = self.fillOrDischargeNodesData[1]
+	local referenceNode = self:getClosestTargetNodeAndDistance(firstFillOrDischargeNodeData)
+	self.currentClosestRelevantNodeIndex = AIDriverUtil.getFirstFillOrDischargeNodeIndex(referenceNode,self.fillOrDischargeNodesData)
 end
 
 function AIDriver:setupDischargeRootNodes()
@@ -2310,6 +2326,9 @@ function AIDriver:setupDischargeRootNodes()
 	if courseplay.debugChannels[2] then
 		DebugUtil.printTableRecursively(self.fillOrDischargeNodesData, '  ', 1, 2)
 	end
+	local firstFillOrDischargeNodeData = self.fillOrDischargeNodesData[1]
+	local referenceNode = self:getClosestTargetNodeAndDistance(firstFillOrDischargeNodeData)
+	self.currentClosestRelevantNodeIndex = AIDriverUtil.getFirstFillOrDischargeNodeIndex(referenceNode,self.fillOrDischargeNodesData)
 end
 
 ---Reset to the first ordered node 

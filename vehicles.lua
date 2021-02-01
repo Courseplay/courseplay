@@ -1758,6 +1758,22 @@ function AIDriverUtil.getSortedDischargeNodesByDistanceToNode(object,referenceNo
 	end
 end
 
+--- Get the closest fillOrDischargeNodeIndex to a reference node
+---@param node targetNode to find closest to
+---@param table of all fillOrDischargeNodes
+---@param int closest fillOrDischargeNodeIndex
+function AIDriverUtil.getFirstFillOrDischargeNodeIndex(referenceNode,fillOrDischargeNodesData)
+	local relevantFillOrDischargeNodeIndex = 1
+	for index,fillOrDischargeNodeData in ipairs(fillOrDischargeNodesData) do 
+		local x,y,z = localToLocal(fillOrDischargeNodeData.rootNode,referenceNode,0,0,0)
+		--get the first fillOrDischargeNodeIndex, which is in front of the target node
+		if z<=0 then 
+			relevantFillOrDischargeNodeIndex = index
+			break
+		end
+	end
+	return relevantFillOrDischargeNodeIndex
+end
 
 ---Is the fillTypeIndex a fuelType ?
 ---@param object vehicle/implement/trailer 
@@ -1773,9 +1789,13 @@ function AIDriverUtil.isValidFuelType(object,fillTypeIndex,fillUnitIndex)
 	end
 end
 
-function AIDriverUtil.drawDebugfillOrDischargeNodesData(fillOrDischargeNodesData)
-	for i,relevantFillOrDischargeNodeData in ipairs(fillOrDischargeNodesData) do 
-		DebugUtil.drawDebugNode(relevantFillOrDischargeNodeData.rootNode,string.format("fillOrDischargeNode(%d)",i),false)
+function AIDriverUtil.drawDebugfillOrDischargeNodesData(fillOrDischargeNodesData,currentFillOrDischargeNodeIndex)
+	for index,relevantFillOrDischargeNodeData in ipairs(fillOrDischargeNodesData) do 
+		local debugText = "fillOrDischargeNode"
+		if currentFillOrDischargeNodeIndex == index then 
+			debugText = "currentFillOrDischargeNode"
+		end		
+		DebugUtil.drawDebugNode(relevantFillOrDischargeNodeData.rootNode,string.format("%s(%d)",debugText,index),false)
 	end
 end
 
@@ -1798,3 +1818,5 @@ function AIDriverUtil.getTotalFillCapacity(object,totalCapacityTable)
 		AIDriverUtil.getTotalFillCapacity(impl.object,totalCapacityTable)
 	end
 end
+
+

@@ -43,13 +43,16 @@ end
 
 function FieldSupplyAIDriver:start(startingPoint)
 	AIDriver.start(self,startingPoint)
-	self:setupTotalCapacity()
-	self:setupDischargeRootNodes()
-	self:findPipe()
 	self.unloadState = self.states.TO_BE_UNLOADED
 	self.vehicle.cp.settings.stopAtEnd:set(false)
 end
 
+function FieldSupplyAIDriver:onStart()
+	AIDriver.onStart(self)
+	self:setupTotalCapacity()
+	self:setupDischargeRootNodes()
+	self:findPipe()
+end
 
 function FieldSupplyAIDriver:enrichWaypoints()
 	--create WaypointNodes for all waitPoints
