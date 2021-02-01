@@ -43,7 +43,6 @@ end
 
 function FillableFieldworkAIDriver:onStart()
 	FieldworkAIDriver.onStart(self)
-	self:enrichWaypoints()
 	self:setupExactFillRootNodes()
 end
 

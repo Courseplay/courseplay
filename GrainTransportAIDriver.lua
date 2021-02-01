@@ -272,9 +272,18 @@ function GrainTransportAIDriver:isRelevantFillOrDischargeNodeFillLevelReached(ca
 	return capacity-fillLevel < 0.02
 end
 
+function GrainTransportAIDriver:isAllowedToStopAtTargetNode(closestTargetNodeDistance)
+	return AIDriver.isAllowedToStopAtTargetNode(self,closestTargetNodeDistance) and self.loadingAtStartState == self.states.NEEDS_LOADING
+end
+
 function GrainTransportAIDriver:changeLoadingAtStartState(state)
 	if state ~= self.loadingAtStartState then
 		self.loadingAtStartState = state
-		print("loadingAtStartState => "..tostring(state.name))
+		self:debug("loadingAtStartState => "..tostring(state.name))
 	end
+end
+
+function GrainTransportAIDriver:onFirstWaypoint() 
+	AIDriver.onFirstWaypoint(self)
+	self:changeLoadingAtStartState(self.states.NEEDS_LOADING)
 end

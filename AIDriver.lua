@@ -785,7 +785,9 @@ function AIDriver:onWaypointPassed(ix)
 	self:debug('onWaypointPassed %d', ix)
 	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
 	-- or stop.
-	if ix == self.course:getNumberOfWaypoints() then
+	if ix == 1 then 
+		self:onFirstWaypoint()
+	elseif ix == self.course:getNumberOfWaypoints() then
 		self:onLastWaypoint()
 	elseif self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
@@ -804,6 +806,10 @@ function AIDriver:onLastWaypoint()
 		self:debug('Last waypoint reached, end of course.')
 		self:onEndCourse()
 	end
+end
+
+function AIDriver:onFirstWaypoint()
+
 end
 
 --- End a course and then continue on nextCourse at nextWpIx
