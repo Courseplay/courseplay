@@ -281,11 +281,16 @@ function BunkerSiloManager:isAtEnd(bestTarget)
 end
 
 --- get the bestTarget, firstLine of the bestTarget work with
----@param siloMapPart bestTarget targeted part
 ---@return bestTarget, firstLine of the bestTarget
-function BunkerSiloManager:getBestTargetFillUnitFillUp(bestTarget)
+function BunkerSiloManager:getBestTargetFillUnitFillUp()
 	--print(string.format("courseplay:getActualTarget(vehicle) called by %s",tostring(courseplay.utils:getFnCallPath(3))))
 	local firstLine = 0
+	local bestTarget = {
+		line = 1,
+		column = 1,
+		empty = true
+	}
+
 	if self.siloMap ~= nil then
 		local stopSearching = false
 		local mostFillLevelAtLine = 0
@@ -304,26 +309,17 @@ function BunkerSiloManager:getBestTargetFillUnitFillUp(bestTarget)
 					mostFillLevelIndex = column
 				end
 				if column == #line and mostFillLevelAtLine > 0 then
-					fillingTarget = {
-						line = lineIndex;
-						column = mostFillLevelIndex;
-						empty = false;
+					bestTarget = {
+						line = lineIndex,
+						column = mostFillLevelIndex,
+						empty = false
 					}
+					firstLine = lineIndex
 					stopSearching = true
 					break
 				end
 			end
-		end
-		if mostFillLevelAtLine == 0 then
-			fillingTarget = {
-				line = 1;
-				column = 1;
-				empty = true;
-			}
-		end
-		
-		bestTarget = fillingTarget
-		firstLine = bestTarget.line
+		end		
 	end
 	
 	return bestTarget, firstLine
@@ -388,6 +384,9 @@ function BunkerSiloManager:debugRouting(bestTarget,tempTarget)
 			local sx,sz = fillUnit.sx,fillUnit.sz
 			cpDebug:drawLine(tx, y, tz, 1, 0, 1, sx, y, sz);
 			cpDebug:drawPoint(tx, y, tz, 1, 1 , 1);
+		end
+		if self.targetNode then
+			DebugUtil.drawDebugNode(self.targetNode, "isAtEnd=>targetNode")
 		end
 	end
 end

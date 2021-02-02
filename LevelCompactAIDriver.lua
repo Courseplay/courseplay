@@ -238,6 +238,8 @@ function LevelCompactAIDriver:selectMode()
 	if self:getIsModeFillUp() then
 		self:debug("self:getIsModeFillUp()")
 		self:changeLevelState(self.states.DRIVE_SILOFILLUP)
+		self:disableShieldJointControl()
+		self:lowerImplements()
 	elseif self:getIsModeLeveling() then
 		self:debug("self:getIsModeLeveling()")
 		self:changeLevelState(self.states.DRIVE_SILOLEVEL)
@@ -317,7 +319,7 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.lastDrivenColumn)
 		end		
 		self:drivePush(dt)
-		self:moveShield('down',dt,0)
+	--	self:moveShield('down',dt,0)
 		--self:moveShield('down',dt,self:getDiffHeightforHeight(0))
 		if self:lastLineFillLevelChanged()
 		or self:isStuck()
@@ -326,16 +328,20 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 			if self.hasFoundUnloaders then
 				self:changeLevelState(self.states.DRIVE_TO_PARKING)
 				self:deleteBestTarget()
+				self:raiseImplements()
+				self:enableShieldJointControl()
 				return
 			else
 				self.fillUpState = self.states.PULLBACK
+				self:raiseImplements()
 			end
 		end	
 	elseif self.fillUpState == self.states.PULLBACK then
-		self:moveShield('up',dt)
+	--	self:moveShield('up',dt)
 		if self:drivePull(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTargetLeveling()
+			self:lowerImplements()
 		end
 	end
 end	
@@ -384,6 +390,8 @@ function LevelCompactAIDriver:drivePull(dt)
 	if self.hasFoundUnloaders then
 		self:changeLevelState(self.states.DRIVE_TO_PARKING)
 		self:deleteBestTarget()
+		self:raiseImplements()
+		self:enableShieldJointControl()
 		return false
 	end
 --	self:drawMap()
@@ -542,7 +550,13 @@ end
 function LevelCompactAIDriver:stop(stopMsg)
 	self:foundUnloaderInRadius(self.vehicle.cp.settings.levelCompactSearchRadius:get())
 	self.relevantWaypointNode = nil	
+	self:enableShieldJointControl()
 	AIDriver.stop(self,stopMsg)
+end
+
+function LevelCompactAIDriver:delete()
+	AIDriver.delete(self)
+	self:enableShieldJointControl()
 end
 
 function LevelCompactAIDriver:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
@@ -820,7 +834,7 @@ function LevelCompactAIDriver:getBestTargetFillUnitLeveling(lastDrivenColumn)
 	if siloMap ~= nil then
 		local newColumn = math.ceil(#siloMap[1]/2)
 		if newApproach then
-			newBestTarget, firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp(self.bestTarget)
+			newBestTarget, firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
 			self:debug('Best leveling target at line %d, column %d, height %d, first line %d (fist approach)',
 					newBestTarget.line, newBestTarget.column, targetHeight, firstLine)
 			return newBestTarget, firstLine, targetHeight
@@ -933,3 +947,30 @@ function LevelCompactAIDriver:renderText(y,text,xOffset)
 	return y-0.02
 end
 
+function LevelCompactAIDriver:disableShieldJointControl()
+	local shield = self.leveler
+	if shield then 
+		local attacherJointControlSpec = shield.spec_attacherJointControl
+		local attacherJointsSpec = shield.spec_attacherJoints
+		attacherJointControlSpec.jointDesc.allowsLowering = true
+		attacherJointControlSpec.isControllable = true
+		self.oldUpperRotationOffset = attacherJointControlSpec.jointDesc.upperRotationOffset
+		attacherJointControlSpec.jointDesc.upperRotationOffset = math.rad(5)
+		self.oldLowerTransLimitScale = attacherJointControlSpec.jointDesc.lowerTransLimitScale
+		attacherJointControlSpec.jointDesc.lowerTransLimitScale = {0,1,0}
+	end
+end
+
+function LevelCompactAIDriver:enableShieldJointControl()
+	local shield = self.leveler
+	if shield and self.oldUpperRotationOffset then 
+		local attacherJointControlSpec = shield.spec_attacherJointControl
+		local attacherJointsSpec = shield.spec_attacherJoints
+		attacherJointControlSpec.isControllable = true
+		attacherJointControlSpec.jointDesc.allowsLowering = false
+		attacherJointControlSpec.jointDesc.upperRotationOffset = self.oldUpperRotationOffset
+		attacherJointControlSpec.jointDesc.lowerTransLimitScale = self.oldLowerTransLimitScale
+		self.oldUpperRotationOffset = nil 
+		self.oldLowerTransLimitScale = nil
+	end
+end

@@ -105,6 +105,7 @@ function ShovelModeAIDriver:start()
 	local numWaitPoints = 0
 	self.bestTarget = nil
 	self.bunkerSiloManager = nil
+	self.tempTarget = nil
 	self.unloadingObjectRaycastActive = false
 	for i,wp in pairs(vehicle.Waypoints) do
 		if wp.wait then
@@ -184,7 +185,7 @@ function ShovelModeAIDriver:drive(dt)
 				end
 			end
 			if self.bunkerSiloManager and self.bestTarget == nil then
-				self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp(self.bestTarget)
+				self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
 			end
 		end
 		self:drawMap()
@@ -194,7 +195,6 @@ function ShovelModeAIDriver:drive(dt)
 	--driving into the bunkerSilo
 	elseif self.shovelState == self.states.STATE_GOINTO_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.field
-		local fwd = true
 		self:driveIntoSilo(dt)
 		self:drawMap()
 		--bunkerSilo is empty => work is finished
@@ -216,7 +216,6 @@ function ShovelModeAIDriver:drive(dt)
 				self.bestTarget = nil
 			end
 		end
-
 		return
 	--driving back out of the bunkerSilo
 	elseif self.shovelState == self.states.STATE_REVERSE_STRAIGHT_OUT_OF_SILO then
@@ -369,7 +368,7 @@ function ShovelModeAIDriver:driveStartUnload(dt)
 			-- the last 2m we drive straight to the unload trigger
 			notAllowedToDrive = true
 			local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
-			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
+			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, 2)
 		end
 	end
 	return notAllowedToDrive
@@ -410,7 +409,7 @@ function ShovelModeAIDriver:driveStartUnloadTrailer(dt)
 			-- the last 2m we drive straight to the unload trailer
 			notAllowedToDrive = true
 			local gx, _, gz = self.course:getWaypointLocalPosition(self:getDirectionNode(),self.shovelEmptyPoint)
-			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, self.refSpeed)
+			self:driveVehicleToLocalPosition(dt, true, true, gx, gz, 2)
 		end
 	end
 	return notAllowedToDrive
@@ -481,7 +480,8 @@ function ShovelModeAIDriver:almostFullObject(dischargeNode)
 end
 
 function ShovelModeAIDriver:driveIntoSilo(dt)
-	if self.bunkerSiloManager == nil then 
+	if self.bunkerSiloManager == nil or self.bestTarget==nil then 
+		courseplay.infoVehicle(self.vehicle,"driveIntoSilo=>bunkerSiloManager or self.bestTarget ==nil")
 		return 
 	end
 	local vehicle = self.vehicle
@@ -501,6 +501,7 @@ function ShovelModeAIDriver:driveIntoSilo(dt)
 	end
 
 	if vehicle.cp.settings.shovelStopAndGo:is(true) and self:getFillLevelDoesChange() then
+		--while loading shovel keep standing still
 		allowedToDrive = false;
 	end
 
@@ -746,6 +747,13 @@ function ShovelModeAIDriver:getClosestPointToStartFill()
 	return closestPoint;
 end
 function ShovelModeAIDriver:getTargetToStraightOut()
+	if self.bunkerSiloManager == nil then
+		courseplay.infoVehicle(self.vehicle,"getTargetToStraightOut => bunkerSiloManager==nil")
+	elseif self.bunkerSiloManager.siloMap == nil then 
+		courseplay.infoVehicle(self.vehicle,"getTargetToStraightOut => siloMap==nil")
+	elseif self.bestTarget == nil then
+		courseplay.infoVehicle(self.vehicle,"getTargetToStraightOut => bestTarget==nil")
+	end
 	local vehicle = self.vehicle
 	local sX,sZ = self.bunkerSiloManager.siloMap[2][self.bestTarget.column].cx,self.bunkerSiloManager.siloMap[2][self.bestTarget.column].cz
 	local tX,tZ = self.bunkerSiloManager.siloMap[1][self.bestTarget.column].cx,self.bunkerSiloManager.siloMap[1][self.bestTarget.column].cz
