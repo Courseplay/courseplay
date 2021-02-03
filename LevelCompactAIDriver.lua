@@ -239,7 +239,6 @@ function LevelCompactAIDriver:selectMode()
 		self:debug("self:getIsModeFillUp()")
 		self:changeLevelState(self.states.DRIVE_SILOFILLUP)
 		self:disableShieldJointControl()
-		self:lowerImplements()
 	elseif self:getIsModeLeveling() then
 		self:debug("self:getIsModeLeveling()")
 		self:changeLevelState(self.states.DRIVE_SILOLEVEL)
@@ -317,7 +316,8 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 		--initialize first target point
 		if self.bestTarget == nil then
 			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.lastDrivenColumn)
-		end		
+		end	
+		self.targetHeight = 0.4	
 		self:drivePush(dt)
 	--	self:moveShield('down',dt,0)
 		--self:moveShield('down',dt,self:getDiffHeightforHeight(0))
@@ -328,20 +328,20 @@ function LevelCompactAIDriver:driveSiloFillUp(dt)
 			if self.hasFoundUnloaders then
 				self:changeLevelState(self.states.DRIVE_TO_PARKING)
 				self:deleteBestTarget()
-				self:raiseImplements()
 				self:enableShieldJointControl()
 				return
 			else
 				self.fillUpState = self.states.PULLBACK
-				self:raiseImplements()
 			end
 		end	
+	--	if g_updateLoopIndex % 1000 == 0 then
+	--		self:updateShieldHeight()
+	--	end
 	elseif self.fillUpState == self.states.PULLBACK then
 	--	self:moveShield('up',dt)
 		if self:drivePull(dt) then
 			self.fillUpState = self.states.PUSH
 			self:deleteBestTargetLeveling()
-			self:lowerImplements()
 		end
 	end
 end	
@@ -950,27 +950,68 @@ end
 function LevelCompactAIDriver:disableShieldJointControl()
 	local shield = self.leveler
 	if shield then 
-		local attacherJointControlSpec = shield.spec_attacherJointControl
-		local attacherJointsSpec = shield.spec_attacherJoints
-		attacherJointControlSpec.jointDesc.allowsLowering = true
-		attacherJointControlSpec.isControllable = true
-		self.oldUpperRotationOffset = attacherJointControlSpec.jointDesc.upperRotationOffset
-		attacherJointControlSpec.jointDesc.upperRotationOffset = math.rad(5)
-		self.oldLowerTransLimitScale = attacherJointControlSpec.jointDesc.lowerTransLimitScale
-		attacherJointControlSpec.jointDesc.lowerTransLimitScale = {0,1,0}
+		self.shieldJointControlDisabled = true
 	end
 end
 
 function LevelCompactAIDriver:enableShieldJointControl()
 	local shield = self.leveler
-	if shield and self.oldUpperRotationOffset then 
-		local attacherJointControlSpec = shield.spec_attacherJointControl
-		local attacherJointsSpec = shield.spec_attacherJoints
-		attacherJointControlSpec.isControllable = true
-		attacherJointControlSpec.jointDesc.allowsLowering = false
-		attacherJointControlSpec.jointDesc.upperRotationOffset = self.oldUpperRotationOffset
-		attacherJointControlSpec.jointDesc.lowerTransLimitScale = self.oldLowerTransLimitScale
-		self.oldUpperRotationOffset = nil 
-		self.oldLowerTransLimitScale = nil
+	if shield then 
+		self.shieldJointControlDisabled = false
 	end
+end
+
+function LevelCompactAIDriver:isShieldJointControlDisabled()
+	return self.shieldJointControlDisabled
+end
+
+--AttacherJointControl:onUpdate(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
+function LevelCompactAIDriver:onUpdateAttacherJointControl(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
+	local rootVehicle = self:getRootVehicle()
+	if courseplay:isAIDriverActive(rootVehicle) then 
+		if self.spec_leveler then 
+			local driver = rootVehicle.cp.driver
+			if driver.isShieldJointControlDisabled and driver:isShieldJointControlDisabled() then 
+				local spec = self.spec_attacherJointControl
+				driver:updateShieldHeight(spec)
+			end
+		end
+	end
+end
+AttacherJointControl.onUpdate = Utils.prependedFunction(AttacherJointControl.onUpdate, LevelCompactAIDriver.onUpdateAttacherJointControl)
+
+function LevelCompactAIDriver:updateShieldHeight(spec)
+	local shield = self.leveler
+	if shield then 
+		if self.fillUpState == self.states.PUSH then 
+			local x,y,z = getWorldTranslation(self:getLevelerNode(shield))
+			local bunkerSiloHeight = self.bunkerSiloManager:getSiloHeight()
+			local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x,y,z);
+			local referenceHeight = terrainHeight--math.min(bunkerSiloHeight,terrainHeight)
+			local jointDesc = spec.jointDesc
+			local heightDiff = self:getTargetShieldHeight()
+			local targetHeight = (referenceHeight+heightDiff)-y						
+			targetAlphaHeight = jointDesc.lowerDistanceToGround+targetHeight
+		--	local upperAlpha = MathUtil.clamp((targetHeight - jointDesc.upperDistanceToGround) / (jointDesc.lowerDistanceToGround - jointDesc.upperDistanceToGround), 0, 1)
+		--	local lowerAlpha = MathUtil.clamp((targetHeight - jointDesc.upperDistanceToGround) / (jointDesc.lowerDistanceToGround - jointDesc.upperDistanceToGround), 0, 1)
+			
+			local alpha = MathUtil.clamp((targetAlphaHeight - jointDesc.upperDistanceToGround) / (jointDesc.lowerDistanceToGround - jointDesc.upperDistanceToGround), 0, 1)	
+			self:debugSparse(string.format("alpha: %.2f, targetHeight: %.2f, terrainHeight: %.2f, bunkerSiloHeight: %.2f, shieldHeight: %.2f",alpha,targetHeight,terrainHeight,bunkerSiloHeight,y))
+			spec.heightTargetAlpha = alpha
+
+		--	local angle = spec.maxTiltAngle
+			jointDesc.upperRotationOffset = jointDesc.upperRotationOffsetBackup 
+			jointDesc.lowerRotationOffset = jointDesc.lowerRotationOffsetBackup 
+
+		else 
+			local jointDesc = spec.jointDesc
+			spec.heightTargetAlpha = jointDesc.upperAlpha
+			jointDesc.upperRotationOffset = jointDesc.upperRotationOffsetBackup - spec.maxTiltAngle 
+			jointDesc.lowerRotationOffset = jointDesc.lowerRotationOffsetBackup - spec.maxTiltAngle
+		end
+	end
+end
+
+function LevelCompactAIDriver:getTargetShieldHeight()
+	return self.targetHeight or 0.5
 end

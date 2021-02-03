@@ -346,38 +346,61 @@ function BunkerSiloManager:updateTarget(bestTarget)
 	end		
 end
 
+---Check if a siloMap was created and it's not empty
+---@return boolean isSiloEmpty ?
+function BunkerSiloManager:isSiloEmpty()
+	return self.siloMap and self:getTotalFillLevel() > 0 or false
+end
+
+---Gets the total fillLevel of the silo
+---@return float totalFillLevel ?
+function BunkerSiloManager:getTotalFillLevel()
+	local totalFillLevel = 0
+	if self.siloMap then
+		for lineIndex, line in pairs(self.siloMap) do
+			for column, fillUnit in pairs(line) do
+				totalFillLevel = totalFillLevel + fillUnit.fillLevel
+			end
+		end
+	end
+	return totalFillLevel
+end
+
+function BunkerSiloManager:getSiloHeight()
+	if self.silo and self.silo.bunkerSiloArea.start then
+		local x,y,z = getWorldTranslation(self.silo.bunkerSiloArea.start)
+		return y 
+	end
+end
+
 ---drawing the routing of the driver 
 ---@param siloMapPart bestTarget targeted part
 ---@param tempTarget for driving out of the silo
 function BunkerSiloManager:debugRouting(bestTarget,tempTarget)
+	local bunker = self.silo
+	if bunker ~= nil then
+		local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
+		local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
+		local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
+		cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
+		--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+		--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
+		cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
+		cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
+	end
 	if self.siloMap ~= nil and bestTarget ~= nil then
-
 		local fillUnit = self.siloMap[bestTarget.line][bestTarget.column]
-		--print(string.format("fillUnit %s; self.cp.actualTarget.line %s; self.cp.actualTarget.column %s",tostring(fillUnit),tostring(self.cp.actualTarget.line),tostring(self.cp.actualTarget.column)))
 		local sx,sz = fillUnit.sx,fillUnit.sz
 		local wx,wz = fillUnit.wx,fillUnit.wz
 		local bx,bz = fillUnit.bx,fillUnit.bz
 		local hx,hz = fillUnit.hx +(fillUnit.wx-fillUnit.sx) ,fillUnit.hz +(fillUnit.wz-fillUnit.sz)
 		local _,tractorHeight,_ = getWorldTranslation(self.vehicle.cp.directionNode)
 		local y = tractorHeight + 1.5;
-
 		cpDebug:drawLine(sx, y, sz, 1, 0, 0, wx, y, wz);
 		cpDebug:drawLine(wx, y, wz, 1, 0, 0, hx, y, hz);
 		cpDebug:drawLine(fillUnit.hx, y, fillUnit.hz, 1, 0, 0, sx, y, sz);
 		cpDebug:drawLine(fillUnit.cx, y, fillUnit.cz, 1, 0, 1, bx, y, bz);
 		cpDebug:drawPoint(fillUnit.cx, y, fillUnit.cz, 1, 1 , 1);
-
-		local bunker = self.silo
-		if bunker ~= nil then
-			local sx,sz = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
-			local wx,wz = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
-			local hx,hz = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, wx,y+2,wz);
-			--drawDebugLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			--drawDebugLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz, 0, 1, 0);
-			cpDebug:drawLine(sx,y+2,sz, 0, 0, 1, hx,y+2,hz);
-			cpDebug:drawLine(wx,y+2,wz, 0, 0, 1, hx,y+2,hz);
-		end
 		if tempTarget ~= nil then
 			local tx,tz = tempTarget.cx,tempTarget.cz
 			local fillUnit = self.siloMap[bestTarget.line][bestTarget.column]
@@ -385,9 +408,9 @@ function BunkerSiloManager:debugRouting(bestTarget,tempTarget)
 			cpDebug:drawLine(tx, y, tz, 1, 0, 1, sx, y, sz);
 			cpDebug:drawPoint(tx, y, tz, 1, 1 , 1);
 		end
-		if self.targetNode then
-			DebugUtil.drawDebugNode(self.targetNode, "isAtEnd=>targetNode")
-		end
+	end
+	if self.targetNode then
+		DebugUtil.drawDebugNode(self.targetNode, "isAtEnd=>targetNode")
 	end
 end
 
@@ -399,13 +422,6 @@ function BunkerSiloManager:drawMap()
 		cpDebug:drawLine(f.hx, f.y + 1, f.hz, r, g, b, f.sx, f.y + 1, f.sz);
 		cpDebug:drawLine(f.cx, f.y + 1, f.cz, 1, 1, 1, f.bx, f.y + 1, f.bz);
 	end
-
-	if not self.siloMap then return end
-	for _, line in pairs(self.siloMap) do
-		for _, fillUnit in pairs(line) do
-			drawTile(fillUnit, 1/1 - fillUnit.fillLevel, 1, 0)
-		end
-	end
 	if not self.silo then return end
 	if self.silo.bunkerSiloArea.start then 
 		DebugUtil.drawDebugNode(self.silo.bunkerSiloArea.start, 'startBunkerNode')
@@ -415,6 +431,13 @@ function BunkerSiloManager:drawMap()
 		cpDebug:drawPoint(self.silo.bunkerSiloArea.sx, 1, self.silo.bunkerSiloArea.sz, 1, 1, 1)
 		cpDebug:drawPoint(self.silo.bunkerSiloArea.wx, 1, self.silo.bunkerSiloArea.wz, 1, 1, 1)
 		cpDebug:drawPoint(self.silo.bunkerSiloArea.hx, 1, self.silo.bunkerSiloArea.hz, 1, 1, 1)
+	end
+
+	if not self.siloMap then return end
+	for _, line in pairs(self.siloMap) do
+		for _, fillUnit in pairs(line) do
+			drawTile(fillUnit, 1/1 - fillUnit.fillLevel, 1, 0)
+		end
 	end
 end
 

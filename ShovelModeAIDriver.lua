@@ -103,9 +103,7 @@ function ShovelModeAIDriver:start()
 	self.shovelFillEndPoint = nil
 	self.shovelEmptyPoint = nil
 	local numWaitPoints = 0
-	self.bestTarget = nil
-	self.bunkerSiloManager = nil
-	self.tempTarget = nil
+	self:resetBunkerSilo()
 	self.unloadingObjectRaycastActive = false
 	for i,wp in pairs(vehicle.Waypoints) do
 		if wp.wait then
@@ -146,12 +144,18 @@ function ShovelModeAIDriver:start()
 	AIDriver.continue(self)
 end
 
+function ShovelModeAIDriver:resetBunkerSilo()
+	self.bestTarget = nil
+	self.bunkerSiloManager = nil
+	self.tempTarget = nil
+end
+
 --debug info
 function ShovelModeAIDriver:onDraw()
 	if self:isDebugActive() and self.shovel then 
 		local y = 0.5
 		y = self:renderText(y,"state: "..tostring(self.shovelState.name),0.4)
-		y = self:renderText(y,"hasbunkerSiloManager: "..tostring(self.bunkerSiloManager ~= nil),0.4)
+		y = self:renderText(y,"hasBunkerSiloManager: "..tostring(self.bunkerSiloManager ~= nil),0.4)
 		y = self:renderText(y,"hasBestTarget: "..tostring(self.bestTarget ~= nil),0.4)
 		y = self:renderText(y,"isShovelFull: "..tostring(self:getIsShovelFull() == true),0.4)
 		y = self:renderText(y,"isShovelEmpty: "..tostring(self:getIsShovelEmpty() == true),0.4)
@@ -184,24 +188,27 @@ function ShovelModeAIDriver:drive(dt)
 					self.bunkerSiloManager =  BunkerSiloManager(self.vehicle, silo, self:getWorkWidth(),self.shovel.rootNode,isHeap)
 				end
 			end
-			if self.bunkerSiloManager and self.bestTarget == nil then
-				self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
+			if self.bunkerSiloManager then
+				---silo is empty 
+				if self.bunkerSiloManager:isSiloEmpty() then 
+					self:setShovelState(self.states.STATE_WORK_FINISHED)
+				else ---siloMap is valid and not empty, so try to find a target unit
+					self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
+					if self.bestTarget then 
+						self:setShovelState(self.states.STATE_GOINTO_SILO)
+					end
+				end
+			else 
+				---couldn't find a silo
+				self:setShovelState(self.states.STATE_WORK_FINISHED)
 			end
 		end
 		self:drawMap()
-		if self.bunkerSiloManager and self.bestTarget then
-			self:setShovelState(self.states.STATE_GOINTO_SILO)
-		end
 	--driving into the bunkerSilo
 	elseif self.shovelState == self.states.STATE_GOINTO_SILO then
 		self.refSpeed = self.vehicle.cp.speeds.field
 		self:driveIntoSilo(dt)
 		self:drawMap()
-		--bunkerSilo is empty => work is finished
-		if self.bunkerSiloManager:isAtEnd(self.bestTarget) and self:getIsShovelEmpty() then
-			self:setShovelState(self.states.STATE_WORK_FINISHED)
-			return
-		end
 		--targeted siloPart is cleared, shovel is full, or driver is stuck
 		if self:getIsShovelFull() or self.bunkerSiloManager:isAtEnd(self.bestTarget) or self:isStuck() then
 			--driving back out of the bunkerSilo
@@ -658,6 +665,7 @@ end
 function ShovelModeAIDriver:onWaypointPassed(ix)
 	if self.course:isWaitAt(ix+1) then
 		if ix+1 == self.shovelFillStartPoint then
+			self:resetBunkerSilo()
 			self:setShovelState(self.states.STATE_CHECKSILO)
 		end
 	end
@@ -686,7 +694,6 @@ end
 function ShovelModeAIDriver:checkLastWaypoint()
 	if self.ppc:reachedLastWaypoint() then
 		self.ppc:initialize(1)
-		self.bunkerSiloManager = nil
 	end
 end
 
