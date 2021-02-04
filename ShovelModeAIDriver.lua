@@ -99,29 +99,8 @@ function ShovelModeAIDriver:start()
 	end
 	--finding my working points
 	local vehicle = self.vehicle
-	self.shovelFillStartPoint = nil
-	self.shovelFillEndPoint = nil
-	self.shovelEmptyPoint = nil
-	local numWaitPoints = 0
 	self:resetBunkerSilo()
 	self.unloadingObjectRaycastActive = false
-	for i,wp in pairs(vehicle.Waypoints) do
-		if wp.wait then
-			numWaitPoints = numWaitPoints + 1;
-			vehicle.cp.waitPoints[numWaitPoints] = i;
-		end;
-
-		if numWaitPoints == 1 and self.shovelFillStartPoint == nil then
-			self.shovelFillStartPoint = i;
-		end;
-		if numWaitPoints == 2 and self.shovelFillEndPoint == nil then
-			self.shovelFillEndPoint = i;
-		end;
-		if numWaitPoints == 3 and self.shovelEmptyPoint == nil then
-			self.shovelEmptyPoint = i;
-		end;
-	end;
-	
 	local vAI = vehicle:getAttachedImplements()
 	for i,_ in pairs(vAI) do
 		local object = vAI[i].object
@@ -141,7 +120,30 @@ function ShovelModeAIDriver:start()
 	self.course = Course(self.vehicle , self.vehicle.Waypoints)
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
+	self:validateWaitpoints()
 	AIDriver.continue(self)
+end
+
+---set the shovelFillStartPoint,shovelFillEndPoint,shovelEmptyPoint waitpoints
+function ShovelModeAIDriver:validateWaitpoints()
+	self.shovelFillStartPoint = nil
+	self.shovelFillEndPoint = nil
+	self.shovelEmptyPoint = nil
+	local numWaitPoints = 0
+	for ix,wp in pairs(self.vehicle.Waypoints) do
+		if self.course:isWaitAt(ix) then
+			numWaitPoints = numWaitPoints + 1
+		end
+		if numWaitPoints == 1 and self.shovelFillStartPoint == nil then
+			self.shovelFillStartPoint = ix
+		end
+		if numWaitPoints == 2 and self.shovelFillEndPoint == nil then
+			self.shovelFillEndPoint = ix
+		end
+		if numWaitPoints == 3 and self.shovelEmptyPoint == nil then
+			self.shovelEmptyPoint = ix
+		end
+	end
 end
 
 function ShovelModeAIDriver:resetBunkerSilo()
@@ -182,24 +184,26 @@ function ShovelModeAIDriver:drive(dt)
 		self:hold()
 		if self:setShovelToPositionFinshed(2,dt) then
 			--initialize first target point
-			if self.bunkerSiloManager == nil then 
-				local silo,isHeap = BunkerSiloManagerUtil.getTargetBunkerSilo(self.vehicle,nil,true)
-				if silo then 
-					self.bunkerSiloManager =  BunkerSiloManager(self.vehicle, silo, self:getWorkWidth(),self.shovel.rootNode,isHeap)
-				end
-			end
-			if self.bunkerSiloManager then
-				---silo is empty 
-				if self.bunkerSiloManager:isSiloEmpty() then 
-					self:setShovelState(self.states.STATE_WORK_FINISHED)
-				else ---siloMap is valid and not empty, so try to find a target unit
-					self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
-					if self.bestTarget then 
-						self:setShovelState(self.states.STATE_GOINTO_SILO)
+			local silo,isHeap = self:getTargetBunkerSilo()
+			if silo then 
+				self.bunkerSiloManager =  BunkerSiloManager(self.vehicle, silo, self:getWorkWidth(),self.shovel.rootNode,isHeap)
+				if self.bunkerSiloManager then
+					---silo is empty 
+					if self.bunkerSiloManager:isSiloEmpty() then 
+						self:debug("silo is empty")
+						self:setShovelState(self.states.STATE_WORK_FINISHED)
+					else ---siloMap is valid and not empty, so try to find a target unit
+						self.bestTarget, self.firstLine = self.bunkerSiloManager:getBestTargetFillUnitFillUp()
+						if self.bestTarget then 
+							self:setShovelState(self.states.STATE_GOINTO_SILO)
+						else 
+							self:debug("couldn't find bestTarget")
+						end
 					end
 				end
 			else 
 				---couldn't find a silo
+				self:debug("couldn't find a silo")
 				self:setShovelState(self.states.STATE_WORK_FINISHED)
 			end
 		end
@@ -828,4 +832,11 @@ end
 
 function ShovelModeAIDriver:isProximitySpeedControlEnabled()
 	return self.shovelState.properties.enableProximitySpeedControl
+end
+
+---search for a bunker silo or heap 
+---@return table bunkerSilo coordinates
+---@return boolean is the silo a heap ?
+function ShovelModeAIDriver:getTargetBunkerSilo()
+	return BunkerSiloManagerUtil.getTargetBunkerSiloBetweenWaypoints(self.vehicle,self.course,self.shovelFillStartPoint,self.shovelFillEndPoint,true)
 end

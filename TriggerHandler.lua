@@ -213,11 +213,6 @@ function TriggerHandler:updateUnloadingTriggers()
 end 
 
 function TriggerHandler:updateUnloadingBunkerSilo()
---	if self.bunkerSilo ~= nil then
---		self.bunkerSilo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.driver.course,self.driver.ppc:getCurrentWaypointIx()+3)
---	else 
---		self.bunkerSilo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.driver.course,self.driver.ppc:getCurrentWaypointIx()-3)
---	end
 	if self:isWaitingForUnloadReady() then 
 		self.driver:setInfoText('WAITING_FOR_LEVELCOMPACTAIDRIVER')
 		self.driver:setSpeed(0)

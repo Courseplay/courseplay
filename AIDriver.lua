@@ -1412,7 +1412,7 @@ end
 
 function AIDriver:setOffsetInBGASilo()
 	if self.bunkerSiloManager == nil then
-		local silo = BunkerSiloManagerUtil.getTargetBunkerSiloByPointOnCourse(self.course,self.ppc:getCurrentWaypointIx()+3)
+		local silo = BunkerSiloManagerUtil.getTargetBunkerSilo(self.vehicle,self.course,self.ppc:getCurrentWaypointIx()+3)
 		if silo then
 			self.bunkerSiloManager = BunkerSiloManager(self.vehicle, silo,3)
 		end

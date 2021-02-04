@@ -596,7 +596,7 @@ end
 
 function LevelCompactAIDriver:checkSilo()
 	if self.bunkerSiloManager == nil then
-		local silo = BunkerSiloManagerUtil.getTargetBunkerSilo(self.vehicle,1)
+		local silo = BunkerSiloManagerUtil.getTargetBunkerSilo(self.vehicle,self.course,1)
 		if silo then 
 			self.bunkerSiloManager = BunkerSiloManager(self.vehicle,silo,self:getWorkWidth(),self:getValidBackImplement())
 		end

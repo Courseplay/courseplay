@@ -40,18 +40,18 @@ function TriggerShovelModeAIDriver:start(startingPoint)
 		return
 	end
 	self:setShovelState(self.states.STATE_TRANSPORT, 'setup');
-	self:validateWaitpoints()
 	AIDriver.start(self,startingPoint)
+	self:validateWaitpoints()
 	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self:disableCollisionDetection()
 end
 
--- get the needed waitPoint
+---set the unloading waitpoint
 function TriggerShovelModeAIDriver:validateWaitpoints()
 	self.shovelEmptyPoint = nil
 	local numWaitPoints = 0
 	for i,wp in pairs(self.vehicle.Waypoints) do
-		if wp.wait then
+		if self.course:isWaitAt(ix) then
 			numWaitPoints = numWaitPoints + 1;
 		end;
 		if numWaitPoints == 1 and self.shovelEmptyPoint == nil then
