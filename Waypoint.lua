@@ -1402,7 +1402,8 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 			100 * offsetNonHeadlandLength / originalNonHeadlandLength,
 			offsetNonHeadlandLength - originalNonHeadlandLength)
 	-- remember this for the convoy progress calculation
-	offsetCourse.headlandLengthRatio = self.headlandLength / offsetCourse.headlandLength
+	offsetCourse.headlandLengthRatio = offsetCourse.headlandLength > 0 and
+		self.headlandLength / offsetCourse.headlandLength or 1
 	offsetCourse.nonHeadlandLengthRatio = originalNonHeadlandLength / offsetNonHeadlandLength
 	offsetCourse.originalCourseLength = offsetCourse.nonHeadlandLengthRatio * offsetNonHeadlandLength
 			+ offsetCourse.headlandLengthRatio * offsetCourse.headlandLength
