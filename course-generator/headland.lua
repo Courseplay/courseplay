@@ -509,10 +509,10 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, headlandSet
 	-- headlands. The first and last intersection in the list is hopefully the intersection with the boundary
 	-- on the left and the right. The tracks are now also parallel to the x axis, track #1 on the bottom.
 	-- Find the section of the boundary we'll use our headland, first on the left:
-	local bottomLeftIx = parallelTracks[startTrack].intersections[1].headlandVertexIx
-	local topLeftIx = parallelTracks[endTrack].intersections[1].headlandVertexIx
-	local bottomRightIx = parallelTracks[startTrack].intersections[#parallelTracks[startTrack].intersections].headlandVertexIx
-	local topRightIx = parallelTracks[endTrack].intersections[#parallelTracks[endTrack].intersections].headlandVertexIx
+	local bottomLeftIx = parallelTracks[startTrack].intersections[1].headlandEdge.fromIx
+	local topLeftIx = parallelTracks[endTrack].intersections[1].headlandEdge.fromIx
+	local bottomRightIx = parallelTracks[startTrack].intersections[#parallelTracks[startTrack].intersections].headlandEdge.fromIx
+	local topRightIx = parallelTracks[endTrack].intersections[#parallelTracks[endTrack].intersections].headlandEdge.fromIx
 
 	-- we need this for the part which connects the left and right side headlands.
 	local headlandAround = calculateHeadlandTrack(boundary, headlandSettings.mode, boundary.isClockwise, implementWidth / 2,

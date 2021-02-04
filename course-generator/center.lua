@@ -410,8 +410,6 @@ function findIntersections( headland, tracks, islandId )
 			local is = getIntersection( cp.x, cp.y, np.x, np.y, t.from.x, t.from.y, t.to.x, t.to.y )
 			if is then
 				-- the line between from and to (the track) intersects the vector from cp to np
-				-- remember the polygon vertex where we are intersecting
-				is.index = i
 				-- remember the angle we cross the headland
 				is.angle = cp.tangent.angle
 				is.islandId = islandId
@@ -419,7 +417,7 @@ function findIntersections( headland, tracks, islandId )
 				-- field and one around each island.
 				is.headland = headland
 				-- remember where we intersect the headland.
-				is.headlandVertexIx = i
+				is.headlandEdge = {fromIx = i, toIx = i + 1}
 				is.originalTrackNumber = t.originalTrackNumber
 				t.onIsland = islandId
 				addPointToListOrderedByX( t.intersections, is )
@@ -872,20 +870,26 @@ function splitCenterIntoBlocks( tracks, width )
 				block.bottomRightIntersection = block[ 1 ].intersections[ 2 ]
 				block.topLeftIntersection = block[ #block ].intersections[ 1 ]
 				block.topRightIntersection = block[ #block ].intersections[ 2 ]
-				block.polygon = Polygon:new()
-				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_LEFT ] = block.bottomLeftIntersection
+
 				-- this is for visualization only
+				block.polygon = Polygon:new()
+
+				block.bottomLeftIntersection.label = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT .. '(' .. block.bottomLeftIntersection.headlandEdge.fromIx .. ')'
+				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_LEFT ] = block.bottomLeftIntersection
 				table.insert( rotatedMarks, block.bottomLeftIntersection )
-				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_BOTTOM_LEFT
+
+				block.bottomRightIntersection.label = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT.. '(' .. block.bottomRightIntersection.headlandEdge.fromIx .. ')'
 				block.polygon[ courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT ] = block.bottomRightIntersection
 				table.insert( rotatedMarks, block.bottomRightIntersection )
-				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_BOTTOM_RIGHT
+
+				block.topRightIntersection.label = courseGenerator.BLOCK_CORNER_TOP_RIGHT.. '(' .. block.topRightIntersection.headlandEdge.fromIx .. ')'
 				block.polygon[ courseGenerator.BLOCK_CORNER_TOP_RIGHT ] = block.topRightIntersection
 				table.insert( rotatedMarks, block.topRightIntersection )
-				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_TOP_RIGHT
+
+				block.topLeftIntersection.label = courseGenerator.BLOCK_CORNER_TOP_LEFT .. '(' .. block.topLeftIntersection.headlandEdge.fromIx .. ')'
 				block.polygon[ courseGenerator.BLOCK_CORNER_TOP_LEFT ] = block.topLeftIntersection
 				table.insert( rotatedMarks, block.topLeftIntersection )
-				rotatedMarks[ #rotatedMarks ].label = courseGenerator.BLOCK_CORNER_TOP_LEFT
+
 				table.insert( blocks, block )
 				block.id = #blocks
 			end
@@ -1157,10 +1161,12 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 				-- table instance as this upvalue headland. Ugly, should use some headland ID instead
 				if headland == currentBlockEntryPoint.headland then
 					if nHeadlandPasses > 0 then
-						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { circleStep } )
+						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart,
+							currentBlockEntryPoint.headlandEdge.fromIx, { circleStep } )
 					else
 						-- if there is no headland, look for the closest point no matter what direction (as we can ignore the clockwise/ccw settings)
-						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart, currentBlockEntryPoint.index, { -1, 1 } )
+						distance, dir = getDistanceBetweenPointsOnHeadland( headland, circleStart,
+							currentBlockEntryPoint.headlandEdge.fromIx, { -1, 1 } )
 						--print(currentBlockIx, chromosome.entryCorner[currentBlockIx], distance, dir, circleStart, currentBlockEntryPoint.index)
 					end
 					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
@@ -1175,7 +1181,9 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 				local nextBlockEntryPoint = blocks[ nextBlockIx ].polygon[ chromosome.entryCorner[ nextBlockIx ]]
 				if currentBlockExitPoint.headland == nextBlockEntryPoint.headland then
 					-- can reach the next block on the same headland					
-					distance, dir = getDistanceBetweenPointsOnHeadland( currentBlockExitPoint.headland, currentBlockExitPoint.index, nextBlockEntryPoint.index, { -1, 1 } )
+					distance, dir = getDistanceBetweenPointsOnHeadland(
+						currentBlockExitPoint.headland, currentBlockExitPoint.headlandEdge.fromIx,
+						nextBlockEntryPoint.headlandEdge.fromIx, { -1, 1 } )
 					chromosome.distance, chromosome.directionToNextBlock[ currentBlockIx ] = chromosome.distance + distance, dir
 				else
 					-- next block's entry point is on a different headland, do not allow this by making
@@ -1245,9 +1253,29 @@ function findBlockSequence( blocks, headland, circleStart, circleStep, nHeadland
 	return blocksInSequence, population.bestChromosome
 end
 
-
-function getTrackBetweenPointsOnHeadland( headland, startIx, endIx, step )
+--- Get a list of waypoints on the headland between two edges (not waypoints!) as the start/end of
+--- an up/down row is somewhere on that edge. To not to overshoot the up/down row, we want to have
+--- the path between the inner waypoints of the two edges, like here, marked with a 'v':
+---  start  v                                       v  end
+---  x------x ..... x ..... x ..... x ..... x ..... x-----x
+--- Depending on which direction we go travel on the headland (increasing or decreasing indices),
+--- these may be the fromIx or the toIx of the edges. fromIx <= toIx is always true for both edges
+---@param headland Polygon
+---@param startingEdge table {fromIx, toIx}
+---@param endingEdge table {fromIx, toIx}
+function getTrackBetweenPointsOnHeadland( headland, startingEdge, endingEdge, step )
 	local track = Polyline:new()
+
+	local startIx, endIx
+	if step > 0 then
+		startIx = startingEdge.toIx
+		endIx = endingEdge.fromIx
+	else
+		startIx = startingEdge.fromIx
+		endIx = endingEdge.toIx
+	end
+--	print(string.format('start %d - %d, end %d - %d => %d - %d',
+--		startingEdge.fromIx, startingEdge.toIx, endingEdge.fromIx, endingEdge.toIx, startIx, endIx ))
 	for i in headland:iterator( startIx, endIx, step ) do
 		table.insert( track, headland[ i ])
 	end
@@ -1261,8 +1289,9 @@ function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBloc
 	for i, block in ipairs( blocksInSequence ) do
 		if i == 1 then
 			-- the track to the first block starts at the end of the innermost headland
-			block.trackToThisBlock = getTrackBetweenPointsOnHeadland(innermostHeadland, circleStart,
-				block.polygon[ block.entryCorner ].index, firstBlockDirection )
+			block.trackToThisBlock = getTrackBetweenPointsOnHeadland(innermostHeadland,
+				{fromIx = circleStart, toIx = circleStart},
+				block.polygon[ block.entryCorner ].headlandEdge, firstBlockDirection )
 		end
 		if i > 1 then
 			-- for the rest of the blocks, the track to the block is from the exit point of the previous block
@@ -1273,8 +1302,9 @@ function linkBlocks( blocksInSequence, innermostHeadland, circleStart, firstBloc
 			local thisOriginalTrackNumber = block.polygon[ block.entryCorner ].originalTrackNumber
 			-- Don't need a connecting track when these were originally adjacent tracks.
 			if math.abs( previousOriginalTrackNumber - thisOriginalTrackNumber ) ~= 1 then
-				block.trackToThisBlock = getTrackBetweenPointsOnHeadland( headland, previousBlock.polygon[ previousBlockExitCorner ].index,
-					block.polygon[ block.entryCorner ].index, previousBlock.directionToNextBlock )
+				block.trackToThisBlock = getTrackBetweenPointsOnHeadland( headland,
+					previousBlock.polygon[ previousBlockExitCorner ].headlandEdge,
+					block.polygon[ block.entryCorner ].headlandEdge, previousBlock.directionToNextBlock )
 			else
 
 			end
