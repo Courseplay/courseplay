@@ -365,7 +365,10 @@ function FieldworkAIDriver:drive(dt)
 			return
 		end
 	elseif self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE then
-		self:driveUnloadOrRefill(dt)
+		local giveUpControl = self:driveUnloadOrRefill(dt)
+		if giveUpControl then 
+			return 
+		end
 	elseif self.state == self.states.RETURNING_TO_FIRST_POINT then
 		self:setSpeed(self:getFieldSpeed())
 		self.triggerHandler.fillableObject = nil
@@ -495,7 +498,7 @@ function FieldworkAIDriver:stopAndRefuel()
 end
 
 ---@return boolean true if unload took over the driving
-function FieldworkAIDriver:driveUnloadOrRefill()
+function FieldworkAIDriver:driveUnloadOrRefill(dt)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload course fields (on alignment/temporary)
 		self:setSpeed(self.vehicle.cp.speeds.field)
