@@ -1812,8 +1812,8 @@ TurnContext = CpObject()
 --- node so when the vehicle's root node reaches the vehicleAtTurnEndNode, the front of the work area will exactly be on the
 --- turn end node. (The vehicle must be steered to the vehicleAtTurnEndNode instead of the turn end node so the implements
 --- reach exactly the row end)
----@param backMarkerDistance number distance of the rearmost work area from the vehicle's root node. Will only be used
---- to pass in to turn generator code and should be reviewed if it is needed at all.
+---@param backMarkerDistance number distance of the rearmost work area from the vehicle's root node. Will be used
+--- to pass in to turn generator code and to calculate the minimum length of the row finishing course.
 ---@param turnEndSideOffset number offset of the turn end in meters to left (>0) or right (<0) to end the turn left or
 --- right of the turn end node. Used when there's an offset to consider, for example because the implement is not
 --- in the middle, like plows.
@@ -1863,7 +1863,8 @@ function TurnContext:init(course, turnStartIx, aiDriverData, workWidth,
 
 	self.dx, _, self.dz = localToLocal(self.turnEndWpNode.node, self.workEndNode, 0, 0, 0)
 	self.leftTurn = self.dx > 0
-	self:debug('start ix = %d', turnStartIx)
+	self:debug('start ix = %d, back marker = %.1f, front marker = %.1f',
+		turnStartIx, self.backMarkerDistance, self.frontMarkerDistance)
 end
 
 function TurnContext:debug(...)
@@ -2192,13 +2193,15 @@ end
 ---@return Course
 function TurnContext:createFinishingRowCourse(vehicle)
 	local waypoints = {}
-	-- must be at least as long as the front marker distance so we are not reaching the end of the course before
-	-- the implement reaches the field edge (a negative frontMarkerDistance means the implement is behind the
-	-- vehicle, this isn't a problem for a positive frontMarkerDistance as the implement reaches the field edge
+	-- must be at least as long as the back marker distance so we are not reaching the end of the course before
+	-- the implement reaches the field edge (a negative backMarkerDistance means the implement is behind the
+	-- vehicle, this isn't a problem for a positive backMarkerDistance as the implement reaches the field edge
 	-- before the vehicle (except for very wide work widths of course, so make sure we have enough course to cross
 	-- the headland)
-	-- TODO: fix this properly, maybe we should check the end course during turns instead
-	for d = 0, math.max(self.workWidth * 1.5, -self.frontMarkerDistance * 6), 1 do
+	-- (back marker is the worst case, for when the raise implement is set to 'late'. If it is set to 'early',
+	-- the front marker distance would be here relevant but this is only for creating the course, where the vehicle will
+	-- stop finishing the row and start the turn depends only on the raise implement setting.
+	for d = 0, math.max(self.workWidth * 1.5, -self.backMarkerDistance * 1.5), 1 do
 		local x, _, z = localToWorld(self.workEndNode, 0, 0, d)
 		table.insert(waypoints, {x = x, z = z})
 	end
