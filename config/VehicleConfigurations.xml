@@ -101,7 +101,7 @@ You can define the following custom settings:
     <!--vehicles\gregoireBesson-->
     <Vehicle name="SPSL9.xml"
              toolOffsetX="2.1"
-             turnRadius = "10"
+             turnRadius = "7.5"
              implementWheelAlwaysOnGround = "true"
 			 workingWidth = "10.5"
     />

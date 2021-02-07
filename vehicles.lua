@@ -774,11 +774,7 @@ end;
 
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
-
-	if g_vehicleConfigurations:get(workTool, 'turnRadius') then
-		turnRadius = g_vehicleConfigurations:get(workTool, 'turnRadius')
-		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(workTool), turnRadius), 6);
-	elseif courseplay:isWheeledWorkTool(workTool) then
+	if courseplay:isWheeledWorkTool(workTool) then
 		local radiusMultiplier = 1.05; -- Used to add a little bit to the radius, for safer turns.
 
 		local wheelBase		= 0;
@@ -1559,23 +1555,37 @@ end
 
 -- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
 function AIDriverUtil.getTurningRadius(vehicle)
-	courseplay.debugVehicle(6, vehicle, 'Finding turn radius')
-	local radius = vehicle.maxTurningRadius * 1.1                     -- needs ackermann steering
+	courseplay.debugVehicle(6, vehicle, 'Finding turn radius:')
+
+	local radius = vehicle.maxTurningRadius * 1.05 -- TODO: do we really need this buffer?
+	courseplay.debugVehicle(6, vehicle, '  maxTurningRadius by Giants is %.1f', vehicle.maxTurningRadius)
 	if vehicle:getAIMinTurningRadius() ~= nil then
+		courseplay.debugVehicle(6, vehicle, '  AIMinTurningRadius by Giants is %.1f', vehicle:getAIMinTurningRadius())
 		radius = math.max(radius, vehicle:getAIMinTurningRadius())
 	end
-	local maxToolRadius = 0
 
 	local attachedAIImplements = vehicle:getAttachedImplements()
+	local maxToolRadius = 0
 
 	for _, implement in pairs(attachedAIImplements) do
-		local turnRadius = AIVehicleUtil.getMaxToolRadius(implement)
-		if turnRadius == 0 then
-			turnRadius = courseplay:getToolTurnRadius(implement.object)
-			courseplay.debugVehicle(6, vehicle, '%s: no Giants turn radius, we calculated %.1f', implement.object:getName(), turnRadius)
+		local turnRadius = 0
+		if g_vehicleConfigurations:get(implement.object, 'turnRadius') then
+			turnRadius = g_vehicleConfigurations:get(implement.object, 'turnRadius')
+			courseplay.debugVehicle(6, vehicle, '  %s: using the configured turn radius %.1f',
+				implement.object:getName(), turnRadius)
+		else
+			turnRadius = AIVehicleUtil.getMaxToolRadius(implement)
+			if turnRadius > 0 then
+				courseplay.debugVehicle(6, vehicle, '  %s: using the Giants turn radius %.1f',
+					implement.object:getName(), turnRadius)
+			else
+				turnRadius = courseplay:getToolTurnRadius(implement.object)
+				courseplay.debugVehicle(6, vehicle, '  %s: no Giants turn radius, we calculated %.1f',
+					implement.object:getName(), turnRadius)
+			end
 		end
 		maxToolRadius = math.max(maxToolRadius, turnRadius)
-		courseplay.debugVehicle(6, vehicle, '%s: max tool radius %.1f', implement.object:getName(), maxToolRadius)
+		courseplay.debugVehicle(6, vehicle, '  %s: max tool radius now is %.1f', implement.object:getName(), maxToolRadius)
 	end
 	radius = math.max(radius, maxToolRadius)
 	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
