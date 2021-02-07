@@ -9,6 +9,7 @@
 	A mode is disabled if one of the specializations under disallowedSetups was found, for either the vehicle or the implement, ..
 	
 	AllowedSetups:
+		- if empty, or the setup is empty, this mode is enabled
 		- each Setup represents an AND Gate (the vehicle must have all of the specializations listed in the Setup group)
 		- multiple Setups represent an OR GATE
 		- as a combination this work like a "Disjunctive normal form"
@@ -67,7 +68,7 @@
 				<Specialization name="spec_trailer"/>
 			</Setup>
 			<Setup>
-			<!-- as an example spezial tools can be enabled by the xml file of the tool
+			<!-- as an example special tools can be enabled by the xml file of the tool
 				<SpecialTool name="fieldLinerHTS31.xml"/>
 			 -->
 			</Setup>
@@ -100,19 +101,16 @@
 			</Setup>
 		</DisallowedSetups>
 	</Mode>
-	<!--AIDriver(5)	
-		currently skipped in courseplay:getIsToolCombiValidForCpMode:getIsToolCombiValidForCpMode()!
-		as every cp driver setup is allowed to use the TransportMode!
-	 -->
+	<!--AIDriver(5) -->
 	<Mode>
 		<AllowedSetups>
 			<Setup>
-
+				<!-- empty enables everything -->
 			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
 			<Setup>
-
+				<!-- empty does not disable anything -->
 			</Setup>
 		</DisallowedSetups>
 	</Mode>
@@ -181,7 +179,8 @@
 		</AllowedSetups>
 		<DisallowedSetups>
 			<Setup>
-
+				<!-- this should disable mode 7 for pretty much everything -->
+				<Specialization name="spec_drivable"/>
 			</Setup>
 		</DisallowedSetups>
 	</Mode>

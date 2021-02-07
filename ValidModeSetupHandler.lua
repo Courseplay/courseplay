@@ -84,10 +84,10 @@ end
 ---checks if the "mode" is allowed and not disallowed for the vehicle
 ---@param int : cpMode to check
 ---@param vehicle : object, implement,vehicle
----@return boolean : isAllowedOkay, boolean : isDisallowedOkay
+---@return boolean, boolean : true = setup allows this mode, true = setup does not disable this mode
 function ValidModeSetupHandler:isModeValid(mode,object)
 	local validData = self.modeSetup[mode]
-	local isAllowedOkay = false
+	local isAllowedOkay = true
 	local isDisallowedOkay = true
 	if validData then 
 		if validData.allowedSetups then 
