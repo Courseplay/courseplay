@@ -45,6 +45,10 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	end
 
 	courseplay:resetTools(vehicle)
+
+	-- reset tool offset to the preconfigured value if exists
+	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
+
 end
 
 --- Set up tool configuration after something is attached or detached
@@ -61,9 +65,6 @@ function courseplay:resetTools(vehicle)
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
 
 	courseplay:calculateWorkWidth(vehicle, true);
-
-	-- reset tool offset to the preconfigured value if exists
-	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
 end;
 
 function courseplay:isAttachedMixer(workTool)
