@@ -91,6 +91,10 @@ function ProximitySensor:getClosestObjectDistance()
     return self.distanceOfClosestObject
 end
 
+function ProximitySensor:getClosestObject()
+	return g_currentMission:getNodeObject(self.objectId)
+end
+
 function ProximitySensor:getClosestRootVehicle()
     if self.objectId then
         local object = g_currentMission:getNodeObject(self.objectId)
@@ -226,8 +230,8 @@ function ProximitySensorPack:setIgnoredVehicle(vehicle, ttlMs)
     self:callForAllSensors(ProximitySensor.setIgnoredVehicle, vehicle, ttlMs)
 end
 
---- @return number, table, number distance of closest object in meters, root vehicle of the closest object, average direction
---- of the obstacle in degrees, > 0 right, < 0 left
+--- @return number, table, number distance of closest object in meters, root vehicle of the closest object,
+--- the closest object, average direction of the obstacle in degrees, > 0 right, < 0 left
 function ProximitySensorPack:getClosestObjectDistanceAndRootVehicle(deg)
     -- make sure we have the latest info, the sensors will make sure they only raycast once per loop
     self:update()
@@ -235,7 +239,7 @@ function ProximitySensorPack:getClosestObjectDistanceAndRootVehicle(deg)
         return self.sensors[deg]:getClosestObjectDistance(), self.sensors[deg]:getClosestRootVehicle(), deg
     else
         local closestDistance = math.huge
-        local closestRootVehicle
+        local closestRootVehicle, closestObject
         -- weighted average over the different direction, weight depends on how close the closest object is
         local totalWeight, totalDegs, totalDistance = 0, 0, 0
         for _, deg in ipairs(self.directionsDeg) do
@@ -251,12 +255,13 @@ function ProximitySensorPack:getClosestObjectDistanceAndRootVehicle(deg)
             if d < closestDistance then
                 closestDistance = d
                 closestRootVehicle = self.sensors[deg]:getClosestRootVehicle()
+                closestObject = self.sensors[deg]:getClosestObject()
             end
         end
         if closestRootVehicle == self.vehicle then
             self:adjustForwardPosition()
         end
-        return closestDistance, closestRootVehicle, totalDegs / totalWeight, totalDistance / totalWeight
+        return closestDistance, closestRootVehicle, closestObject, totalDegs / totalWeight, totalDistance / totalWeight
     end
     return math.huge, nil, deg
 end
