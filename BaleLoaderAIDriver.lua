@@ -69,6 +69,12 @@ function BaleLoaderAIDriver:init(vehicle)
 
 	self:initStates(BaleLoaderAIDriver.myStates)
 	self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
+	if self.baleLoader.cp.realUnloadOrFillNode then
+		-- use that realUnloadOrFillNode for now as it includes the balerUnloadDistance config value
+		-- TODO: can we just use the back marker node here as well?
+		self.baleFinderProximitySensorPack = BackwardLookingProximitySensorPack(
+			self.vehicle, self.ppc, self.baleLoader.cp.realUnloadOrFillNode, 5, 1)
+	end
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
 
@@ -95,16 +101,16 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 50)
 	if self:hasTipTrigger() or nearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
-		self:raycast()
+
 		if self:haveBales() and self.unloadRefillState == nil then
 			self.unloadRefillState = self.states.APPROACHING_UNLOAD_POINT
-			self.tooCloseToOtherBales = false
 			self:debug('Approaching unload point.')
+
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
 			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
 			local _, _, dz = localToLocal(unloadNode, self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
 			self:debugSparse('distance to unload point: %.1f', dz)
-			if math.abs(dz) < 1 or self.tooCloseToOtherBales then
+			if math.abs(dz) < 1 or self:tooCloseToOtherBales() then
 				self:debug('Unload point reached.')
 				self.unloadRefillState = self.states.UNLOADING
 			end
@@ -198,24 +204,22 @@ function BaleLoaderAIDriver:getUnloadNode(isUnloadpoint, unloadPointIx)
 	end
 end
 
---- Raycast back to stop when there's already a stack of bales at the unload point.
-function BaleLoaderAIDriver:raycast()
-	if not self.baleLoader.cp.realUnloadOrFillNode then return end
-	local nx, ny, nz = localDirectionToWorld(self.baleLoader.cp.realUnloadOrFillNode, 0, 0, -1)
-	local x, y, z = localToWorld(self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
-	raycastClosest(x, y, z, nx, ny, nz, 'raycastCallback', 5, self)
-end
-
-function BaleLoaderAIDriver:raycastCallback(hitObjectId, x, y, z, distance, nx, ny, nz, subShapeIndex)
-	if hitObjectId ~= 0 then
-		local object = g_currentMission:getNodeObject(hitObjectId)
+--- When backing up to unload, see if we have to stop because there are bales already there
+function BaleLoaderAIDriver:tooCloseToOtherBales()
+	if self.baleFinderProximitySensorPack then
+		local distance, _, object = self.baleFinderProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
 		if object and object:isa(Bale) then
-			if distance < 2 then
-				self.tooCloseToOtherBales = true
-				self:debugSparse('Bale found at d=%.1f', distance)
+			-- round bales have diameter, others height, thanks Giants!
+			local baleHeight = object.baleDiameter and object.baleDiameter or
+				(object.baleHeight and object.baleHeight or 0.8)
+			self:debugSparse('Bale found at d=%.1f, bale height %.1f', distance, baleHeight)
+			if distance < (baleHeight + 1) then
+				return true
 			else
-				self.tooCloseToOtherBales = false
+				return false
 			end
 		end
+	else
+		return false
 	end
 end

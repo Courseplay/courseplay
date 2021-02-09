@@ -126,11 +126,11 @@ end
 function DevHelper:updateProximitySensors(vehicle)
     if vehicle and vehicle.cp.driver then
         if vehicle.cp.driver.forwardLookingProximitySensorPack then
-            local d, otherVehicle, deg, dAvg =
+            local d, otherVehicle, object, deg, dAvg =
                 vehicle.cp.driver.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
         end
         if vehicle.cp.driver.backwardLookingProximitySensorPack then
-            local d, otherVehicle, deg, dAvg =
+            local d, otherVehicle, object, deg, dAvg =
                 vehicle.cp.driver.backwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
         end
     end

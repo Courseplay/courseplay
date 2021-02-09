@@ -2000,7 +2000,7 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	local d, vehicle, range, deg, dAvg = math.huge, nil, 10, 0
 	local pack = moveForwards and self.forwardLookingProximitySensorPack or self.backwardLookingProximitySensorPack
 	if pack and self:isProximitySpeedControlEnabled() then
-		d, vehicle, deg, dAvg = pack:getClosestObjectDistanceAndRootVehicle()
+		d, vehicle, _, deg, dAvg = pack:getClosestObjectDistanceAndRootVehicle()
 		range = pack:getRange()
 	end
 
