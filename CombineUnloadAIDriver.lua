@@ -1684,17 +1684,26 @@ function CombineUnloadAIDriver:changeToUnloadWhenFull()
 	end
 	return false
 end
+
+function CombineUnloadAIDriver:checkForCombineProximity()
+	-- do not swerve for our combine towards the end of the course,
+	-- otherwise we won't be able to align with it when coming from
+	-- the wrong angle
+	if self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) < 20 then
+		if not self.doNotSwerveForVehicle:get() then
+			self:debug('Disable swerve for %s', nameNum(self.combineToUnload))
+		end
+		self.doNotSwerveForVehicle:set(self.combineToUnload, 2000)
+	end
+
+end
+
 ------------------------------------------------------------------------------------------------------------------------
 -- Drive to stopped combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:driveToCombine()
 
-	-- do not swerve for our combine towards the end of the course,
-	-- otherwise we won't be able to align with it when coming from
-	-- the wrong angle
-	if self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) < 20 then
-		self.doNotSwerveForVehicle:set(self.combineToUnload, 2000)
-	end
+	self:checkForCombineProximity()
 
 	courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_TO_COMBINE");
 
@@ -1711,12 +1720,8 @@ end
 -- Drive to moving combine
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:driveToMovingCombine()
-	-- do not swerve for our combine towards the end of the course,
-	-- otherwise we won't be able to align with it when coming from
-	-- the wrong angle
-	if self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) < 20 then
-		self.doNotSwerveForVehicle:set(self.combineToUnload, 2000)
-	end
+
+	self:checkForCombineProximity()
 
 	courseplay:setInfoText(self.vehicle, "COURSEPLAY_DRIVE_TO_COMBINE");
 

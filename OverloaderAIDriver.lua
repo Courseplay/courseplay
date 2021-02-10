@@ -132,9 +132,9 @@ function OverloaderAIDriver:isAugerPipeToolPositionsOkay(dt)
 	return true
 end
 
--- make sure we stay close to the trailer while overloading
-function OverloaderAIDriver:isProximitySwerveEnabled()
-    return CombineUnloadAIDriver.isProximitySwerveEnabled(self) and not self.nearOverloadPoint
+function OverloaderAIDriver:isProximitySwerveEnabled(vehicle)
+	-- make sure we stay close to the trailer while overloading
+	return CombineUnloadAIDriver.isProximitySwerveEnabled(self, vehicle) and not self.nearOverloadPoint
 end
 
 function OverloaderAIDriver:isProximitySpeedControlEnabled()

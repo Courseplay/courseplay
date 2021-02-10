@@ -2052,8 +2052,11 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 	-- check for nil and NaN
 	if deg and deg == deg and self:isProximitySwerveEnabled(vehicle) and
 			(not sameDirection or not vehicle:getIsCourseplayDriving()) then
-		local dx = dAvg * math.sin(math.rad(deg))
+		local dx = dAvg * math.sin(math.rad(deg)) -- dx > 0 is left
 		-- which direction to swerve (have a little bias for right, sorry UK folks :)
+		local gx, _, _ = self.ppc:getGoalPointLocalPosition()
+		local bias = gx - 1.2
+		-- TODO: use bias here instead of -1.2
 		local dir = dx > -1.2 and 1 or -1
 		self:setInfoText('SLOWING_DOWN_FOR_TRAFFIC')
 		self.ppc:setTemporaryShortLookaheadDistance(1000)
@@ -2064,8 +2067,9 @@ function AIDriver:checkProximitySensor(maxSpeed, allowedToDrive, moveForwards)
 		self.course:changeTemporaryOffsetX(offsetChange, 1000)
 		-- always slow down when swerving
 		newSpeed = slowSpeed
-		debug(AIDriver.psStateSwerve, 'dAvg = %.1f (%d), speed = %.1f, swerve dx = %.1f, setPoint = %.1f, error = %.1f, offsetChange = %.1f',
-				dAvg, 100 * normalizedD, newSpeed, dx, setPoint, error, offsetChange)
+		debug(AIDriver.psStateSwerve,
+			'dAvg = %.1f (%d), speed = %.1f, swerve dx = %.1f, setPoint = %.1f, error = %.1f, offsetChange = %.1f, (%s)',
+				dAvg, 100 * normalizedD, newSpeed, dx, setPoint, error, offsetChange, nameNum(vehicle))
 	else
 		if self:isProximitySlowDownEnabled(vehicle) then
 			newSpeed = slowSpeed
