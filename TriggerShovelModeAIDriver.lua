@@ -42,8 +42,11 @@ function TriggerShovelModeAIDriver:start(startingPoint)
 	self:setShovelState(self.states.STATE_TRANSPORT, 'setup');
 	self:validateWaitpoints()
 	AIDriver.start(self,startingPoint)
-	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self:disableCollisionDetection()
+end
+
+function TriggerShovelModeAIDriver:shouldStopAtEndOfCourse()
+	return false
 end
 
 -- get the needed waitPoint

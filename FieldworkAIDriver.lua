@@ -168,6 +168,10 @@ function FieldworkAIDriver:isProximitySwerveEnabled()
 			self.state == self.states.RETURNING_TO_FIRST_POINT
 end
 
+function FieldworkAIDriver:shouldStopAtEndOfCourse()
+	return true
+end
+
 --- Start the course and turn on all implements when needed
 --- @param startingPoint StartingPointSetting at which waypoint to start the course
 function FieldworkAIDriver:start(startingPoint)
@@ -180,8 +184,6 @@ function FieldworkAIDriver:start(startingPoint)
 	-- always enable alignment with first waypoint, this is needed to properly start/continue fieldwork
 	self.alignmentEnabled = self.vehicle.cp.alignment.enabled
 	self.vehicle.cp.alignment.enabled = true
-	-- stop at the last waypoint by default
-	self.vehicle.cp.settings.stopAtEnd:set(true)
 	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
