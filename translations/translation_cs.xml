@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_PPC_OFF" 									text="普通模式" />
 		<text name="COURSEPLAY_PPC_ON" 										text="高级模式" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI 驾驶" /> <!-- enable new AI driver -->
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at Endpoint" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="任务执行次数" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="重置运行次数"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="无限" />

@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_PPC_OFF" 									text="Modo normal" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Modo experimental" />
 		<text name="COURSEPLAY_AIDRIVER" 									text="Conductor IA" /> 
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at Endpoint" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Número de viajes a realizar" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Reiniciar número de viajes"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />
