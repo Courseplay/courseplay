@@ -654,10 +654,20 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--autoDriveModeSetting
 					if vehicle.cp.canDrive and vehicle.spec_autodrive then
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.autoDriveMode)
+						self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.autoDriveMode:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText() 
 					else
 						self:disableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.autoDriveMode)
+					end
+				elseif entry.functionToCall == 'stopAtEnd:toggle' then
+					--StopAtEndSetting
+					if vehicle.cp.canDrive and vehicle.cp.mode == courseplay.MODE_TRANSPORT then
+						self:enableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
+						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopAtEnd:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopAtEnd:getText() 
+					else
+						self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
 					end
 				elseif entry.functionToCall == 'returnToFirstPoint:changeByX' then
 					--ReturnToFirstPointSetting 
@@ -2044,6 +2054,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,nil,'start_record', 1, 1, 2 )
 	self:addRowButton(vehicle,vehicle.cp.settings.startingPoint,'next', 1, 2, 2 )
 	self:addRowButton(vehicle,nil,'setDriveNow', 1, 2, 3 )
+	self:addRowButton(vehicle,vehicle.cp.settings.stopAtEnd,'toggle', 1, 3, 1 )
 	self:addSettingsRowWithArrows(vehicle,nil,'switchDriverCopy', 1, 3, 2 )
 	self:setupCopyCourseButton(vehicle, 1, 3)
 	
@@ -2115,7 +2126,6 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,vehicle.cp.settings.convoyActive,'toggle', 3, 3, 1 )
 	self:addSettingsRow(vehicle,vehicle.cp.settings.convoyMinDistance,'changeByX', 3, 4, 1 )
-	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'next', 3, 8, 1 ):setOnlyCallLocal();
 	
 	--page 7
 	self:addRowButton(vehicle,nil,'toggleAlignmentWaypoint', 7, 6, 1 )

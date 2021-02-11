@@ -2371,7 +2371,7 @@ end
 StopAtEndSetting = CpObject(BooleanSetting)
 function StopAtEndSetting:init(vehicle)
 	BooleanSetting.init(self, 'stopAtEnd', 'COURSEPLAY_STOP_AT_LAST_POINT', 'COURSEPLAY_STOP_AT_LAST_POINT', vehicle)
-	self:set(false)
+	self:set(true)
 end
 
 ---@class AutomaticCoverHandlingSetting : BooleanSetting

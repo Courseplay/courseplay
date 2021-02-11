@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI sofőr" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Szállító elindítása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Szállító megállítása" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Állj az utolsó pontnál, következő triggernél" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at Endpoint" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Fordulók száma" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="fordulók számának visszaállítása"/>  <!-- Todo translate -->
  		<text name="COURSEPLAY_UNLIMITED" 									text="bármennyi" />
