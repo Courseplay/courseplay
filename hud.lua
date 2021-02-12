@@ -959,8 +959,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'combineWantsCourseplayer:toggle' then
 					--CombineWantsCourseplayerSetting 
 					if not  vehicle.cp.settings.combineWantsCourseplayer:isDisabled()  then
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.combineWantsCourseplayer:getText()
-					else
+							vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.combineWantsCourseplayer:getText()
+						else
 						local courseplayer = g_combineUnloadManager:getUnloaderByNumber(1, vehicle)
 						vehicle.cp.hud.content.pages[page][line][1].text =  vehicle.cp.settings.combineWantsCourseplayer:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text =  courseplayer.name;
@@ -2478,8 +2478,8 @@ function courseplay.hud:addRowButton(vehicle,setting,funct, hudPage, line, colum
 	local button = courseplay.button:new(vehicle, hudPage, nil, funct, line, self.col1posX, self.linesPosY[line], width[1], self.lineHeight, line, nil, true):setSetting(setting);
 	if setting then
 		if funct ~= 'hudButtonCallFunction' then 
-			vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
-		else 
+		vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
+	else
 			self:addRowButtonTexts(vehicle,setting,hudPage,line,column)
 		end
 	else
@@ -2497,8 +2497,8 @@ function courseplay.hud:addSettingsRow(vehicle,setting,funct, hudPage, line, col
 	courseplay.button:new(vehicle, hudPage, nil, funct, parameter, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true):setSetting(setting);
 	if setting then
 		if funct ~= 'hudButtonCallFunction' then 
-			vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
-		else
+		vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
+	else
 			self:addRowButtonTexts(vehicle,setting,hudPage,line,column)
 		end
 	else
@@ -2514,8 +2514,8 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,setting,funct, hudPage,
 	courseplay.button:new(vehicle, hudPage, nil, funct, 1, self.contentMinX, self.linesButtonPosY[line], self.contentMaxWidth, self.lineHeight, line, 5, true, true):setSetting(setting);
 	if setting then
 		if funct~='hudButtonCallFunction' then 
-			vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
-		else 
+		vehicle.cp.hud.content.pages[hudPage][line][column].functionToCall = setting:getName()..":"..funct
+	else
 			self:addRowButtonTexts(vehicle,setting,hudPage,line,column)
 		end
 	else
@@ -2534,7 +2534,7 @@ end
 function courseplay.hud:debug(vehicle,...)
 	courseplay.debugVehicle(courseplay.DBG_HUD, vehicle, ...)
 end	
-
+	
 
 TextElement = CpObject()
 TextElement.TEXT_CALLBACK_TYPE = {

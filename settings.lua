@@ -1168,6 +1168,18 @@ function Setting:hudButtonHelpCallFunction(parameter)
 
 end
 
+function Setting:isVisible()
+	return true
+end
+
+function Setting:hudButtonCallFunction(parameter)
+	self:changeByX(parameter)
+end
+
+function Setting:hudButtonHelpCallFunction(parameter)
+	local help = string.format("%s help: /n%s",self.label,self.label.."_HELP")
+end
+
 ---@class FloatSetting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
@@ -2923,11 +2935,6 @@ function MoveOnAtFillLevelSetting:init(vehicle)
 	self:set(5)
 end
 
-function MoveOnAtFillLevelSetting:isDisabled()
-	return self.vehicle.cp.settings.seperateFillTypeLoading:isActive()
-end
-
---seperate SiloSelectedFillTypeSettings to save their current state
 --and disable runCounter for FillableFieldWorkDriver and FieldSupplyDriver
 
 --TODO: figure out how to implement maxFillLevel for separate FillTypes in mode 1 
