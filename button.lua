@@ -131,9 +131,12 @@ function courseplay.button:render()
 
 	local vehicle, pg, fn, prm = self.vehicle, self.page, self.functionToCall, self.parameter;
 	local hoveredButton = false;
+	local isDisabled = self.settingCall and self.settingCall:isDisabled(self.parameter) or false
+	local isVisible = self.settingCall and self.settingCall:isVisible(self.parameter) or true
+
 
 	if self.overlay ~= nil then
-		if self.show then
+		if self.show and isVisible then
 			-- set color
 			local currentColor = self.curColor;
 			local targetColor = currentColor;
@@ -141,14 +144,15 @@ function courseplay.button:render()
 			if fn == 'openCloseHud' then
 				hoverColor = 'closeRed';
 			end;
+			isDisabled = self.isDisabled or isDisabled
 
-			if not self.isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
+			if not isDisabled and not self.isActive and not self.isHovered and (self.canBeClicked or self.functionToCall == nil) and not self.isClicked then
 				targetColor = 'white';
-			elseif self.isDisabled then
+			elseif isDisabled then
 				targetColor = 'whiteDisabled';
-			elseif not self.isDisabled and self.canBeClicked and self.isClicked and fn ~= 'openCloseHud' then
+			elseif not isDisabled and self.canBeClicked and self.isClicked and fn ~= 'openCloseHud' then
 				targetColor = 'activeRed';
-			elseif self.isHovered and ((not self.isDisabled and self.isToggleButton and self.isActive and self.canBeClicked and not self.isClicked) or (not self.isDisabled and not self.isActive and self.canBeClicked and not self.isClicked)) then
+			elseif self.isHovered and ((not isDisabled and self.isToggleButton and self.isActive and self.canBeClicked and not self.isClicked) or (not isDisabled and not self.isActive and self.canBeClicked and not self.isClicked)) then
 				targetColor = hoverColor;
 				hoveredButton = true;
 				if self.isToggleButton then
@@ -250,12 +254,15 @@ end;
 
 function courseplay.button:handleInput(vehicle,parameter)
 	if self.settingCall then --settingButton
-		courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), courseplay.DBG_HUD);
-		self.settingCall[self.functionToCall](self.settingCall, parameter)	
-		if vehicle:getIsEntered() then
-			g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
+		local isDisabled = self.settingCall:isDisabled(parameter)
+		if not isDisabled then 
+			courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), 18);
+			self.settingCall[self.functionToCall](self.settingCall, parameter)	
+			if vehicle:getIsEntered() then
+				g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
+			end
+			courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 		end
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 	else
 		if self.functionToCall then
 			vehicle:setCourseplayFunc(self.functionToCall, parameter, self.onlyCallLocal or false, self.page);

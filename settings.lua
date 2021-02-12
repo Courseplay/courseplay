@@ -1111,6 +1111,10 @@ function Setting:set(value)
 	self.value = value
 end
 
+function Setting:changeByX(x)
+	self:set(x)
+end
+
 function Setting:onChange()
 	-- setting specific implementation in the derived classes
 end
@@ -1151,9 +1155,17 @@ function Setting:isDisabled()
 	return false
 end
 
---- Action event for Keys?
-function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
-	---override
+function Setting:isVisible()
+	return true
+end
+
+function Setting:hudButtonCallFunction(parameter)
+	self:changeByX(parameter)
+end
+
+function Setting:hudButtonHelpCallFunction(parameter)
+	local help = string.format("%s help: /n%s",self.label,self.label.."_HELP")
+
 end
 
 ---@class FloatSetting
@@ -1818,6 +1830,126 @@ function StartingPointSetting:isDisabled()
 	return self.vehicle:getIsCourseplayDriving() or not self.vehicle.cp.canDrive
 end
 
+function StartingPointSetting:isDisabled()
+	return self.vehicle:getIsCourseplayDriving() or not self.vehicle.cp.canDrive
+end
+
+---@class StartingLocationSetting : SettingList
+StartingLocationSetting = CpObject(SettingList)
+
+function StartingLocationSetting:init(vehicle)
+	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '', vehicle,
+		{
+			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
+			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
+			courseGenerator.STARTING_LOCATION_SW,
+			courseGenerator.STARTING_LOCATION_NW,
+			courseGenerator.STARTING_LOCATION_NE,
+			courseGenerator.STARTING_LOCATION_SE,
+			courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
+		},
+		{
+			'COURSEPLAY_CORNER_5',
+			'COURSEPLAY_CORNER_6',
+			'COURSEPLAY_CORNER_7',
+			'COURSEPLAY_CORNER_8',
+			'COURSEPLAY_CORNER_9',
+			'COURSEPLAY_CORNER_10',
+			'COURSEPLAY_CORNER_11'
+		})
+	if not self.vehicle.cp.generationPosition.hasSavedPosition then
+		table.remove(self.values, 2)
+		table.remove(self.texts, 2)
+	end
+end
+
+--- Course gen center mode setting
+---@class CenterModeSetting : SettingList
+CenterModeSetting = CpObject(SettingList)
+
+function CenterModeSetting:init(vehicle)
+	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '', vehicle,
+		{
+			courseGenerator.CENTER_MODE_UP_DOWN,
+			courseGenerator.CENTER_MODE_CIRCULAR,
+			courseGenerator.CENTER_MODE_SPIRAL,
+			courseGenerator.CENTER_MODE_LANDS
+		},
+		{
+			'COURSEPLAY_CENTER_MODE_UP_DOWN',
+			'COURSEPLAY_CENTER_MODE_CIRCULAR',
+			'COURSEPLAY_CENTER_MODE_SPIRAL',
+			'COURSEPLAY_CENTER_MODE_LANDS'
+		})
+end
+
+--- Number of rows per land in Lands center mode
+---@class NumberOfRowsPerLand
+NumberOfRowsPerLandSetting = CpObject(SettingList)
+
+function NumberOfRowsPerLandSetting:init(vehicle)
+	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
+			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', vehicle,
+			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24},
+			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24})
+	self:set(6)
+end
+
+--- Percentage of Overlap for Headland
+---@class HeadlandOverlapPercent
+HeadlandOverlapPercent = CpObject(SettingList)
+
+function HeadlandOverlapPercent:init(vehicle)
+	local values, texts = {}, {}
+	for i = 0, 20 do
+		table.insert(values, i)
+		table.insert(texts, string.format('%d %%', i))
+	end
+	SettingList.init(self, 'headlandOverlapPercent', 'COURSEPLAY_HEADLAND_OVERLAP_PERCENT',
+			'COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP', vehicle,
+			values, texts)
+	-- reasonable default used for years
+	self:set(7)
+end
+
+---@class ShowSeedCalculatorSetting : BooleanSetting
+ShowSeedCalculatorSetting = CpObject(BooleanSetting)
+function ShowSeedCalculatorSetting:init(vehicle)
+	BooleanSetting.init(self, 'showSeedCalculator', 'COURSEPLAY_SEEDUSAGECALCULATOR','COURSEPLAY_SEEDUSAGECALCULATOR', vehicle)
+	self:set(false)
+end
+
+--- Course generator settings (read from the XML, may be added to the UI later when needed):
+---
+--- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
+--- we only change lanes on relatively straight sections of the headland (not around corners)
+---@class HeadlandLaneChangeMinRadius
+HeadlandLaneChangeMinRadius = CpObject(IntSetting)
+
+function HeadlandLaneChangeMinRadius:init()
+	IntSetting.init(self, 'headlandLaneChangeMinRadius', 'HeadlandLaneChangeMinRadius',
+			'Minimum radius where a lane change on the headland is allowed')
+	self:set(20)
+end
+
+--- No lane change allowed on the headland if there is a corner ahead within this distance in meters
+---@class HeadlandLaneChangeMinDistanceToCorner
+HeadlandLaneChangeMinDistanceToCorner = CpObject(IntSetting)
+function HeadlandLaneChangeMinDistanceToCorner:init()
+	IntSetting.init(self, 'headlandLaneChangeMinDistanceToCorner', 'HeadlandLaneChangeMinDistanceToCorner',
+			'Minimum distance to a corner for a lane change on the headland')
+	self:set(20)
+end
+
+--- No lane change allowed on the headland if there is a corner behind within this distance in meters
+---@class HeadlandLaneChangeMinDistanceFromCorner
+HeadlandLaneChangeMinDistanceFromCorner = CpObject(IntSetting)
+function HeadlandLaneChangeMinDistanceFromCorner:init()
+	IntSetting.init(self, 'headlandLaneChangeMinDistanceFromCorner', 'HeadlandLaneChangeMinDistanceFromCorner',
+			'Minimum distance from a corner for a lane change on the headland')
+	self:set(10)
+end
+
 --- Pathfinder parameters settings (read from the XML, may be added to the UI later when needed):
 ---
 
@@ -1927,59 +2059,8 @@ function ReturnToFirstPointSetting:isReleaseDriverActive()
 	return self:get() == self.RELEASE_DRIVER or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
 
---- Generic offset setting with increment/decrement
----@class OffsetSetting : FloatSetting
-OffsetSetting = CpObject(FloatSetting)
-function OffsetSetting:init(name, label, toolTip, vehicle, value)
-	FloatSetting.init(self, name, label, toolTip, vehicle, value)
-end
-
--- increment/decrement offset
-function OffsetSetting:changeBy(changeBy)
-	self.value = courseplay:round(self.value, 1) + changeBy
-	if abs(self.value) < 0.1 then
-		self.value = 0
-	end
-end
-
----@class ToolOffsetXSetting : OffsetSetting
-ToolOffsetXSetting = CpObject(OffsetSetting)
-function ToolOffsetXSetting:init(vehicle)
-	OffsetSetting.init(self, 'toolOffsetX', 'COURSEPLAY_TOOL_OFFSET_X', 'COURSEPLAY_TOOL_OFFSET_X', vehicle, 0)
-end
-
---- Set to the configured value if exists, 0 otherwise
-function ToolOffsetXSetting:setToConfiguredValue()
-	-- set the auto tool offset if exists or 0
-	self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
-end
-
-function ToolOffsetXSetting:getText()
-	if self.value ~= 0 then
-		return ('%.1f%s (%s)'):format(
-				abs(self.value),
-				courseplay:loc('COURSEPLAY_UNIT_METER'),
-				courseplay:loc(self.value > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'))
-	else
-		return '---'
-	end
-end
-
----@class ToolOffsetZSetting : OffsetSetting
-ToolOffsetZSetting = CpObject(OffsetSetting)
-function ToolOffsetZSetting:init(vehicle)
-	OffsetSetting.init(self, 'toolOffsetZ', 'COURSEPLAY_TOOL_OFFSET_Z', 'COURSEPLAY_TOOL_OFFSET_Z', vehicle, 0)
-end
-
-function ToolOffsetZSetting:getText()
-	if self.value ~= 0 then
-		return ('%.1f%s (%s)'):format(
-				abs(self.value),
-				courseplay:loc('COURSEPLAY_UNIT_METER'),
-				courseplay:loc(self.value > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'))
-	else
-		return '---'
-	end
+function ReturnToFirstPointSetting:isDisabled()
+	return not self.vehicle.cp.canDrive
 end
 
 --- Setting to select a field
@@ -2073,6 +2154,10 @@ function SearchCombineOnFieldSetting:changeByX(x)
 		return
 	end
 	return FieldNumberSetting.changeByX(self,x)
+end
+
+function SearchCombineOnFieldSetting:isDisabled()
+	return not self.vehicle.cp.searchCombineAutomatically or courseplay.fields.numAvailableFields <=0
 end
 
 --- SelectedCombineToUnload on field
@@ -2277,6 +2362,18 @@ function AutomaticCoverHandlingSetting:init(vehicle)
 	self:set(true)
 end
 
+--no Function!!
+---@class AutomaticUnloadingOnFieldSetting : BooleanSetting
+AutomaticUnloadingOnFieldSetting = CpObject(BooleanSetting)
+function AutomaticUnloadingOnFieldSetting:init(vehicle)
+	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD',vehicle, {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
+	self:set(false)
+end
+
+function AutomaticUnloadingOnFieldSetting:isDisabled()
+	return self.vehicle.cp.hasUnloadingRefillingCourse
+end	
+
 ---@class DriverPriorityUseFillLevelSetting : BooleanSetting
 DriverPriorityUseFillLevelSetting = CpObject(BooleanSetting)
 function DriverPriorityUseFillLevelSetting:init(vehicle)
@@ -2348,6 +2445,10 @@ CombineWantsCourseplayerSetting = CpObject(BooleanSetting)
 function CombineWantsCourseplayerSetting:init(vehicle)
 	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
+end
+
+function CombineWantsCourseplayerSetting:isDisabled()
+	return g_combineUnloadManager:getHasUnloaders(self.vehicle)
 end
 
 ---@class KeepUnloadingUntilEndOfRow : BooleanSetting
@@ -2542,10 +2643,14 @@ function SiloSelectedFillTypeSetting:getTexts(index)
 		local runCounterText = data.runCounter and data.runCounter.."/"..self.MAX_RUNS or ""
 		local maxFillLevelText = data.maxFillLevel and data.maxFillLevel.."%" or ""
 		local minFillLevelText = data.minFillLevel and data.minFillLevel.."%" or ""
-		return runCounterText,maxFillLevelText,minFillLevelText
+		return string.format("% 6s  % 6s  % 6s",runCounterText,maxFillLevelText,minFillLevelText)
 	else
-		return "","",""
+		return ""
 	end
+end
+
+function SiloSelectedFillTypeSetting:getLabelText()
+	return string.format("%6s  %6s  %6s","count","max","min")
 end
 
 function SiloSelectedFillTypeSetting:incrementRunCounter(index)
@@ -2775,6 +2880,17 @@ function TurnOnFieldSetting:init(vehicle)
 	self:set(true)
 end
 
+---@class TurnStageSetting : BooleanSetting
+TurnStageSetting = CpObject(BooleanSetting)
+function TurnStageSetting:init(vehicle)
+	BooleanSetting.init(self, 'turnStage','COURSEPLAY_TURN_MANEUVER', 'COURSEPLAY_TURN_MANEUVER', vehicle, {'COURSEPLAY_START','COURSEPLAY_FINISH'}) 
+	self:set(false)
+end
+
+function TurnStageSetting:isDisabled() 
+	return not g_combineUnloadManager:getHasUnloaders(self.vehicle) or self.vehicle:getIsCourseplayDriving() 
+end
+
 ---@class RefillUntilPctSetting : PercentageSettingList
 RefillUntilPctSetting = CpObject(PercentageSettingList)
 function RefillUntilPctSetting:init(vehicle)
@@ -2787,6 +2903,10 @@ DriveOnAtFillLevelSetting = CpObject(PercentageSettingList)
 function DriveOnAtFillLevelSetting:init(vehicle)
 	PercentageSettingList.init(self, 'driveOnAtFillLevel', 'COURSEPLAY_DRIVE_ON_AT', 'COURSEPLAY_DRIVE_ON_AT', vehicle)
 	self:set(90)
+end
+
+function DriveOnAtFillLevelSetting:isDisabled()
+	return self.vehicle.cp.settings.seperateFillTypeLoading:isActive()
 end
 
 ---@class FollowAtFillLevelSetting : PercentageSettingList
@@ -2803,7 +2923,11 @@ function MoveOnAtFillLevelSetting:init(vehicle)
 	self:set(5)
 end
 
---separate SiloSelectedFillTypeSettings to save their current state
+function MoveOnAtFillLevelSetting:isDisabled()
+	return self.vehicle.cp.settings.seperateFillTypeLoading:isActive()
+end
+
+--seperate SiloSelectedFillTypeSettings to save their current state
 --and disable runCounter for FillableFieldWorkDriver and FieldSupplyDriver
 
 --TODO: figure out how to implement maxFillLevel for separate FillTypes in mode 1 
@@ -2934,6 +3058,10 @@ function SeparateFillTypeLoadingSetting:isActive()
 	if self.vehicle.cp.driver:is_a(GrainTransportAIDriver) and not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() then 
 		return true
 	end
+end
+
+function SeperateFillTypeLoadingSetting:isDisabled()
+	return not self:isActive()
 end
 
 ---@class ForcedToStopSetting : BooleanSetting
