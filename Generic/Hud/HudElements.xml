@@ -1,0 +1,32 @@
+<HudElements>
+	<ButtonElements>
+		<!--base class-->
+		<Button>
+		
+		</Button>
+		<!--one line button-->
+		<LineButtonElement>
+			
+		<LineButtonElement/>
+	
+
+		<ClassButtonElement/>
+
+		<CpButtonElement>
+
+		</CpButtonElement>
+
+	</ButtonElements>
+
+	<TextElements>
+		<TextElement/>
+		
+		<SettingTextElement/>
+		
+		<ClassTextElement/>
+
+		<CpTextElement/>
+		
+	</TextElements>
+
+</HudElements>

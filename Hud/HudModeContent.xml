@@ -1,0 +1,266 @@
+<!--SettingButtonElement,SettingTextElement-->
+<!--ClassButtonElement,ClassTextElement-->
+<!--CpButtonElement,CpTextElement-->
+<HudModeContent>
+	<AIDriver>
+		<Page index="0">
+			
+		</Page>
+		<Page index="1">
+			<Line index = "1">
+				<Column index = "1">
+					<CpButtonElement funcName1="startStop" funcName2="start_record" parameter="1"/>
+					<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<CpButtonElement funcName1="startStop" funcName2="start_record" parameter="1"/>
+				<!--	<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/> -->
+				</Column>
+			</Line>
+			<Line index = "2">
+				<Column index = "1">
+					<SettingButtonElement settingName="startingPoint" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="startingPoint" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="startingPoint" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="startingPoint" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+				<Column index = "1">
+					<CpButtonElement funcName1="setDriveNow" parameter="1"/>
+					<CpTextElement funcName1="setDriveNow" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<CpButtonElement funcName1="setDriveNow" parameter="1"/>
+				<!--	<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/> -->
+				</Column>
+			</Line>
+			<Line index = "3">
+				<Column index = "1">
+					<CpButtonElement funcName1="switchDriverCopy" parameter="1"/>
+					<CpTextElement funcName1="switchDriverCopy" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<CpButtonElement funcName1="switchDriverCopy" parameter="1"/>
+				<!--	<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/> -->
+				</Column>
+			</Line>
+		<!--	<Line index = "4">
+				<Column index = "1">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+			</Line>
+			<Line index = "5">
+				<Column index = "1">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+			</Line>
+			<Line index = "6">
+				<Column index = "1">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+			</Line>
+			<Line index = "7">
+				<Column index = "1">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+			</Line>
+			<Line index = "8">
+				<Column index = "1">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="" hudCallBackFunc="" parameter=""/>
+					<SettingTextElement settingName="" hudCallBackFunc="" parameter=""/>
+				</Column>
+			</Line>
+			-->
+		</Page>
+		<Page index="2">
+			<!--coursemanager waiting for rework-->
+		</Page>
+		<Page index="3">
+		
+		</Page>
+		<Page index="4">
+
+		</Page>
+		<Page index="5">
+			<Line index = "1">
+				<Column index = "1">
+					<SettingButtonElement settingName="turnSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="turnSpeed" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="turnSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="turnSpeed" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "2">
+				<Column index = "1">
+					<SettingButtonElement settingName="fieldSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="fieldSpeed" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="fieldSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="fieldSpeed" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "3">
+				<Column index = "1">
+					<SettingButtonElement settingName="reverseSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="reverseSpeed" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="reverseSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="reverseSpeed" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "4">
+				<Column index = "1">
+					<SettingButtonElement settingName="streetSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="streetSpeed" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="streetSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="streetSpeed" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "5">
+				<Column index = "1">
+					<SettingButtonElement settingName="useRecordingSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="useRecordingSpeed" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="useRecordingSpeed" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="useRecordingSpeed" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+		</Page>
+		<Page index="6">
+			<!--TODO: debug buttons -->
+			<!--TODO: showWaypoints buttons -->
+			<Line index = "1">
+				<Column index = "1">
+					<CpButtonElement funcName1="openAdvancedSettingsDialog" parameter="1" onlyCallLocal = "true"/>
+					<CpTextElement funcName1="openAdvancedSettingsDialog" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<CpButtonElement funcName1="openAdvancedSettingsDialog" parameter="1" onlyCallLocal = "true"/>
+				<!--	<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/> -->
+				</Column>
+			</Line>
+		</Page>
+		<Page index="7">
+			<Line index = "1">
+				<Column index = "1">
+					<SettingButtonElement settingName="warningLightsMode" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="warningLightsMode" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="warningLightsMode" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="warningLightsMode" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "2">
+				<Column index = "1">
+					<SettingButtonElement settingName="saveFuelOption" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="saveFuelOption" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="saveFuelOption" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="saveFuelOption" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "3">
+				<Column index = "1">
+					<SettingButtonElement settingName="allwaysSearchFuel" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="allwaysSearchFuel" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="allwaysSearchFuel" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="allwaysSearchFuel" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			<Line index = "4">
+				<Column index = "1">
+					<SettingButtonElement settingName="automaticCoverHandling" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="automaticCoverHandling" hudCallBackFunc="getLabel" parameter="1"/>
+				</Column>
+				<Column index = "2">
+					<SettingButtonElement settingName="automaticCoverHandling" hudCallBackFunc="changeByX" parameter="1"/>
+					<SettingTextElement settingName="automaticCoverHandling" hudCallBackFunc="getText" parameter="1"/>
+				</Column>
+			</Line>
+			
+			<!--needs a setting -->
+			<Line index = "5">
+				<Column index = "1">
+					<CpButtonElement funcName1="changeWaitTime" parameter="1" />
+					<CpTextElement funcName1="changeWaitTime" parameter="1" />
+				</Column>
+				<Column index = "2">
+					<CpButtonElement funcName1="changeWaitTime" parameter="1" />
+				<!--	<CpTextElement funcName1="startStop" funcName2="start_record" parameter="1"/> -->
+				</Column>
+			</Line>
+		</Page>
+	</AIDriver>
+	<GrainTransportAIDriver>
+
+	</GrainTransportAIDriver>
+	<CombineUnloadAIDriver>
+
+	</CombineUnloadAIDriver>
+	<OverloaderAIDriver>
+
+	</OverloaderAIDriver>
+	<FieldWorkAIDriver>
+
+	</FieldWorkAIDriver>
+	<FillableFieldworkAIDriver>
+
+	</FillableFieldworkAIDriver>
+	<UnloadableFieldworkAIDriver>
+
+	</UnloadableFieldworkAIDriver>
+	<CombineAIDriverContent>
+
+	</CombineAIDriverContent>
+	<BaleLoaderAIDriver>
+
+	</BaleLoaderAIDriver>
+	<ShovelModeAIDriver>
+
+	</ShovelModeAIDriver>
+	<TriggerHandlerShovelModeAIDriver>
+
+	</TriggerHandlerShovelModeAIDriver>
+	<LevelCompactAIDriver>
+
+	</LevelCompactAIDriver>
+
+
+
+</HudModeContent>
