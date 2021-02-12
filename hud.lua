@@ -652,9 +652,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end				
 				elseif entry.functionToCall == 'autoDriveMode:changeByX' then
 					--autoDriveModeSetting
-					if vehicle.cp.canDrive and vehicle.spec_autodrive then
+					if not vehicle.cp.settings.autoDriveMode:isDisabled() then
 						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.autoDriveMode)
-						self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
+					--	self:disableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.autoDriveMode:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.autoDriveMode:getText() 
 					else
@@ -662,7 +662,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'stopAtEnd:toggle' then
 					--StopAtEndSetting
-					if vehicle.cp.canDrive and vehicle.cp.mode == courseplay.MODE_TRANSPORT then
+					if not vehicle.cp.settings.stopAtEnd:isDisabled() then
 						self:enableButtonWithFunction(vehicle,page, 'toggle',vehicle.cp.settings.stopAtEnd)
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopAtEnd:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopAtEnd:getText() 
@@ -2054,7 +2054,10 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,nil,'start_record', 1, 1, 2 )
 	self:addRowButton(vehicle,vehicle.cp.settings.startingPoint,'next', 1, 2, 2 )
 	self:addRowButton(vehicle,nil,'setDriveNow', 1, 2, 3 )
-	self:addRowButton(vehicle,vehicle.cp.settings.stopAtEnd,'toggle', 1, 3, 1 )
+	---only enable this button in mode 5 
+	if vehicle.cp.mode == courseplay.MODE_TRANSPORT then
+		self:addRowButton(vehicle,vehicle.cp.settings.stopAtEnd,'toggle', 1, 3, 1 )
+	end
 	self:addSettingsRowWithArrows(vehicle,nil,'switchDriverCopy', 1, 3, 2 )
 	self:setupCopyCourseButton(vehicle, 1, 3)
 	
