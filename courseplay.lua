@@ -84,6 +84,7 @@ local function initialize()
 		'Waypoint',
 		'StateModule',
 		'TriggerHandler',
+		'BaleToCollect',
 		'AIDriver',
 		'CombineUnloadAIDriver',
 		'OverloaderAIDriver',
@@ -95,6 +96,7 @@ local function initialize()
 		'PlowAIDriver',
 		'UnloadableFieldworkAIDriver',
 		'BaleLoaderAIDriver',
+		'BaleCollectorAIDriver',
 		'BalerAIDriver',
 		'BaleWrapperAIDriver',
 		'CombineAIDriver',
@@ -184,7 +186,7 @@ local function setGlobalData()
 	courseplay.MODE_SEED_FERTILIZE = 4;
 	courseplay.MODE_TRANSPORT = 5;
 	courseplay.MODE_FIELDWORK = 6;
-	courseplay.MODE_COMBINE_SELF_UNLOADING = 7; --removed by Tommi
+	courseplay.MODE_BALE_COLLECTOR = 7;
 	courseplay.MODE_FIELD_SUPPLY = 8;
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;

@@ -11,14 +11,16 @@ function courseplay:openCloseHud(vehicle, open)
 	end;
 end;
 
-function courseplay:setCpMode(vehicle, modeNum)
+function courseplay:setCpMode(vehicle, modeNum, dontSetAIDriver)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
-		--courseplay:setNextPrevModeVars(vehicle);
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		--courseplay.buttons:setActiveEnabled(vehicle, 'all');
-		--end
-		courseplay:setAIDriver(vehicle, modeNum)
+		if not dontSetAIDriver then
+			-- another ugly hack: when this is called from loadVehicleCPSettings,
+			-- setAIDriver fails as not everything is loaded yet, so just for that case,
+			-- don't call it from here.
+			courseplay:setAIDriver(vehicle, modeNum)
+		end
 	end;
 end;
 
@@ -43,6 +45,8 @@ function courseplay:setAIDriver(vehicle, mode)
 		status,driver,err,errDriverName = xpcall(FillableFieldworkAIDriver, function(err) printCallstack(); return self,err,"FillableFieldworkAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
 		status,driver,err,errDriverName = xpcall(UnloadableFieldworkAIDriver.create, function(err) printCallstack(); return self,err,"UnloadableFieldworkAIDriver" end, vehicle)
+	elseif mode == courseplay.MODE_BALE_COLLECTOR then
+		status,driver,err,errDriverName = xpcall(BaleCollectorAIDriver, function(err) printCallstack(); return self,err,"BaleCollectorAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
 		status,driver,err,errDriverName = xpcall(LevelCompactAIDriver, function(err) printCallstack(); return self,err,"LevelCompactAIDriver" end, vehicle)
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
@@ -1806,35 +1810,63 @@ StartingPointSetting.START_AT_FIRST_POINT   = 2 -- first waypoint
 StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
 StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
 StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the combine (only for CombineUnloadAIDriver)
+StartingPointSetting.START_COLLECTING_BALES = 6 -- start with unloading the combine (only for CombineUnloadAIDriver)
 
 function StartingPointSetting:init(vehicle)
-	SettingList.init(self, 'startingPoint', 'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle,
-			{
-		        StartingPointSetting.START_AT_NEAREST_POINT,
-				StartingPointSetting.START_AT_FIRST_POINT  ,
-				StartingPointSetting.START_AT_CURRENT_POINT,
-				StartingPointSetting.START_AT_NEXT_POINT,
-				StartingPointSetting.START_WITH_UNLOAD
-			},
-			{
-				"COURSEPLAY_NEAREST_POINT",
-				"COURSEPLAY_FIRST_POINT"  ,
-				"COURSEPLAY_CURRENT_POINT",
-				"COURSEPLAY_NEXT_POINT",
-				"COURSEPLAY_UNLOAD"
-			})
+	local values, texts = self:getValuesForMode(vehicle.cp.mode)
+	SettingList.init(self, 'startingPoint',
+		'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle, values, texts)
+end
+
+function StartingPointSetting:getValuesForMode(mode)
+	if mode == courseplay.MODE_COMBI or mode == courseplay.MODE_OVERLOADER then
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_CURRENT_POINT,
+			StartingPointSetting.START_AT_NEXT_POINT,
+			StartingPointSetting.START_WITH_UNLOAD
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_CURRENT_POINT",
+			"COURSEPLAY_NEXT_POINT",
+			"COURSEPLAY_UNLOAD",
+		}
+	elseif mode == courseplay.MODE_BALE_COLLECTOR then
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_NEXT_POINT,
+			StartingPointSetting.START_COLLECTING_BALES
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_NEXT_POINT",
+			"COURSEPLAY_COLLECT_BALES",
+		}
+	else
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_FIRST_POINT  ,
+			StartingPointSetting.START_AT_CURRENT_POINT,
+			StartingPointSetting.START_AT_NEXT_POINT,
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_CURRENT_POINT",
+			"COURSEPLAY_NEXT_POINT",
+		}
+	end
 end
 
 function StartingPointSetting:checkAndSetValidValue(new)
-	-- enable unload only for CombineUnloadAIDriver/Overloader
-	if self.vehicle.cp.driver and
-			self.vehicle.cp.mode ~= courseplay.MODE_COMBI and
-			self.vehicle.cp.mode ~= courseplay.MODE_OVERLOADER and
-			self.values[new] == StartingPointSetting.START_WITH_UNLOAD then
-		return 1
-	else
-		return SettingList.checkAndSetValidValue(self, new)
-	end
+	-- make sure we always have a valid set for the current mode
+	self.values, self.texts = self:getValuesForMode(self.vehicle.cp.mode)
+	return SettingList.checkAndSetValidValue(self, new)
 end
 
 ---@class StartingLocationSetting : SettingList
@@ -2053,6 +2085,10 @@ function ReturnToFirstPointSetting:init(vehicle)
 		})
 end
 
+function ReturnToFirstPointSetting:isDisabled()
+	return not self.vehicle.cp.canDrive or self.vehicle.cp.mode == courseplay.MODE_BALE_COLLECTOR
+end
+
 function ReturnToFirstPointSetting:isReturnToStartActive()
 	return self:get() == self.RETURN_TO_START or self:get() == self.RETURN_TO_START_AND_RELEASE_DRIVER
 end
@@ -2119,10 +2155,9 @@ end
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
-function FieldNumberSetting:init(vehicle)
+function FieldNumberSetting:init(name, label, toolTip, vehicle)
 	local values, texts = self:loadFields()
-	SettingList.init(self, 'fieldNumbers', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD',
-		vehicle, values, texts)
+	SettingList.init(self, name, label, toolTip, vehicle, values, texts)
 end
 
 function FieldNumberSetting:loadFields()
@@ -2130,10 +2165,13 @@ function FieldNumberSetting:loadFields()
 	local texts = {}
 	for fieldNumber, _ in pairs( courseplay.fields.fieldData ) do
 		table.insert(values, fieldNumber)
-		table.insert(texts, fieldNumber)
 	end
+	-- numeric sort first
 	table.sort( values, function( a, b ) return a < b end )
-	table.sort( texts, function( a, b ) return a < b end )
+	-- then convert to text
+	for _, fieldNumber in ipairs(values) do
+		table.insert(texts, tostring(fieldNumber))
+	end
 	return values, texts
 end
 
@@ -2149,16 +2187,40 @@ function FieldNumberSetting:refresh()
 	self.current = math.min(self.current, #self.values)
 end
 
+-- see above, refresh in case it was not initialized
+function FieldNumberSetting:get()
+	if #self.values == 0 then
+		self:refresh()
+	end
+	return SettingList.get(self)
+end
+
+-- see above, refresh in case it was not initialized
+function FieldNumberSetting:getText()
+	if #self.values == 0 then
+		self:refresh()
+	end
+	return SettingList.getText(self)
+end
+
+function FieldNumberSetting:changeByX(x)
+	self:refresh()
+	SettingList.changeByX(self, x)
+end
+
+--- Field to collect the bales from
+---@class BaleCollectionFieldSetting : FieldNumberSetting
+BaleCollectionFieldSetting = CpObject(FieldNumberSetting)
+function BaleCollectionFieldSetting:init(vehicle)
+	FieldNumberSetting.init(self, 'baleCollectionField', 'COURSEPLAY_FIELD', 'COURSEPLAY_FIELD', vehicle)
+end
+
 --- Search combine on field
 ---@class SearchCombineOnFieldSetting : FieldNumberSetting
 SearchCombineOnFieldSetting = CpObject(FieldNumberSetting)
 function SearchCombineOnFieldSetting:init(vehicle)
-	FieldNumberSetting.init(self, vehicle)
-	self.name = 'searchCombineOnField'
-	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
-	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
-	self.xmlKey = 'searchCombineOnField'
-	self.xmlAttribute = '#fieldNumber'
+	FieldNumberSetting.init(self, 'searchCombineOnField',
+		'COURSEPLAY_SEARCH_COMBINE_ON_FIELD', 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD', vehicle)
 	self:addNoneSelected()
 end
 
@@ -2188,7 +2250,6 @@ end
 SelectedCombineToUnloadSetting = CpObject(SettingList)
 
 function SelectedCombineToUnloadSetting:init()
-	print("SelectedCombineToUnloadSetting:init()")
 	self.name = 'selectedCombineToUnload'
 	self.label = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
 	self.tooltip = 'COURSEPLAY_SEARCH_COMBINE_ON_FIELD'
@@ -2386,14 +2447,6 @@ function AutomaticCoverHandlingSetting:init(vehicle)
 	self:set(true)
 end
 
---no Function!!
----@class AutomaticUnloadingOnFieldSetting : BooleanSetting
-AutomaticUnloadingOnFieldSetting = CpObject(BooleanSetting)
-function AutomaticUnloadingOnFieldSetting:init(vehicle)
-	BooleanSetting.init(self, 'automaticUnloadingOnField', 'COURSEPLAY_UNLOADING_ON_FIELD', 'COURSEPLAY_UNLOADING_ON_FIELD',vehicle, {'COURSEPLAY_MANUAL','COURSEPLAY_AUTOMATIC'})
-	self:set(false)
-end
-
 ---@class DriverPriorityUseFillLevelSetting : BooleanSetting
 DriverPriorityUseFillLevelSetting = CpObject(BooleanSetting)
 function DriverPriorityUseFillLevelSetting:init(vehicle)
@@ -2491,9 +2544,6 @@ function ShowMapHotspotSetting:getMapHotspotText(vehicle)
 end
 
 function ShowMapHotspotSetting:createMapHotspot()
-	if self.vehicle.cp.mode == courseplay.MODE_COMBINE_SELF_UNLOADING then
-		return
-	end
 	--[[
 	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
 	local _, textSize = getNormalizedScreenValues(0, 6);
@@ -3030,13 +3080,6 @@ TurnOnFieldSetting = CpObject(BooleanSetting)
 function TurnOnFieldSetting:init(vehicle)
 	BooleanSetting.init(self, 'turnOnField','COURSEPLAY_TURN_ON_FIELD', 'COURSEPLAY_TURN_ON_FIELD', vehicle) 
 	self:set(true)
-end
-
----@class TurnStageSetting : BooleanSetting
-TurnStageSetting = CpObject(BooleanSetting)
-function TurnStageSetting:init(vehicle)
-	BooleanSetting.init(self, 'turnStage','COURSEPLAY_TURN_MANEUVER', 'COURSEPLAY_TURN_MANEUVER', vehicle, {'COURSEPLAY_START','COURSEPLAY_FINISH'}) 
-	self:set(false)
 end
 
 ---@class RefillUntilPctSetting : PercentageSettingList
@@ -4143,7 +4186,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(EnableVisualWaypointsTemporary, vehicle)
 	container:addSetting(StopAtEndSetting, vehicle)
 	container:addSetting(AutomaticCoverHandlingSetting, vehicle)
-	container:addSetting(AutomaticUnloadingOnFieldSetting, vehicle)
+	container:addSetting(BaleCollectionFieldSetting, vehicle)
 	container:addSetting(DriverPriorityUseFillLevelSetting, vehicle)
 	container:addSetting(UseRecordingSpeedSetting, vehicle)
 	container:addSetting(WarningLightsModeSetting, vehicle)
@@ -4154,7 +4197,6 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(DriveUnloadNowSetting, vehicle)
 	container:addSetting(CombineWantsCourseplayerSetting, vehicle)
 	container:addSetting(TurnOnFieldSetting, vehicle)
-	container:addSetting(TurnStageSetting, vehicle)
 	container:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)

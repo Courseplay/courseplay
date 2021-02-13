@@ -5,9 +5,6 @@
     <text name="COURSEPLAY_DRIVER" 							 			text="Remorque" />
     <text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Rappeler la remorque" />
     <text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Stopper la remorque" />
-    <text name="COURSEPLAY_PPC_OFF" 									text="Mode normal" />
-    <text name="COURSEPLAY_PPC_ON" 										text="Mode expérimental" /> <!-- a new driving algorithm using a pure pursuit controller -->
-    <text name="COURSEPLAY_AIDRIVER" 									text="Ouvrier AI" /> <!-- enable new AI driver -->
     <text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="S'arrêter au dernier point" />
     <text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
     <text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Réinitialiser le nombre de tours"/>
@@ -75,6 +72,7 @@
     <text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": doit être vidé." />
     <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être ravitaillé." />
     <text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
     <text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est bloqué par un véhicule." />
 	<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="ralentit pour laisser passer un véhicule." />
     <text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="le trigger est atteint" />
@@ -285,6 +283,8 @@
     <text name="COURSEPLAY_FIRST_POINT" 						 		text="Premier point" />
     <text name="COURSEPLAY_CURRENT_POINT" 						 		text="Point actuel" />
     <text name="COURSEPLAY_NEXT_POINT" 									text="Prochain point" />
+	<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+	<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
     <text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Contour de la parcelle" />
     <text name="COURSEPLAY_FIELD" 							 			text="Parcelle" />
     <text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="Course actuelle" />

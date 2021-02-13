@@ -174,13 +174,11 @@
 	<Mode>
 		<AllowedSetups>
 			<Setup>
-
+				<Specialization name="spec_baleLoader"/>
 			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
 			<Setup>
-				<!-- this should disable mode 7 for pretty much everything -->
-				<Specialization name="spec_drivable"/>
 			</Setup>
 		</DisallowedSetups>
 	</Mode>

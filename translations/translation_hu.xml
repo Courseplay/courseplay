@@ -3,9 +3,6 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 							text="Útvonal rögzítés indítása" />
 		<text name="COURSEPLAY_DRIVER" 										text="Útvonal" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="normál mód" />
-		<text name="COURSEPLAY_PPC_ON" 										text="kísérleti mód" />
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI sofőr" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Szállító elindítása" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Szállító megállítása" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
@@ -71,6 +68,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": A munka folytatásához ki kell ürítened!" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": A munkaeszközt újra kell tölteni." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="kirakja a bálákat." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="dugóban van (forgalomban)" />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Elérte a triggert" />
@@ -248,11 +246,11 @@
 		<text name="COURSEPLAY_FINISH" 										text="Vége" />
 		<text name="COURSEPLAY_NO_VALID_COURSE" 							text="Az útvonal nem megfelelő" />
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="vetőgép műtrágyaszóró funkció" />
-		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="jármű konvoj" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximális távolság" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimális távolság" /> <!-- TODO: translate -->
-		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="A kombájn csöve termény felett van" /> <!-- TODO: this is the local InfoText in mode2 with pathfinding active when the combines pipe is in fruit -->
-		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mód specifikus beállítások" /> <!-- TODO: translate -->
+		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="jármű konvoj" />
+		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximális távolság" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimális távolság" />
+		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="A kombájn csöve termény felett van" />
+		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="mód specifikus beállítások" />
     <text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    text="Keep Current Steering" />
 		<text name="COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP "		text="Courseplay won't change the current crab steering setting of the vehicle" />
 		
@@ -278,9 +276,10 @@
 		<text name="COURSEPLAY_START_AT_POINT" 								text="Útvonal kezdése:" />
 		<text name="COURSEPLAY_NEAREST_POINT" 								text="legközelebbi útpont" />
 		<text name="COURSEPLAY_FIRST_POINT" 								text="első útpont" />
-		<text name="COURSEPLAY_CURRENT_POINT" 								text="Aktuális útpont" />
+		<text name="COURSEPLAY_CURRENT_POINT" 								text="aktuális útpont" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="következő útpont" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="kombájn ürítés" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="bálagyűjtés" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Művelendő terület:" />
 		<text name="COURSEPLAY_FIELD" 										text="Terület" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(jelenleg betöltött útvonal)" />

@@ -26,7 +26,7 @@ BaleLoaderAIDriver.myStates = {
 }
 
 --- Make sure the the bale loader behaves like a proper AIImplement and reacts on AIImplementStart/End
---- events so there's no special handling is needed elswhere.
+--- events so there's no special handling is needed elsewhere.
 function BaleLoaderAIDriver.register()
 
 	BaleLoader.onAIImplementStart = Utils.overwrittenFunction(BaleLoader.onAIImplementStart,
@@ -59,8 +59,8 @@ end
 function BaleLoaderAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baleLoader = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleLoader)
-
+	self.baleLoader = AIDriverUtil.getImplementWithSpecialization(vehicle, BaleLoader)
+	self:debug('baleloader %s', tostring(self.baleLoader))
 	-- Bale loaders have no AI markers (as they are not AIImplements according to Giants) so add a function here
 	-- to get the markers
 	self.baleLoader.getAIMarkers = function(self)
@@ -77,12 +77,6 @@ function BaleLoaderAIDriver:init(vehicle)
 	end
 	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
-
-function BaleLoaderAIDriver:setHudContent()
-	UnloadableFieldworkAIDriver.setHudContent(self)
-	courseplay.hud:setBaleLoaderAIDriverContent(self.vehicle)
-end
-
 
 ---@return boolean true if unload took over the driving
 function BaleLoaderAIDriver:driveUnloadOrRefill(dt)

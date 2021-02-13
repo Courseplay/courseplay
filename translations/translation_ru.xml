@@ -3,9 +3,6 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 											text="Начать запись маршрута" />
 		<text name="COURSEPLAY_DRIVER" 														text="Транспорт" />
-		<text name="COURSEPLAY_PPC_OFF" 													text="Обычный режим" />
-		<text name="COURSEPLAY_PPC_ON" 														text="Экспериментальный режим" />
-		<text name="COURSEPLAY_AIDRIVER" 													text="AI driver" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 										text="Отправить транспорт" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 										text="Остановить транспорт" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 											text="Остановить в конечной точке:" />
@@ -75,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 											text="нуждается в разгрузке. " />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 											text="нуждается в заправке. " />
 		<text name="COURSEPLAY_UNLOADING_BALES" 											text="выгрузка тюков." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 												text="застрял." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 									text="замедляется из-за трафика" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 											text="Достигнут пункт разгрузки" />
@@ -286,6 +284,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 												text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 													text="с ближайшей подходящей точки" />
 		<text name="COURSEPLAY_UNLOAD" 														text="с разгрузки" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 											text="Выбрать границу" />
 		<text name="COURSEPLAY_FIELD" 														text="поля №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 									text="(загруженный маршрут)" />

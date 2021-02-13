@@ -5,9 +5,6 @@
 		<text name="COURSEPLAY_DRIVER" 										text="任务车辆" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="开始卸载" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="停止卸载" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="普通模式" />
-		<text name="COURSEPLAY_PPC_ON" 										text="高级模式" /> <!-- a new driving algorithm using a pure pursuit controller -->
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI 驾驶" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="任务执行次数" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="重置运行次数"/>  <!-- Todo translate -->
@@ -75,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": 工具需要卸载。" />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": 工具需要装载。" />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="卸载。" />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="卡住了!" />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="已进入触发区" />
@@ -285,6 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="当前点" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="下一个路径点" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="选择地块范围编号" />
 		<text name="COURSEPLAY_FIELD" 										text="地块范围路径编号:" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="当前任务" />

@@ -3,9 +3,6 @@
 	<texts>
 		<text name="COURSEPLAY_RECORDING_START" 							text="Začni snemanje poti" />
 		<text name="COURSEPLAY_DRIVER" 										text="Voznik" />
-		<text name="COURSEPLAY_PPC_OFF" 									text="normal mode" /> <!-- TODO: TRANSLATE -->
-		<text name="COURSEPLAY_PPC_ON" 										text="experimental mode" /> <!-- TODO: TRANSLATE: a new driving algorithm using a pure pursuit controller -->
-		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- TODO: TRANSLATE: enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Poženi voznika" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Ustavi voznika" />
 		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
@@ -75,6 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": priključek je potrebno raztovoriti." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": priključek je potrebno napolniti." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="odlaganje bal." />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="ima ovire." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="slowing down for traffic" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="prišel na prožilec za odlaganje" />
@@ -285,6 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="trenutna točka" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="next waypoint" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Pot okrog polja" />
 		<text name="COURSEPLAY_FIELD" 										text="Polje" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(trenutno naložena pot)" />

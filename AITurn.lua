@@ -537,8 +537,6 @@ function CourseTurn:changeDirectionWhenAligned()
 end
 
 function CourseTurn:generateCalculatedTurn()
-	-- TODO: fix ugly dependency on global variables, there should be one function to create the turn maneuver
-	self.vehicle.cp.settings.turnStage:set(true)
 	-- call turn() with stage 1 which will generate the turn waypoints (dt isn't used by that part)
 	courseplay:turn(self.vehicle, 1, self.turnContext)
 	-- they waypoints should now be in turnTargets, create a course based on that

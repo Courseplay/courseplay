@@ -1656,9 +1656,12 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 	return lastImplement, minDistance
 end
 
-
 function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
 	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
+end
+
+function AIDriverUtil.hasImplementWithSpecialization(vehicle, specialization)
+	return AIDriverUtil.getImplementWithSpecialization(vehicle, specialization) ~= nil
 end
 
 function AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization)

@@ -52,8 +52,6 @@ function FieldworkAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'FieldworkAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
-	-- waiting for tools to turn on, unfold and lower
-	self.waitingForTools = true
 	self.debugChannel = 14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
@@ -190,7 +188,12 @@ function FieldworkAIDriver:start(startingPoint)
 	self.aiDriverOffsetZ = 0
 
 	self.workWidth = courseplay:getWorkWidth(self.vehicle)
+	self.ppc:setNormalLookaheadDistance()
 
+	self:setUpAndStart(startingPoint)
+end
+
+function FieldworkAIDriver:setUpAndStart(startingPoint)
 	self:setUpCourses()
 
 	-- now that we have our unload/refill and fieldwork courses set up, see where to start
@@ -249,9 +252,6 @@ function FieldworkAIDriver:start(startingPoint)
 		end
 		startWithFieldwork = true
 	end
-
-	self.waitingForTools = true
-	self.ppc:setNormalLookaheadDistance()
 
 	if startWithFieldwork then
 		self:startFieldworkWithPathfinding(ix)
@@ -422,10 +422,7 @@ function FieldworkAIDriver:driveFieldwork(dt)
 			self:checkFillLevels()
 		end
 	elseif self.fieldworkState == self.states.WORKING then
-		self:setSpeed(self:getWorkSpeed())
-		self:manageConvoy()
-		self:checkWeather()
-		self:checkFillLevels()
+		self:work()
 	elseif self.fieldworkState == self.states.UNLOAD_OR_REFILL_ON_FIELD then
 		self:driveFieldworkUnloadOrRefill()
 	elseif self.fieldworkState == self.states.TEMPORARY then
@@ -439,6 +436,16 @@ function FieldworkAIDriver:driveFieldwork(dt)
 		iAmDriving = self.aiTurn:drive(dt)
 	end
 	return iAmDriving
+end
+
+--- Do the actual fieldwork. This is extracted here so derived classes can use the
+--- existing start/end work mechanisms to lower/raise start/stop implements and only
+--- need to implement the actual work themselves.
+function FieldworkAIDriver:work()
+	self:setSpeed(self:getWorkSpeed())
+	self:manageConvoy()
+	self:checkWeather()
+	self:checkFillLevels()
 end
 
 function FieldworkAIDriver:getNominalSpeed()

@@ -35,7 +35,7 @@ PathfinderUtil.VehicleData = CpObject()
 --- If the vehicle has a trailer, it is handled separately from other implements to allow for the
 --- pathfinding to consider the trailer's heading (which will be different from the vehicle's heading)
 function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
-    self.turnRadius = vehicle.cp and vehicle.cp.turnDiameter and vehicle.cp.turnDiameter / 2 or 10
+    self.turnRadius = vehicle.cp and vehicle.cp.driver and AIDriverUtil.getTurningRadius(vehicle) or 10
     self.vehicle = vehicle
     self.rootVehicle = vehicle:getRootVehicle()
     self.name = vehicle.getName and vehicle:getName() or 'N/A'
@@ -283,8 +283,11 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        --courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
+        courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
     end
+		if collidingObject and collidingObject:isa(Bale) then
+				courseplay.debugFormat(7, 'collision with bale')
+		end
     if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
         --[[
         local text = ''
@@ -316,14 +319,14 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
 
     self.collidingShapes = 0
 
-    overlapBox(x, y + 1, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    overlapBox(x, y + 0.2, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
     if log and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
-                { x = x, y = y + 1, z = z, yRot = yRot, width = width, length = length})
+                { x = x, y = y + 0.2, z = z, yRot = yRot, width = width, length = length})
         courseplay.debugFormat(7, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
                 vehicleData.name, x, z, width, length, math.deg(yRot))
     end
-    --DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
+    DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
 
     return self.collidingShapes
 end
@@ -601,9 +604,12 @@ end
 
 ---@param start State3D
 ---@param goal State3D
-function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, start, goal,
+function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
                                                           allowReverse, fieldNum,
                                                           vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+
+		local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
+
     local otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 
@@ -737,11 +743,19 @@ function PathfinderUtil.findDubinsPath(vehicle, startOffset, goalReferenceNode, 
     return dubinsPath, solution:getLength(turnRadius)
 end
 
+
 function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)
     local x, _, z = localToWorld(node, xOffset or 0, 0, zOffset or 0)
     local lx, _, lz = localDirectionToWorld(node, 0, 0, 1)
     local yRot = math.atan2(lx, lz)
     return x, z, yRot
+end
+
+---@param vehicle Vehicle
+---@return State3D position/heading of vehicle
+function PathfinderUtil.getVehiclePositionAsState3D(vehicle)
+	local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
+	return State3D(x, -z, courseGenerator.fromCpAngle(yRot))
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -760,13 +774,12 @@ end
 function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint,
                                                               xOffset, zOffset, allowReverse,
                                                               fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
-    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
-    local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
+
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
     local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
-            vehicle, start, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+            vehicle, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
@@ -786,12 +799,10 @@ function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
                                                           xOffset, zOffset, allowReverse,
                                                           fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty,
                                                           mustBeAccurate)
-    local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
-    local start = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
-            vehicle, start, goal, allowReverse, fieldNum,
+            vehicle, goal, allowReverse, fieldNum,
             vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 end
 

@@ -609,17 +609,6 @@ function CombineUnloadAIDriver:getCourseToAlignTo(vehicle,offset)
 	return tempCourse
 end
 
-function CombineUnloadAIDriver:getStraightForwardCourse(length)
-	local l = length or 100
-	return Course.createFromNode(self.vehicle, self.vehicle.rootNode, 0, 0, l, 5, false)
-end
-
-function CombineUnloadAIDriver:getStraightReverseCourse(length)
-	local lastTrailer = AIDriverUtil.getLastAttachedImplement(self.vehicle)
-	local l = length or 100
-	return Course.createFromNode(self.vehicle, lastTrailer.rootNode, 0, 0, -l, -5, true)
-end
-
 function CombineUnloadAIDriver:getTrailersTargetNode()
 	local allTrailersFull = true
 	for i=1, #self.vehicle.cp.workTools do

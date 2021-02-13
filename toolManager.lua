@@ -37,17 +37,17 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	-- TODO: refactor this (if it is even still needed), this ignore list is all over the place...
 	vehicle.cpTrafficCollisionIgnoreList = {}
 
-	if vehicle.cp and vehicle.cp.settings then
-		vehicle.cp.settings:validateCurrentValues()
-		if vehicle.cp.driver then
-			vehicle.cp.driver:refreshHUD()
-		end
-	end
-
 	courseplay:resetTools(vehicle)
+	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
+
+	vehicle.cp.settings:validateCurrentValues()
 
 	-- reset tool offset to the preconfigured value if exists
 	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
+
+	if vehicle.cp.driver then
+		vehicle.cp.driver:refreshHUD()
+	end
 
 end
 
@@ -489,9 +489,6 @@ function courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck)
 	--5 is always valid
 	if cpModeToCheck == 5 then 
 		return true;
-	end
-	if cpModeToCheck == 7 then 
-		return false;
 	end
 	local callback = {}
 	callback.isDisallowedOkay = true

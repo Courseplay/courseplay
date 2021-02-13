@@ -108,7 +108,11 @@ function DevHelper:overlapBoxCallback(transformId)
         if collidingObject.getRootVehicle then
             text = 'vehicle' .. collidingObject:getName()
         else
-            text = collidingObject.getName and collidingObject:getName() or 'N/A'
+			if collidingObject:isa(Bale) then
+				text = 'Bale'
+			else
+            	text = collidingObject.getName and collidingObject:getName() or 'N/A'
+			end
         end
     else
         text = ''
@@ -139,11 +143,14 @@ function DevHelper:updateProximitySensors(vehicle)
 end
 
 -- Left-Alt + , (<) = mark current position as start for pathfinding
+-- Left-Alt + , (<) = mark current position as start for pathfinding
 -- Left-Alt + . (>) = mark current position as goal for pathfinding
 -- Left-Ctrl + . (>) = start pathfinding from marked start to marked goal
 -- Left-Ctrl + , (<) = mark current field as field for pathfinding
 -- Left-Alt + Space = save current vehicle position
 -- Left-Ctrl + Space = restore current vehicle position
+-- Left-Alt + / = look for bales
+-- Left-Ctrl + / = find path to next bale
 function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     if not CpManager.isDeveloper then return end
     if bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_comma then
@@ -179,6 +186,10 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
     elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_space then
         -- restore vehicle position
         DevHelper.restoreVehiclePosition(g_currentMission.controlledVehicle)
+	elseif bitAND(modifier, Input.MOD_LALT) ~= 0 and isDown and sym == Input.KEY_slash then
+		self:initBales()
+	elseif bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_slash then
+		self:findPathToNextBale()
     end
 end
 
@@ -196,7 +207,7 @@ function DevHelper:startPathfinding()
                 tostring(self.start), tostring(self.goal), self.fieldNumForPathfinding or 0)
         local start = State3D:copy(self.start)
 
-        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, start, self.goal,
+        self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, self.goal,
                 false, self.fieldNumForPathfinding or 0, {}, 10)
 
     end
@@ -260,7 +271,6 @@ function DevHelper:drawCourse()
     end
 end
 
-
 function DevHelper:showFillNodes()
     for _, vehicle in pairs(g_currentMission.vehicles) do
         if SpecializationUtil.hasSpecialization(Trailer, vehicle.specializations) then
@@ -272,6 +282,61 @@ function DevHelper:showFillNodes()
             end
         end
     end
+end
+
+function DevHelper:findBales(fieldId)
+	self:debug('Finding bales on field %d...', fieldId or 0)
+	local bales = {}
+	for _, object in pairs(g_currentMission.nodeToObject) do
+		if object:isa(Bale) then
+			local bale = BaleToCollect(object)
+			if not fieldId or fieldId == 0 or bale:getFieldId() == fieldId then
+				bales[object.id] = bale
+			end
+		end
+	end
+	return bales
+end
+
+function DevHelper:initBales()
+	local allBales = self:findBales()
+	local closestBale, d = self:findClosestBale(allBales, self.node)
+	self:debug('Closest bale is at %.1f m, on field %d', d, closestBale:getFieldId())
+	self.bales = self:findBales(closestBale:getFieldId())
+end
+
+---@return BaleToCollect, number closest bale and its distance
+function DevHelper:findClosestBale(bales, node)
+	local closestBale, minDistance = nil, math.huge
+	for _, bale in pairs(bales) do
+		local _, _, _, d = bale:getPositionFromNodeInfo(node)
+		if d < minDistance then
+			closestBale = bale
+			minDistance = d
+		end
+	end
+	return closestBale, minDistance
+end
+
+function DevHelper:findPathToNextBale()
+	if not self.bales then return end
+	local baleId
+	for id, bale in pairs(self.bales) do
+		-- first figure out the direction at the goal, as the pathfinder needs that.
+		-- for now, just use the direction from our location towards the bale
+		local xb, zb, yRot, d = bale:getPositionFromNodeInfo(self.node)
+
+		self.start = State3D(self.data.x, -self.data.z, courseGenerator.fromCpAngleDeg(self.data.yRotDeg))
+		self.goal = State3D(xb, -zb, courseGenerator.fromCpAngle(yRot))
+		local offset = Vector(0, 3.5)
+		self.goal:add(offset:rotate(self.goal.t))
+
+		self:startPathfinding()
+		baleId = id
+		break
+	end
+	-- remove bale from list
+	if baleId then self.bales[baleId] = nil end
 end
 
 function DevHelper:showVehicleSize()

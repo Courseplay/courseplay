@@ -1438,6 +1438,18 @@ function AIDriver:resetBGASiloTables()
 	self.bestColumnToFill = nil
 end
 
+--- Helper functions to generate a straight course
+function AIDriver:getStraightForwardCourse(length)
+	local l = length or 100
+	return Course.createFromNode(self.vehicle, self.vehicle.rootNode, 0, 0, l, 5, false)
+end
+
+function AIDriver:getStraightReverseCourse(length)
+	local lastTrailer = AIDriverUtil.getLastAttachedImplement(self.vehicle)
+	local l = length or 100
+	return Course.createFromNode(self.vehicle, lastTrailer.rootNode or self.vehicle.rootNode, 0, 0, -l, -5, true)
+end
+
 ------------------------------------------------------------------------------
 --- PATHFINDING
 ------------------------------------------------------------------------------
