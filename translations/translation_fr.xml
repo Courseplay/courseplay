@@ -8,7 +8,7 @@
     <text name="COURSEPLAY_PPC_OFF" 									text="Mode normal" />
     <text name="COURSEPLAY_PPC_ON" 										text="Mode expérimental" /> <!-- a new driving algorithm using a pure pursuit controller -->
     <text name="COURSEPLAY_AIDRIVER" 									text="Ouvrier AI" /> <!-- enable new AI driver -->
-    <text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Arrêter au prochain trigger" />
+    <text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
     <text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
     <text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Réinitialiser le nombre de tours"/>
     <text name="COURSEPLAY_UNLIMITED" 									text="Illimité" />

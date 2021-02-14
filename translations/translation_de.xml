@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_PPC_OFF" 									text="Normaler Modus" />
 		<text name="COURSEPLAY_PPC_ON" 										text="Experimenteller Modus" /> <!-- a new driving algorithm using a pure pursuit controller -->
 		<text name="COURSEPLAY_AIDRIVER" 									text="KI Fahrer" /> <!-- enable new AI driver -->
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Am letzten Wegpunkt o. Trigger warten" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop am Endpunkt" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Anzahl der Durchläufe"/>
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Durchläufe zurücksetzen"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="unbegrenzt" />

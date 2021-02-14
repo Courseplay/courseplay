@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AIドライバー" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="ドライバーを始動" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="ドライバーを停止" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="次のトリガー/エンドポイントで停止" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="実行予定回数" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="実行回数をリセット"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="無制限" />

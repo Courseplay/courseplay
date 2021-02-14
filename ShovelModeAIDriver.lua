@@ -87,7 +87,6 @@ function ShovelModeAIDriver:setHudContent()
 end
 
 function ShovelModeAIDriver:start()
-	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self:beforeStart()
 	self:disableCollisionDetection()
 
@@ -143,6 +142,10 @@ function ShovelModeAIDriver:start()
 	self.ppc:setCourse(self.course)
 	self.ppc:initialize()
 	AIDriver.continue(self)
+end
+
+function ShovelModeAIDriver:shouldStopAtEndOfCourse()
+	return false
 end
 
 --debug info

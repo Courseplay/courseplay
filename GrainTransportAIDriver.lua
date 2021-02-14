@@ -37,7 +37,6 @@ function GrainTransportAIDriver:start(startingPoint)
 	self.nextClosestExactFillRootNode = nil
 	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
-	self.vehicle.cp.settings.stopAtEnd:set(false)
 	self.firstWaypointNode = WaypointNode('firstWaypoint')
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
 end
@@ -47,6 +46,9 @@ function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
 	return false
 end
 
+function GrainTransportAIDriver:shouldStopAtEndOfCourse()
+	return false
+end
 
 --TODO: consolidate this with AIDriver:drive() 
 function GrainTransportAIDriver:drive(dt)

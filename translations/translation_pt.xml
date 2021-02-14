@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="Motorista AI" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Conduzir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar o condutor" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Parar no último ponto ou próximo trigger" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 					 		text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Número de passagens" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="zerar numero de viagens atual"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />

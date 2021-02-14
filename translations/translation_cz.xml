@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI driver" /> <!-- enable new AI driver -->
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Aktivovat odvozce" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Zastavit odvozce" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Čekat na posledním bodě nebo triggeru:" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Počet jízd" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="resetovat aktualní počet jízd"/>  
  		<text name="COURSEPLAY_UNLIMITED" 									text="Neomezený" />

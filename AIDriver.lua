@@ -302,7 +302,6 @@ end
 --- @param startingPoint number, one of StartingPointSetting.START_AT_* constants
 function AIDriver:start(startingPoint)
 	self:beforeStart()
-	self.vehicle.cp.settings.stopAtEnd:set(true)
 	self.state = self.states.RUNNING
 	-- derived classes must disable collision detection if they don't need it
 	self:enableCollisionDetection()
@@ -657,6 +656,12 @@ function AIDriver:onNextCourse()
 	-- nothing in general, derived classes will implement when needed
 end
 
+--- Should we stop at the end of the course (or restart it from the beginning)
+--- In Mode 5 we do what the user wants.
+function AIDriver:shouldStopAtEndOfCourse()
+	return self.vehicle.cp.settings.stopAtEnd:is(true)
+end
+
 --- Course ended
 function AIDriver:onEndCourse()
 	if self.vehicle.cp.settings.autoDriveMode:useForParkVehicle() then
@@ -669,7 +674,7 @@ function AIDriver:onEndCourse()
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)
 		end
-	elseif self.vehicle.cp.settings.stopAtEnd:is(true) then
+	elseif self:shouldStopAtEndOfCourse() then
 		self:onEndCourseFinished()
 	else
 		-- continue at the first waypoint

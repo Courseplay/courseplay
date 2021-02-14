@@ -1796,6 +1796,10 @@ function AutoDriveModeSetting:useForParkVehicle()
 	return self:is(AutoDriveModeSetting.PARK) or self:is(AutoDriveModeSetting.UNLOAD_OR_REFILL_PARK)
 end
 
+function AutoDriveModeSetting:isDisabled()
+	return not self.vehicle.cp.canDrive or not self.vehicle.spec_autodrive
+end
+
 --- Starting point setting (at which waypoint should the vehicle start the course)
 ---@class StartingPointSetting : SettingList
 StartingPointSetting = CpObject(SettingList)
@@ -2371,7 +2375,11 @@ end
 StopAtEndSetting = CpObject(BooleanSetting)
 function StopAtEndSetting:init(vehicle)
 	BooleanSetting.init(self, 'stopAtEnd', 'COURSEPLAY_STOP_AT_LAST_POINT', 'COURSEPLAY_STOP_AT_LAST_POINT', vehicle)
-	self:set(false)
+	self:set(true)
+end
+
+function StopAtEndSetting:isDisabled()
+	return not self.vehicle.cp.canDrive or not self.vehicle.cp.mode == courseplay.MODE_TRANSPORT
 end
 
 ---@class AutomaticCoverHandlingSetting : BooleanSetting
