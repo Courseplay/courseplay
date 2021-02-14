@@ -162,6 +162,15 @@ You can define the following custom settings:
     />
     <!--[MODS]-->
 
+	<!--Mod: KOECKERLING Vector 460-->
+	<Vehicle name="vector460.xml"
+			 implementWheelAlwaysOnGround = "true"
+	/>
+	<!--Mod: KOECKERLING Vector 620-->
+	<Vehicle name="vector620.xml"
+			 implementWheelAlwaysOnGround = "true"
+	/>
+
     <!--Harvester-->
 
     <!--Implements-->

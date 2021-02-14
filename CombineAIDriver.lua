@@ -1499,20 +1499,24 @@ end
 
 --- Make life easier for unloaders, increases reach of the pipe
 function CombineAIDriver:fixMaxRotationLimit()
-	local LastPipeNode = self.pipe.nodes and self.pipe.nodes[#self.pipe.nodes]
-	if self:isChopper() and LastPipeNode and LastPipeNode.maxRotationLimits then
-		self.oldLastPipeNodeMaxRotationLimit = LastPipeNode.maxRotationLimits
-        self:debug('Chopper fix maxRotationLimits, old Values: x=%s, y= %s, z =%s', tostring(LastPipeNode.maxRotationLimits[1]), tostring(LastPipeNode.maxRotationLimits[2]), tostring(LastPipeNode.maxRotationLimits[3]))
-        LastPipeNode.maxRotationLimits = nil   
-    end
+	if self.pipe then
+		local lastPipeNode = self.pipe.nodes and self.pipe.nodes[#self.pipe.nodes]
+		if self:isChopper() and lastPipeNode and lastPipeNode.maxRotationLimits then
+			self.oldLastPipeNodeMaxRotationLimit = lastPipeNode.maxRotationLimits
+			self:debug('Chopper fix maxRotationLimits, old Values: x=%s, y= %s, z =%s', tostring(lastPipeNode.maxRotationLimits[1]), tostring(lastPipeNode.maxRotationLimits[2]), tostring(lastPipeNode.maxRotationLimits[3]))
+			lastPipeNode.maxRotationLimits = nil
+		end
+	end
 end
 
 function CombineAIDriver:resetFixMaxRotationLimit()
-	local LastPipeNode = self.pipe.nodes and self.pipe.nodes[#self.pipe.nodes]
-	if LastPipeNode and self.oldLastPipeNodeMaxRotationLimit then 
-		LastPipeNode.maxRotationLimits = self.oldLastPipeNodeMaxRotationLimit
-		self:debug('Chopper: reset maxRotationLimits is x=%s, y= %s, z =%s', tostring(LastPipeNode.maxRotationLimits[1]), tostring(LastPipeNode.maxRotationLimits[3]), tostring(LastPipeNode.maxRotationLimits[3]))
-		self.oldLastPipeNodeMaxRotationLimit = nil
+	if self.pipe then
+		local lastPipeNode = self.pipe.nodes and self.pipe.nodes[#self.pipe.nodes]
+		if lastPipeNode and self.oldLastPipeNodeMaxRotationLimit then
+			lastPipeNode.maxRotationLimits = self.oldLastPipeNodeMaxRotationLimit
+			self:debug('Chopper: reset maxRotationLimits is x=%s, y= %s, z =%s', tostring(lastPipeNode.maxRotationLimits[1]), tostring(lastPipeNode.maxRotationLimits[3]), tostring(lastPipeNode.maxRotationLimits[3]))
+			self.oldLastPipeNodeMaxRotationLimit = nil
+		end
 	end
 end
 
