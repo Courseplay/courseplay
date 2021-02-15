@@ -8,7 +8,7 @@
 		<text name="COURSEPLAY_AIDRIVER" 									text="AI Driver" /> 
 		<text name="COURSEPLAY_UNLOADING_DRIVER_START" 						text="Dirigir" />
 		<text name="COURSEPLAY_UNLOADING_DRIVER_STOP" 						text="Parar" />
-		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
+		<text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Parar no último ponto" />
 		<text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Total de voltas" />
 		<text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Redefinir numero atual de voltas"/>
  		<text name="COURSEPLAY_UNLIMITED" 									text="Ilimitado" />
