@@ -8,7 +8,7 @@
     <text name="COURSEPLAY_PPC_OFF" 									text="Mode normal" />
     <text name="COURSEPLAY_PPC_ON" 										text="Mode expérimental" /> <!-- a new driving algorithm using a pure pursuit controller -->
     <text name="COURSEPLAY_AIDRIVER" 									text="Ouvrier AI" /> <!-- enable new AI driver -->
-    <text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="Stop at last point" />
+    <text name="COURSEPLAY_STOP_AT_LAST_POINT" 							text="S'arrêter au dernier point" />
     <text name="COURSEPLAY_NUMBER_OF_RUNS" 								text="Nombre de tours à effectuer" />
     <text name="COURSEPLAY_RESET_NUMBER_OF_RUNS" 						text="Réinitialiser le nombre de tours"/>
     <text name="COURSEPLAY_UNLIMITED" 									text="Illimité" />
@@ -142,10 +142,10 @@
     <text name="COURSEPLAY_WAITING_FOR_COMBINE_TURNED" 					text="Attend que la batteuse finisse de manœuvrer" />
     <text name="COURSEPLAY_WAITING_FOR_WAYPOINT" 						text="Attend le nouveau point" />
     <text name="COURSEPLAY_FOLLOWING_TRACTOR" 					 		text="Suit le tracteur" />
-    <text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 		text="Doit bientôt faire le plein de carburant" />
-    <text name="COURSEPLAY_MUST_BE_REFUELED" 					 		text="Doit faire le plein de carburant" />
-    <text name="COURSEPLAY_IS_BEING_REFUELED" 					 		text="Fait le plein de carburant" />
-    <text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="Se fait peser" />
+    <text name="COURSEPLAY_SHOULD_BE_REFUELED" 					 		text="doit bientôt faire le plein de carburant" />
+    <text name="COURSEPLAY_MUST_BE_REFUELED" 					 		text="doit faire le plein de carburant" />
+    <text name="COURSEPLAY_IS_BEING_REFUELED" 					 		text="fait le plein de carburant" />
+    <text name="COURSEPLAY_IS_BEING_WEIGHED" 							text="se fait peser" />
     <text name="COURSEPLAY_WAITING_POINTS_TOO_MANY" 					text="Trop de points d'attente! Il en faut %d." />
     <text name="COURSEPLAY_WAITING_POINTS_TOO_FEW" 						text="Pas assez de points d'attente! Il en faut %d." />
     <text name="COURSEPLAY_UNLOADING_POINTS_TOO_MANY" 					text="Trop de points de déchargement! Il en faut %d." />
@@ -153,7 +153,7 @@
     <text name="COURSEPLAY_WRONG_TRAILER" 						 		text="Remorque incompatible avec ce mode" />
     <text name="COURSEPLAY_WRONG_TOOL" 						 			text="Outil incompatible avec ce mode" />
     <text name="COURSEPLAY_MODE_NOT_SUPPORTED_FOR_VEHICLETYPE" 			text="Ce véhicule n'est pas supporté dans ce mode" />
-    <text name="COURSEPLAY_WEATHER_WARNING" 					 		text="attend une meilleure météo." />
+    <text name="COURSEPLAY_WEATHER_WARNING" 					 		text="attend que les conditions climatiques s'améliorent." />
     <text name="COURSEPLAY_LANE_OFFSET" 						 		text="Décalage dans le rang" />
     <text name="COURSEPLAY_TOOL_OFFSET_X" 						 		text="Outil: décalage latéral" />
     <text name="COURSEPLAY_TOOL_OFFSET_Z" 						 		text="Outil: décalage av/ar" />
@@ -162,7 +162,7 @@
     <text name="COURSEPLAY_FRONT" 							 			text="avant" />
     <text name="COURSEPLAY_BACK" 							 			text="arrière" />
     <text name="COURSEPLAY_WORK_WIDTH" 						 			text="Largeur de travail" />
-    <text name="COURSEPLAY_WATER_WARNING" 						 		text="aimerait aller nager" />
+    <text name="COURSEPLAY_WATER_WARNING" 						 		text="prend un bain" />
     <text name="COURSEPLAY_OPEN_HUD_MODE" 						 		text="Ouverture du Courseplay" />
     <text name="COURSEPLAY_DEBUG_CHANNELS" 						 		text="Canaux de debug" />
     <text name="COURSEPLAY_PAGE_TITLE_COURSE_GENERATION" 				text="Générer une course" />
@@ -312,7 +312,7 @@
     <text name="COURSEPLAY_BGA_IS_FULL" 						 		text=": le silo est plein!" />
     <text name="COURSEPLAY_FARM_SILO_NO_FILLTYPE" 						text="Le silo n'a pas le produit sélectionné" />
     <text name="COURSEPLAY_FARM_SILO_FILL_TYPE" 						text="Produit à charger:" />
-    <text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 		text="Silo vide ! En attente..." />
+    <text name="COURSEPLAY_FARM_SILO_IS_EMPTY" 					 		text=": Silo vide ! En attente..." />
     <text name="COURSEPLAY_FARM_SILO_IS_FULL" 							text=": Silo plein !" />
     <text name="COURSEPLAY_STARTING_UP_TOOL" 					 		text="Démarrer à %s!" />
     <text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Cherche le premier point" />
@@ -338,7 +338,7 @@
     <text name="COURSEPLAY_DRIVECONTROL_MODE_4" 						text="4x4 Permanent &amp; différentiel au travail" />
     <text name="COURSEPLAY_YES_NO_FIELDSCAN" 					 		text="Les parcelles seront scannées automatiquement au démarrage du jeu" />
     <text name="COURSEPLAY_SUPPORT_INFO" 								text="Si vous souhaitez de l'aide ou signaler un bug sur courseplay, merci de vous rendre sur le site: https://github.com/Courseplay/courseplay or https://courseplay.github.io/courseplay/en/index.html" />
-    <text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Utilisation des semences" />
+    <text name="COURSEPLAY_SEEDUSAGECALCULATOR" 						text="Calculette intrants" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_FIELD" 					text="Parcelle: %d (%s %s)" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_SEEDTYPE" 				text="Type de semence: %s" />
     <text name="COURSEPLAY_SEEDUSAGECALCULATOR_USAGE" 					text="Utilisation: %s %s (%s)" />
