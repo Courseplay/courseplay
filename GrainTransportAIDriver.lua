@@ -272,3 +272,13 @@ function GrainTransportAIDriver:delete()
 	end
 	AIDriver.delete(self)
 end
+
+function GrainTransportAIDriver:isProximitySwerveEnabled(vehicle)
+	if vehicle.cp and vehicle.cp.driver and vehicle.cp.driver.is_a(OverloaderAIDriver) then
+		-- the other vehicle as an overloader, potentially waiting for us. We should not swerve
+		-- as we need to drive under the pipe of the overloader wagon
+		return not vehicle.cp.driver:isNearOverloadPoint()
+	else
+		return true
+	end
+end

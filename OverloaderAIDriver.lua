@@ -187,3 +187,8 @@ end
 function OverloaderAIDriver:enableFillTypeUnloading()
 	
 end
+
+--- Is around the overload point?
+function OverloaderAIDriver:isNearOverloadPoint()
+	return self.nearOverloadPoint
+end

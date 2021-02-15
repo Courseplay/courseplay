@@ -902,6 +902,7 @@ end
 function AIDriver:getIsInFilltrigger()
 	return self.vehicle.cp.fillTrigger ~= nil or self:isNearFillPoint()
 end
+
 --- Is an alignment course needed to reach waypoint ix in the current course?
 -- override in derived classes as needed
 ---@param course Course
