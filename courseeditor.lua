@@ -723,7 +723,7 @@ function courseEditor:draw(vehicle)
 			-- don't delete if it's the start or end waypoint
 			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
 				-- Delete from selected WP to Start
-				CourseEditorEvent.sendEvent(vehicle,"DeleteToStart", self.guiWpSelected);
+				courseEditor:doDeleteToStartAction(vehicle, self.guiWpSelected);
 
 				-- clear the history because we don't store these potentially huge changes
 				self:clearHistory();
@@ -742,7 +742,7 @@ function courseEditor:draw(vehicle)
 			-- don't delete if it's the start or end waypoint
 			if self.guiWpSelected ~= 1 and self.guiWpSelected ~= #vehicle.Waypoints then
 				-- Delete from selected WP to End
-				courseEditor:doDeleteToEndAction(vehicle,self.guiWpSelected)
+				courseEditor:doDeleteToEndAction(vehicle, self.guiWpSelected)
 
 				-- Clear the history because we don't store these potentially huge changes
 				self:clearHistory();

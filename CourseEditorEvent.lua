@@ -17,10 +17,10 @@ function CourseEditorEvent:new(vehicle,action,values)
 end
 
 function CourseEditorEvent:readStream(streamId, connection)
-	courseplay.debugVehicle(5,self.vehicle,"readStream Course Editor")
 	self.vehicle = NetworkUtil.readNodeObject(streamId);
+	courseplay.debugVehicle(5,self.vehicle,"readStream Course Editor")
 	self.action = streamReadString(streamId);
-	courseplay:debugVehicle(5,self.vehicle,'readStream Course Editor: Recieving %s event', tostring(self.action));
+	courseplay.debugVehicle(5,self.vehicle,'readStream Course Editor: Recieving %s event', tostring(self.action));
 
 	if self.action == "DragTo"
 	or self.action == "UndoDragTo"
@@ -76,7 +76,7 @@ function CourseEditorEvent:readStream(streamId, connection)
 end
 
 function CourseEditorEvent:writeStream(streamId, connection)
-	courseplay:debugVehicle(5,self.vehicle,'writeStream Course Editor: Sending %s event', tostring(self.action));
+	courseplay.debugVehicle(5,self.vehicle,'writeStream Course Editor: Sending %s event', tostring(self.action));
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteString(streamId, self.action);
 
@@ -164,11 +164,11 @@ function CourseEditorEvent.sendEvent(vehicle,action,values,noEventSend)
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
 			courseplay.debugVehicle(5,vehicle,"broadcast Course Editor event");
-			courseplay:debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
+			courseplay.debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
 			g_server:broadcastEvent(CourseEditorEvent:new(vehicle,action,values), nil, nil, vehicle);
 		else
 			courseplay.debugVehicle(5,vehicle,"send Course Editor event");
-			courseplay:debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
+			courseplay.debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
 			g_client:getServerConnection():sendEvent(CourseEditorEvent:new(vehicle,action,values));
 		end;
 	end
