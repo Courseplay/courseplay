@@ -93,7 +93,6 @@ function courseplay:onLoad(savegame)
 	self.cp.abortWork = nil
 	self.cp.abortWorkExtraMoveBack = 0;
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.hasTransferCourse = false
 	self.cp.wait = true;
 	self.cp.waitTimer = nil;
 	self.cp.canSwitchMode = false;

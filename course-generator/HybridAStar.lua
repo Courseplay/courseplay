@@ -632,6 +632,7 @@ function HybridAStar:rollUpPath(node, goal, path)
 		table.insert(self.path, 1, currentNode.pred)
 		currentNode = currentNode.pred
 	end
+	-- TODO: see if this really is needed after it was fixed in the Reeds-Shepp getWaypoints()
 	-- start node always points forward, make sure it is reverse if the second node is reverse...
 	self.path[1].gear = self.path[2] and self.path[2].gear or self.path[1].gear
 	self:debug('Nodes %d, iterations %d, yields %d, deltaTheta %.1f', #self.path, self.iterations, self.yields,

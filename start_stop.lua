@@ -122,8 +122,7 @@ function courseplay:start(self)
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setDriveUnloadNow(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
-		self.cp.hasTransferCourse = self.cp.startWork > 5
-		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx 
+		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx
 		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
 			self.cp.finishWork = self.cp.stopWork-5
 		else
@@ -134,7 +133,6 @@ function courseplay:start(self)
 		if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
 			courseplay:setWaypointIndex(self, 2);
 		end
-		courseplay:debug(string.format("%s: numWaypoints=%d, stopWork=%d, finishWork=%d, hasUnloadingRefillingCourse=%s,hasTransferCourse=%s, waypointIndex=%d", nameNum(self), self.cp.numWaypoints, self.cp.stopWork, self.cp.finishWork, tostring(self.cp.hasUnloadingRefillingCourse),tostring(self.cp.hasTransferCourse), self.cp.waypointIndex), 12);
 	elseif self.cp.mode == 8 then
 		courseplay:setDriveUnloadNow(self, false);
 	end
@@ -263,8 +261,6 @@ function courseplay:stop(self)
 	self.cp.hasFinishedWork = nil
 	self.cp.turnTimeRecorded = nil;	
 	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.hasTransferCourse = false
-	self.cp.settings.stopAtEnd:set(false)
 	self.cp.prevFillLevelPct = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');

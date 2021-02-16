@@ -86,15 +86,12 @@ function courseplay:setVehicleWait(vehicle, active)
 	vehicle.cp.wait = active;
 end;
 
-function courseplay:cancelWait(vehicle, cancelStopAtEnd)
+function courseplay:cancelWait(vehicle)
 	if vehicle.cp.driver then
 		vehicle.cp.driver:continue()
 	end
 	if vehicle.cp.wait then
 		courseplay:setVehicleWait(vehicle, false);
-	end;
-	if cancelStopAtEnd then
-		vehicle.cp.settings.stopAtEnd:set(false)
 	end;
 end;
 

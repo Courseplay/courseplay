@@ -160,6 +160,9 @@ end
 ---@param start State3D
 function ReedsShepp.ActionSet:getWaypoints(start, turnRadius)
     local prev = State3D:copy(start)
+		-- start is always forward, make sure if we generated a path starting in reverse is now
+	  -- reflected in the first waypoint, otherwise the first wp would always be forward
+	  prev.gear = self.actions[1].gear
     local waypoints = {}
     table.insert(waypoints, prev)
     for _, action in ipairs(self.actions) do
