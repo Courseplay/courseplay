@@ -190,6 +190,37 @@ function cleanupOffsetEdges(offsetEdges, result, minDistanceBetweenPoints)
 	result:calculateData()
 end
 
+--- debugPoints will be shown in the standalone LOVE2D implementation for debugging/troubleshooting
+--- whatever is passed in, desparately try to extract a list of points from it
+--- TODO: should probably be implemented recursively
+local function saveAsDebugPoints(polygon, depth)
+	if not polygon then return end
+	depth = depth or -1
+	if depth == 0 then return end
+	if polygon.copy then
+		print('saveAsDebugPoints: this is a polygon')
+		debugPoints = Polygon:copy(polygon)
+	else
+		debugPoints = debugPoints or Polygon:new()
+		for k, v in pairs(polygon) do
+			print('saveAsDebugPoints: this is a table ', k)
+			if type(v) == 'table' then
+				if v.x and v.y then
+					table.insert(debugPoints, {x = v.x, y = v.y})
+				end
+				saveAsDebugPoints(v, depth - 1)
+			end
+		end
+	end
+end
+
+local function transformDebugPolygon(bestAngle, dx, dy)
+	if debugPoints then
+		debugPoints:rotate(-math.rad(bestAngle))
+		debugPoints:translate(dx, dy)
+	end
+end
+
 local function continueUntilStraightSection(headlandPath, track, passNumber, i, step, isConnectingTrack)
 	local dElapsed = 0
 	-- search only for the next few meters
@@ -637,6 +668,7 @@ function generateTwoSideHeadlands( polygon, islands, implementWidth, headlandSet
 
 	result:rotate(-math.rad(bestAngle))
 	result:translate(dx, dy)
+	transformDebugPolygon(bestAngle, dx, dy)
 	return result, innerBoundary
 end
 
@@ -654,3 +686,4 @@ function extendLineToOtherLine(line, otherLine, extension)
 	if is then table.insert(line, is) end
 	line:calculateData()
 end
+

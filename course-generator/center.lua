@@ -1263,11 +1263,12 @@ end
 ---@param headland Polygon
 ---@param startingEdge table {fromIx, toIx}
 ---@param endingEdge table {fromIx, toIx}
+---@param step number or nil, -1/+1 direction to follow on headland, default +1
 function getTrackBetweenPointsOnHeadland( headland, startingEdge, endingEdge, step )
 	local track = Polyline:new()
 
 	local startIx, endIx
-	if step > 0 then
+	if not step or step > 0 then
 		startIx = startingEdge.toIx
 		endIx = endingEdge.fromIx
 	else
