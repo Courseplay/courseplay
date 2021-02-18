@@ -100,43 +100,20 @@ end
 ---@return boolean true if unload took over the driving
 function UnloadableFieldworkAIDriver:driveUnloadOrRefill(dt)
 	self:updateOffset()
-	local allowedToDrive = true
-	local isNearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getCurrentWaypointIx(),20)
-	-- by default, drive street/recorded speed.
-	self:setSpeed(self:getRecordedSpeed())
-	if not self.ppc:isReversing() then
-		-- 'cause reverse does the raycasting for us
-		self:searchForTipTriggers()
-	end
-	local takeOverSteering = FieldworkAIDriver.driveUnloadOrRefill(self)
-	if self.vehicle.cp.totalFillLevel > 0 then
-		if self:hasTipTrigger() then
-			-- unload at tip trigger
-			self:setSpeed(self.vehicle.cp.speeds.approach)
-			allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
-			courseplay:setInfoText(self.vehicle,"COURSEPLAY_TIPTRIGGER_REACHED");
-			self:setSpeed(self.vehicle.cp.speeds.turn)
-		end
-	end
 	self.triggerHandler:enableFillTypeUnloading()
 	self.triggerHandler:enableFillTypeUnloadingBunkerSilo()
-	-- tractor reaches unloadPoint
-	if isNearUnloadPoint then
-		self:setSpeed(self.vehicle.cp.speeds.approach)
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_TIPTRIGGER_REACHED");
-		allowedToDrive, takeOverSteering = self:dischargeAtUnloadPoint(dt,unloadPointIx)
-	end
-	
+		
+	-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
+	self:searchForTipTriggers()
+	local allowedToDrive, giveUpControl = self:onUnLoadCourse(true, dt)
 	if not allowedToDrive then
-		self:setSpeed(0)
+		self:hold()
+	end	
+	if giveUpControl then 
+		return true
 	end
-		
-	-- done tipping?
-	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel <= 10 then
-		courseplay:resetTipTrigger(self.vehicle, true);
-	end
-		
-	return takeOverSteering
+	FieldworkAIDriver.driveUnloadOrRefill(self,dt)
+	return false
 end
 
 --- Interface for AutoDrive
