@@ -752,7 +752,7 @@ function courseplay:onUpdate(dt)
 	--updateFunction for play testing workingToolPostions(manually)
 	self.cp.settings.frontloaderToolPositions:updatePositions(dt)
 	self.cp.settings.augerPipeToolPositions:updatePositions(dt)
-
+	self.cp.settings.mixerWagonToolPositions:updatePositions(dt)
 end; --END update()
 
 --[[

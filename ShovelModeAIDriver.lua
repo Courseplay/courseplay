@@ -79,6 +79,11 @@ function ShovelModeAIDriver:init(vehicle)
 end
 
 function ShovelModeAIDriver.create(vehicle)
+	---is a drivable mixer wagon
+	if vehicle.spec_mixerWagon then 
+		return MixerWagonAIDriver(vehicle)
+	end
+	
 	if vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive:is(false) then
 		return ShovelModeAIDriver(vehicle)
 	else

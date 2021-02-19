@@ -330,8 +330,29 @@ function BunkerSiloManager:getNumberOfLinesAndColumns()
 	return self:getNumberOfLines(),self:getNumberOfColumns()
 end
 
+---Get the fillType of the complete silo
+---@return int silo part fillType index
+function BunkerSiloManager:getFillType()
+	local sx,sz,wx,wz,hx,hz = self:getSiloBunkerSiloAreaPositions()
+	local wy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, 1, wz);
+	local hy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, hx, 1, hz)
+	return DensityMapHeightUtil.getFillTypeAtLine(wx, wy, wz, hx, hy, hz, 5)
+end
+
 function BunkerSiloManager:getSilo()
 	return self.silo
+end
+
+---Get the bunker silo area coordinates 
+---@return float sx/sz start position of silo
+---@return float wx/wz width position of silo
+---@return float hx/hz height position of silo
+function BunkerSiloManager:getSiloBunkerSiloAreaPositions()
+	local bunkerSiloArea = self.silo.bunkerSiloArea
+	local sx,sz = bunkerSiloArea.sx,bunkerSiloArea.sz; --start BunkerNode
+	local wx,wz = bunkerSiloArea.wx,bunkerSiloArea.wz; --width BunkerNode "x cordinate"
+	local hx,hz = bunkerSiloArea.hx,bunkerSiloArea.hz; --height/"depth" BunkerNode "z cordinate"
+	return sx,sz,wx,wz,hx,hz
 end
 
 function BunkerSiloManager:isHeapSiloMap()
@@ -372,6 +393,7 @@ function BunkerSiloManager:createBunkerSiloMap(width)
 
 	local widthCount = 0
 	self:debug('Bunker width %.1f, working width %.1f (passed in)', bunkerWidth, width)
+	self:debug('Bunker start distance: %.2f, end distance: %.2f',startDistance,endDistance)
 	widthCount =math.ceil(bunkerWidth/width)
 
 	if self:getDriverMode() == self.MODE.SHIELD and courseplay:isEven(widthCount) then 

@@ -204,7 +204,7 @@
 			</Setup>
 		</DisallowedSetups>
 	</Mode>
-	<!--ShovelModeAIDriver/TriggerShovelModeAIDriver (9)-->
+	<!--ShovelModeAIDriver/TriggerShovelModeAIDriver/MixerWagonAIDriver (9)-->
 	<Mode>
 		<AllowedSetups>
 			<Setup>
@@ -240,7 +240,6 @@
 				<Specialization name="spec_treePlanter"/>
 				<!--no trailer-->
 				<Specialization name="spec_pipe"/>
-				<Specialization name="spec_trailer"/>
 				<Specialization name="spec_fillTriggerVehicle"/>
 				<Specialization name="spec_waterTrailer"/>
 			</Setup>

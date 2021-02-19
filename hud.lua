@@ -688,6 +688,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--AutomaticCoverHandlingSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticCoverHandling:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticCoverHandling:getText()
+				---TODO: fixes this hud, no more string calls ...
 				elseif string.find(entry.functionToCall, "siloSelectedFillType") then 
 					--SiloSelectedFillTypeSetting
 					if string.find(entry.functionToCall, "GrainTransportDriver") then 
@@ -698,7 +699,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:updateSiloSelectedFillTypeList(vehicle,page,3,4,"FieldSupplyDriver",line)	
 					elseif string.find(entry.functionToCall, "ShovelModeDriver") then --ShovelModeDriver
 						self:updateSiloSelectedFillTypeList(vehicle,page,6,8,"ShovelModeDriver",line)	
-					end				
+					elseif string.find(entry.functionToCall, "MixerWagonAIDriver") then --MixerWagonAIDriver
+						self:updateSiloSelectedFillTypeList(vehicle,page,4,6,"MixerWagonAIDriver",line)	
+					end
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
@@ -1215,6 +1218,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					for i=1,4 do 
 						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
 					end
+				elseif entry.functionToCall == 'mixerWagonToolPositions:setOrClearPostion' then
+					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
+					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
+					local texts = vehicle.cp.settings.mixerWagonToolPositions:getTexts()
+					for i=1,2 do 
+						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
+					end
 				end
 			end		
 		end
@@ -1687,7 +1697,14 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 			line = line +1
 		end
 		vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
-	else --AugerPipeToolPositionsSetting
+	elseif setting:getTotalPositions() == 2 then--MixerWagonToolPositionsSetting
+		for i=1,2 do 
+			courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_toolTips[i]):setSetting(setting)
+			courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_toolTips[i]):setSetting(setting)
+			line = line +1
+		end
+		vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
+	else--AugerPipeToolPositionsSetting
 		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'shovelLoading'   }, 'setOrClearPostion', 1, shovelX1, self.linesButtonPosY[line], btnW, btnH, 1, nil, true, false, true):setSetting(setting)
 		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', 1, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, 1, nil, true, false, false):setSetting(setting)
 		vehicle.cp.hud.content.pages[page][line][1].functionToCall = funcCall
@@ -2247,6 +2264,14 @@ function courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(vehicle)
 	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeShovelModeDriver,'addFilltype', 9, 5, 1 )
 	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeShovelModeDriver, 9, 6, 8, 1,true)
 	self:addRowButton(vehicle,vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive,'toggle', 9, 8, 1 )
+end
+
+function courseplay.hud:setMixerWagonAIDriverContent(vehicle)
+	--page 9
+	self:enablePageButton(vehicle, 9)
+	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.mixerWagonToolPositions,9,1)
+	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver,'addFilltype', 9, 3, 1 )
+	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver, 9, 4, 6, 1)
 end
 
 function courseplay.hud:setLevelCompactAIDriverContent(vehicle)

@@ -101,6 +101,7 @@ local function initialize()
 		'LevelCompactAIDriver',
 		'ShovelModeAIDriver',
 		'TriggerShovelModeAIDriver',
+		'MixerWagonAIDriver',
 		'Conflict',
 		'AITurn',
 		'VehicleConfigurations',

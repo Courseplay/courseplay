@@ -3103,6 +3103,13 @@ function ShovelModeDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
+---@class MixerWagonAIDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+MixerWagonAIDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function MixerWagonAIDriver_SiloSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle, "MixerWagonAIDriver")
+	self.MAX_FILLTYPES = 3
+end
+
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
 ShovelModeAIDriverTriggerHandlerIsActive = CpObject(BooleanSetting)
 function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle)
@@ -3891,6 +3898,14 @@ function AugerPipeToolPositionsSetting:getText()
 	end
 end
 
+---@class MixerWagonToolPositionsSetting : WorkingToolPositionsSetting
+MixerWagonToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function MixerWagonToolPositionsSetting:init(vehicle)
+	local label = "mixerWagon"
+	local toolTip = "mixerWagon"
+	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
+end
+
 ---@class ShovelStopAndGoSetting : BooleanSetting
 ShovelStopAndGoSetting = CpObject(BooleanSetting)
 function ShovelStopAndGoSetting:init(vehicle)
@@ -4188,6 +4203,8 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)
+	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	return container
 end
 
