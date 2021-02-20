@@ -25,7 +25,7 @@
     <text name="COURSEPLAY_MODE_4" 							 			text="Fertiliser, pulvériser et semer" />
     <text name="COURSEPLAY_MODE_5" 							 			text="Aller à" />
     <text name="COURSEPLAY_MODE_6" 							 			text="Travail dans la parcelle" />
-    <text name="COURSEPLAY_MODE_7" 							 			text="Batteuse va à la remorque" />
+    <text name="COURSEPLAY_MODE_7" 							 			text="Ramasser les balles" />
     <text name="COURSEPLAY_MODE_8" 							 			text="Ravitaillement à la parcelle" />
     <text name="COURSEPLAY_MODE_9" 							 			text="Charger et décharger avec un godet" />
     <text name="COURSEPLAY_MODE_10" 									text="Nivellement et tassement" />
@@ -72,7 +72,7 @@
     <text name="COURSEPLAY_NEEDS_UNLOADING" 					 		text=": doit être vidé." />
     <text name="COURSEPLAY_NEEDS_REFILLING" 					 		text=": doit être ravitaillé." />
     <text name="COURSEPLAY_UNLOADING_BALES" 					 		text="décharge les ballots." />
-		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
+	<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": pas de parcelle sélectionnée" />
     <text name="COURSEPLAY_IS_IN_TRAFFIC" 						 		text="est bloqué par un véhicule." />
 	<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="ralentit pour laisser passer un véhicule." />
     <text name="COURSEPLAY_TIPTRIGGER_REACHED" 					 		text="le trigger est atteint" />
@@ -278,13 +278,13 @@
     <text name="COURSEPLAY_SHOVEL_STOP_AND_GO" 					 		text="Mettre godet en position à l'arrêt" />
     <text name="COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE"				text="shovel trigger mode"/>
 
-    <text name="COURSEPLAY_START_AT_POINT" 						 		text="Commencer la course au" />
-    <text name="COURSEPLAY_NEAREST_POINT" 						 		text="Point le plus proche" />
-    <text name="COURSEPLAY_FIRST_POINT" 						 		text="Premier point" />
-    <text name="COURSEPLAY_CURRENT_POINT" 						 		text="Point actuel" />
-    <text name="COURSEPLAY_NEXT_POINT" 									text="Prochain point" />
-	<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-	<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+    <text name="COURSEPLAY_START_AT_POINT" 						 		text="Commencer la course" />
+    <text name="COURSEPLAY_NEAREST_POINT" 						 		text="Au point le plus proche" />
+    <text name="COURSEPLAY_FIRST_POINT" 						 		text="Au premier point" />
+    <text name="COURSEPLAY_CURRENT_POINT" 						 		text="Au point actuel" />
+    <text name="COURSEPLAY_NEXT_POINT" 									text="Au prochain point" />
+	<text name="COURSEPLAY_UNLOAD" 										text="Dans la parcelle" />
+	<text name="COURSEPLAY_COLLECT_BALES" 								text="Ramasser les balles" />
     <text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Contour de la parcelle" />
     <text name="COURSEPLAY_FIELD" 							 			text="Parcelle" />
     <text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="Course actuelle" />
