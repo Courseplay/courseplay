@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": equipamento precisa ser descarregado." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": equipamento precisa ser recarregado." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="descarregando fardos." />
-		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": nenhum campo selecionado" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="em tráfego." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="em tráfego, desacelerando" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="trigger alcançado" />
@@ -282,8 +282,8 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="Primeiro ponto" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Ponto atual" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="Segundo ponto mais próximo" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Descarregar" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Coletar fardos" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Caminho de borda do campo" />
 		<text name="COURSEPLAY_FIELD" 										text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Rota atual carregada)" />
