@@ -40,6 +40,7 @@ function BaleCollectorAIDriver:init(vehicle)
 	courseplay.debugVehicle(11,vehicle,'BaleCollectorAIDriver:init()')
 	BaleLoaderAIDriver.init(self, vehicle)
 	self:initStates(BaleCollectorAIDriver.myStates)
+	self.mode = courseplay.MODE_BALE_COLLECTOR
 	self.fieldId = 0
 	self.bales = {}
 	-- make sure we have a good turning radius set
@@ -111,7 +112,7 @@ function BaleCollectorAIDriver:findBales(fieldId)
 	self:debug('Finding bales on field %d...', fieldId or 0)
 	local balesFound = {}
 	for _, object in pairs(g_currentMission.nodeToObject) do
-		if object:isa(Bale) then
+		if BaleToCollect.isValidBale(object) then
 			local bale = BaleToCollect(object)
 			-- if the bale has a mountObject it is already on the loader so ignore it
 			if (not fieldId or fieldId == 0 or bale:getFieldId() == fieldId) and
@@ -267,7 +268,6 @@ function BaleCollectorAIDriver:work()
 		self:setSpeed(self.vehicle:getSpeedLimit())
 	elseif self.baleCollectingState == self.states.APPROACHING_BALE then
 		self:setSpeed(self:getWorkSpeed() / 2)
-		self:debug('%s %s', tostring(self.baleLoader.spec_baleLoader.grabberIsMoving), tostring(self.baleLoader.spec_baleLoader.grabberMoveState))
 		if self.baleLoader.spec_baleLoader.grabberMoveState then
 			self:debug('Start picking up bale')
 			self:setBaleCollectingState(self.states.PICKING_UP_BALE)

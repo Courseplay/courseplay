@@ -283,12 +283,9 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
+        --courseplay.debugFormat(7, 'collision: %s', collidingObject:getName())
     end
-		if collidingObject and collidingObject:isa(Bale) then
-				courseplay.debugFormat(7, 'collision with bale')
-		end
-    if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
+   if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
         --[[
         local text = ''
         for key, classId in pairs(ClassIds) do
