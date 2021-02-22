@@ -451,34 +451,34 @@ function ShovelModeAIDriver:driveStartUnloadTrailer(dt)
 			local inputAttacherJoints = self.shovel:getInputAttacherJoints()
 			local relevantAttacherJointNode = inputAttacherJoints[1].node
 			---offset between shovel attacherNode and dischargeNode
-			local _,_,offsetZ = localToLocal(relevantAttacherJointNode,dischargeNode.node,0,0,0)
-			---get the distance between exactFillRootNode and dischargeNode in z direction of the dischargeNode
-			local nx,ny,nz = localToLocal(exactFillRootNode,dischargeNode.node,0,0,offsetZ)
+			local nx,_,nz = localToLocal(relevantAttacherJointNode,dischargeNode.node,0,0,0)
 			---get the world coordinates
-			local ax,ay,az = localToWorld(dischargeNode.node,0,0,offsetZ)
+			local ax,ay,az = localToWorld(dischargeNode.node,0,0,nz/2)
+			local bx,by,bz = localToWorld(relevantAttacherJointNode,0,0,0)
 			local dx,dy,dz = localToWorld(exactFillRootNode,0,0,0)
+			local distance = courseplay:distance(dx,dz,ax,az)
 			if self:isDebugActive() then
 				cpDebug:drawLine(dx,dy,dz,1,0,1,ax,ay,az)
 				DebugUtil.drawDebugNode(relevantAttacherJointNode, 'relevantAttacherJointNode')
 				DebugUtil.drawDebugNode(exactFillRootNode, 'exactFillRootNode')
 				DebugUtil.drawDebugNode(dischargeNode.node, 'dischargeNode.node')
 			end
-			self:debug("distanceToTrailer(nz): %.2f,offsetShovelToAttacherNode(offsetZ): %.2f",nz,offsetZ)
-			if nz > 0 then 
+			self:debug("distanceToTrailer: %.2f",distance)
+			--additional offset so the driver doesn't crash into the trailer
+			if distance > 1.2 then 
 				---shovel attacherNode is not near enough to the exactFillRootNode
 				---get the direction of the dischargeNode to the exactFillRootNode(dx,dy,dz)
 				local lx, lz = AIVehicleUtil.getDriveDirection(dischargeNode.node, dx,dy,dz);
 				local MIN_SPEED = 4
-				local speed = MathUtil.clamp(nz,MIN_SPEED,self.refSpeed)
-				self:driveInDirection(dt,lx,lz,true,speed,true)
-				-- the last 2m we drive straight to the unload trailer
-				
+				local speed = MathUtil.clamp(distance,MIN_SPEED,self.refSpeed)
+				self:driveInDirection(dt,lx,lz,true,speed,true)				
 				return true
 			else
 				---position is reached, so start unloading if possible down below
-				self:debug("self.trailerCallback=>nil")
+				self:debug("reached trailer start unloading")
 				self.trailerCallback = nil
-				self:setSpeed(0) 
+				self:setSpeed(0)
+				self:hold() 
 			end
 		end
 	else 
