@@ -1340,7 +1340,7 @@ function courseplay:findAiCollisionTrigger(vehicle)
 	end;
 	
 	if vehicle.aiTrafficCollisionTrigger == nil and getNumOfChildren(vehicle.rootNode) > 0 then
-		courseplay.debugVehicle( 3, vehicle, "findaiTrafficCollisionTrigger: no aiCollisionTrigger found in vehicle XML - trying alternative")
+		courseplay.debugVehicle( courseplay.DBG_TRAFFIC, vehicle, "findaiTrafficCollisionTrigger: no aiCollisionTrigger found in vehicle XML - trying alternative")
 		if getChild(vehicle.rootNode, "aiCollisionTrigger") ~= 0 then
 			vehicle.aiTrafficCollisionTrigger = getChild(vehicle.rootNode, "aiCollisionTrigger");
 		else
@@ -1377,7 +1377,7 @@ function courseplay:removeFromVehicleLocalIgnoreList(vehicle, targetVehicle)
 
 		-- TRAFFIC COLLISION IGNORE LIST (components)
 		if targetVehicle.components ~= nil then
-			courseplay:debug(('%s: removing %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), 3);
+			courseplay:debug(('%s: removing %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), courseplay.DBG_TRAFFIC);
 			for i,component in pairs(targetVehicle.components) do
 				vehicle.cpTrafficCollisionIgnoreList[component.node] = nil;
 			end;
@@ -1399,7 +1399,7 @@ function courseplay:addToVehicleLocalIgnoreList(vehicle, targetVehicle)
 
 		-- TRAFFIC COLLISION IGNORE LIST (components)
 		if targetVehicle.components ~= nil then
-			courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), 3);
+			courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(targetVehicle), tostring(targetVehicle.cp.xmlFileName)), courseplay.DBG_TRAFFIC);
 			for i,component in pairs(targetVehicle.components) do
 				vehicle.cpTrafficCollisionIgnoreList[component.node] = true;
 			end;

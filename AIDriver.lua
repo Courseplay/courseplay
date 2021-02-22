@@ -285,7 +285,7 @@ function AIDriver:beforeStart()
 	-- for now, pathfinding generated courses can't be driven by towed tools
 	self.allowReversePathfinding = self.firstReversingWheeledWorkTool == nil
 	if self.vehicle:getAINeedsTrafficCollisionBox() then
-		courseplay.debugVehicle(3,self.vehicle,"Making sure cars won't stop around us")
+		courseplay.debugVehicle(courseplay.DBG_TRAFFIC,self.vehicle,"Making sure cars won't stop around us")
 		-- something deep inside the Giants vehicle sets the translation of this box to whatever
 		-- is in aiTrafficCollisionTranslation, if you do a setTranslation() it won't remain there...
 		self.vehicle.spec_aiVehicle.aiTrafficCollisionTranslation[2] = -1000
@@ -997,12 +997,12 @@ function AIDriver:isTrafficConflictDetectionEnabled()
 end
 
 function AIDriver:enableCollisionDetection()
-	courseplay.debugVehicle(3,self.vehicle,'Collision detection enabled')
+	courseplay.debugVehicle(courseplay.DBG_TRAFFIC,self.vehicle,'Collision detection enabled')
 	self.collisionDetectionEnabled = true
 end
 
 function AIDriver:disableCollisionDetection()
-	courseplay.debugVehicle(3,self.vehicle,'Collision detection disabled')
+	courseplay.debugVehicle(courseplay.DBG_TRAFFIC,self.vehicle,'Collision detection disabled')
 	self.collisionDetectionEnabled = false
 end
 

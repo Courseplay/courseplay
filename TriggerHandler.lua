@@ -31,7 +31,7 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.lastLoadedFillTypes = {}
 	self.disabledCombiUnloadingTrigger = nil
 	self.debugTicks = 100
-	self.debugChannel = 2
+	self.debugChannel = courseplay.DBG_TRIGGERS
 	self.lastDistanceToTrigger = nil
 	self.lastDebugLoadingCallback = nil
 	self.bunkerSilo = nil
@@ -767,10 +767,10 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 								else
 									triggerHandler:setFuelLoadingState()
 									CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY')
-									courseplay.debugFormat(2, 'No Diesel at this trigger.')
+									courseplay.debugFormat(courseplay.DBG_LOAD_UNLOAD, 'No Diesel at this trigger.')
 								end
 							else
-								courseplay.debugFormat(2, 'max FillLevel Reached')
+								courseplay.debugFormat(courseplay.DBG_LOAD_UNLOAD, 'max FillLevel Reached')
 								triggerHandler:resetLoadingState()
 							end
 						end

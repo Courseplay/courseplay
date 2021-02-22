@@ -218,11 +218,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	courseplay:getReverseProperties(vehicle, workTool);
 
 	-- TRAFFIC COLLISION IGNORE LIST
-	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
+	courseplay:debug(('%s: adding %q (%q) to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), courseplay.DBG_TRAFFIC);
 	vehicle.cpTrafficCollisionIgnoreList[workTool.rootNode] = true;
 	-- TRAFFIC COLLISION IGNORE LIST (components)
 	if workTool.components ~= nil then
-		courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), 3);
+		courseplay:debug(('%s: adding %q (%q) components to cpTrafficCollisionIgnoreList'):format(nameNum(vehicle), nameNum(workTool), tostring(workTool.cp.xmlFileName)), courseplay.DBG_TRAFFIC);
 		for i,component in pairs(workTool.components) do
 			vehicle.cpTrafficCollisionIgnoreList[component.node] = true;
 		end;
@@ -243,11 +243,11 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		-- list debug
 		if courseplay.debugChannels[3] then
 			cpPrintLine(6);
-			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), 3);
+			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), courseplay.DBG_TRAFFIC);
 			for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
         if g_currentMission.nodeToObject[ a ] then
           local name = g_currentMission.nodeToObject[a].name;
-          courseplay:debug(('\\___ [%s] = %s (%q)'):format(tostring(a), tostring(name), tostring(getName(a))), 3);
+          courseplay:debug(('\\___ [%s] = %s (%q)'):format(tostring(a), tostring(name), tostring(getName(a))), courseplay.DBG_TRAFFIC);
         end
 			end;
 		end;

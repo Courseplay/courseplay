@@ -32,7 +32,7 @@ Conflict.clearThresholdMilliSecHeadOn = 1000
 Conflict.maxTriggerAge = 30000
 
 function Conflict:init(vehicle, otherVehicle, triggerId, d, eta, otherD, otherEta, yRotDiff)
-	self.debugChannel = 3
+	self.debugChannel = courseplay.DBG_TRAFFIC
 	self.vehicle = vehicle
 	self.otherVehicle = otherVehicle
     self.triggers = {}

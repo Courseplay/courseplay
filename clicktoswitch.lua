@@ -61,7 +61,7 @@ function clickToSwitch:vehicleClickToSwitchRaycastCallback(hitObjectId, x, y, z,
                 -- this is a valid vehicle, so enter it
                 g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetObject, g_currentMission.missionInfo.playerStyle, g_currentMission.player.ownerFarmId));
                 g_currentMission.isPlayerFrozen = false;
-                courseplay.debugFormat(1,"clickToSwitch raycastCallBack: attempt to enter vehicle: %s ",nameNum(targetObject))
+                courseplay.debugFormat(courseplay.DBG_TRIGGERS,"clickToSwitch raycastCallBack: attempt to enter vehicle: %s ",nameNum(targetObject))
                 return false
             end                
         end

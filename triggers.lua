@@ -85,10 +85,10 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	
 	-- TIPTRIGGERS
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
-	courseplay:debug(('%s: found %s'):format(nameNum(self), name), 1);
+	courseplay:debug(('%s: found %s'):format(nameNum(self), name), courseplay.DBG_TRIGGERS);
 
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
-		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), 1);
+		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), courseplay.DBG_TRIGGERS);
 		local trailerFillType = self.cp.workTools[1].cp.fillType;
 		if trailerFillType == nil or trailerFillType == 0 then
 			for i=1,#(self.cp.workTools) do
@@ -102,11 +102,11 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 			local trigger = tipTriggers[transformId]
 			if trigger ~= nil then
 				if trigger.bunkerSilo ~= nil and trigger.state ~= 0 then 
-					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.state), 1);
+					courseplay:debug(('%s: bunkerSilo.state=%d -> ignoring trigger'):format(nameNum(self), trigger.state), courseplay.DBG_TRIGGERS);
 					return true
 				end
 				if self.cp.hasShield and trigger.bunkerSilo == nil then
-					courseplay:debug(nameNum(self) .. ": has silage shield and trigger is not BGA -> ignoring trigger", 1);
+					courseplay:debug(nameNum(self) .. ": has silage shield and trigger is not BGA -> ignoring trigger", courseplay.DBG_TRIGGERS);
 					return true
 				end
 
@@ -114,28 +114,28 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				if triggerId == nil then
 					triggerId = trigger.tipTriggerId;
 				end;
-				courseplay:debug(('%s: transformId %s is in tipTriggers (#%s) (triggerId=%s)'):format(nameNum(self), tostring(transformId), tostring(tipTriggersCount), tostring(triggerId)), 1);
+				courseplay:debug(('%s: transformId %s is in tipTriggers (#%s) (triggerId=%s)'):format(nameNum(self), tostring(transformId), tostring(tipTriggersCount), tostring(triggerId)), courseplay.DBG_TRIGGERS);
 
 				if trigger.isFermentingSiloTrigger then
 					trigger = trigger.TipTrigger
-					courseplay:debug('    trigger is FermentingSiloTrigger', 1);
+					courseplay:debug('    trigger is FermentingSiloTrigger', courseplay.DBG_TRIGGERS);
 				elseif trigger.isAlternativeTipTrigger then
-					courseplay:debug('    trigger is AlternativeTipTrigger', 1);
+					courseplay:debug('    trigger is AlternativeTipTrigger', courseplay.DBG_TRIGGERS);
 				elseif trigger.isPlaceableHeapTrigger then
-					courseplay:debug('    trigger is PlaceableHeap', 1);
+					courseplay:debug('    trigger is PlaceableHeap', courseplay.DBG_TRIGGERS);
 				end;
 
-				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and g_fillTypeManager.indexToName[trailerFillType] or ''), 1);
+				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and g_fillTypeManager.indexToName[trailerFillType] or ''), courseplay.DBG_TRIGGERS);
 				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
-					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), 1);
+					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					-- check trigger fillLevel / capacity
 					if trigger.unloadingStation then
 						local ownerFarmId = self:getOwnerFarmId();
 						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
 						local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
-						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), 1);
+						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), courseplay.DBG_TRIGGERS);
 						if fillLevel>=capacity then
-							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), 1);
+							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 							return true;
 						end
 					end;
@@ -144,28 +144,28 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					local fillTypeIsValid = true;
 					if trigger.currentFillType then
 						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == trailerFillType;
-						courseplay:debug(('    trigger (%s): currentFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.currentFillType, tostring(fillTypeIsValid)), 1);
+						courseplay:debug(('    trigger (%s): currentFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.currentFillType, tostring(fillTypeIsValid)), courseplay.DBG_TRIGGERS);
 					elseif trigger.getFillType then
 						local triggerFillType = trigger:getFillType();
 						fillTypeIsValid = triggerFillType == 0 or triggerFillType == trailerFillType;
-						courseplay:debug(('    trigger (%s): trigger:getFillType()=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), triggerFillType, tostring(fillTypeIsValid)), 1);
+						courseplay:debug(('    trigger (%s): trigger:getFillType()=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), triggerFillType, tostring(fillTypeIsValid)), courseplay.DBG_TRIGGERS);
 					end;
 
 					if fillTypeIsValid then
 						self.cp.currentTipTrigger = trigger;
 						self.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.cp.directionNode or self.rootNode, trigger.triggerId)*2
-						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), 1);
+						courseplay:debug(('%s: self.cp.currentTipTrigger=%s , cpActualLength=%s'):format(nameNum(self), tostring(triggerId),tostring(self.cp.currentTipTrigger.cpActualLength)), courseplay.DBG_TRIGGERS);
 						return false
 					end;
 				elseif trigger.acceptedFillTypes ~= nil then
 
 					if courseplay.debugChannels[1] then
-						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), 1);
-						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), 1);
+						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), courseplay.DBG_TRIGGERS);
+						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:printTipTriggersFruits(trigger)
 					end
 				else
-					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (trailerFillType=%s)", nameNum(self), tostring(triggerId), tostring(trailerFillType)), 1);
+					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (trailerFillType=%s)", nameNum(self), tostring(triggerId), tostring(trailerFillType)), courseplay.DBG_TRIGGERS);
 				end;
 				return true;
 			end;
@@ -175,7 +175,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	CpManager.confirmedNoneTipTriggers[transformId] = true;
 	CpManager.confirmedNoneTipTriggersCounter = CpManager.confirmedNoneTipTriggersCounter + 1;
-	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), name, CpManager.confirmedNoneTipTriggersCounter), 1);
+	courseplay:debug(('%s: added %s to trigger blacklist -> total=%d'):format(nameNum(self), name, CpManager.confirmedNoneTipTriggersCounter), courseplay.DBG_TRIGGERS);
 
 	return true;
 end;
@@ -290,7 +290,7 @@ end;
 
 
 function courseplay:updateAllTriggers()
-	courseplay:debug('updateAllTriggers()', 1);
+	courseplay:debug('updateAllTriggers()', courseplay.DBG_TRIGGERS);
 
 	--RESET
 	if courseplay.triggers ~= nil then
@@ -333,7 +333,7 @@ function courseplay:updateAllTriggers()
 	-- UPDATE
 ]]
 	if g_currentMission.itemsToSave ~= nil then
-		courseplay:debug('   check itemsToSave', 1);
+		courseplay:debug('   check itemsToSave', courseplay.DBG_TRIGGERS);
 		
 		local counter = 0;
 		for index,itemToSave in pairs (g_currentMission.itemsToSave) do
@@ -350,20 +350,20 @@ function courseplay:updateAllTriggers()
 									unloadTrigger = unloadTrigger;				
 								}
 						
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.sellingStation.stationName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.sellingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 				end
 			end
 			
 			if item.bga and item.bga.bunker then
-				courseplay:debug('   found a BGA', 1);
+				courseplay:debug('   found a BGA', courseplay.DBG_TRIGGERS);
 				local trigger = {}
 				local fillTypes ={}
 				for i=1, #item.bga.bunker.slots do
 					for filltype,_ in pairs (item.bga.bunker.slots[i].fillTypes) do
 						fillTypes[filltype] = true
-						courseplay:debug(string.format('     add %d(%s) from slot%d to acceptedFilltypes',filltype, g_fillTypeManager.indexToName[filltype] , i), 1);
+						courseplay:debug(string.format('     add %d(%s) from slot%d to acceptedFilltypes',filltype, g_fillTypeManager.indexToName[filltype] , i), courseplay.DBG_TRIGGERS);
 						--item.bga.bunker.slots[x].fillTypes[filltype]
 					end
 				end
@@ -377,7 +377,7 @@ function courseplay:updateAllTriggers()
 									unloadingStation = item.bga.bunker.unloadingStation;
 								}
 						
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.bga.bunker.unloadingStation.stationName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.bga.bunker.unloadingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 					if unloadTrigger.exactFillRootNode then
@@ -389,20 +389,20 @@ function courseplay:updateAllTriggers()
 									unloadingStation = item.bga.bunker.unloadingStation;									
 								}
 						
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.bga.bunker.unloadingStation.stationName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',item.bga.bunker.unloadingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 				end
-				courseplay:debug('   BGA End -------------', 1);
+				courseplay:debug('   BGA End -------------', courseplay.DBG_TRIGGERS);
 			end			
 		end
-		courseplay:debug(('  %i in list'):format(counter), 1);		
+		courseplay:debug(('  %i in list'):format(counter), courseplay.DBG_TRIGGERS);
 	end
 
 
 	-- placeables objects
 	if g_currentMission.placeables ~= nil then
-		courseplay:debug('   check placeables', 1);
+		courseplay:debug('   check placeables', courseplay.DBG_TRIGGERS);
 		local counter = 0
 		for placeableIndex, placeable in pairs(g_currentMission.placeables) do
 			counter = counter +1 
@@ -418,7 +418,7 @@ function courseplay:updateAllTriggers()
 								unloadTrigger = unloadTrigger;
 							}
 					
-					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.unloadingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.unloadingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end
 			end
@@ -433,7 +433,7 @@ function courseplay:updateAllTriggers()
 								acceptedFillTypes = placeable.sellingStation.acceptedFillTypes;
 								unloadTrigger = unloadTrigger;				
 							}
-					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.sellingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers',placeable.sellingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 				end
 			end
@@ -453,7 +453,7 @@ function courseplay:updateAllTriggers()
 												--capacity = myModule.fillCapacity;
 												--fillLevels = myModule.fillLevels;
 											}
-							courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
+							courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 							courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');							
 					end
 										
@@ -465,12 +465,12 @@ function courseplay:updateAllTriggers()
 											--capacity = myModule.fillCapacity;
 											--fillLevels = myModule.fillLevels;
 										}
-						courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to tipTriggers',myModule.moduleName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
 					end
 					if myModule.loadPlace ~= nil then                                            
                         local triggerId = myModule.loadPlace.triggerNode;                        						      
-						courseplay:debug(string.format('    add %s(%s) to fillTriggers',myModule.moduleName,tostring(triggerId)), 1);
+						courseplay:debug(string.format('    add %s(%s) to fillTriggers',myModule.moduleName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:cpAddTrigger(triggerId, myModule.loadPlace, 'fillTrigger');
                     end					
 				end
@@ -479,7 +479,7 @@ function courseplay:updateAllTriggers()
 			if placeable.buyingStation ~= nil then
 				for _,loadTrigger in pairs (placeable.buyingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
-					courseplay:debug(string.format('    add %s(%s) to fillTriggers (buyingStation)', placeable.buyingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (buyingStation)', placeable.buyingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
 				end
 			end
@@ -487,19 +487,19 @@ function courseplay:updateAllTriggers()
 			if placeable.loadingStation ~= nil then
 				for _,loadTrigger in pairs (placeable.loadingStation.loadTriggers) do
 					local triggerId = loadTrigger.triggerNode;
-					courseplay:debug(string.format('    add %s(%s) to fillTriggers (loadingStation)', placeable.loadingStation.stationName,tostring(triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (loadingStation)', placeable.loadingStation.stationName,tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(triggerId, loadTrigger, 'fillTrigger');
 				end
 			end
 
 
 		end
-		courseplay:debug(('   %i found'):format(counter), 1);
+		courseplay:debug(('   %i found'):format(counter), courseplay.DBG_TRIGGERS);
 	end;
 	
 	
 	if g_currentMission.vehicles ~= nil then
-		courseplay:debug('   check fillTriggerVehicles', 1);
+		courseplay:debug('   check fillTriggerVehicles', courseplay.DBG_TRIGGERS);
 		local counter = 0
 		for vehicleIndex, vehicle in pairs(g_currentMission.vehicles) do
 				if vehicle.spec_fillTriggerVehicle then
@@ -509,19 +509,19 @@ function courseplay:updateAllTriggers()
 						local triggerId = trigger.triggerId
 
 						courseplay:cpAddTrigger(triggerId, trigger, 'fillTrigger');
-						courseplay:debug(string.format('    add %s(%i) to fillTriggers (fillTriggerVehicle)', vehicle:getName(),triggerId), 1);
+						courseplay:debug(string.format('    add %s(%i) to fillTriggers (fillTriggerVehicle)', vehicle:getName(),triggerId), courseplay.DBG_TRIGGERS);
 					end
 				end
 		end
-		courseplay:debug(('   %i found'):format(counter), 1);
+		courseplay:debug(('   %i found'):format(counter), courseplay.DBG_TRIGGERS);
 	end;
 
 	if g_currentMission.bunkerSilos ~= nil then
-		courseplay:debug('   check bunkerSilos', 1);
+		courseplay:debug('   check bunkerSilos', courseplay.DBG_TRIGGERS);
 		for _, trigger in pairs(g_currentMission.bunkerSilos) do
 			if courseplay:isValidTipTrigger(trigger) and trigger.bunkerSilo then
 				local triggerId = trigger.triggerId;
-				courseplay:debug(('    add tipTrigger: id=%d, is BunkerSiloTipTrigger '):format(triggerId), 1);
+				courseplay:debug(('    add tipTrigger: id=%d, is BunkerSiloTipTrigger '):format(triggerId), courseplay.DBG_TRIGGERS);
 							
 				--local area = trigger.bunkerSiloArea
 				--local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
@@ -535,40 +535,40 @@ function courseplay:updateAllTriggers()
 	end
 	
 	if g_currentMission.nodeToObject ~= nil then
-		courseplay:debug('   check nodeToObject', 1);
+		courseplay:debug('   check nodeToObject', courseplay.DBG_TRIGGERS);
 		for _,object in pairs (g_currentMission.nodeToObject) do
 			if object.exactFillRootNode ~= nil and not courseplay.triggers.all[object.exactFillRootNode] then
-				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(object.exactFillRootNode)), 1);
+				courseplay:debug(string.format('    add %s(%s) to tipTriggers (nodeToObject->exactFillRootNode)', '',tostring(object.exactFillRootNode)), courseplay.DBG_TRIGGERS);
 				courseplay:cpAddTrigger(object.exactFillRootNode, object, 'tipTrigger');
 			end
 			if object.triggerNode ~= nil and not courseplay.triggers.all[object.triggerNode] then
 				local triggerId = object.triggerNode;
-				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject->triggerNode )', '',tostring(triggerId)), 1);
+				courseplay:debug(string.format('    add %s(%s) to fillTriggers (nodeToObject->triggerNode )', '',tostring(triggerId)), courseplay.DBG_TRIGGERS);
 				courseplay:cpAddTrigger(triggerId, object, 'fillTrigger');
 			end
 			--[[if object.baleTriggerNode ~= nil and not courseplay.triggers.all[object.baleTriggerNode] then
 				courseplay:cpAddTrigger(object.baleTriggerNode, object, 'tipTrigger');
-				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), 1);
+				courseplay:debug(('    add tipTrigger: id=%d, name=%q, className=%q, is BunkerSiloTipTrigger '):format(object.baleTriggerNode, '', className), courseplay.DBG_TRIGGERS);
 			end]]
 		end			
 	end
 	
 	if g_company ~= nil and g_company.triggerManagerList ~= nil then
-		courseplay:debug('   check globalCompany mod', 1);
+		courseplay:debug('   check globalCompany mod', courseplay.DBG_TRIGGERS);
 		for i=1,#g_company.triggerManagerList do
 			local triggerManager = g_company.triggerManagerList[i];			
-			courseplay:debug(string.format('    triggerManager %d:',i), 1);
+			courseplay:debug(string.format('    triggerManager %d:',i), courseplay.DBG_TRIGGERS);
 			for index, trigger in pairs (triggerManager.registeredTriggers) do
 				if trigger.exactFillRootNode then
 					trigger.triggerId = trigger.exactFillRootNode;
 					trigger.acceptedFillTypes = trigger.fillTypes
-					courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to tipTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'tipTrigger');
 				end	
 				if trigger.triggerNode then
 					trigger.triggerId = trigger.triggerNode;
 					trigger.isGlobalCompanyFillTrigger = true
-					courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), 1);
+					courseplay:debug(string.format('    add %s(%s) to fillTriggers (globalCompany mod)', '',tostring(trigger.triggerId)), courseplay.DBG_TRIGGERS);
 					courseplay:cpAddTrigger(trigger.triggerId, trigger, 'fillTrigger');
 				end
 			end
@@ -577,7 +577,7 @@ function courseplay:updateAllTriggers()
 end;
 
 function courseplay:cpAddTrigger(triggerId, trigger, groupType)
-	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), 1);
+	--courseplay:debug(('%s: courseplay:cpAddTrigger: TriggerId: %s,trigger: %s, triggerType: %s,groupType: %s'):format(nameNum(self), tostring(triggerId), tostring(trigger), tostring(triggerType), tostring(groupType)), courseplay.DBG_TRIGGERS);
 	local t = courseplay.triggers;
 	if t.all[triggerId] ~= nil then return; end;
 
@@ -612,7 +612,7 @@ end;
 -- Adding easy access to SiloTrigger
 --------------------------------------------------
 function courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	courseplay:debug(' SiloTrigger_TriggerCallback',2);
+	courseplay:debug(' SiloTrigger_TriggerCallback',courseplay.DBG_LOAD_UNLOAD);
 	local trailer = g_currentMission.nodeToObject[otherShapeId];
 	if trailer ~= nil then
 		-- Make sure cp table is present in the trailer.
@@ -627,14 +627,14 @@ function courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, o
 			-- Add the current SiloTrigger to the cp table, for easier access.
 			if not trailer.cp.currentSiloTrigger then
 				trailer.cp.currentSiloTrigger = self;
-				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), 2);
+				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), courseplay.DBG_LOAD_UNLOAD);
 			end;
 			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits + 1;
 		elseif onLeave and not self.Schnecke and trailer.cp.siloTriggerHits >= 1 then 
 			-- Remove the current SiloTrigger.
 			if trailer.cp.currentSiloTrigger ~= nil and trailer.cp.siloTriggerHits == 1 then
 				trailer.cp.currentSiloTrigger = nil;
-				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), 2);
+				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), courseplay.DBG_LOAD_UNLOAD);
 			end;
 			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits - 1;
 		end;

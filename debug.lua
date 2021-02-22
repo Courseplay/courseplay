@@ -1,3 +1,8 @@
+courseplay = courseplay or {}
+courseplay.DBG_TRIGGERS = 1
+courseplay.DBG_LOAD_UNLOAD = 2
+courseplay.DBG_TRAFFIC = 3
+
 function CpManager:setUpDebugChannels()
 	print('## Courseplay: setting up debug channels');
 
@@ -41,12 +46,18 @@ function CpManager:setUpDebugChannels()
 	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = defaultActive[channel] or false;
 	end;
+	--[[
+	Regex to replace debug flags:
+	(courseplay:debug.*, *)(3)(\D.*)
+	(courseplay.debugFormat\( *)(3)(\D.*)
+	(courseplay.debug(Vehicle|Format)\( *)(3)(\D.*)
 
+	--]]
 	-- Debug channels legend:
 	courseplay.debugChannelsDesc = {
-		[1] = 'Debug: Raycast (drive + tipTriggers)';
-		[2] = 'Debug: Load and unload tippers';
-		[3] = 'Debug: Traffic collision';
+		[courseplay.DBG_TRIGGERS] = 'Debug: Raycast (drive + tipTriggers)';
+		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: Load and unload tippers';
+		[courseplay.DBG_TRAFFIC] = 'Debug: Traffic collision';
 		[4] = 'Debug: Mode 2/3, combi/overloader';
 		[5] = 'Debug: Multiplayer';
 		[6] = 'Debug: implements (updateWorkTools etc.)';
