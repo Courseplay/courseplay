@@ -72,7 +72,7 @@
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": potřebuje vyložit." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": pracovní stroj musí být doplněn." />
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="skládá balíky." />
-		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
+		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": není vybráno žádné pole " />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="stojí v dopravní zácpě." />
 		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="zpomalil díky provozu." />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Místo vysypání dosaženo" />
@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="na vybraném bodě" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="následující čekací bod" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Vykládání" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Svoz balíků" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Trasa okolo pole:" />
 		<text name="COURSEPLAY_FIELD" 										text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(načtená trasa)" />
