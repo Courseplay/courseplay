@@ -43,8 +43,12 @@ function BaleCollectorAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_BALE_COLLECTOR
 	self.fieldId = 0
 	self.bales = {}
-	-- make sure we have a good turning radius set
-	self.turnRadius = AIDriverUtil.getTurningRadius(self.vehicle)
+	--we don't need this variable on the client side,
+	--as calling AIDriverUtil.getTurningRadius causes an error 
+	if g_server then 
+		-- make sure we have a good turning radius set
+		self.turnRadius = AIDriverUtil.getTurningRadius(self.vehicle)
+	end
 end
 
 function BaleCollectorAIDriver:setHudContent()
