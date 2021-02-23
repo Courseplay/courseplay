@@ -634,7 +634,7 @@ end
 
 --release the driver completely once entered
 function FieldworkAIDriver:shouldDriverBeReleased()
-	if self.vehicle:getIsEntered() and self.shouldBeReleasedOnceEntered then
+	if (self.vehicle:getIsEntered() or self.vehicle:getIsControlled()) and self.shouldBeReleasedOnceEntered then
 		self.shouldBeReleasedOnceEntered = nil
 		--unitl there is leftover code in courseplay:stop() we need to use it
 		--setCourseplayFunc used as a way to call it on server and client
