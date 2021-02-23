@@ -88,6 +88,8 @@ function FieldworkAIDriver.register()
 				return true
 			elseif SpecializationUtil.hasSpecialization(BaleWrapper, self.specializations) then
 				return true
+				elseif SpecializationUtil.hasSpecialization(Combine, self.specializations) then
+				return true
 			elseif SpecializationUtil.hasSpecialization(Pickup, self.specializations) then
 				return true
 			elseif SpecializationUtil.hasSpecialization(Cutter, self.specializations) then
