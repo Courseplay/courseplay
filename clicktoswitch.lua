@@ -42,7 +42,7 @@ function clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouse
     local activeCam = getCamera()
     if activeCam ~= nil then
         local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(posX, posY, activeCam)
-        courseplay.debugVehicle(1,vehicle,"create a clickToSwitch raycast")
+        courseplay.debugVehicle(courseplay.DBG_TRIGGERS,vehicle,"create a clickToSwitch raycast")
         raycastClosest(hx, hy, hz, px, py, pz, "vehicleClickToSwitchRaycastCallback", 1000, self, 371)
     end
 end

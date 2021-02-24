@@ -70,8 +70,7 @@ function CpManager:setUpDebugChannels()
 	--[[
 	Regex to replace debug flags:
 	(courseplay:debug.*, *)(3)(\D.*)
-	(courseplay.debugFormat\( *)(3)(\D.*)
-	(courseplay.debug(Vehicle|Format)\( *)(3)(\D.*)
+	(courseplay.debug(Vehicle|Format)\( *)(\d+)(\D.*)  -> $1courseplay.DBG_$3$4
 
 	--]]
 	-- Debug channels legend:
@@ -134,7 +133,7 @@ function courseplay:debug(str, channel)
 end;
 
 -- convenience debug function that expects string.format() arguments,
--- courseplay.debugVehicle( 14, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_14, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugFormat(channel, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
@@ -145,7 +144,7 @@ function courseplay.debugFormat(channel, ...)
 end
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
--- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugVehicle(channel, vehicle, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then

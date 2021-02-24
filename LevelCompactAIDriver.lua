@@ -48,7 +48,7 @@ LevelCompactAIDriver.myStates = {
 
 --- Constructor
 function LevelCompactAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'LevelCompactAIDriver:init') 
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'LevelCompactAIDriver:init')
 	AIDriver.init(self, vehicle)
 	self:initStates(LevelCompactAIDriver.myStates)
 	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
@@ -553,7 +553,7 @@ function LevelCompactAIDriver:getSpeed()
 end
 
 function LevelCompactAIDriver:debug(...)
-	courseplay.debugVehicle(10, self.vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_10, self.vehicle, ...)
 end
 
 function LevelCompactAIDriver:checkSilo()

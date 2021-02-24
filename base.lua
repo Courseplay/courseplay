@@ -209,7 +209,7 @@ function courseplay:onLoad(savegame)
 	else
 		self.cp.steeringAngle = 30;
 	end
-	courseplay.debugVehicle( 7, self, 'steering angle is %.1f', self.cp.steeringAngle)
+	courseplay.debugVehicle( courseplay.DBG_COURSE_GENERATOR, self, 'steering angle is %.1f', self.cp.steeringAngle)
 	if isTruck then
 		self.cp.revSteeringAngle = self.cp.steeringAngle * 0.25;
 	end;

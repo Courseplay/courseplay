@@ -167,7 +167,7 @@ function ProximitySensorPack:init(name, vehicle, ppc, node, range, height, direc
 end
 
 function ProximitySensorPack:debug(...)
-    courseplay.debugVehicle(12, self.vehicle, ...)
+    courseplay.debugVehicle(courseplay.DBG_12, self.vehicle, ...)
 end
 
 function ProximitySensorPack:adjustForwardPosition()

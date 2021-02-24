@@ -57,7 +57,7 @@ CombineAIDriver.turnTypes = {
 CombineAIDriver.isACombineAIDriver = true
 
 function CombineAIDriver:init(vehicle)
-	courseplay.debugVehicle(11, vehicle, 'CombineAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11, vehicle, 'CombineAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self:initStates(CombineAIDriver.myStates)
 	self.fruitLeft, self.fruitRight = 0, 0

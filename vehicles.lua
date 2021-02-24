@@ -1494,7 +1494,7 @@ function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, 
 
     -- smooth the offset a bit to avoid sudden changes
     tightTurnOffset = smoothOffset(offset)
-    courseplay.debugVehicle(14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
+    courseplay.debugVehicle(courseplay.DBG_14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
     -- remember the last value for smoothing
     return tightTurnOffset
 end
@@ -1555,12 +1555,12 @@ end
 
 -- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
 function AIDriverUtil.getTurningRadius(vehicle)
-	courseplay.debugVehicle(6, vehicle, 'Finding turn radius:')
+	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, 'Finding turn radius:')
 
 	local radius = vehicle.maxTurningRadius * 1.05 -- TODO: do we really need this buffer?
-	courseplay.debugVehicle(6, vehicle, '  maxTurningRadius by Giants is %.1f', vehicle.maxTurningRadius)
+	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  maxTurningRadius by Giants is %.1f', vehicle.maxTurningRadius)
 	if vehicle:getAIMinTurningRadius() ~= nil then
-		courseplay.debugVehicle(6, vehicle, '  AIMinTurningRadius by Giants is %.1f', vehicle:getAIMinTurningRadius())
+		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  AIMinTurningRadius by Giants is %.1f', vehicle:getAIMinTurningRadius())
 		radius = math.max(radius, vehicle:getAIMinTurningRadius())
 	end
 
@@ -1571,24 +1571,24 @@ function AIDriverUtil.getTurningRadius(vehicle)
 		local turnRadius = 0
 		if g_vehicleConfigurations:get(implement.object, 'turnRadius') then
 			turnRadius = g_vehicleConfigurations:get(implement.object, 'turnRadius')
-			courseplay.debugVehicle(6, vehicle, '  %s: using the configured turn radius %.1f',
+			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: using the configured turn radius %.1f',
 				implement.object:getName(), turnRadius)
 		else
 			turnRadius = AIVehicleUtil.getMaxToolRadius(implement)
 			if turnRadius > 0 then
-				courseplay.debugVehicle(6, vehicle, '  %s: using the Giants turn radius %.1f',
+				courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: using the Giants turn radius %.1f',
 					implement.object:getName(), turnRadius)
 			else
 				turnRadius = courseplay:getToolTurnRadius(implement.object)
-				courseplay.debugVehicle(6, vehicle, '  %s: no Giants turn radius, we calculated %.1f',
+				courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: no Giants turn radius, we calculated %.1f',
 					implement.object:getName(), turnRadius)
 			end
 		end
 		maxToolRadius = math.max(maxToolRadius, turnRadius)
-		courseplay.debugVehicle(6, vehicle, '  %s: max tool radius now is %.1f', implement.object:getName(), maxToolRadius)
+		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: max tool radius now is %.1f', implement.object:getName(), maxToolRadius)
 	end
 	radius = math.max(radius, maxToolRadius)
-	courseplay.debugVehicle(6, vehicle, 'getTurningRadius: %.1f m', radius)
+	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, 'getTurningRadius: %.1f m', radius)
 	return radius
 end
 
@@ -1625,7 +1625,7 @@ function AIDriverUtil.getFirstAttachedImplement(vehicle)
 			-- the distance from the vehicle's root node to the front of the implement
 			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
 					implement.object.sizeLength / 2 + implement.object.lengthOffset)
-			courseplay.debugVehicle(6, vehicle, '%s front distance %d', implement.object:getName(), d)
+			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '%s front distance %d', implement.object:getName(), d)
 			if d > maxDistance then
 				maxDistance = d
 				firstImplement = implement.object
@@ -1646,7 +1646,7 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 			-- the distance from the vehicle's root node to the back of the implement
 			local _, _, d = localToLocal(implement.object.rootNode, vehicle.rootNode, 0, 0,
 					- implement.object.sizeLength / 2 + implement.object.lengthOffset)
-			courseplay.debugVehicle(6, vehicle, '%s back distance %d', implement.object:getName(), d)
+			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '%s back distance %d', implement.object:getName(), d)
 			if d < minDistance then
 				minDistance = d
 				lastImplement = implement.object

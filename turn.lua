@@ -634,7 +634,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 	--- Do the opposite direction turns for bale loaders, so we avoid bales in the normal turn direction
 	if doNormalTurn and isReverseingBaleLoader then
-		courseplay.debugVehicle(14, vehicle, '(Turn) opposite direction for bale loaders to avoid bales')
+		courseplay.debugVehicle(courseplay.DBG_14, vehicle, '(Turn) opposite direction for bale loaders to avoid bales')
 		doNormalTurn = false;
 	end;
 
@@ -1137,7 +1137,7 @@ end;
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay.debugVehicle( 14, vehicle, "(Turn) Using Headland Corner Reverse Turn" )
+	courseplay.debugVehicle( courseplay.DBG_14, vehicle, "(Turn) Using Headland Corner Reverse Turn" )
 	cpPrintLine(14, 3);
 
 	local fromPoint, toPoint = {}, {};
@@ -1153,7 +1153,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	turnInfo.turnRadius = turnInfo.turnRadius * 1.1
 	local deltaZC = turnInfo.turnRadius / math.abs( math.tan( turnInfo.deltaAngle / 2 ))
 	centerForward.x,_,centerForward.z = localToWorld(turnStartNode, - turnInfo.direction * turnInfo.turnRadius, 0, -deltaZC )
-	courseplay.debugVehicle( 14, vehicle,
+	courseplay.debugVehicle( courseplay.DBG_14, vehicle,
 		"(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), fwdCircle( %.2f %.2f ), deltaAngle %.2f, deltaZC %.2f",
 		centerForward.x, centerForward.z, math.deg( turnInfo.deltaAngle ), deltaZC )
 
@@ -1162,7 +1162,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle
 	-- we want the work area of our implement reach the edge of the field. We are on a headland, the field edge
 	-- is workwidth/2 from us, but our front marker must reach it.
 	toPoint.x, _, toPoint.z = localToWorld( turnStartNode, 0, 0, vehicle.cp.courseWorkWidth / 2 - turnInfo.frontMarker + turnInfo.wpChangeDistance + 0.5 )
-	courseplay.debugVehicle( 14, vehicle,
+	courseplay.debugVehicle( courseplay.DBG_14, vehicle,
 		"(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightCombine(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, frontMarker: %.1f",
 		fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.courseWorkWidth, turnInfo.frontMarker )
 	courseplay:generateTurnStraightPoints( vehicle, fromPoint, toPoint, false )
@@ -1550,7 +1550,7 @@ function courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, tx, tz, tDirec
 	local angleBetweenTangentAndC1 = math.pi / 2 - math.asin( turnRadius / vehicleToC1Distance )
 	-- check for NaN, may happen when we are closer than turnRadius
 	if angleBetweenTangentAndC1 ~= angleBetweenTangentAndC1 then
-		courseplay.debugVehicle(14, vehicle, "can't create alignment course, r=%.1f, c-v=%.1f", turnRadius, vehicleToC1Distance)
+		courseplay.debugVehicle(courseplay.DBG_14, vehicle, "can't create alignment course, r=%.1f, c-v=%.1f", turnRadius, vehicleToC1Distance)
 		courseplay.destroyNode( wpNode )
 		return nil
 	end
@@ -2099,7 +2099,7 @@ end
 function TurnContext:createCorner(vehicle, r, sideOffset)
 	-- use the average angle of the turn end and the next wp as there is often a bend there
 	local endAngleDeg = self:getAverageEndAngleDeg()
-	courseplay.debugVehicle(14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
+	courseplay.debugVehicle(courseplay.DBG_14, vehicle, 'start angle: %.1f, end angle: %.1f (from %.1f and %.1f)', self.beforeTurnStartWp.angle,
 		endAngleDeg, self.turnEndWp.angle, self.afterTurnEndWp.angle)
 	return Corner(vehicle, self.beforeTurnStartWp.angle, self.turnStartWp, endAngleDeg, self.turnEndWp, r,
 			sideOffset or vehicle.cp.settings.toolOffsetX:get())

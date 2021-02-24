@@ -92,11 +92,11 @@ function ValidModeSetupHandler:isModeValid(mode,object)
 	if validData then 
 		if validData.allowedSetups then 
 			isAllowedOkay = self:isSetupAllowedValid(validData.allowedSetups,object)
-			courseplay.debugVehicle(18,object,"allowedSetups, mode: %d, isAllowedOkay: %s",mode,tostring(isAllowedOkay))
+			courseplay.debugVehicle(courseplay.DBG_18,object,"allowedSetups, mode: %d, isAllowedOkay: %s",mode,tostring(isAllowedOkay))
 		end
 		if validData.disallowedSetups then 
 			isDisallowedOkay = self:isSetupDisallowedValid(validData.disallowedSetups,object)
-			courseplay.debugVehicle(18,object,"disallowedSetup, mode: %d,, isDisallowedOkay: %s",mode,tostring(isDisallowedOkay))
+			courseplay.debugVehicle(courseplay.DBG_18,object,"disallowedSetup, mode: %d,, isDisallowedOkay: %s",mode,tostring(isDisallowedOkay))
 		end
 	else 
 		courseplay.info("ValidModeSetupHandler, validData==nil !!")

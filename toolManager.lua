@@ -5,7 +5,7 @@ function courseplay:attachImplement(implement)
 	local rootVehicle = implement:getRootVehicle()
 	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
 		rootVehicle.hasCourseplaySpec then
-		courseplay.debugVehicle(6, rootVehicle, '%s attached', nameNum(implement))
+		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, rootVehicle, '%s attached', nameNum(implement))
 		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
 end
@@ -21,7 +21,7 @@ function courseplay:detachImplement(implementIndex)
 		local rootVehicle = implement.object:getRootVehicle()
 		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
 			rootVehicle.hasCourseplaySpec then
-			courseplay.debugVehicle(6, rootVehicle, '%s detached', nameNum(implement.object))
+			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, rootVehicle, '%s detached', nameNum(implement.object))
 			-- do not update yet as the implement is still attached to the vehicle.
 			-- defer the update until the next updateTick(), by that time things settle down
 			rootVehicle.cp.toolsDirty = true
@@ -423,7 +423,7 @@ end
 -- TODO: consolidate this with the logic in FieldworkAIDriver:setMarkers()
 function courseplay:getWorkWidth(thing, logPrefix)
 	logPrefix = logPrefix and logPrefix .. '  ' or ''
-	courseplay.debugFormat(6,'%s%s: getting working width...', logPrefix, nameNum(thing))
+	courseplay.debugFormat(courseplay.DBG_IMPLEMENTS,'%s%s: getting working width...', logPrefix, nameNum(thing))
 	-- check if we have a manually configured working width
 	local width = g_vehicleConfigurations:get(thing, 'workingWidth')
 	if not width then
@@ -441,7 +441,7 @@ function courseplay:getWorkWidth(thing, logPrefix)
 			width = math.max( width, courseplay:getWorkWidth(implement.object, logPrefix))
 		end
 	end
-	courseplay.debugFormat(6, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)
+	courseplay.debugFormat(courseplay.DBG_IMPLEMENTS, '%s%s: working width is %.1f', logPrefix, nameNum(thing), width)
 	return width
 end
 
@@ -456,11 +456,11 @@ function courseplay:getWorkAreaWidth(object, logPrefix)
 		local x, _, _ = localToLocal(wa.width, wa.start, 0, 0, 0)
 		width = math.max(width, math.abs(x))
 		local _, _, z = localToLocal(wa.height, wa.start, 0, 0, 0)
-		courseplay.debugFormat(6, '%s%s: work area %d is %s, %.1f by %.1f m',
+		courseplay.debugFormat(courseplay.DBG_IMPLEMENTS, '%s%s: work area %d is %s, %.1f by %.1f m',
 			logPrefix, nameNum(object), i, g_workAreaTypeManager.workAreaTypes[wa.type].name, math.abs(x), math.abs(z))
 	end
 	if width == 0 then
-		courseplay.debugFormat(6, '%s%s: has NO work area', logPrefix, nameNum(object))
+		courseplay.debugFormat(courseplay.DBG_IMPLEMENTS, '%s%s: has NO work area', logPrefix, nameNum(object))
 	end
 	return width
 end
@@ -473,11 +473,11 @@ function courseplay:getAIMarkerWidth(object, logPrefix)
 			local left, _, _ = localToLocal(aiLeftMarker, object.cp.directionNode or object.rootNode, 0, 0, 0);
 			local right, _, _ = localToLocal(aiRightMarker, object.cp.directionNode or object.rootNode, 0, 0, 0);
 			local width, _, _ = localToLocal(aiLeftMarker, aiRightMarker, 0, 0, 0)
-			courseplay.debugFormat( 6, '%s%s aiMarkers: left=%.2f, right=%.2f (width %.2f)', logPrefix, nameNum(object), left, right, width)
+			courseplay.debugFormat( courseplay.DBG_IMPLEMENTS, '%s%s aiMarkers: left=%.2f, right=%.2f (width %.2f)', logPrefix, nameNum(object), left, right, width)
 
 			if left < right then
 				left, right = right, left -- yes, lua can do this!
-				courseplay.debugFormat(6, '%s%s left < right -> switch -> left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
+				courseplay.debugFormat(courseplay.DBG_IMPLEMENTS, '%s%s left < right -> switch -> left=%.2f, right=%.2f', logPrefix, nameNum(object), left, right)
 			end
 			return left - right;
 		end

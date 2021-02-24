@@ -12,7 +12,7 @@ function CourseplayEvent:emptyNew()
 end
 
 function CourseplayEvent:new(vehicle, func, value, page)
-	courseplay:debugVehicle(5,vehicle,"courseplay:CourseplayEvent:new( %s, %s, %s)",tostring(func), tostring(value), tostring(page))
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"courseplay:CourseplayEvent:new( %s, %s, %s)",tostring(func), tostring(value), tostring(page))
 	self.vehicle = vehicle;
 	self.messageNumber = Utils.getNoNil(self.messageNumber,0) +1
 	self.func = func
@@ -60,15 +60,15 @@ function CourseplayEvent:readStream(streamId, connection) -- wird aufgerufen wen
 	else 
 		self.value = streamReadFloat32(streamId);
 	end
-	courseplay:debugVehicle(5,self.vehicle,"	readStream:")
-	courseplay:debugVehicle(5,self.vehicle,"	messageNumber: %s, functionCall: %s, value: %s, page: %s, type: %s ",tostring(messageNumber), tostring(self.func), tostring(self.value),tostring(self.page), tostring(self.type))
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	readStream:")
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	messageNumber: %s, functionCall: %s, value: %s, page: %s, type: %s ",tostring(messageNumber), tostring(self.func), tostring(self.value),tostring(self.page), tostring(self.type))
 
 	self:run(connection);
 end
 
 function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
-	courseplay:debugVehicle(5,self.vehicle,"	writeStream:")
-	courseplay:debugVehicle(5,self.vehicle,"	messageNumber: %s, functionCall: %s, value: %s, page: %s, type: %s ",tostring(messageNumber), tostring(self.func), tostring(self.value),tostring(self.page), tostring(self.type))
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	writeStream:")
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	messageNumber: %s, functionCall: %s, value: %s, page: %s, type: %s ",tostring(messageNumber), tostring(self.func), tostring(self.value),tostring(self.page), tostring(self.type))
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteFloat32(streamId, self.messageNumber);
 	streamWriteString(streamId, self.func);
@@ -100,11 +100,11 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 end
 
 function CourseplayEvent:run(connection) -- wir fuehren das empfangene event aus
-	courseplay:debugVehicle(5,self.vehicle,"\t\t\trun")
-	courseplay:debugVehicle(5,self.vehicle,'\t\t\t\function=%s, value=%s', tostring(self.func), tostring(self.value));
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"\t\t\trun")
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,'\t\t\t\function=%s, value=%s', tostring(self.func), tostring(self.value));
 	self.vehicle:setCourseplayFunc(self.func, self.value, true, self.page);
 	if not connection:getIsServer() then
-		courseplay:debugVehicle(5,self.vehicle,"broadcast event feedback")
+		courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"broadcast event feedback")
 		g_server:broadcastEvent(CourseplayEvent:new(self.vehicle, self.func, self.value, self.page), nil, connection, self.object);
 	end;
 end
@@ -112,12 +112,12 @@ end
 function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- hilfsfunktion, die Events anst��te (wirde von setRotateDirection in der Spezi aufgerufen) 
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
-			courseplay:debugVehicle(5,vehicle,"broadcast event")
-			courseplay:debugVehicle(5,vehicle,'function=%s, value=%s, page=%s', tostring(func), tostring(value), tostring(page));
+			courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"broadcast event")
+			courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'function=%s, value=%s, page=%s', tostring(func), tostring(value), tostring(page));
 			g_server:broadcastEvent(CourseplayEvent:new(vehicle, func, value, page), nil, nil, vehicle);
 		else
-			courseplay:debugVehicle(5,vehicle,"send event")
-			courseplay:debugVehicle(5,vehicle,'function=%s, value=%s, page=%s', tostring(func), tostring(value), tostring(page));
+			courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"send event")
+			courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'function=%s, value=%s, page=%s', tostring(func), tostring(value), tostring(page));
 			g_client:getServerConnection():sendEvent(CourseplayEvent:new(vehicle, func, value, page));
 		end;
 	end;
@@ -125,7 +125,7 @@ end
 
 function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
 	if variable ~= variableMemory then
-		courseplay:debugVehicle(5,vehicle,"checkForChangeAndBroadcast")
+		courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"checkForChangeAndBroadcast")
 		CourseplayEvent.sendEvent(self, stringName, variable)
 		variableMemory = variable
 	end

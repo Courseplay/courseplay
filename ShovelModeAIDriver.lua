@@ -70,7 +70,7 @@ ShovelModeAIDriver.SHOVEL_POSITIONS.UNLOADING = 4
 
 --- Constructor
 function ShovelModeAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'ShovelModeAIDriver:init') 
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'ShovelModeAIDriver:init')
 	AIDriver.init(self, vehicle)
 	self:initStates(ShovelModeAIDriver.myStates)
 	--self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
@@ -800,7 +800,7 @@ function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 end
 
 function ShovelModeAIDriver:debug(...)
-	courseplay.debugVehicle(10, self.vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_10, self.vehicle, ...)
 end
 
 function ShovelModeAIDriver:setShovelState(state, extraText)

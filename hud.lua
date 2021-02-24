@@ -1706,7 +1706,7 @@ end
 --update functions 
 function courseplay.hud:updateCourseList(vehicle, page)
 	-- update courses?
-	courseplay.debugVehicle(8, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
+	courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
 	if vehicle.cp.reloadCourseItems then
 		courseplay.courses:reloadVehicleCourses(vehicle)
 		CourseplayEvent.sendEvent(vehicle,'self.cp.onMpSetCourses',true)
@@ -2322,7 +2322,7 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,setting,funct, hudPage,
 end
 		
 function courseplay.hud:debug(vehicle,...)
-	courseplay.debugVehicle(18, vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_18, vehicle, ...)
 end	
 	
 -- do not remove this comment

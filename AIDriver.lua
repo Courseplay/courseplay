@@ -141,7 +141,7 @@ AIDriver.myStates = {
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'AIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'AIDriver:init()')
 	self.debugChannel = 14
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
@@ -1253,19 +1253,19 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
-					courseplay.debugVehicle(2,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode))
-					courseplay.debugVehicle(2,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
-					courseplay.debugVehicle(2,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode))
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 				end
 				
 				local tipState = tipper:getTipState()
 				if tipState == Trailer.TIPSTATE_CLOSED or tipState == Trailer.TIPSTATE_CLOSING then
-					courseplay.debugVehicle(2,self.vehicle,"start tipping")
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,"start tipping")
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_GROUND)
 				end				
 			else
 				if self.unloadSpeed then
-					courseplay.debugVehicle(2,self.vehicle,"reset self.unloadSpeed")
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,"reset self.unloadSpeed")
 				end
 				self.unloadSpeed = nil
 				if tipper.cp.fillLevel == 0 then
@@ -1356,7 +1356,7 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			local maxDist = isBGA and (self.vehicle.cp.totalLength + 55) or (self.vehicle.cp.totalLength + triggerLength);
 			if distToTrigger > maxDist or startReversing then --it's a backup, so we don't need to care about +/-10m
 				courseplay:resetTipTrigger(self.vehicle)
-				courseplay.debugVehicle(1,self.vehicle,"%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist);
+				courseplay.debugVehicle(courseplay.DBG_TRIGGERS,self.vehicle,"%s: distance to currentTipTrigger = %d (> %d or start reversing) --> currentTipTrigger = nil", nameNum(self.vehicle), distToTrigger, maxDist);
 			end
 		else
 			courseplay:resetTipTrigger(self.vehicle)
@@ -1371,9 +1371,9 @@ function AIDriver:tipTriggerIsFull(trigger,tipper)
 		local ownerFarmId = self.vehicle.getOwnerFarmId(self.vehicle);
 		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
 		local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
-		courseplay.debugVehicle(2,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
+		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
 		if fillLevel>=capacity then
-			courseplay.debugVehicle(2, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
+			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
 			return true;
 		end
 	end;

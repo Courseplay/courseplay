@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 BalerAIDriver = CpObject(UnloadableFieldworkAIDriver)
 
 function BalerAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'BalerAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
 	if self.baler then

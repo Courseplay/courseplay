@@ -109,7 +109,7 @@ function PurePursuitController:delete()
 end
 
 function PurePursuitController:debug(...)
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: ' .. string.format( ... ))
+	courseplay.debugVehicle(courseplay.DBG_12, self.vehicle, 'PPC: ' .. string.format( ... ))
 end
 
 function PurePursuitController:debugSparse(...)
@@ -435,7 +435,7 @@ function PurePursuitController:findGoalPoint()
 			self:showGoalpointDiag(2, 'common case, ix=%d, q1=%.1f, q2=%.1f la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- current waypoint is the waypoint at the end of the path segment
 			self:setCurrentWaypoint(ix + 1)
-			--courseplay.debugVehicle(12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
+			--courseplay.debugVehicle(courseplay.DBG_12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
 			break
 		end
 

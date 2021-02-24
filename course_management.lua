@@ -121,7 +121,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 
 		if not g_currentMission.cp_courses[id].waypoints and not g_currentMission.cp_courses[id].virtual then
 			if not CpManager.isMP or not courseplay.isClient then
-				courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
+				courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
 				courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
 			else
 				g_currentMission.cp_courses[id].waypoints = {}
@@ -247,7 +247,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 									vehicle.cp.lastMergedWP = wpNum1;
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
-									courseplay.debugVehicle(8, vehicle,
+									courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle,
 										'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
 										wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist)
 								end;
@@ -1356,7 +1356,7 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 		
 		-- update items for the hud
 		courseplay.hud.reloadCourses(vehicle);
-		courseplay.debugVehicle(8, vehicle, 'reloadVehicleCourses')
+		courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'reloadVehicleCourses')
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
 end
@@ -1871,7 +1871,7 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 		adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
 	end
 	if adCourse then
-		courseplay.debugVehicle(8, vehicle, 'Received AD course with %d waypoints', #adCourse)
+		courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Received AD course with %d waypoints', #adCourse)
 	else
 		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationName)
 		return nil

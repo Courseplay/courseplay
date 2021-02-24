@@ -469,7 +469,7 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
-				courseplay.debugVehicle(8, v,"courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName)
+				courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, v,"courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName)
 				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end
@@ -1758,7 +1758,7 @@ function AutoDriveModeSetting:init(vehicle)
 end
 
 function AutoDriveModeSetting:next()
-	courseplay.debugVehicle(12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
+	courseplay.debugVehicle(courseplay.DBG_12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
 	SettingList.next(self)
 end
 

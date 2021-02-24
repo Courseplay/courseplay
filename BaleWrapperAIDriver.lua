@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 BaleWrapperAIDriver = CpObject(BalerAIDriver)
 
 function BaleWrapperAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'BaleWrapperAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'BaleWrapperAIDriver:init()')
 	-- the only reason this is derived from BalerAIDriver is that some wrappers are also balers. Our concept
 	-- derived classes may not fly when there are multiple specializations to handle, if we had a bale loader
 	-- which is also a bale wrapper then we would probably have to put everything back into the baler.

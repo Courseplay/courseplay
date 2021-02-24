@@ -18,35 +18,35 @@ function AssignedCombinesEvents:new(vehicle,combine)
 end
 
 function AssignedCombinesEvents:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	courseplay.debugVehicle(5,self.vehicle,"AssignedCombinesEvents: readStream ")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"AssignedCombinesEvents: readStream ")
 	self.vehicle = NetworkUtil.getObject(NetworkUtil.readNodeObjectId(streamId))
 	self.combine = NetworkUtil.getObject(NetworkUtil.readNodeObjectId(streamId))
 	self:run(connection);
 end
 
 function AssignedCombinesEvents:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 	
-	courseplay.debugVehicle(5,self.vehicle,"AssignedCombinesEvents: writeStream ")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"AssignedCombinesEvents: writeStream ")
 	NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.vehicle))
 	NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.combine))
 end
 
 function AssignedCombinesEvents:run(connection) -- wir fuehren das empfangene event aus
-	courseplay.debugVehicle(5,self.vehicle,"AssignedCombinesEvents: run ")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"AssignedCombinesEvents: run ")
 	if self.combine then
 		self.vehicle.cp.driver.assignedCombinesSetting:toggleAssignedCombineFromNetwork(self.combine)
 	end
 	if not connection:getIsServer() then
 		g_server:broadcastEvent(AssignedCombinesEvents:new(self.vehicle, self.combine), nil, connection, self.vehicle);
-		courseplay.debugVehicle(5,self.vehicle,"AssignedCombinesEvents: broadcastEvent to all clients ")
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"AssignedCombinesEvents: broadcastEvent to all clients ")
 	end;
 end
 
 function AssignedCombinesEvents.sendEvent(vehicle,combine)
 	if g_server ~= nil then
 		g_server:broadcastEvent(AssignedCombinesEvents:new(vehicle,combine), nil, nil, vehicle);
-		courseplay.debugVehicle(5,vehicle,"AssignedCombinesEvents: broadcast course event ")
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"AssignedCombinesEvents: broadcast course event ")
 	else 
 		g_client:getServerConnection():sendEvent(AssignedCombinesEvents:new(vehicle,combine));
-		courseplay.debugVehicle(5,vehicle,"AssignedCombinesEvents: sendEvent course event to clients ")
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"AssignedCombinesEvents: sendEvent course event to clients ")
 	end
 end

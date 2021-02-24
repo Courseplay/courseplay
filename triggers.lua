@@ -248,7 +248,7 @@ function courseplay:addFoundFillTrigger(vehicle, transformId)
 	--if not, add it
 	if not allreadyThere then
 		table.insert(vehicle.cp.fillTriggers,transformId)
-		courseplay.debugVehicle(19,vehicle,'add %s to vehicle.cp.fillTriggers; new number of triggers: %d',tostring(transformId),#vehicle.cp.fillTriggers)
+		courseplay.debugVehicle(courseplay.DBG_19,vehicle,'add %s to vehicle.cp.fillTriggers; new number of triggers: %d',tostring(transformId),#vehicle.cp.fillTriggers)
 	end
 end
 

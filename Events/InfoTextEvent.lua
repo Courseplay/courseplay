@@ -18,7 +18,7 @@ function InfoTextEvent:new(vehicle,refIdx,forceRemove)
 end
 
 function InfoTextEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	courseplay.debugVehicle(5,vehicle,"readStream infoText event")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"readStream infoText event")
 	if streamReadBool(streamId) then
 		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 	else
@@ -30,7 +30,7 @@ function InfoTextEvent:readStream(streamId, connection) -- wird aufgerufen wenn 
 end
 
 function InfoTextEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
-	courseplay.debugVehicle(5,vehicle,"writeStream infoText event")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"writeStream infoText event")
 	if self.vehicle ~= nil then
 		streamWriteBool(streamId, true)
 		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
@@ -42,7 +42,7 @@ function InfoTextEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn
 end
 
 function InfoTextEvent:run(connection) -- wir fuehren das empfangene event aus
-	courseplay.debugVehicle(5,vehicle,"run infoText event")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"run infoText event")
 	if self.vehicle then 
 		CpManager:setGlobalInfoText(self.vehicle, self.refIdx, self.forceRemove)
 	end
@@ -51,10 +51,10 @@ end
 
 function InfoTextEvent.sendEvent(vehicle,refIdx,forceRemove)
 	if g_server ~= nil then
-		courseplay.debugVehicle(5,vehicle,"broadcast infoText event")
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"broadcast infoText event")
 		g_server:broadcastEvent(InfoTextEvent:new(vehicle,refIdx,forceRemove), nil, nil, vehicle);
 --	else
---		courseplay.debugVehicle(5,vehicle,"send infoText event")
+--		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"send infoText event")
 --		g_client:getServerConnection():sendEvent(InfoTextEvent:new(vehicle,refIdx,forceRemove));
 	end;
 end
