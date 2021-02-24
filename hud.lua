@@ -611,7 +611,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	-- there is a change, they set forceUpdate to force the update of the HUD page, otherwise there's only an empty
 	-- row shown until the page is reselected
 	local forceUpdate = false
-	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), 18);
+	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), courseplay.DBG_18);
 	--go through all the HUD stuff and update the content	
 	for line,columns in pairs(vehicle.cp.hud.content.pages[page]) do
 		for column,entry in pairs(columns) do
@@ -1251,7 +1251,7 @@ function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
 		if courseplay.debugChannels[18] and bool == true then
-			courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), 18);
+			courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_18);
 		end;
 	end;
 end;

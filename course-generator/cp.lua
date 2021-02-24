@@ -56,7 +56,7 @@ function courseGenerator.generate( vehicle )
 	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
 		fieldCourseName = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name;
 	end;
-	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), 7);
+	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), courseplay.DBG_COURSE_GENERATOR);
 
 	local poly = {}
 	local islandNodes = {}
@@ -191,7 +191,7 @@ function courseGenerator.generate( vehicle )
 	vehicle.cp.numWaypoints = #vehicle.Waypoints
 
 	if vehicle.cp.numWaypoints == 0 then
-		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', 7);
+		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', courseplay.DBG_COURSE_GENERATOR);
 		return status, ok;
 	end;
 

@@ -1348,7 +1348,7 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
 			local startReversing = self.course:switchingToReverseAt(self.ppc:getCurrentWaypointIx() - 1)
 			if startReversing then
-				courseplay:debug(string.format(2,"%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), 13);
+				courseplay:debug(string.format(2,"%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), courseplay.DBG_13);
 			end
 
 			local isBGA = t.bunkerSilo ~= nil

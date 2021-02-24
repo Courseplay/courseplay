@@ -211,10 +211,10 @@ function courseplay.button:handleHoverAction(vehicle, posX, posY)
 		local upParameter = parameter;
 		local downParameter = upParameter * -1;
 		if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) and button.canScrollUp then
-			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), 18);
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_UP: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(upParameter)), courseplay.DBG_18);
 			self:handleInput(vehicle,upParameter)
 		elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) and button.canScrollDown then
-			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), 18);
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_WHEEL_DOWN: %s(%s)", nameNum(vehicle), tostring(button.functionToCall), tostring(downParameter)), courseplay.DBG_18);
 			self:handleInput(vehicle,downParameter)
 		end;
 	end;
@@ -224,7 +224,7 @@ function courseplay.button:handleMouseClick(vehicle)
 	vehicle = vehicle or self.vehicle;
 	local parameter = self.parameter;
 	if courseplay.inputModifierIsPressed and self.modifiedParameter ~= nil then
-		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), 18);
+		courseplay:debug("self.modifiedParameter = " .. tostring(self.modifiedParameter), courseplay.DBG_18);
 		parameter = self.modifiedParameter;
 	end;
 
@@ -240,7 +240,7 @@ function courseplay.button:handleMouseClick(vehicle)
 		if self.functionToCall == "goToVehicle" then
 			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
 		else
-			courseplay:debug(string.format("%s: MOUSE_BUTTON_ClICKED: %s(%s)", nameNum(vehicle), tostring(self.functionToCall), tostring(parameter)), 18);
+			courseplay:debug(string.format("%s: MOUSE_BUTTON_ClICKED: %s(%s)", nameNum(vehicle), tostring(self.functionToCall), tostring(parameter)), courseplay.DBG_18);
 			self:handleInput(vehicle,parameter)
 		end
 		-- self:setClicked(false);
@@ -249,7 +249,7 @@ end;
 
 function courseplay.button:handleInput(vehicle,parameter)
 	if self.settingCall then --settingButton
-		courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), 18);
+		courseplay:debug(string.format("%s: handleSettingInput: %s:%s(%s)", nameNum(vehicle),tostring(self.settingCall.name), tostring(self.functionToCall), tostring(parameter)), courseplay.DBG_18);
 		self.settingCall[self.functionToCall](self.settingCall, parameter)	
 		if vehicle:getIsEntered() then
 			g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)

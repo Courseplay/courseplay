@@ -146,7 +146,7 @@ function courseplay:mouseIsInArea(mouseX, mouseY, areaX1, areaX2, areaY1, areaY2
 end;
 
 function courseplay:setCourseplayFunc(func, value, noEventSend, page)
-	courseplay:debug("setCourseplayFunc: function: " .. func .. " value: " .. tostring(value) .. " noEventSend: " .. tostring(noEventSend) .. " page: " .. tostring(page), 5)
+	courseplay:debug("setCourseplayFunc: function: " .. func .. " value: " .. tostring(value) .. " noEventSend: " .. tostring(noEventSend) .. " page: " .. tostring(page), courseplay.DBG_MULTIPLAYER)
 	if noEventSend ~= true then
 		CourseplayEvent.sendEvent(self, func, value,noEventSend,page); -- Die Funktion ruft sendEvent auf und übergibt 3 Werte   (self "also mein ID", action, "Ist eine Zahl an der ich festmache welches Fenster ich aufmachen will", state "Ist der eigentliche Wert also true oder false"
 	end;
@@ -160,16 +160,16 @@ function courseplay:setCourseplayFunc(func, value, noEventSend, page)
 end
 
 function courseplay:executeFunction(self, func, value, page)
-	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), 5)
+	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), courseplay.DBG_MULTIPLAYER)
 	--legancy code
 	if func == "setMPGlobalInfoText" then
 		CpManager:setGlobalInfoText(self, value, page)
-		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),5)
+		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),courseplay.DBG_MULTIPLAYER)
 		return
 	elseif StringUtil.startsWith(func,"self") or StringUtil.startsWith(func,"courseplay") then
-		courseplay:debug("					setting value",5)
+		courseplay:debug("					setting value",courseplay.DBG_MULTIPLAYER)
 		courseplay:setVarValueFromString(self, func, value)
-		--courseplay:debug("					"..tostring(func)..": "..tostring(value),5)
+		--courseplay:debug("					"..tostring(func)..": "..tostring(value),courseplay.DBG_MULTIPLAYER)
 		return
 	end
 	if self:getIsEntered() then
@@ -177,13 +177,13 @@ function courseplay:executeFunction(self, func, value, page)
 		-- The new gui click sound
 		g_currentMission.hud.guiSoundPlayer:playSample(GuiSoundPlayer.SOUND_SAMPLES.CLICK)
 	end
-	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), 18);
+	courseplay:debug(('%s: calling function "%s(%s)"'):format(nameNum(self), tostring(func), tostring(value)), courseplay.DBG_18);
 	if func ~= "rowButton" then
 		--@source: http://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 		assert(loadstring('courseplay:' .. func .. '(...)'))(self, value);
 		courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
 	else
-		courseplay:debug(('%s: calling rowButton function !!!'):format(nameNum(self)), 5);
+		courseplay:debug(('%s: calling rowButton function !!!'):format(nameNum(self)), courseplay.DBG_MULTIPLAYER);
 	end; --END isRowFunction
 end;
 

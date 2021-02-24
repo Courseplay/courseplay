@@ -155,7 +155,7 @@ local Server_sendObjects_old = Server.sendObjects;
 
 function Server:sendObjects(connection, x, y, z, viewDistanceCoeff)
 	connection:sendEvent(CourseplayJoinFixEvent:new());
-	courseplay:debug("server send objects",5)
+	courseplay:debug("server send objects",courseplay.DBG_MULTIPLAYER)
 
 	Server_sendObjects_old(self, connection, x, y, z, viewDistanceCoeff);
 end
@@ -259,7 +259,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
-			--courseplay:debug("got course", 8);
+			--courseplay:debug("got course", courseplay.DBG_COURSE_MANAGEMENT);
 			local course_name = streamDebugReadString(streamId)
 			local courseUid = streamDebugReadString(streamId)
 			local courseType = streamDebugReadString(streamId)
@@ -270,7 +270,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local waypoints = {}
 			if wp_count >= 0 then
 				for w = 1, wp_count do
-					--courseplay:debug("got waypoint", 8);
+					--courseplay:debug("got waypoint", courseplay.DBG_COURSE_MANAGEMENT);
 					table.insert(waypoints, CourseEvent:readWaypoint(streamId))
 				end
 			else
@@ -326,7 +326,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 end
 
 function CourseplayJoinFixEvent:run(connection)
-	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", 8);
+	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", courseplay.DBG_COURSE_MANAGEMENT);
 end;
 
 ---------------------------------

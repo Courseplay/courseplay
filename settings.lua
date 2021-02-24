@@ -146,7 +146,7 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 		vehicle.cp.combineOffsetAutoMode = true;
 	end;
 
-	courseplay:debug(nameNum(vehicle) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. vehicle.cp.combineOffset .. " // auto = " .. tostring(vehicle.cp.combineOffsetAutoMode), 4);
+	courseplay:debug(nameNum(vehicle) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. vehicle.cp.combineOffset .. " // auto = " .. tostring(vehicle.cp.combineOffsetAutoMode), courseplay.DBG_MODE_2_3);
 end
 
 function courseplay:changeTipperOffset(vehicle, changeBy)
@@ -761,7 +761,7 @@ end;
 function courseplay:toggleHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
 	--vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
-	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), 7);
+	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), courseplay.DBG_COURSE_GENERATOR);
 end;
 
 function courseplay:changeIslandBypassMode(vehicle)
@@ -826,24 +826,24 @@ function courseplay:validateCourseGenerationData(vehicle)
 	--courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
 
 	if courseplay.debugChannels[7] then
-		courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), 7);
+		courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSE_GENERATOR);
 	end;
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
 	if courseplay.debugChannels[12] then
-		courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), 12);
+		courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_12);
 	end;
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
-	courseplay:debug("reloadCoursesFromXML()", 8);
+	courseplay:debug("reloadCoursesFromXML()", courseplay.DBG_COURSE_MANAGEMENT);
 	if g_server ~= nil then
 		courseplay.courses:loadCoursesAndFoldersFromXml();
 
-		--courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
-		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", 8);
+		--courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), courseplay.DBG_COURSE_MANAGEMENT);
+		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", courseplay.DBG_COURSE_MANAGEMENT);
 		if not vehicle:getIsCourseplayDriving() then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);
@@ -1092,7 +1092,7 @@ end;
 
 function courseplay:setSlippingStage(vehicle, stage)
 	if vehicle.cp.slippingStage ~= stage then
-		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), 14);
+		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), courseplay.DBG_14);
 		vehicle.cp.slippingStage = stage;
 	end;
 end;
@@ -1111,23 +1111,23 @@ function courseplay:setCpVar(varName, value, noEventSend)
 			self.cp[varName] = value;		
 			if CpManager.isMP and not noEventSend then
 				--print(courseplay.utils:getFnCallPath(2))
-				courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);
+				courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), courseplay.DBG_MULTIPLAYER);
 				CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 			end
 			if varName == "isDriving" then
-				courseplay:debug("reload page 1", 5);
+				courseplay:debug("reload page 1", courseplay.DBG_MULTIPLAYER);
 				courseplay.hud:setReloadPageOrder(self, 1, true);
 			elseif varName:sub(1, 3) == 'HUD' then
 				-- TODO: using the variable name to trigger a HUD refresh is not a good idea.
 				--print('broken settings 1860')
 				if StringUtil.startsWith(varName, 'HUD0') then
-					courseplay:debug("reload page 0", 5);
+					courseplay:debug("reload page 0", courseplay.DBG_MULTIPLAYER);
 					courseplay.hud:setReloadPageOrder(self, 0, true);
 				elseif StringUtil.startsWith(varName, 'HUD1') then
-					courseplay:debug("reload page 1", 5);
+					courseplay:debug("reload page 1", courseplay.DBG_MULTIPLAYER);
 					courseplay.hud:setReloadPageOrder(self, 1, true);
 				elseif StringUtil.startsWith(varName, 'HUD4') then
-					courseplay:debug("reload page 4", 5);
+					courseplay:debug("reload page 4", courseplay.DBG_MULTIPLAYER);
 					courseplay.hud:setReloadPageOrder(self, 4, true);
 				end;
 			elseif varName == 'waypointIndex' and self.cp.hud.currentPage == courseplay.hud.PAGE_CP_CONTROL and (self.cp.isRecording or self.cp.recordingIsPaused) and value and value == 4 then -- record pause action becomes available
@@ -1141,7 +1141,7 @@ function courseplay:setCpVar(varName, value, noEventSend)
 		-- TODO: this is unclear, shouldn't this be only called when the value changed?
 		if CpManager.isMP and not noEventSend then
 			--print(courseplay.utils:getFnCallPath(2))
-			courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), 5);
+			courseplay:debug(string.format("setCpVar: %s: %s -> send Event",varName,tostring(value)), courseplay.DBG_MULTIPLAYER);
 			CourseplayEvent.sendEvent(self, "self.cp."..varName, value)
 		end
 	end

@@ -32,7 +32,7 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	end;
 
 	local isFolding, isFolded, isUnfolded = false, true, true;
-	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), 17);
+	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s', nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection), tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), courseplay.DBG_17);
 	
 	if workTool.spec_foldable.foldAnimTime ~= (workTool.spec_foldable.oldFoldAnimTime or 0) then
 		if workTool.spec_foldable.foldMoveDirection > 0 and workTool.spec_foldable.foldAnimTime < 1 then
@@ -46,7 +46,7 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	isUnfolded = workTool:getIsUnfolded();
 	isFolded = not isUnfolded and not isFolding;
 	
-	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), 17);
+	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s', tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), courseplay.DBG_17);
 	return isFolding, isFolded, isUnfolded;
 end;
 
@@ -178,7 +178,7 @@ function courseplay:setVarValueFromString(self, str, value)
 			result = value;
 		end;
 
-		courseplay:debug("					" .. table.concat(what, ".") .." = " .. tostring(result),5);
+		courseplay:debug("					" .. table.concat(what, ".") .." = " .. tostring(result),courseplay.DBG_MULTIPLAYER);
 	end;
 
 	what = nil;
@@ -649,7 +649,7 @@ function courseplay.utils:hasVarChanged(vehicle, variableName, direct)
 	local memory = vehicle.cp.varMemory[variableName];
 
 	if (memory == nil and variable ~= nil) or (memory ~= nil and (variable == nil or variable ~= vehicle.cp.varMemory[variableName])) then
-		courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new=%q', nameNum(vehicle), variableName, tostring(memory), tostring(variable)), 12);
+		courseplay:debug(string.format('%s: hasVarChanged(): changed variable %q - old=%q, new=%q', nameNum(vehicle), variableName, tostring(memory), tostring(variable)), courseplay.DBG_12);
 		vehicle.cp.varMemory[variableName] = variable;
 		return true;
 	end;

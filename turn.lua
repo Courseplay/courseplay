@@ -183,7 +183,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 	--- Get the local delta distances from the tractor to the targetNode
 	turnInfo.targetDeltaX, _, turnInfo.targetDeltaZ = worldToLocal(turnInfo.directionNode, cx, vehicleY, cz);
-	courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), 14);
+	courseplay:debug(string.format("%s:(Turn) targetDeltaX=%.2f, targetDeltaZ=%.2f", nameNum(vehicle), turnInfo.targetDeltaX, turnInfo.targetDeltaZ), courseplay.DBG_14);
 
 	--- Get the turn direction
 	if turnContext:isHeadlandCorner() then
@@ -225,19 +225,19 @@ function courseplay:turn(vehicle, dt, turnContext)
 		turnInfo.reverseOffset = offset;
 	end;
 
-	courseplay:debug(("%s:(Turn Data) frontMarker=%q, backMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(backMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), 14);
-	courseplay:debug(("%s:(Turn Data) reverseWPChangeDistance=%q, direction=%q, haveHeadlands=%q, headlandHeight=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseWPChangeDistance), tostring(turnInfo.direction), tostring(turnInfo.haveHeadlands), tostring(turnInfo.headlandHeight)), 14);
-	courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), 14);
-	courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), 14);
-	courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), 14);
-	courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q, noReverse=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester), tostring(turnInfo.noReverse)), 14);
+	courseplay:debug(("%s:(Turn Data) frontMarker=%q, backMarker=%q, halfVehicleWidth=%q, directionNodeToTurnNodeLength=%q, wpChangeDistance=%q"):format(nameNum(vehicle), tostring(turnInfo.frontMarker), tostring(backMarker), tostring(turnInfo.halfVehicleWidth), tostring(turnInfo.directionNodeToTurnNodeLength), tostring(turnInfo.wpChangeDistance)), courseplay.DBG_14);
+	courseplay:debug(("%s:(Turn Data) reverseWPChangeDistance=%q, direction=%q, haveHeadlands=%q, headlandHeight=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseWPChangeDistance), tostring(turnInfo.direction), tostring(turnInfo.haveHeadlands), tostring(turnInfo.headlandHeight)), courseplay.DBG_14);
+	courseplay:debug(("%s:(Turn Data) numLanes=%q, onLaneNum=%q, turnOnField=%q, reverseOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.numLanes), tostring(turnInfo.onLaneNum), tostring(turnInfo.turnOnField), tostring(turnInfo.reverseOffset)), courseplay.DBG_14);
+	courseplay:debug(("%s:(Turn Data) haveWheeledImplement=%q, reversingWorkTool=%q, turnRadius=%q, turnDiameter=%q"):format(nameNum(vehicle), tostring(turnInfo.haveWheeledImplement), tostring(turnInfo.reversingWorkTool), tostring(turnInfo.turnRadius), tostring(turnInfo.turnDiameter)), courseplay.DBG_14);
+	courseplay:debug(("%s:(Turn Data) targetNode=%q, targetDeltaX=%q, targetDeltaZ=%q, zOffset=%q"):format(nameNum(vehicle), tostring(turnInfo.targetNode), tostring(turnInfo.targetDeltaX), tostring(turnInfo.targetDeltaZ), tostring(turnInfo.zOffset)), courseplay.DBG_14);
+	courseplay:debug(("%s:(Turn Data) reverseOffset=%q, isHarvester=%q, noReverse=%q"):format(nameNum(vehicle), tostring(turnInfo.reverseOffset), tostring(turnInfo.isHarvester), tostring(turnInfo.noReverse)), courseplay.DBG_14);
 
 
 	if not turnContext:isHeadlandCorner() then
 		----------------------------------------------------------
 		-- SWITCH TO THE NEXT LANE
 		----------------------------------------------------------
-		courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnContext.directionChangeDeg), 14);
+		courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a lane switch.", nameNum(vehicle), turnContext.directionChangeDeg), courseplay.DBG_14);
 		----------------------------------------------------------
 		-- WIDE TURNS (Turns where the distance to next lane is bigger than the turning Diameter)
 		----------------------------------------------------------
@@ -306,13 +306,13 @@ function courseplay:turn(vehicle, dt, turnContext)
 	end
 
 	cpPrintLine(14, 1);
-	courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), 14);
+	courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 end
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Wide Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Wide Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -393,7 +393,7 @@ end;
 
 function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Wide Turn With Corner Avoidance", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Wide Turn With Corner Avoidance", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -512,7 +512,7 @@ end;
 
 function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Ohm Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Ohm Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -560,7 +560,7 @@ end;
 
 function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Questionmark Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Questionmark Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -575,7 +575,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	local sideC = turnInfo.turnDiameter;
 	local sideB = turnInfo.turnRadius + centerOffset;
 	local centerHeight = square(sideC^2 - sideB^2);
-	courseplay:debug(("%s:(Turn) centerOffset=%s, sideB=%s, sideC=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(centerOffset), tostring(sideB), tostring(sideC), tostring(centerHeight)), 14);
+	courseplay:debug(("%s:(Turn) centerOffset=%s, sideB=%s, sideC=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(centerOffset), tostring(sideB), tostring(sideC), tostring(centerHeight)), courseplay.DBG_14);
 
 	--- Check if we can turn on the headlands
 	local spaceNeeded = 0;
@@ -589,7 +589,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 		canTurnOnHeadland = true;
 	end;
 
-	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, spaceNeeded), 14);
+	courseplay:debug(("%s:(Turn) canTurnOnHeadland=%s, headlandHeight=%.2fm, spaceNeeded=%.2fm"):format(nameNum(vehicle), tostring(canTurnOnHeadland), turnInfo.headlandHeight, spaceNeeded), courseplay.DBG_14);
 
 	--- Target is behind of us
 	local targetOffsetZ = 0;
@@ -610,7 +610,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	if turnInfo.frontMarker > 0 and turnInfo.backMarker > 0 then
 		extraMoveBack = turnInfo.frontMarker;
 	end;
-	courseplay:debug(("%s:(Turn) targetOffsetZ=%s, extraMoveBack=%.2fm"):format(nameNum(vehicle), tostring(targetOffsetZ), extraMoveBack), 14);
+	courseplay:debug(("%s:(Turn) targetOffsetZ=%s, extraMoveBack=%.2fm"):format(nameNum(vehicle), tostring(targetOffsetZ), extraMoveBack), courseplay.DBG_14);
 
 	--- Get the center height offset
 	local centerHeightOffset = -targetOffsetZ + turnInfo.reverseOffset + extraMoveBack;
@@ -625,11 +625,11 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 	if vehicle.cp.settings.oppositeTurnMode:is(true) then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = (turnInfo.haveHeadlands and widthNeeded > (width + turnInfo.headlandHeight) or widthNeeded > width);
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), courseplay.DBG_14);
 	else
 		width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = (turnInfo.haveHeadlands and widthNeeded < (width + turnInfo.headlandHeight) or widthNeeded < width);
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), 14);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, haveHeadlands=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), tostring(turnInfo.haveHeadlands), widthNeeded, (turnInfo.haveHeadlands and (width + turnInfo.headlandHeight) or width)), courseplay.DBG_14);
 	end;
 
 	--- Do the opposite direction turns for bale loaders, so we avoid bales in the normal turn direction
@@ -660,7 +660,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 
 		--- Get the new zOffset
 		local newZOffset = centerHeight + centerHeightOffset;
-		courseplay:debug(("%s:(Turn) centerHeightOffset=%s, reverseOffset=%s, zOffset=%s, turnRadius=%s"):format(nameNum(vehicle), tostring(centerHeightOffset), tostring(turnInfo.reverseOffset), tostring(turnInfo.zOffset), tostring(turnInfo.turnRadius)), 14);
+		courseplay:debug(("%s:(Turn) centerHeightOffset=%s, reverseOffset=%s, zOffset=%s, turnRadius=%s"):format(nameNum(vehicle), tostring(centerHeightOffset), tostring(turnInfo.reverseOffset), tostring(turnInfo.zOffset), tostring(turnInfo.turnRadius)), courseplay.DBG_14);
 
 		--- Get the 2 circle center cordinate
 		center1.x,_,center1.z = localToWorld(turnInfo.targetNode, centerOffset * turnInfo.direction, 0, centerHeightOffset);
@@ -747,7 +747,7 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 			courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, nil, turnInfo.reverseWPChangeDistance);
 		end;
 
-		courseplay:debug(("%s:(Turn) centerHeightOffset=%s, reverseOffset=%s, zOffset=%s, turnRadius=%s"):format(nameNum(vehicle), tostring(centerHeightOffset), tostring(turnInfo.reverseOffset), tostring(turnInfo.zOffset), tostring(turnInfo.turnRadius)), 14);
+		courseplay:debug(("%s:(Turn) centerHeightOffset=%s, reverseOffset=%s, zOffset=%s, turnRadius=%s"):format(nameNum(vehicle), tostring(centerHeightOffset), tostring(turnInfo.reverseOffset), tostring(turnInfo.zOffset), tostring(turnInfo.turnRadius)), courseplay.DBG_14);
 
 		--- Get the 2 circle center cordinate
 		center1.x,_,center1.z = localToWorld(turnInfo.targetNode, (abs(turnInfo.targetDeltaX) + turnInfo.turnRadius) * turnInfo.direction, 0, newZOffset);
@@ -810,7 +810,7 @@ end;
 
 function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Forward 3 Point Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Forward 3 Point Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -841,18 +841,18 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 		if vehicle.cp.settings.oppositeTurnMode:is(true) then
 			width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 			doNormalTurn = widthNeeded > width;
-			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
+			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), courseplay.DBG_14);
 		else
 			width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 			doNormalTurn = widthNeeded < width;
-			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
+			courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), courseplay.DBG_14);
 		end;
 
 		if not doNormalTurn then
 			--- We don't have space on the side we want to turn into, so we do the turn in opposite direction
 			turnInfo.direction = turnInfo.direction * -1;
 		end;
-		courseplay:debug(("%s:(Turn) centerOffset=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(turnInfo.centerOffset), tostring(turnInfo.centerHeight)), 14);
+		courseplay:debug(("%s:(Turn) centerOffset=%s, centerHeight=%s"):format(nameNum(vehicle), tostring(turnInfo.centerOffset), tostring(turnInfo.centerHeight)), courseplay.DBG_14);
 
 		--- Get the 2 circle center coordinate
 		center1.x,_,center1.z = localToWorld(turnInfo.targetNode, turnInfo.targetDeltaX - turnInfo.turnRadius * turnInfo.direction, 0, targetDeltaZ + turnInfo.zOffset + frontOffset);
@@ -945,7 +945,7 @@ end;
 
 function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Reversing 3 Point Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Reversing 3 Point Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local posX, posZ;
@@ -965,11 +965,11 @@ function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
 	if vehicle.cp.settings.oppositeTurnMode:is(true) then
 		width = turnInfo.onLaneNum * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = widthNeeded > width;
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm > %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), courseplay.DBG_14);
 	else
 		width = (turnInfo.numLanes - turnInfo.onLaneNum) * vehicle.cp.courseWorkWidth - (vehicle.cp.courseWorkWidth * 0.5);
 		doNormalTurn = widthNeeded < width;
-		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), 14);
+		courseplay:debug(("%s:(Turn) doNormalTurn=%s, %.1fm < %.1fm"):format(nameNum(vehicle), tostring(doNormalTurn), widthNeeded, width), courseplay.DBG_14);
 	end;
 
 	if not doNormalTurn then
@@ -1043,7 +1043,7 @@ end;
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Turn", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Turn", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local fromPoint, toPoint = {}, {};
@@ -1204,7 +1204,7 @@ end;
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
 	cpPrintLine(14, 3);
-	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Reverse Turn for tractors", nameNum(vehicle)), 14);
+	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Reverse Turn for tractors", nameNum(vehicle)), courseplay.DBG_14);
 	cpPrintLine(14, 3);
 
 	local fromPoint, toPoint = {}, {}
@@ -1222,7 +1222,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	local dx, dy, dz = worldToLocal( helperNode, toPoint.x, toPoint.y, toPoint.z )
 	-- at which waypoint we have to raise the implement
 	if dz > 0 then
-		courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), now driving forward so implement reaches headland"):format( nameNum( vehicle )), 14 )
+		courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), now driving forward so implement reaches headland"):format( nameNum( vehicle )), courseplay.DBG_14 )
 		courseplay:generateTurnStraightPoints( vehicle, fromPoint, toPoint, false )
 		setTranslation(helperNode, dx, dy, dz)
 	end
@@ -1321,7 +1321,7 @@ function courseplay:getLaneInfo(vehicle)
 		end;
 	end;
 
-	courseplay:debug(("%s:(Turn) courseplay:getLaneInfo(), On Lane Nummber = %d, Number of Lanes = %d"):format(nameNum(vehicle), onLaneNum, numLanes), 14);
+	courseplay:debug(("%s:(Turn) courseplay:getLaneInfo(), On Lane Nummber = %d, Number of Lanes = %d"):format(nameNum(vehicle), onLaneNum, numLanes), courseplay.DBG_14);
 	return numLanes, onLaneNum;
 end;
 
@@ -1425,7 +1425,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 			degreeToTurn = startRot - endRot;
 		end;
 	end;
-	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockwise=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockwise), degreeToTurn, clockwise), 14);
+	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) startRot=%d, endRot=%d, degreeStep=%d, degreeToTurn=%d, clockwise=%d", nameNum(vehicle), startRot, endRot, (degreeStep * clockwise), degreeToTurn, clockwise), courseplay.DBG_14);
 
 	-- Get the number of waypoints
 	numWP = ceil(degreeToTurn / degreeStep);
@@ -1434,7 +1434,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 	-- Add extra waypoint if addEndPoint is true
 	if addEndPoint then numWP = numWP + 1; end;
 
-	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) numberOfWaypoints=%d, newDegreeStep=%d", nameNum(vehicle), numWP, degreeStep), 14);
+	courseplay:debug(string.format("%s:(Turn:generateTurnCircle) numberOfWaypoints=%d, newDegreeStep=%d", nameNum(vehicle), numWP, degreeStep), courseplay.DBG_14);
 
 	-- Generate the waypoints
 	local i = 1;
@@ -1450,7 +1450,7 @@ function courseplay:generateTurnCircle(vehicle, center, startDir, stopDir, radiu
 		courseplay:addTurnTarget(vehicle, posX, posZ, nil, reverse, nil, nil, true);
 
 		local _,rot,_ = getRotation(point);
-		courseplay:debug(string.format("%s:(Turn:generateTurnCircle) waypoint %d curentRotation=%d", nameNum(vehicle), i, deg(rot)), 14);
+		courseplay:debug(string.format("%s:(Turn:generateTurnCircle) waypoint %d curentRotation=%d", nameNum(vehicle), i, deg(rot)), courseplay.DBG_14);
 	end;
 
 	-- Clean up the created node.
@@ -1470,7 +1470,7 @@ function courseplay:addTurnTarget(vehicle, posX, posZ, turnEnd, turnReverse, rev
 	table.insert(vehicle.cp.turnTargets, target);
 
 	if not dontPrint then
-		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeDirectionWhenAligned=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeDirectionWhenAligned and true or false)), 14);
+		courseplay:debug(("%s:(Turn:addTurnTarget %d) posX=%.2f, posZ=%.2f, turnEnd=%s, turnReverse=%s, changeDirectionWhenAligned=%s"):format(nameNum(vehicle), #vehicle.cp.turnTargets, posX, posZ, tostring(turnEnd and true or false), tostring(turnReverse and true or false), tostring(changeDirectionWhenAligned and true or false)), courseplay.DBG_14);
 	end;
 end
 

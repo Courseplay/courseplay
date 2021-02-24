@@ -195,7 +195,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 	local parent = getParent(transformId);
 	for _,implement in pairs(self:getAttachedImplements()) do
 		if (implement.object ~= nil and implement.object.rootNode == parent) then
-			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), courseplay.DBG_19);
 			return true
 		end
 	end	
@@ -208,23 +208,23 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		for _,workTool in pairs (self.cp.workTools) do
 			if (trigger.onActivateObject and trigger.getIsActivatable and trigger:getIsActivatable(workTool))
 			or (trigger.sourceObject and  #workTool.spec_fillUnit.fillTrigger.triggers > 0 and workTool.spec_fillUnit.fillTrigger.triggers[1] == trigger) then 
-				courseplay:debug(('%s: %s is allready in fillTrigger(%d)'):format(nameNum(self),tostring(workTool:getName()), transformId), 19);
+				courseplay:debug(('%s: %s is allready in fillTrigger(%d)'):format(nameNum(self),tostring(workTool:getName()), transformId), courseplay.DBG_19);
 				imNotInThisTrigger = false
 			end
 		end
 		if imNotInThisTrigger then
-			courseplay:debug(('%s: fillTrigger(%d) found, add to vehicle.cp.fillTriggers'):format(nameNum(self), transformId), 19);
+			courseplay:debug(('%s: fillTrigger(%d) found, add to vehicle.cp.fillTriggers'):format(nameNum(self), transformId), courseplay.DBG_19);
 			courseplay:addFoundFillTrigger(self, transformId)
 			courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
 		else
-			courseplay:debug(('%s: fillTrigger(%d) found, but Im allready in it so ignore it'):format(nameNum(self), transformId), 19);
+			courseplay:debug(('%s: fillTrigger(%d) found, but Im allready in it so ignore it'):format(nameNum(self), transformId), courseplay.DBG_19);
 		end
 		return false;
 	end
 			
 	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
 	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
-	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), 19);
+	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), courseplay.DBG_19);
 
 	return true;
 end;
@@ -232,7 +232,7 @@ end;
 function courseplay:addFoundFillTrigger(vehicle, transformId)
 	--if we dont have a fillTrigger, set cp.fillTrigger
 	if vehicle.cp.fillTrigger == nil then
-		courseplay:debug(string.format("set %s as vehicle.cp.fillTrigger",tostring(transformId)),19)
+		courseplay:debug(string.format("set %s as vehicle.cp.fillTrigger",tostring(transformId)),courseplay.DBG_19)
 		vehicle.cp.fillTrigger = transformId;
 	end
 	-- check whether we have it in our list allready
@@ -267,7 +267,7 @@ function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
 	local parent = getParent(transformId);
 	for _,implement in pairs(self:getAttachedImplements()) do
 		if (implement.object ~= nil and implement.object.rootNode == parent) then
-			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), 19);
+			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), courseplay.DBG_19);
 			return true
 		end
 	end	
@@ -283,7 +283,7 @@ function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
 			
 	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
 	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
-	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), 19);
+	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), courseplay.DBG_19);
 
 	return true;
 end;

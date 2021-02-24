@@ -929,7 +929,7 @@ function courseplay:setVehicleWaypoints(vehicle, waypoints)
 end;
 
 function courseplay:onReadStream(streamId, connection)
-	courseplay:debug("id: "..tostring(self.id).."  base: readStream", 5)
+	courseplay:debug("id: "..tostring(self.id).."  base: readStream", courseplay.DBG_MULTIPLAYER)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		local value = courseplay.streamDebugRead(streamId, variable.dataFormat)
@@ -938,7 +938,7 @@ function courseplay:onReadStream(streamId, connection)
 		end
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
-	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", 5)
+	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onReadStream(streamId)
@@ -999,16 +999,16 @@ function courseplay:onReadStream(streamId, connection)
 	courseplay:setAIDriver(self, self.cp.mode)
 	self.cp.driver:onReadStream(streamId)
 	
-	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", 5)
+	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", courseplay.DBG_MULTIPLAYER)
 end
 
 function courseplay:onWriteStream(streamId, connection)
-	courseplay:debug("id: "..tostring(self).."  base: write stream", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write stream", courseplay.DBG_MULTIPLAYER)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
-	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", 5)
+	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onWriteStream(streamId)
@@ -1032,7 +1032,7 @@ function courseplay:onWriteStream(streamId, connection)
 	
 	--print(string.format("%s:write: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
 	if self.cp.numCourses > #self.cp.loadedCourses then
-		courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  sync temp course", 5)
+		courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  sync temp course", courseplay.DBG_MULTIPLAYER)
 		streamDebugWriteInt32(streamId, #(self.Waypoints))
 		for w = 1, #(self.Waypoints) do
 			--print("writing point "..tostring(w))
@@ -1059,7 +1059,7 @@ function courseplay:onWriteStream(streamId, connection)
 	
 	self.cp.driver:onWriteStream(streamId)
 	
-	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", 5)
+	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", courseplay.DBG_MULTIPLAYER)
 end
 
 --TODO figure out how dirtyFlags work ??

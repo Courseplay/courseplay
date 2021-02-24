@@ -127,7 +127,7 @@ function courseplay:getDistances(object)
 			-- Set the wheel offset anddistance
 			distances.frontWheelToDirectionNodeOffset = front * -1;
 			distances.frontWheelToRearWheel = abs(front - rear);
-			courseplay:debug(('%s: frontWheelToDirectionNodeOffset=%.2f, frontWheelToRearWheel=%.2f'):format(nameNum(object), distances.frontWheelToDirectionNodeOffset, distances.frontWheelToRearWheel), 6);
+			courseplay:debug(('%s: frontWheelToDirectionNodeOffset=%.2f, frontWheelToRearWheel=%.2f'):format(nameNum(object), distances.frontWheelToDirectionNodeOffset, distances.frontWheelToRearWheel), courseplay.DBG_IMPLEMENTS);
 
 			-- Finde the attacherJoints distance from the direction node
 			for _, attacherJoint in ipairs(object.spec_attacherJoints.attacherJoints) do
@@ -138,7 +138,7 @@ function courseplay:getDistances(object)
 						distances.frontWheelToRearTrailerAttacherJoints = {};
 					end;
 					distances.frontWheelToRearTrailerAttacherJoints[attacherJoint.jointType] = abs(front - dis);
-					courseplay:debug(('%s: frontWheelToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.frontWheelToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
+					courseplay:debug(('%s: frontWheelToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.frontWheelToRearTrailerAttacherJoints[attacherJoint.jointType]), courseplay.DBG_IMPLEMENTS);
 				end;
 			end
 
@@ -156,7 +156,7 @@ function courseplay:getDistances(object)
 						distances.turningNodeToRearTrailerAttacherJoints = {};
 					end;
 					distances.turningNodeToRearTrailerAttacherJoints[attacherJoint.jointType] = dis;
-					courseplay:debug(('%s: turningNodeToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.turningNodeToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
+					courseplay:debug(('%s: turningNodeToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.turningNodeToRearTrailerAttacherJoints[attacherJoint.jointType]), courseplay.DBG_IMPLEMENTS);
 				end;
 			end
 
@@ -187,16 +187,16 @@ function courseplay:getDistances(object)
 						local tmpnx, tmpny, tmpnz = getWorldTranslation(tempNode);
 						local _,_,dis = worldToLocal(backTrack[i], tmpnx, tmpny, tmpnz);
 
-						courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), abs(dis)), 6);
+						courseplay:debug(('%s: backTrack[%d](node: %s) Length = %.2f'):format(nameNum(object), i, tostring(backTrack[i]), abs(dis)), courseplay.DBG_IMPLEMENTS);
 						nodeLength = nodeLength + abs(dis);
 					end;
 
 					if isPivoted then
 						distances.attacherJointToPivot = nodeLength;
-						courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), 6);
+						courseplay:debug(('%s: attacherJointToPivot=%.2f'):format(nameNum(object), distances.attacherJointToPivot), courseplay.DBG_IMPLEMENTS);
 					else
 						distances.attacherJointToLastMovingPart = nodeLength;
-						courseplay:debug(('%s: attacherJointToLastMovingPart=%.2f'):format(nameNum(object), distances.attacherJointToLastMovingPart), 6);
+						courseplay:debug(('%s: attacherJointToLastMovingPart=%.2f'):format(nameNum(object), distances.attacherJointToLastMovingPart), courseplay.DBG_IMPLEMENTS);
 					end;
 				end;
 			end;
@@ -229,7 +229,7 @@ function courseplay:getDistances(object)
 					distances.attacherJointToRearWheel = length;
 				end;
 
-				courseplay:debug(('%s: attacherJointToRearWheel=%.2f'):format(nameNum(object), distances.attacherJointToRearWheel), 6);
+				courseplay:debug(('%s: attacherJointToRearWheel=%.2f'):format(nameNum(object), distances.attacherJointToRearWheel), courseplay.DBG_IMPLEMENTS);
 			end;
 
 			-- Finde the attacherJoints distance from the direction node
@@ -255,7 +255,7 @@ function courseplay:getDistances(object)
 						distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType] = dis;
 					end;
 
-					courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), 6);
+					courseplay:debug(('%s: attacherJointToRearTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.attacherJointToRearTrailerAttacherJoints[attacherJoint.jointType]), courseplay.DBG_IMPLEMENTS);
 				end;
 			end;
 
@@ -273,7 +273,7 @@ function courseplay:getDistances(object)
 
 					distances.turningNodeToTrailerAttacherJoints[attacherJoint.jointType] = dis;
 
-					courseplay:debug(('%s: turningNodeToTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.turningNodeToTrailerAttacherJoints[attacherJoint.jointType]), 6);
+					courseplay:debug(('%s: turningNodeToTrailerAttacherJoints[%d]=%.2f'):format(nameNum(object), attacherJoint.jointType, distances.turningNodeToTrailerAttacherJoints[attacherJoint.jointType]), courseplay.DBG_IMPLEMENTS);
 				end;
 
 				-- Finde the attacherJoint/Pivot distance to the turning node
@@ -284,7 +284,7 @@ function courseplay:getDistances(object)
 				else
 					distances.attacherJointOrPivotToTurningNode = dis;
 				end;
-				courseplay:debug(('%s: attacherJointOrPivotToTurningNode=%.2f'):format(nameNum(object), distances.attacherJointOrPivotToTurningNode), 6);
+				courseplay:debug(('%s: attacherJointOrPivotToTurningNode=%.2f'):format(nameNum(object), distances.attacherJointOrPivotToTurningNode), courseplay.DBG_IMPLEMENTS);
 
 			end;
 
@@ -320,18 +320,18 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 
 					if workToolDistances.attacherJointToPivot then
 						totalDistance = totalDistance + workToolDistances.attacherJointToPivot;
-						courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToPivot=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointToPivot), 14);
+						courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToPivot=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointToPivot), courseplay.DBG_14);
 					end;
 
 					totalDistance = totalDistance + workToolDistances.attacherJointOrPivotToTurningNode;
-					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointOrPivotToTurningNode=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointOrPivotToTurningNode), 14);
-					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToTurningNode=%.2fm'):format(nameNum(workTool), totalDistance), 14);
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointOrPivotToTurningNode=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointOrPivotToTurningNode), courseplay.DBG_14);
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToTurningNode=%.2fm'):format(nameNum(workTool), totalDistance), courseplay.DBG_14);
 				else
 					if not distances.attacherJointOrPivotToTurningNode and distances.attacherJointToRearTrailerAttacherJoints then
 						totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
 					end;
 					totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
-					--courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), 14);
+					--courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), courseplay.DBG_14);
 				end;
 				break;
 			end;
@@ -347,7 +347,7 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 				end;
 			end;
 			vehicle.cp.directionNodeToTurnNodeLength = totalDistance;
-			courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(vehicle), totalDistance), 14);
+			courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(vehicle), totalDistance), courseplay.DBG_14);
 		end;
 	end;
 
@@ -555,7 +555,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 				--	local x,_,z = getWorldTranslation(AIReverseNode);
 				--	local _,_,dis = worldToLocal(componentNode, x, y, z);
 				--	Distance = dis * invert;
-				--	courseplay:debug(('%s: getRealTurningNode(): Using getAIToolReverserDirectionNode() -> distance = %.2f'):format(nameNum(object), Distance), 6);
+				--	courseplay:debug(('%s: getRealTurningNode(): Using getAIToolReverserDirectionNode() -> distance = %.2f'):format(nameNum(object), Distance), courseplay.DBG_IMPLEMENTS);
 				--else
 					-- Get the distance from root node to the wheels turning point.
 					local objectWheels = object:getWheels();
@@ -568,7 +568,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 								local x,_,z = getWorldTranslation(objectWheels[i].driveNode);
 								local _,_,dis = worldToLocal(componentNode, x, y, z);
 								dis = dis * invert;
-								courseplay:debug(('%s: getRealTurningNode(): wheel%d distance = %.2f'):format(nameNum(object), i, dis), 6);
+								courseplay:debug(('%s: getRealTurningNode(): wheel%d distance = %.2f'):format(nameNum(object), i, dis), courseplay.DBG_IMPLEMENTS);
 								if object.steeringAxleUpdateBackwards == false or object.spec_wheels.wheels[i].steeringAxleScale == 0 then
 									if haveStraitWheels then
 										if dis < minDis then minDis = dis; end;
@@ -613,7 +613,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 								Distance = (minDisRot + maxDisRot) * 0.5;
 							end;
 						end;
-						courseplay:debug(('%s: getRealTurningNode(): haveStraitWheels=%q, haveTurningWheels=%q, Distance=%2f'):format(nameNum(object), tostring(haveStraitWheels), tostring(haveTurningWheels), Distance), 6);
+						courseplay:debug(('%s: getRealTurningNode(): haveStraitWheels=%q, haveTurningWheels=%q, Distance=%2f'):format(nameNum(object), tostring(haveStraitWheels), tostring(haveTurningWheels), Distance), courseplay.DBG_IMPLEMENTS);
 					end;
 				--end;
 			else
@@ -624,7 +624,7 @@ function courseplay:getRealTurningNode(object, useNode, nodeName)
 					local _,_,dis = worldToLocal(node, x, y, z);
 					Distance = dis * invert;
 				end;
-				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), 6);
+				courseplay:debug(('%s: getRealTurningNode(): useNode=%q, nodeName=%q, Distance=%2f'):format(nameNum(object), tostring(useNode ~= nil), tostring(transformGroupName), Distance), courseplay.DBG_IMPLEMENTS);
 			end;
 
 			if Distance ~= 0 then
@@ -832,7 +832,7 @@ function courseplay:getToolTurnRadius(workTool)
 					end;
 				end;
 			end;
-			courseplay:debug(('%s -> TurnRadius: rotMax=%d°, frontLength=%.2fm'):format(nameNum(workTool), deg(rotMax), frontLength), 6);
+			courseplay:debug(('%s -> TurnRadius: rotMax=%d°, frontLength=%.2fm'):format(nameNum(workTool), deg(rotMax), frontLength), courseplay.DBG_IMPLEMENTS);
 
 			-- WE ARE A PIVOTED TRAILER / IMPLEMENT
 			if workToolDistances.attacherJointToPivot then
@@ -846,7 +846,7 @@ function courseplay:getToolTurnRadius(workTool)
 						end;
 					end;
 				end;
-				courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), 6);
+				courseplay:debug(('%s -> TurnRadius: pivotRotMax=%d° (Pivot trailer/implement)'):format(nameNum(workTool), deg(pivotRotMax)), courseplay.DBG_IMPLEMENTS);
 
 				-- We are an implement and should be handled a bit different
 				if workTool.spec_attacherJoints and workTool.spec_attacherJoints.attacherJoint and workTool.spec_attacherJoints.attacherJoint.jointType == AttacherJoints.JOINTTYPE_IMPLEMENT then
@@ -862,7 +862,7 @@ function courseplay:getToolTurnRadius(workTool)
 					else
 						TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
 					end;
-					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot implement)'):format(nameNum(workTool), TR), 6);
+					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot implement)'):format(nameNum(workTool), TR), courseplay.DBG_IMPLEMENTS);
 
 				-- We are an pivoted trailer
 				else
@@ -888,7 +888,7 @@ function courseplay:getToolTurnRadius(workTool)
 					else
 						TR = ceil((workToolDistances.attacherJointToPivot + workToolDistances.attacherJointOrPivotToTurningNode) / 2 * radiusMultiplier);
 					end;
-					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot trailer)'):format(nameNum(workTool), TR), 6);
+					courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Pivot trailer)'):format(nameNum(workTool), TR), courseplay.DBG_IMPLEMENTS);
 				end;
 
 			-- WE ARE A NORMAL TRAILER OR IMPLEMENT
@@ -897,7 +897,7 @@ function courseplay:getToolTurnRadius(workTool)
 				CPRatio = courseplay:getCenterPivotRatio(nil, wheelBase, frontLength);
 
 				TR = ceil(courseplay:calculateTurnRadius(type, wheelBase, rotMax, CPRatio) * radiusMultiplier);
-				courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Normal trailer/implement)'):format(nameNum(workTool), TR), 6);
+				courseplay:debug(('%s -> TurnRadius: turnRadius=%.2fm (Normal trailer/implement)'):format(nameNum(workTool), TR), courseplay.DBG_IMPLEMENTS);
 			end;
 
 			if TR > 0 then
@@ -909,18 +909,18 @@ function courseplay:getToolTurnRadius(workTool)
 		if ((deg(rotMax) < 30 and deg(rotMax) >= 90) or activeInputAttacherJoint.jointType ~= AttacherJoints.JOINTTYPE_IMPLEMENT) and workToolDistances.attacherJointToRearWheel then
 			if (workToolDistances.attacherJointToRearWheel / 2) > turnRadius then
 				turnRadius = ceil(workToolDistances.attacherJointToRearWheel / 2 * radiusMultiplier);
-				courseplay:debug(('%s -> TurnRadius: Using half tool length = %.2fm'):format(nameNum(workTool), turnRadius), 6);
+				courseplay:debug(('%s -> TurnRadius: Using half tool length = %.2fm'):format(nameNum(workTool), turnRadius), courseplay.DBG_IMPLEMENTS);
 			end;
 		end;
 	else
-		courseplay:debug(('%s -> TurnRadius: Have no wheels. turnRadius set to 0m'):format(nameNum(workTool)), 6);
+		courseplay:debug(('%s -> TurnRadius: Have no wheels. turnRadius set to 0m'):format(nameNum(workTool)), courseplay.DBG_IMPLEMENTS);
 	end;
 
 	return turnRadius;
 end;
 
 function courseplay:getTotalLengthOnWheels(vehicle)
-	courseplay:debug(('%s: getTotalLengthOnWheels()'):format(nameNum(vehicle)), 6);
+	courseplay:debug(('%s: getTotalLengthOnWheels()'):format(nameNum(vehicle)), courseplay.DBG_IMPLEMENTS);
 	local totalLength = 0;
 	local directionNodeToFrontWheelOffset;
 
@@ -957,14 +957,14 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 				totalLength = 0;
 				directionNodeToFrontWheelOffset = 0;
 			end;
-			courseplay:debug(('%s: hasRearAttach: totalLength=%.2f'):format(nameNum(vehicle), totalLength), 6);
+			courseplay:debug(('%s: hasRearAttach: totalLength=%.2f'):format(nameNum(vehicle), totalLength), courseplay.DBG_IMPLEMENTS);
 		else
 			totalLength = vehicle.cp.distances.frontWheelToRearWheel;
-			courseplay:debug(('%s: Using frontWheelToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), 6);
+			courseplay:debug(('%s: Using frontWheelToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), courseplay.DBG_IMPLEMENTS);
 		end;
 
 		cpPrintLine(6);
-		courseplay:debug(('%s: totalLength=%.2f, totalLengthOffset=%.2f'):format(nameNum(vehicle), totalLength, directionNodeToFrontWheelOffset), 6);
+		courseplay:debug(('%s: totalLength=%.2f, totalLengthOffset=%.2f'):format(nameNum(vehicle), totalLength, directionNodeToFrontWheelOffset), courseplay.DBG_IMPLEMENTS);
 		cpPrintLine(6);
 
 	-- IMPLEMENTS OR TRAILERS
@@ -994,13 +994,13 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 			else
 				totalLength = 0;
 			end;
-			courseplay:debug(('%s: hasRearAttach: totalLength=%.2f'):format(nameNum(vehicle), totalLength), 6);
+			courseplay:debug(('%s: hasRearAttach: totalLength=%.2f'):format(nameNum(vehicle), totalLength), courseplay.DBG_IMPLEMENTS);
 		elseif vehicle.cp.distances.attacherJointToRearWheel then
 			totalLength = vehicle.cp.distances.attacherJointToRearWheel;
-			courseplay:debug(('%s: Using attacherJointToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), 6);
+			courseplay:debug(('%s: Using attacherJointToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), courseplay.DBG_IMPLEMENTS);
 		else
 			totalLength = 0;
-			courseplay:debug(('%s: No length found, returning 0'):format(nameNum(vehicle)), 6);
+			courseplay:debug(('%s: No length found, returning 0'):format(nameNum(vehicle)), courseplay.DBG_IMPLEMENTS);
 		end;
 	end;
 
@@ -1021,7 +1021,7 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	courseplay:getRealTurningNode(vehicle);
 
 	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
-		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), 6);
+		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), courseplay.DBG_IMPLEMENTS);
 		return g_vehicleConfigurations:get(vehicle, 'turnRadius')
 	else
 		-- We need to calculate it ourself.
@@ -1054,10 +1054,10 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	if TR > 0 then
 		if vehicle.maxTurningRadius then
 			turnRadius = vehicle.maxTurningRadius;
-			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), 6);
+			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), courseplay.DBG_IMPLEMENTS);
 		else
 			turnRadius = TR;
-			courseplay:debug(('%s -> TurnRadius: (Steering Type: %s) Calculated turnRadius set to %.2fm'):format(nameNum(vehicle), steeringType, turnRadius), 6);
+			courseplay:debug(('%s -> TurnRadius: (Steering Type: %s) Calculated turnRadius set to %.2fm'):format(nameNum(vehicle), steeringType, turnRadius), courseplay.DBG_IMPLEMENTS);
 		end;
 	end;
 

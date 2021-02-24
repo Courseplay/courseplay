@@ -349,9 +349,9 @@ function ShovelModeAIDriver:isStuck()
 	if self:doesNotMove() then
 		if self.vehicle.cp.timers.slipping == nil or self.vehicle.cp.timers.slipping == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'slipping', 2);
-			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", courseplay.DBG_TRAFFIC)'):format(nameNum(self.vehicle)), 10);
+			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", courseplay.DBG_TRAFFIC)'):format(nameNum(self.vehicle)), courseplay.DBG_10);
 		elseif courseplay:timerIsThrough(self.vehicle, 'slipping') then
-			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), 10);
+			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), courseplay.DBG_10);
 			courseplay:resetCustomTimer(self.vehicle, 'slipping');
 			self:debug("dropout isStuck")
 			return true

@@ -110,7 +110,7 @@ function courseplay:start(self)
 	self.cp.numWaitPoints = numWaitPoints;
 	self.cp.numUnloadPoints = numUnloadPoints;
 	self.cp.numCrossingPoints = numCrossingPoints;
-	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), 12);
+	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d", nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), courseplay.DBG_12);
 
 	-- set waitTime to 0 if necessary
 	if not courseplay:getCanHaveWaitTime(self) and self.cp.waitTime > 0 then
