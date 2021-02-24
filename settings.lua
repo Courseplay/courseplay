@@ -28,34 +28,39 @@ function courseplay:setAIDriver(vehicle, mode)
 	if vehicle.cp.driver then
 		vehicle.cp.driver:delete()
 	end
-	local status,driver,err
+	local driver
 	if mode == courseplay.MODE_TRANSPORT then
 		---@type AIDriver
-		status,driver,err,errDriverName = xpcall(AIDriver, function(err) printCallstack(); return self,err,"AIDriver" end, vehicle)
-	--local status, err = xpcall(self.cp.driver.update, function(err) printCallstack(); return err end, self.cp.driver, dt)
+		driver = courseplay:initAIDriver(AIDriver,vehicle,"AIDriver")
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
-		status,driver,err,errDriverName = xpcall(GrainTransportAIDriver, function(err) printCallstack(); return self,err,"GrainTransportAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(GrainTransportAIDriver,vehicle,"GrainTransportAIDriver")
 	elseif mode == courseplay.MODE_COMBI then
-		status,driver,err,errDriverName = xpcall(CombineUnloadAIDriver, function(err) printCallstack(); return self,err,"CombineUnloadAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(CombineUnloadAIDriver,vehicle,"CombineUnloadAIDriver")
 	elseif mode == courseplay.MODE_OVERLOADER then
-		status,driver,err,errDriverName = xpcall(OverloaderAIDriver, function(err) printCallstack(); return self,err,"OverloaderAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(OverloaderAIDriver,vehicle,"OverloaderAIDriver")
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		status,driver,err,errDriverName = xpcall(ShovelModeAIDriver.create, function(err) printCallstack(); return self,err,"ShovelModeAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(ShovelModeAIDriver.create,vehicle,"ShovelModeAIDriver")
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
-		status,driver,err,errDriverName = xpcall(FillableFieldworkAIDriver, function(err) printCallstack(); return self,err,"FillableFieldworkAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(FillableFieldworkAIDriver,vehicle,"FillableFieldworkAIDriver")
 	elseif mode == courseplay.MODE_FIELDWORK then
-		status,driver,err,errDriverName = xpcall(UnloadableFieldworkAIDriver.create, function(err) printCallstack(); return self,err,"UnloadableFieldworkAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(UnloadableFieldworkAIDriver.create,vehicle,"UnloadableFieldworkAIDriver")
 	elseif mode == courseplay.MODE_BALE_COLLECTOR then
-		status,driver,err,errDriverName = xpcall(BaleCollectorAIDriver, function(err) printCallstack(); return self,err,"BaleCollectorAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(BaleCollectorAIDriver,vehicle,"BaleCollectorAIDriver")
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		status,driver,err,errDriverName = xpcall(LevelCompactAIDriver, function(err) printCallstack(); return self,err,"LevelCompactAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(LevelCompactAIDriver,vehicle,"LevelCompactAIDriver")
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
-		status,driver,err,errDriverName = xpcall(FieldSupplyAIDriver, function(err) printCallstack(); return self,err,"FieldSupplyAIDriver" end, vehicle)
+		driver = courseplay:initAIDriver(FieldSupplyAIDriver,vehicle,"FieldSupplyAIDriver")
 	end
 	vehicle.cp.driver = driver
+end
+
+function courseplay:initAIDriver(Driver,vehicle,driverName)	
+	local status, err, driver = xpcall(Driver, function(err) printCallstack(); return err end,vehicle)
 	if not status then
-		courseplay.infoVehicle(vehicle, "Exception, can't init %s, %s", errDriverName,tostring(err))
+		courseplay.infoVehicle(vehicle, "Exception, error in %s:init(), %s", driverName,tostring(err))
+		return nil
 	end
+	return driver
 end
 
 function courseplay:setDriveNow(vehicle)

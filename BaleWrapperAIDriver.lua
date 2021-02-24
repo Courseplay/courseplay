@@ -27,7 +27,7 @@ function BaleWrapperAIDriver:init(vehicle)
 	BalerAIDriver.init(self, vehicle)
 	self.baleWrapper = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleWrapper)
 
-	if not self.baler then
+	if self.baleWrapper and not self.baler then
 		-- Bale wrappers which aren't balers have no AI markers as they have no pick up so add a function here
 		-- to get the markers
 		self.baleWrapper.getAIMarkers = function(self)
