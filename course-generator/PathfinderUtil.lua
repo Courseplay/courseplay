@@ -190,6 +190,12 @@ function PathfinderUtil.getFieldIdAtWorldPosition(posX, posZ)
     return 0
 end
 
+--- Is the land at this position owned by me?
+function PathfinderUtil.isWorldPositionOwned(posX, posZ)
+	local farmland = g_farmlandManager:getFarmlandAtWorldPosition(posX, posZ)
+	return farmland and farmland.isOwned
+end
+
 --- Pathfinder context
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
@@ -485,7 +491,7 @@ function PathfinderConstraints:getNodePenalty(node)
     local offField = area / totalArea < minRequiredAreaRatio
     if self.fieldNum ~= 0 and not offField then
         -- if there's a preferred field and we are on a field
-        if self.fieldNum ~= PathfinderUtil.getFieldIdAtWorldPosition(node.x, -node.y) then
+        if not PathfinderUtil.isWorldPositionOwned(node.x, -node.y) then
             -- the field we are on is not ours, more penalty!
             offField = true
             offFieldPenalty = self.offFieldPenalty * 1.2
