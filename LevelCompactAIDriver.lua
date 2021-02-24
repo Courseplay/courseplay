@@ -609,7 +609,7 @@ function LevelCompactAIDriver:getLevelerNode(blade)
 end
 
 function LevelCompactAIDriver:printMap()
-	if courseplay.debugChannels[10] and self.bunkerSiloManager.siloMap then
+	if courseplay.debugChannels[courseplay.DBG_10] and self.bunkerSiloManager.siloMap then
 		for _, line in pairs(self.bunkerSiloManager.siloMap) do
 			local printString = ""
 			for _, fillUnit in pairs(line) do
@@ -761,7 +761,7 @@ function LevelCompactAIDriver:getValidBackImplement()
 end
 
 function LevelCompactAIDriver:isDebugActive()
-	return courseplay.debugChannels[10]
+	return courseplay.debugChannels[courseplay.DBG_10]
 end
 
 

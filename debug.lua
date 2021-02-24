@@ -32,26 +32,26 @@ function CpManager:setUpDebugChannels()
 	if CpManager.isDeveloper then
 		-- Enable specified debugmode by default for Satis Only!
 		if getMD5(g_gameSettings:getValue("nickname")) == "9a9f028043394ff9de1cf6c905b515c1" then
-			defaultActive[6] = true;
-			defaultActive[12] = true;
-			defaultActive[13] = true;
-			defaultActive[14] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_12] = true;
+			defaultActive[courseplay.DBG_13] = true;
+			defaultActive[courseplay.DBG_14] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "b74ad095badc54d4334039f2f73f240e" then
-			defaultActive[6] = true;
-			defaultActive[13] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_13] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
-			defaultActive[11] = true;
-			defaultActive[12] = true;
-			defaultActive[13] = true;
-			defaultActive[14] = true;
-			defaultActive[6] = true;
-			defaultActive[7] = true;
-			defaultActive[8] = true;
-			defaultActive[9] = true;
-			defaultActive[4] = true;
-			defaultActive[3] = true;
+			defaultActive[courseplay.DBG_11] = true;
+			defaultActive[courseplay.DBG_12] = true;
+			defaultActive[courseplay.DBG_13] = true;
+			defaultActive[courseplay.DBG_14] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_COURSE_GENERATOR] = true;
+			defaultActive[courseplay.DBG_COURSE_MANAGEMENT] = true;
+			defaultActive[courseplay.DBG_PATHFINDING] = true;
+			defaultActive[courseplay.DBG_MODE_2_3] = true;
+			defaultActive[courseplay.DBG_TRAFFIC] = true;
 		end;
 	end;
 
@@ -71,6 +71,8 @@ function CpManager:setUpDebugChannels()
 	Regex to replace debug flags:
 	(courseplay:debug.*, *)(3)(\D.*)
 	(courseplay.debug(Vehicle|Format)\( *)(\d+)(\D.*)  -> $1courseplay.DBG_$3$4
+	(courseplay.debugChannels\[ *)(\d+)(\D.*)  -> $1courseplay.DBG_$2$3
+	(courseplay.debugLine\( *)(\d+)(\D.*)  -> $1courseplay.DBG_$2$3
 
 	--]]
 	-- Debug channels legend:
@@ -78,27 +80,27 @@ function CpManager:setUpDebugChannels()
 		[courseplay.DBG_TRIGGERS] = 'Debug: Raycast (drive + tipTriggers)';
 		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: Load and unload tippers';
 		[courseplay.DBG_TRAFFIC] = 'Debug: Traffic collision';
-		[4] = 'Debug: Mode 2/3, combi/overloader';
-		[5] = 'Debug: Multiplayer';
-		[6] = 'Debug: implements (updateWorkTools etc.)';
-		[7] = 'Debug: course generation';
-		[8] = 'Debug: course management';
-		[9] = 'Debug: path finding';
-		[10] = 'Debug: mode9: shovel loading/unloading';
-		[11] = 'Debug: AIDriver management';
-		[12] = 'Debug: all other debugs (uncategorized)';
-		[13] = 'Debug: reverse driving';
-		[14] = 'Debug: driving specific';
-		[15] = 'Debug: not used';
-		[16] = 'Debug: recording courses';
-		[17] = 'Debug: mode4/6: seeding/fieldWork';
-		[18] = 'Debug: hud action';
-		[19] = 'Debug: special triggers';
-		[20] = 'Debug: WeightStation';
-		[21] = 'Debug: Speed setting';
-		[22] = 'Debug: temp MP';
-		[23] = 'Debug: mode8: liquid product transport';
-		[24] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
+		[courseplay.DBG_MODE_2_3] = 'Debug: Mode 2/3, combi/overloader';
+		[courseplay.DBG_MULTIPLAYER] = 'Debug: Multiplayer';
+		[courseplay.DBG_IMPLEMENTS] = 'Debug: implements (updateWorkTools etc.)';
+		[courseplay.DBG_COURSE_GENERATOR] = 'Debug: course generation';
+		[courseplay.DBG_COURSE_MANAGEMENT] = 'Debug: course management';
+		[courseplay.DBG_PATHFINDING] = 'Debug: path finding';
+		[courseplay.DBG_10] = 'Debug: mode9: shovel loading/unloading';
+		[courseplay.DBG_11] = 'Debug: AIDriver management';
+		[courseplay.DBG_12] = 'Debug: all other debugs (uncategorized)';
+		[courseplay.DBG_13] = 'Debug: reverse driving';
+		[courseplay.DBG_14] = 'Debug: driving specific';
+		[courseplay.DBG_15] = 'Debug: not used';
+		[courseplay.DBG_16] = 'Debug: recording courses';
+		[courseplay.DBG_17] = 'Debug: mode4/6: seeding/fieldWork';
+		[courseplay.DBG_18] = 'Debug: hud action';
+		[courseplay.DBG_19] = 'Debug: special triggers';
+		[courseplay.DBG_20] = 'Debug: WeightStation';
+		[courseplay.DBG_21] = 'Debug: Speed setting';
+		[courseplay.DBG_22] = 'Debug: temp MP';
+		[courseplay.DBG_23] = 'Debug: mode8: liquid product transport';
+		[courseplay.DBG_24] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
 	};
 
 	courseplay.debugButtonPosData = {};
@@ -174,7 +176,7 @@ local lines = {
 	('_'):rep(50),
 	('#'):rep(50)
 };
-function cpPrintLine(debugChannel, line)
+function courseplay.debugLine(debugChannel, line)
 	if debugChannel == nil or courseplay.debugChannels[debugChannel] then
 		line = line or 1;
 		print(lines[line]);
@@ -496,7 +498,7 @@ end
 -- TODO: there could be a drawTemporaryLine in cpDebug that already has a buffer for all draw data, there's no need to
 -- create a separate one
 function courseplay:showTemporaryMarkers(vehicle)
-	if not courseplay.debugChannels[14] then return end
+	if not courseplay.debugChannels[courseplay.DBG_14] then return end
 	if vehicle.cp.showMarkers then
 		if vehicle.cp.showMarkers.timer < vehicle.timer then
 			-- time is up, remove markers

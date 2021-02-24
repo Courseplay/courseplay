@@ -38,7 +38,7 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 end 
 
 function TriggerHandler:isDebugActive()
-	return courseplay.debugChannels[2]
+	return courseplay.debugChannels[courseplay.DBG_LOAD_UNLOAD]
 end
 
 function TriggerHandler:debugSparse(vehicle,...)

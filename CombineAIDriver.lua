@@ -1721,7 +1721,7 @@ end
 
 function CombineAIDriver:onDraw()
 
-	if not courseplay.debugChannels[6] then return end
+	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
 
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	if dischargeNode then

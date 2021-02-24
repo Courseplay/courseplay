@@ -40,7 +40,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			end;
 		end;
 	end;
-	local debugActive = courseplay.debugChannels[13];
+	local debugActive = courseplay.debugChannels[courseplay.DBG_13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		-- Simple reversing, no trailer to back up, so set the direction and get out of here, no need for
@@ -329,7 +329,7 @@ function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
 end;
 
 function courseplay:showDirection(node,lx,lz, r, g, b)
-	if courseplay.debugChannels[13] then
+	if courseplay.debugChannels[courseplay.DBG_13] then
 		local x,y,z = getWorldTranslation(node);
 		local ctx,_,ctz = localToWorld(node,lx*5,y,lz*5);
 		cpDebug:drawLine(x, y+5, z, r or 1, g or 0, b or 0, ctx, y+5, ctz);

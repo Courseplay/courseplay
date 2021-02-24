@@ -98,7 +98,7 @@ end;
 
 function courseplay:getDistances(object)
 	if not object.cp.distances then
-		cpPrintLine(6);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 		local distances = {};
 
 		-- STEERABLES
@@ -924,7 +924,7 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 	local totalLength = 0;
 	local directionNodeToFrontWheelOffset;
 
-	if not vehicle.cp.distances or (courseplay.debugChannels[6] ~= nil and courseplay.debugChannels[6] == true) then
+	if not vehicle.cp.distances or (courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] ~= nil and courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] == true) then
 		vehicle.cp.distances = courseplay:getDistances(vehicle);
 	end;
 
@@ -963,9 +963,9 @@ function courseplay:getTotalLengthOnWheels(vehicle)
 			courseplay:debug(('%s: Using frontWheelToRearWheel=%.2f'):format(nameNum(vehicle), totalLength), courseplay.DBG_IMPLEMENTS);
 		end;
 
-		cpPrintLine(6);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 		courseplay:debug(('%s: totalLength=%.2f, totalLengthOffset=%.2f'):format(nameNum(vehicle), totalLength, directionNodeToFrontWheelOffset), courseplay.DBG_IMPLEMENTS);
-		cpPrintLine(6);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 
 	-- IMPLEMENTS OR TRAILERS
 	else

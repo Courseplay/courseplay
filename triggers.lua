@@ -54,7 +54,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 end;
 
 function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, raycastNumber)
-	if courseplay.debugChannels[debugChannel] and  courseplay.debugChannels[24] then
+	if courseplay.debugChannels[debugChannel] and  courseplay.debugChannels[courseplay.DBG_24] then
 		courseplay:debug(('%s: call %s raycast (%s) #%d'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 	end;
 	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
@@ -76,7 +76,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 		return true;
 	end;
 
-	if courseplay.debugChannels[1] then
+	if courseplay.debugChannels[courseplay.DBG_TRIGGERS] then
 		cpDebug:drawPoint( x, y, z, 1, 1, 0);
 	end;
 
@@ -159,7 +159,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					end;
 				elseif trigger.acceptedFillTypes ~= nil then
 
-					if courseplay.debugChannels[1] then
+					if courseplay.debugChannels[courseplay.DBG_TRIGGERS] then
 						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), courseplay.DBG_TRIGGERS);
 						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:printTipTriggersFruits(trigger)
@@ -186,7 +186,7 @@ function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
 		return true;
 	end;
 	
-	if courseplay.debugChannels[19] then
+	if courseplay.debugChannels[courseplay.DBG_19] then
 		cpDebug:drawPoint(x, y, z, 1, 1, 0);
 	end;
 	
@@ -258,7 +258,7 @@ function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
 		return true;
 	end;
 		
-	if courseplay.debugChannels[19] then
+	if courseplay.debugChannels[courseplay.DBG_19] then
 		cpDebug:drawPoint(x, y, z, 1, 1, 0);
 	end;
 	

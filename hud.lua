@@ -1250,9 +1250,7 @@ function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
-		if courseplay.debugChannels[18] and bool == true then
-			courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_18);
-		end;
+		courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_18);
 	end;
 end;
 

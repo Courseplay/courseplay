@@ -26,7 +26,7 @@ function courseplay.lowerImplements() end
 function courseplay.raiseImplements() end
 
 courseplay.debugChannels = {}
-courseplay.debugChannels[12] = true
+courseplay.debugChannels[courseplay.DBG_12] = true
 
 courseplay.settings = {}
 courseplay.hud = {}

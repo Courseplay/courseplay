@@ -175,7 +175,7 @@ function ShovelModeAIDriver:renderText(y,text,xOffset)
 end
 
 function ShovelModeAIDriver:isDebugActive()
-	return courseplay.debugChannels[10]
+	return courseplay.debugChannels[courseplay.DBG_10]
 end
 
 function ShovelModeAIDriver:drive(dt)
@@ -658,7 +658,7 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycast()
 		if self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
 			local x,y,z = localToWorld(node.node,0,8,i/2);
 			raycastAll(x, y, z, lx, ly, lz, "searchForUnloadingObjectRaycastCallback", 10, self);
-			if courseplay.debugChannels[10] then
+			if courseplay.debugChannels[courseplay.DBG_10] then
 				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx*10, y+ly*10, z+lz*10);
 			end;
 		end

@@ -1549,7 +1549,7 @@ function courseplay:getAllowedCharacters()
 	for unicode=allowedSpan.from,allowedSpan.to do
 		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
 		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
-		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+		if courseplay.debugChannels and courseplay.debugChannels[courseplay.DBG_COURSE_MANAGEMENT] and getCanRenderUnicode(unicode) then
 			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
 		end;
 	end;

@@ -192,7 +192,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 			turnVerticalDirStr = 'down';
 		end;
 
-		if courseplay.debugChannels[16] then
+		if courseplay.debugChannels[courseplay.DBG_16] then
 			local printStr = '';
 			printStr = printStr .. string.format('\tvx1,vz1=%.2f,%.2f\n', vx1,vz1);
 			printStr = printStr .. string.format('\tvx2,vz2=%.2f,%.2f\n', vx2,vz2);

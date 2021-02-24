@@ -147,15 +147,15 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end
 
 	if not isImplement then
-		cpPrintLine(6, 3);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 3);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool), vehicle.cp.mode), courseplay.DBG_IMPLEMENTS);
 	else
-		cpPrintLine(6);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), courseplay.DBG_IMPLEMENTS);
 	end;
 
 	-- Reset distances if in debug mode 6.
-	if courseplay.debugChannels[6] ~= nil and courseplay.debugChannels[6] == true then
+	if courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] ~= nil and courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] == true then
 		workTool.cp.distances = nil;
 	end;
 
@@ -241,8 +241,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		vehicle.cp.numWorkTools = #vehicle.cp.workTools;
 
 		-- list debug
-		if courseplay.debugChannels[3] then
-			cpPrintLine(6);
+		if courseplay.debugChannels[courseplay.DBG_TRAFFIC] then
+			courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 			courseplay:debug(('%s cpTrafficCollisionIgnoreList'):format(nameNum(vehicle)), courseplay.DBG_TRAFFIC);
 			for a,b in pairs(vehicle.cpTrafficCollisionIgnoreList) do
         if g_currentMission.nodeToObject[ a ] then
@@ -262,8 +262,8 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 
 		-- FINAL WORKTOOLS TABLE DEBUG
-		if courseplay.debugChannels[6] then
-			cpPrintLine(6);
+		if courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then
+			courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 			if vehicle.cp.numWorkTools > 0 then
 				courseplay:debug(('%s: workTools:'):format(nameNum(vehicle)), courseplay.DBG_IMPLEMENTS);
 				for i=1, vehicle.cp.numWorkTools do
@@ -278,7 +278,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	--------------------------------------------------
 
 	if not isImplement then
-		cpPrintLine(6, 3);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 3);
 	end;
 
 	return hasWorkTool;
@@ -324,7 +324,7 @@ end;
 
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
-		cpPrintLine(17);
+		courseplay.debugLine(courseplay.DBG_17);
 		courseplay:debug(nameNum(object) .. ': setFoldedStates()', courseplay.DBG_17);
 
 		object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection;
@@ -348,13 +348,13 @@ function courseplay:setFoldedStates(object)
 			end;
 			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)', i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), foldingPart.isUnfoldedAnimTimeNormal), courseplay.DBG_17);
 		end;
-		cpPrintLine(17);
+		courseplay.debugLine(courseplay.DBG_17);
 	end;
 end;
 
 
 function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
-	cpPrintLine(6, 3);
+	courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 3);
 	local turnRadius, turnRadiusAuto = 10, 10;
 
 	vehicle.cp.turnDiameterAuto = vehicle.cp.vehicleTurnRadius * 2;
@@ -378,7 +378,7 @@ function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
 		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
 		courseplay:debug(('%s: turnDiameterAutoMode is active: turnDiameter set to %.2fm'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), courseplay.DBG_IMPLEMENTS);
 	end;
-	cpPrintLine(6, 1);
+	courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 1);
 end;
 
 function courseplay:addCpNilTempFillLevelFunction()

@@ -1350,7 +1350,7 @@ end
 
 function FieldworkAIDriver:onDraw()
 
-	if not courseplay.debugChannels[6] then return end
+	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
 
 	local function showAIMarkersOfObject(object)
 		if object.getAIMarkers then

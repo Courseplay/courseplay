@@ -40,7 +40,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 	----------------------------------------------------------
 	-- Debug prints
 	----------------------------------------------------------
-	if courseplay.debugChannels[14] then
+	if courseplay.debugChannels[courseplay.DBG_14] then
 		if #vehicle.cp.turnTargets > 0 then
 			-- Draw debug points for waypoints.
 			for index, turnTarget in ipairs(vehicle.cp.turnTargets) do
@@ -171,7 +171,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 	local cx,cz = turnContext.turnEndWp.x, turnContext.turnEndWp.z
 
 	--- Debug Print
-	if courseplay.debugChannels[14] then
+	if courseplay.debugChannels[courseplay.DBG_14] then
 		local x,y,z = getWorldTranslation(turnInfo.targetNode);
 		local ctx,_,ctz = localToWorld(turnInfo.targetNode, 0, 0, 20);
 		--drawDebugLine(x, y+5, z, 1, 0, 0, ctx, y+5, ctz, 0, 1, 0);
@@ -305,15 +305,15 @@ function courseplay:turn(vehicle, dt, turnContext)
 		courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
 	end
 
-	cpPrintLine(14, 1);
+	courseplay.debugLine(courseplay.DBG_14, 1);
 	courseplay:debug(string.format("%s:(Turn) Generated %d Turn Waypoints", nameNum(vehicle), #vehicle.cp.turnTargets), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 end
 
 function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Wide Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 	local fromPoint, toPoint = {}, {};
@@ -392,9 +392,9 @@ function courseplay:generateTurnTypeWideTurn(vehicle, turnInfo)
 end;
 
 function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Wide Turn With Corner Avoidance", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 	local fromPoint, toPoint = {}, {};
@@ -511,9 +511,9 @@ function courseplay:generateTurnTypeWideTurnWithAvoidance(vehicle, turnInfo)
 end;
 
 function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Ohm Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 
@@ -559,9 +559,9 @@ function courseplay:generateTurnTypeOhmTurn(vehicle, turnInfo)
 end;
 
 function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Questionmark Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 	local fromPoint, toPoint = {}, {};
@@ -809,9 +809,9 @@ function courseplay:generateTurnTypeQuestionmarkTurn(vehicle, turnInfo)
 end;
 
 function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Forward 3 Point Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 	local fromPoint, toPoint = {}, {};
@@ -944,9 +944,9 @@ function courseplay:generateTurnTypeForward3PointTurn(vehicle, turnInfo)
 end;
 
 function courseplay:generateTurnTypeReverse3PointTurn(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Reversing 3 Point Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local posX, posZ;
 	local fromPoint, toPoint = {}, {};
@@ -1042,9 +1042,9 @@ end;
 -- forward on a curve, reaching the target direction at turnEnd
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseWithCurve(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Turn", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local fromPoint, toPoint = {}, {};
 	local centerReverse, tempCenterReverse, centerForward, startDir, stopDir = {}, {}, {}, {}, {}
@@ -1136,9 +1136,9 @@ end;
 -- During this turn the vehicle does not leave the field (or the current headland)
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseStraightCombine(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay.debugVehicle( courseplay.DBG_14, vehicle, "(Turn) Using Headland Corner Reverse Turn" )
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local fromPoint, toPoint = {}, {};
 	local centerForward, startDir, stopDir = {}, {}, {}
@@ -1203,9 +1203,9 @@ end;
 -- reverse back straight, then forward on a curve, then back up to the corner, lower implements there.
 ------------------------------------------------------------------------
 function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle, turnInfo)
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 	courseplay:debug(string.format("%s:(Turn) Using Headland Corner Reverse Turn for tractors", nameNum(vehicle)), courseplay.DBG_14);
-	cpPrintLine(14, 3);
+	courseplay.debugLine(courseplay.DBG_14, 3);
 
 	local fromPoint, toPoint = {}, {}
 	local centerForward = vehicle.cp.turnCorner:getArcCenter()

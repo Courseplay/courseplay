@@ -68,7 +68,7 @@ function ProximitySensor:update()
                 --bitOR(AIVehicleUtil.COLLISION_MASK, 0x1f0))
         --cpDebug:drawLine(x, y + self.height, z, 0, 1, 0, x + 5 * nx, y + self.height + 5 * ny, z + 5 * nz)
     end
-    if courseplay.debugChannels[12] and self.distanceOfClosestObject <= self.range then
+    if courseplay.debugChannels[courseplay.DBG_12] and self.distanceOfClosestObject <= self.range then
         local green = self.distanceOfClosestObject / self.range
         local red = 1 - green
         cpDebug:drawLine(x, y + self.height, z, red, green, 0, self.closestObjectX, self.closestObjectY, self.closestObjectZ)
@@ -105,7 +105,7 @@ function ProximitySensor:getClosestRootVehicle()
 end
 
 function ProximitySensor:showDebugInfo()
-    if not courseplay.debugChannels[12] then return end
+    if not courseplay.debugChannels[courseplay.DBG_12] then return end
     local text = string.format('%.1f ', self.distanceOfClosestObject)
     if self.objectId then
         local object = g_currentMission:getNodeObject(self.objectId)
@@ -210,7 +210,7 @@ function ProximitySensorPack:update()
     self:callForAllSensors(ProximitySensor.update)
 
     -- show the position of the pack
-    if courseplay.debugChannels[12] then
+    if courseplay.debugChannels[courseplay.DBG_12] then
         local x, y, z = getWorldTranslation(self.node)
         local x1, y1, z1 = localToWorld(self.node, 0, 0, 0.5)
         cpDebug:drawLine(x, y, z, 0, 0, 1, x, y + 3, z)

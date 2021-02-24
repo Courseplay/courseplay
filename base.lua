@@ -462,7 +462,7 @@ function courseplay:onDraw()
 		end;
 	end;
 	--DEBUG Speed Setting
-	if courseplay.debugChannels[21] then
+	if courseplay.debugChannels[courseplay.DBG_21] then
 		renderText(0.2, 0.105, 0.02, string.format("mode%d waypointIndex: %d",self.cp.mode,self.cp.waypointIndex));
 		renderText(0.2, 0.075, 0.02, self.cp.speedDebugLine);
 		if self.cp.speedDebugStreet then
@@ -479,14 +479,9 @@ function courseplay:onDraw()
 			renderText(0.2, 0.045, 0.02, string.format("mode[%s] speed: %s",mode,tostring(speed)));
 		end	
 	end
-	if self.cp.isCombine and courseplay.debugChannels[4] then
-		--renderText(0.2,0.165,0.02,string.format("time till full: %s s  ", (self:getFillUnitCapacity(self.spec_combine.fillUnitIndex) - self:getFillUnitFillLevel(self.spec_combine.fillUnitIndex))/self.cp.fillLitersPerSecond))
-		--renderText(0.2,0.135,0.02,"self.cp.fillLitersPerSecond: "..tostring(self.cp.fillLitersPerSecond))
-	end
-			
 	
 	--DEBUG SHOW DIRECTIONNODE
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[courseplay.DBG_12] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
 		if self.cp.oldDirectionNode then
 			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
