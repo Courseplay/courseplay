@@ -73,7 +73,7 @@ function CombineAIDriver:init(vehicle)
 	if self.vehicle.spec_combine then
 		self.combine = self.vehicle.spec_combine
 	else
-		local combineImplement = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Combine)
+		local combineImplement = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Combine)
         local peletizerImplement = FS19_addon_strawHarvest and
 				AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, FS19_addon_strawHarvest.StrawHarvestPelletizer) or nil
 		if combineImplement then
@@ -116,7 +116,7 @@ function CombineAIDriver:setUpPipe()
 		self.pipe = self.vehicle.spec_pipe
 		self.objectWithPipe = self.vehicle
 	else
-		local implementWithPipe = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Pipe)
+		local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
 		if implementWithPipe then
 			self.pipe = implementWithPipe.spec_pipe
 			self.objectWithPipe = implementWithPipe
