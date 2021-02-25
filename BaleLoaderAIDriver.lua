@@ -69,14 +69,16 @@ function BaleLoaderAIDriver:init(vehicle)
 		end
 	end
 	self:initStates(BaleLoaderAIDriver.myStates)
-	self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
-	if self.baleLoader.cp.realUnloadOrFillNode then
-		-- use that realUnloadOrFillNode for now as it includes the balerUnloadDistance config value
-		-- TODO: can we just use the back marker node here as well?
-		self.baleFinderProximitySensorPack = BackwardLookingProximitySensorPack(
-			self.vehicle, self.ppc, self.baleLoader.cp.realUnloadOrFillNode, 5, 1)
+	if g_server then 
+		self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
+		if self.baleLoader.cp.realUnloadOrFillNode then
+			-- use that realUnloadOrFillNode for now as it includes the balerUnloadDistance config value
+			-- TODO: can we just use the back marker node here as well?
+			self.baleFinderProximitySensorPack = BackwardLookingProximitySensorPack(
+				self.vehicle, self.ppc, self.baleLoader.cp.realUnloadOrFillNode, 5, 1)
+		end
+		self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 	end
-	self:debug('Initialized, bale loader: %s', self.baleLoader:getName())
 end
 
 ---@return boolean true if unload took over the driving
