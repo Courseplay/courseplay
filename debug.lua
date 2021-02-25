@@ -1,4 +1,6 @@
 courseplay = courseplay or {}
+
+-- Debug channels. The numbers represent the channel numbers on the HUD
 courseplay.DBG_TRIGGERS = 1
 courseplay.DBG_LOAD_UNLOAD = 2
 courseplay.DBG_TRAFFIC = 3
