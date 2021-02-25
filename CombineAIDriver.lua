@@ -57,7 +57,7 @@ CombineAIDriver.turnTypes = {
 CombineAIDriver.isACombineAIDriver = true
 
 function CombineAIDriver:init(vehicle)
-	courseplay.debugVehicle(11, vehicle, 'CombineAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11, vehicle, 'CombineAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self:initStates(CombineAIDriver.myStates)
 	self.fruitLeft, self.fruitRight = 0, 0
@@ -1721,7 +1721,7 @@ end
 
 function CombineAIDriver:onDraw()
 
-	if not courseplay.debugChannels[6] then return end
+	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
 
 	local dischargeNode = self.combine:getCurrentDischargeNode()
 	if dischargeNode then

@@ -33,7 +33,7 @@ FillableFieldworkAIDriver.myStates = {
 }
 
 function FillableFieldworkAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'FillableFieldworkAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'FillableFieldworkAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE

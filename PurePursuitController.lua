@@ -109,7 +109,7 @@ function PurePursuitController:delete()
 end
 
 function PurePursuitController:debug(...)
-	courseplay.debugVehicle(12, self.vehicle, 'PPC: ' .. string.format( ... ))
+	courseplay.debugVehicle(courseplay.DBG_12, self.vehicle, 'PPC: ' .. string.format( ... ))
 end
 
 function PurePursuitController:debugSparse(...)
@@ -372,7 +372,7 @@ function PurePursuitController:findRelevantSegment()
 			self:debug('relevant waypoint: %d, crosstrack error: %.1f', self.relevantWpNode.ix, self.crossTrackError)
 		end
 	end
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[courseplay.DBG_12] then
 		cpDebug:drawLine(px, py + 3, pz, 1, 1, 0, px, py + 1, pz);
 		DebugUtil.drawDebugNode(self.relevantWpNode.node, string.format('ix = %d\nrelevant\nnode', self.relevantWpNode.ix))
 		DebugUtil.drawDebugNode(self.projectedPosNode, 'projected\nvehicle\nposition')
@@ -435,7 +435,7 @@ function PurePursuitController:findGoalPoint()
 			self:showGoalpointDiag(2, 'common case, ix=%d, q1=%.1f, q2=%.1f la=%.1f', ix, q1, q2, self.lookAheadDistance)
 			-- current waypoint is the waypoint at the end of the path segment
 			self:setCurrentWaypoint(ix + 1)
-			--courseplay.debugVehicle(12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
+			--courseplay.debugVehicle(courseplay.DBG_12, self.vehicle, "PPC: %d, p=%.1f", self.currentWpNode.ix, p)
 			break
 		end
 
@@ -484,7 +484,7 @@ function PurePursuitController:findGoalPoint()
 	node1:destroy()
 	node2:destroy()
 	
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[courseplay.DBG_12] then
 		local gx, gy, gz = localToWorld(self.goalWpNode.node, 0, 0, 0)
 		cpDebug:drawLine(gx, gy + 3, gz, 0, 1, 0, gx, gy + 1, gz);
 		DebugUtil.drawDebugNode(self.currentWpNode.node, string.format('ix = %d\ncurrent\nwaypoint', self.currentWpNode.ix))
@@ -525,7 +525,7 @@ end
 
 function PurePursuitController:showGoalpointDiag(case, ...)
 	local diagText = string.format(...)
-	if courseplay.debugChannels[12] then
+	if courseplay.debugChannels[courseplay.DBG_12] then
 		DebugUtil.drawDebugNode(self.goalWpNode.node, diagText)
 		DebugUtil.drawDebugNode(self.controlledNode, 'controlled')
 	end

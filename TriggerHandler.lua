@@ -31,14 +31,14 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.lastLoadedFillTypes = {}
 	self.disabledCombiUnloadingTrigger = nil
 	self.debugTicks = 100
-	self.debugChannel = 2
+	self.debugChannel = courseplay.DBG_TRIGGERS
 	self.lastDistanceToTrigger = nil
 	self.lastDebugLoadingCallback = nil
 	self.bunkerSilo = nil
 end 
 
 function TriggerHandler:isDebugActive()
-	return courseplay.debugChannels[2]
+	return courseplay.debugChannels[courseplay.DBG_LOAD_UNLOAD]
 end
 
 function TriggerHandler:debugSparse(vehicle,...)
@@ -657,7 +657,7 @@ function TriggerHandler:activateTriggerForVehicle(trigger, vehicle)
 	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
 	local overriddenFarmIdFunc = function()
 		local ownerFarmId = vehicle:getOwnerFarmId()
-		courseplay.debugVehicle(19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
+		courseplay.debugVehicle(courseplay.DBG_19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
 		return ownerFarmId;
 	end
 	g_currentMission.getFarmId = overriddenFarmIdFunc;
@@ -767,10 +767,10 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 								else
 									triggerHandler:setFuelLoadingState()
 									CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY')
-									courseplay.debugFormat(2, 'No Diesel at this trigger.')
+									courseplay.debugFormat(courseplay.DBG_LOAD_UNLOAD, 'No Diesel at this trigger.')
 								end
 							else
-								courseplay.debugFormat(2, 'max FillLevel Reached')
+								courseplay.debugFormat(courseplay.DBG_LOAD_UNLOAD, 'max FillLevel Reached')
 								triggerHandler:resetLoadingState()
 							end
 						end
@@ -964,7 +964,7 @@ function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 		triggerHandler.triggers[self] = nil
 	end
 	if onEnter then 
-		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger onEnter')
+		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'LoadTrigger onEnter')
 		if fillableObject.getFillUnitIndexFromNode ~= nil then
 			local fillLevels, capacity
 			if self.source.getAllFillLevels then
@@ -990,11 +990,11 @@ function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 		if spec then
 			SpecializationUtil.raiseEvent(fillableObject, "onRemovedFillUnitTrigger",#spec.fillTrigger.triggers)
 		end
-		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: onLeave, disableTriggerSpeed')
+		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'LoadTrigger: onLeave, disableTriggerSpeed')
 	else
-		courseplay.debugVehicle(2,fillableObject, 'LoadTrigger: enableTriggerSpeed')
+		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'LoadTrigger: enableTriggerSpeed')
 	end
-	courseplay.debugVehicle(2,fillableObject, "validFillableObject: "..tostring(self.validFillableObject))
+	courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, "validFillableObject: "..tostring(self.validFillableObject))
 end
 
 --FillTrigger callback used to set approach speed for Cp driver
@@ -1032,10 +1032,10 @@ function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherId, onEnt
 			triggerHandler.triggers[self] = nil
 		end
 		if onEnter then
-			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onEnter')
+			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'fillTrigger onEnter')
 		end
 		if onLeave then
-			courseplay.debugVehicle(2,fillableObject, 'fillTrigger onLeave')
+			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'fillTrigger onLeave')
 		end
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
@@ -1090,7 +1090,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 					local fillType = self:getFillUnitFillType(dischargeNode.fillUnitIndex)
 					local validFillUnitIndex = object:getFirstValidFillUnitToFill(fillType)
                     if fillType and validFillUnitIndex then 
-						courseplay.debugVehicle(2,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
+						courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
 						SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
 						objectTriggerHandler.isInAugerWagonTrigger = true
 					end
@@ -1098,7 +1098,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 			end
 		elseif onLeave then
 			SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
-			courseplay.debugVehicle(2,object,"unloadingTriggerCallback close Cover")
+			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,object,"unloadingTriggerCallback close Cover")
 			objectTriggerHandler:resetLoadingState()
 			objectTriggerHandler.isInAugerWagonTrigger = false
 		end

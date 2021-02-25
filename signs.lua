@@ -129,7 +129,7 @@ end;
 
 function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 	section = section or 'all'; --section: 'all', 'crossing', 'current'
-	courseplay.debugVehicle(8, vehicle, 'Updating waypoint display for %s', section)
+	courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Updating waypoint display for %s', section)
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
 	vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
@@ -286,7 +286,7 @@ function courseplay.signs:setSignsVisibility(vehicle, forceHide)
 	local showVisualWaypointsState = vehicle.cp.settings.showVisualWaypoints:get()
 	
 	local numSigns = #vehicle.cp.signs.current;
-	courseplay.debugVehicle(8, vehicle, 'Setting visibility for %d waypoints, start/end=%s all=%s, xing=%s', numSigns,
+	courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Setting visibility for %d waypoints, start/end=%s all=%s, xing=%s', numSigns,
 		tostring(vehicle.cp.visualWaypointsStartEnd), tostring(vehicle.cp.visualWaypointsAll), tostring(vehicle.cp.visualWaypointsCrossing))
 	local vis, isStartEndPoint;
 	for k,signData in pairs(vehicle.cp.signs.current) do

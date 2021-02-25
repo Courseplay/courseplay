@@ -34,7 +34,7 @@ UnloadableFieldworkAIDriver.fillLevelFullPercentage = UnloadableFieldworkAIDrive
 UnloadableFieldworkAIDriver.fillLevelEmptyPercentage = 0.1
 
 function UnloadableFieldworkAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'UnloadableFieldworkAIDriver:init()') 
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'UnloadableFieldworkAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(UnloadableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK

@@ -1,3 +1,29 @@
+courseplay = courseplay or {}
+courseplay.DBG_TRIGGERS = 1
+courseplay.DBG_LOAD_UNLOAD = 2
+courseplay.DBG_TRAFFIC = 3
+courseplay.DBG_MODE_2_3 = 4
+courseplay.DBG_MULTIPLAYER = 5
+courseplay.DBG_IMPLEMENTS = 6
+courseplay.DBG_COURSE_GENERATOR = 7
+courseplay.DBG_COURSE_MANAGEMENT = 8
+courseplay.DBG_PATHFINDING = 9
+courseplay.DBG_10 = 10
+courseplay.DBG_11 = 11
+courseplay.DBG_12 = 12
+courseplay.DBG_13 = 13
+courseplay.DBG_14 = 14
+courseplay.DBG_15 = 15
+courseplay.DBG_16 = 16
+courseplay.DBG_17 = 17
+courseplay.DBG_18 = 18
+courseplay.DBG_19 = 19
+courseplay.DBG_20 = 20
+courseplay.DBG_21 = 21
+courseplay.DBG_22 = 22
+courseplay.DBG_23 = 23
+courseplay.DBG_24 = 24
+
 function CpManager:setUpDebugChannels()
 	print('## Courseplay: setting up debug channels');
 
@@ -6,26 +32,26 @@ function CpManager:setUpDebugChannels()
 	if CpManager.isDeveloper then
 		-- Enable specified debugmode by default for Satis Only!
 		if getMD5(g_gameSettings:getValue("nickname")) == "9a9f028043394ff9de1cf6c905b515c1" then
-			defaultActive[6] = true;
-			defaultActive[12] = true;
-			defaultActive[13] = true;
-			defaultActive[14] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_12] = true;
+			defaultActive[courseplay.DBG_13] = true;
+			defaultActive[courseplay.DBG_14] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "b74ad095badc54d4334039f2f73f240e" then
-			defaultActive[6] = true;
-			defaultActive[13] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_13] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
-			defaultActive[11] = true;
-			defaultActive[12] = true;
-			defaultActive[13] = true;
-			defaultActive[14] = true;
-			defaultActive[6] = true;
-			defaultActive[7] = true;
-			defaultActive[8] = true;
-			defaultActive[9] = true;
-			defaultActive[4] = true;
-			defaultActive[3] = true;
+			defaultActive[courseplay.DBG_11] = true;
+			defaultActive[courseplay.DBG_12] = true;
+			defaultActive[courseplay.DBG_13] = true;
+			defaultActive[courseplay.DBG_14] = true;
+			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			defaultActive[courseplay.DBG_COURSE_GENERATOR] = true;
+			defaultActive[courseplay.DBG_COURSE_MANAGEMENT] = true;
+			defaultActive[courseplay.DBG_PATHFINDING] = true;
+			defaultActive[courseplay.DBG_MODE_2_3] = true;
+			defaultActive[courseplay.DBG_TRAFFIC] = true;
 		end;
 	end;
 
@@ -41,33 +67,40 @@ function CpManager:setUpDebugChannels()
 	for channel=1, courseplay.numAvailableDebugChannels do
 		courseplay.debugChannels[channel] = defaultActive[channel] or false;
 	end;
+	--[[
+	Regex to replace debug flags:
+	(courseplay:debug.*, *)(3)(\D.*)
+	(courseplay.debug(Vehicle|Format)\( *)(\d+)(\D.*)  -> $1courseplay.DBG_$3$4
+	(courseplay.debugChannels\[ *)(\d+)(\D.*)  -> $1courseplay.DBG_$2$3
+	(courseplay.debugLine\( *)(\d+)(\D.*)  -> $1courseplay.DBG_$2$3
 
+	--]]
 	-- Debug channels legend:
 	courseplay.debugChannelsDesc = {
-		[1] = 'Debug: Raycast (drive + tipTriggers)';
-		[2] = 'Debug: Load and unload tippers';
-		[3] = 'Debug: Traffic collision';
-		[4] = 'Debug: Mode 2/3, combi/overloader';
-		[5] = 'Debug: Multiplayer';
-		[6] = 'Debug: implements (updateWorkTools etc.)';
-		[7] = 'Debug: course generation';
-		[8] = 'Debug: course management';
-		[9] = 'Debug: path finding';
-		[10] = 'Debug: mode9: shovel loading/unloading';
-		[11] = 'Debug: AIDriver management';
-		[12] = 'Debug: all other debugs (uncategorized)';
-		[13] = 'Debug: reverse driving';
-		[14] = 'Debug: driving specific';
-		[15] = 'Debug: not used';
-		[16] = 'Debug: recording courses';
-		[17] = 'Debug: mode4/6: seeding/fieldWork';
-		[18] = 'Debug: hud action';
-		[19] = 'Debug: special triggers';
-		[20] = 'Debug: WeightStation';
-		[21] = 'Debug: Speed setting';
-		[22] = 'Debug: temp MP';
-		[23] = 'Debug: mode8: liquid product transport';
-		[24] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
+		[courseplay.DBG_TRIGGERS] = 'Debug: Raycast (drive + tipTriggers)';
+		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: Load and unload tippers';
+		[courseplay.DBG_TRAFFIC] = 'Debug: Traffic collision';
+		[courseplay.DBG_MODE_2_3] = 'Debug: Mode 2/3, combi/overloader';
+		[courseplay.DBG_MULTIPLAYER] = 'Debug: Multiplayer';
+		[courseplay.DBG_IMPLEMENTS] = 'Debug: implements (updateWorkTools etc.)';
+		[courseplay.DBG_COURSE_GENERATOR] = 'Debug: course generation';
+		[courseplay.DBG_COURSE_MANAGEMENT] = 'Debug: course management';
+		[courseplay.DBG_PATHFINDING] = 'Debug: path finding';
+		[courseplay.DBG_10] = 'Debug: mode9: shovel loading/unloading';
+		[courseplay.DBG_11] = 'Debug: AIDriver management';
+		[courseplay.DBG_12] = 'Debug: all other debugs (uncategorized)';
+		[courseplay.DBG_13] = 'Debug: reverse driving';
+		[courseplay.DBG_14] = 'Debug: driving specific';
+		[courseplay.DBG_15] = 'Debug: not used';
+		[courseplay.DBG_16] = 'Debug: recording courses';
+		[courseplay.DBG_17] = 'Debug: mode4/6: seeding/fieldWork';
+		[courseplay.DBG_18] = 'Debug: hud action';
+		[courseplay.DBG_19] = 'Debug: special triggers';
+		[courseplay.DBG_20] = 'Debug: WeightStation';
+		[courseplay.DBG_21] = 'Debug: Speed setting';
+		[courseplay.DBG_22] = 'Debug: temp MP';
+		[courseplay.DBG_23] = 'Debug: mode8: liquid product transport';
+		[courseplay.DBG_24] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
 	};
 
 	courseplay.debugButtonPosData = {};
@@ -102,7 +135,7 @@ function courseplay:debug(str, channel)
 end;
 
 -- convenience debug function that expects string.format() arguments,
--- courseplay.debugVehicle( 14, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_14, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugFormat(channel, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
@@ -113,7 +146,7 @@ function courseplay.debugFormat(channel, ...)
 end
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
--- courseplay.debugVehicle( 14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugVehicle(channel, vehicle, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
@@ -143,7 +176,7 @@ local lines = {
 	('_'):rep(50),
 	('#'):rep(50)
 };
-function cpPrintLine(debugChannel, line)
+function courseplay.debugLine(debugChannel, line)
 	if debugChannel == nil or courseplay.debugChannels[debugChannel] then
 		line = line or 1;
 		print(lines[line]);
@@ -274,16 +307,16 @@ function courseplay.streamDebugWrite(streamId, varType, value, name)
 		elseif value == 0 then
 			value = false;
 		end;
-		courseplay:debug(('%d: writing %s (bool): %s'):format(stream_debug_counter,name or "XX", tostring(value)), 5);
+		courseplay:debug(('%d: writing %s (bool): %s'):format(stream_debug_counter,name or "XX", tostring(value)), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'Float' then
 		value = value or 0.0;
-		courseplay:debug(('%d: writing %s (float): %f'):format(stream_debug_counter,name or "XX", value), 5);
+		courseplay:debug(('%d: writing %s (float): %f'):format(stream_debug_counter,name or "XX", value), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'Int' then
 		value = value or 0.0;
-		courseplay:debug(('%d: writing %s (int): %d'):format(stream_debug_counter,name or "XX", value), 5);
+		courseplay:debug(('%d: writing %s (int): %d'):format(stream_debug_counter,name or "XX", value), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'String' then
 		value = value or 'nil';
-		courseplay:debug(('%d: writing %s  (string): %q'):format(stream_debug_counter,name or "XX", value), 5);
+		courseplay:debug(('%d: writing %s  (string): %q'):format(stream_debug_counter,name or "XX", value), courseplay.DBG_MULTIPLAYER);
 	end;
 
 	courseplay.streamWriteFunctions[varType](streamId, value);
@@ -294,13 +327,13 @@ function courseplay.streamDebugRead(streamId, varType)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = courseplay.streamReadFunctions[varType](streamId);
 	if varType == 'Bool' then
-		courseplay:debug(('%d: reading bool: %s'):format(stream_debug_counter, tostring(value)), 5);
+		courseplay:debug(('%d: reading bool: %s'):format(stream_debug_counter, tostring(value)), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'Float' then
-		courseplay:debug(('%d: reading float: %s'):format(stream_debug_counter, tostring(value)), 5);
+		courseplay:debug(('%d: reading float: %s'):format(stream_debug_counter, tostring(value)), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'Int' then
-		courseplay:debug(('%d: reading int: %s'):format(stream_debug_counter, tostring(value)), 5);
+		courseplay:debug(('%d: reading int: %s'):format(stream_debug_counter, tostring(value)), courseplay.DBG_MULTIPLAYER);
 	elseif varType == 'String' then
-		courseplay:debug(('%d: reading string: %s'):format(stream_debug_counter, tostring(value)), 5);
+		courseplay:debug(('%d: reading string: %s'):format(stream_debug_counter, tostring(value)), courseplay.DBG_MULTIPLAYER);
 	end;
 
 	return value;
@@ -310,7 +343,7 @@ stream_debug_counter = 0;
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteFloat32(streamId, value)
 end
 
@@ -323,21 +356,21 @@ function streamDebugWriteBool(streamId, value)
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),5)
+	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),courseplay.DBG_MULTIPLAYER)
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 	value = Utils.getNoNil(value, 0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing int: %d",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: writing int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 	value = Utils.getNoNil(value, "")
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing string: %s",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: writing string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteString(streamId, value)
 end
 
@@ -345,7 +378,7 @@ end
 function streamDebugReadFloat32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadFloat32(streamId)
-	courseplay:debug(string.format("%d: reading float: %f",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: reading float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
@@ -353,21 +386,21 @@ end
 function streamDebugReadInt32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadInt32(streamId)
-	courseplay:debug(string.format("%d: reading int: %d",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: reading int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
 function streamDebugReadBool(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadBool(streamId)
-	courseplay:debug(string.format("%d: reading bool: %s",stream_debug_counter, tostring(value)),5)
+	courseplay:debug(string.format("%d: reading bool: %s",stream_debug_counter, tostring(value)),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
 function streamDebugReadString(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadString(streamId)
-	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),5)
+	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
@@ -465,7 +498,7 @@ end
 -- TODO: there could be a drawTemporaryLine in cpDebug that already has a buffer for all draw data, there's no need to
 -- create a separate one
 function courseplay:showTemporaryMarkers(vehicle)
-	if not courseplay.debugChannels[14] then return end
+	if not courseplay.debugChannels[courseplay.DBG_14] then return end
 	if vehicle.cp.showMarkers then
 		if vehicle.cp.showMarkers.timer < vehicle.timer then
 			-- time is up, remove markers

@@ -18,9 +18,9 @@ end
 
 function CourseEditorEvent:readStream(streamId, connection)
 	self.vehicle = NetworkUtil.readNodeObject(streamId);
-	courseplay.debugVehicle(5,self.vehicle,"readStream Course Editor")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"readStream Course Editor")
 	self.action = streamReadString(streamId);
-	courseplay.debugVehicle(5,self.vehicle,'readStream Course Editor: Recieving %s event', tostring(self.action));
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,'readStream Course Editor: Recieving %s event', tostring(self.action));
 
 	if self.action == "DragTo"
 	or self.action == "UndoDragTo"
@@ -76,7 +76,7 @@ function CourseEditorEvent:readStream(streamId, connection)
 end
 
 function CourseEditorEvent:writeStream(streamId, connection)
-	courseplay.debugVehicle(5,self.vehicle,'writeStream Course Editor: Sending %s event', tostring(self.action));
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,'writeStream Course Editor: Sending %s event', tostring(self.action));
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
 	streamWriteString(streamId, self.action);
 
@@ -122,7 +122,7 @@ function CourseEditorEvent:writeStream(streamId, connection)
 	end
 
 function CourseEditorEvent:run(connection)
-	courseplay.debugVehicle(5,self.vehicle,"run Course Editor event")
+	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"run Course Editor event")
 
 	if self.action == "SaveCourse" then
 		courseEditor:doSaveCourseAction(self.vehicle,self.values,true);
@@ -155,7 +155,7 @@ function CourseEditorEvent:run(connection)
 	end
 
 	if not connection:getIsServer() then
-		courseplay.debugVehicle(5,self.vehicle,"broadcast Course Editor event feedback");
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"broadcast Course Editor event feedback");
 		g_server:broadcastEvent(CourseEditorEvent:new(self.vehicle,self.action,self.values), nil, connection, self.vehicle);
 	end;
 end
@@ -163,12 +163,12 @@ end
 function CourseEditorEvent.sendEvent(vehicle,action,values,noEventSend)
 	if noEventSend == nil or noEventSend == false then
 		if g_server ~= nil then
-			courseplay.debugVehicle(5,vehicle,"broadcast Course Editor event");
-			courseplay.debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"broadcast Course Editor event");
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
 			g_server:broadcastEvent(CourseEditorEvent:new(vehicle,action,values), nil, nil, vehicle);
 		else
-			courseplay.debugVehicle(5,vehicle,"send Course Editor event");
-			courseplay.debugVehicle(5,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"send Course Editor event");
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'action=%s, values=%s', tostring(action), tostring(values));
 			g_client:getServerConnection():sendEvent(CourseEditorEvent:new(vehicle,action,values));
 		end;
 	end

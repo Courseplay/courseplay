@@ -30,7 +30,7 @@ PlowAIDriver.myStates = {
 }
 
 function PlowAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'PlowAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'PlowAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(PlowAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK

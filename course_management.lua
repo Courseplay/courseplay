@@ -5,7 +5,7 @@ local ceil = math.ceil;
 function courseplay.courses:setup()
 	-- LOAD COURSES AND FOLDERS FROM XML
 	if g_currentMission.cp_courses == nil then
-		-- courseplay:debug("cp_courses was nil and initialized", 8);
+		-- courseplay:debug("cp_courses was nil and initialized", courseplay.DBG_COURSE_MANAGEMENT);
 		g_currentMission.cp_courses = {};
 		g_currentMission.cp_courseManager = {};
 		g_currentMission.cp_folders = {};
@@ -13,7 +13,7 @@ function courseplay.courses:setup()
 
 		if g_server ~= nil and next(g_currentMission.cp_courses) == nil then
 			self:loadCoursesAndFoldersFromXml();
-			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), 8);
+			-- courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), courseplay.DBG_COURSE_MANAGEMENT);
 		end;
 	end;
 end;
@@ -64,7 +64,7 @@ function courseplay:showSaveCourseForm(vehicle, saveWhat) -- fn is in courseplay
 end;
 
 function courseplay:reloadCourses(vehicle, useRealId) -- fn is in courseplay because it's vehicle based
-	courseplay:debug(('%s: reloadCourses(..., %s)'):format(nameNum(vehicle), tostring(useRealId)), 8);
+	courseplay:debug(('%s: reloadCourses(..., %s)'):format(nameNum(vehicle), tostring(useRealId)), courseplay.DBG_COURSE_MANAGEMENT);
 	local courses = vehicle.cp.loadedCourses;
 	vehicle.cp.loadedCourses = {};
 	for k, v in pairs(courses) do
@@ -74,7 +74,7 @@ end;
 
 function courseplay.courses:reinitializeCourses()
 	if g_currentMission.cp_courses == nil then
-		courseplay:debug("cp_courses is empty", 8)
+		courseplay:debug("cp_courses is empty", courseplay.DBG_COURSE_MANAGEMENT)
 		if g_server ~= nil then
 			self:loadCoursesAndFoldersFromXml();
 		end
@@ -100,7 +100,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 	
 	if addCourseAtEnd == nil then addCourseAtEnd = false; end;
 
-	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), 8);
+	courseplay:debug(string.format('%s: loadCourse(..., id=%s, useRealId=%s, addCourseAtEnd=%s)', nameNum(vehicle), tostring(id), tostring(useRealId), tostring(addCourseAtEnd)), courseplay.DBG_COURSE_MANAGEMENT);
 	if id ~= nil and id ~= "" then
 		if not useRealId then
 			-- this useRealId smells to heaven...
@@ -121,7 +121,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 
 		if not g_currentMission.cp_courses[id].waypoints and not g_currentMission.cp_courses[id].virtual then
 			if not CpManager.isMP or not courseplay.isClient then
-				courseplay.debugVehicle(8, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
+				courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Loading course %d (%s)', id, g_currentMission.cp_courses[id].nameClean)
 				courseplay.courses:loadCourseFromFile(g_currentMission.cp_courses[id])
 			else
 				g_currentMission.cp_courses[id].waypoints = {}
@@ -170,7 +170,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			if vehicle.cp.currentCourseName == nil then --recorded but not saved course
 				vehicle.cp.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses), tostring(course.name)), 8);
+			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(courseplay.DBG_TRIGGERS).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses), tostring(course.name)), courseplay.DBG_COURSE_MANAGEMENT);
 
 
 			local course1, course2 = vehicle.Waypoints, course.waypoints;
@@ -187,17 +187,17 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				local crossingPoints = { [1] = {}, [2] = {} };
 				for i=vehicle.cp.lastMergedWP + 1, numCourse1 do
 					if i > 1 and course1[i].crossing == true and not course1[i].merged then
-						courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', 8);
+						courseplay:debug('course1 wp ' .. i .. ': add to crossingPoints[1]', courseplay.DBG_COURSE_MANAGEMENT);
 						table.insert(crossingPoints[1], i);
 					end;
 				end;
 				for i,wp in pairs(course2) do
 					if i < numCourse2 and wp.crossing == true and not wp.merged then
-						courseplay:debug('course2 wp ' .. i .. ': add to crossingPoints[2]', 8);
+						courseplay:debug('course2 wp ' .. i .. ': add to crossingPoints[2]', courseplay.DBG_COURSE_MANAGEMENT);
 						table.insert(crossingPoints[2], i);
 					end;
 				end;
-				courseplay:debug(string.format('course 1 has %d crossing points (excluding first point), course 2 has %d crossing points (excluding last point), useFirstMatch=%s', #crossingPoints[1], #crossingPoints[2], tostring(useFirstMatch)), 8);
+				courseplay:debug(string.format('course 1 has %d crossing points (excluding first point), course 2 has %d crossing points (excluding last point), useFirstMatch=%s', #crossingPoints[1], #crossingPoints[2], tostring(useFirstMatch)), courseplay.DBG_COURSE_MANAGEMENT);
 
 				--find < wpDistMax match with lowest total turn angle
 				local smallestAngle, smallestDist = math.huge, math.huge;
@@ -215,7 +215,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 								math.abs(getDeltaAngle(math.rad(wp1.angle),angleTurn)) +
 									math.abs(getDeltaAngle(angleTurn,math.rad(wp2.angle))))
 							angleTurn = math.deg(angleTurn) -- now in degrees
-							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), 8);
+							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), courseplay.DBG_COURSE_MANAGEMENT);
 							if dist and dist ~= 0 and dist < wpDistMax then
 								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
 									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), 8);
@@ -247,7 +247,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 									vehicle.cp.lastMergedWP = wpNum1;
 									course1[course1wp].merged = true;
 									course2[course2wp].merged = true;
-									courseplay.debugVehicle(8, vehicle,
+									courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle,
 										'wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
 										wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist)
 								end;
@@ -292,7 +292,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			end;
 
 
-			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), 8);
+			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), courseplay.DBG_COURSE_MANAGEMENT);
 		end;
 
 
@@ -1331,12 +1331,12 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 			local parent
 			local courses, folders = {}, {}
 			local searchTermClean = courseplay:normalizeUTF8(vehicle.cp.hud.filter);
-			courseplay:debug(string.format("%s: [filter] searchTermClean = %q", nameNum(vehicle), tostring(searchTermClean)), 8);
+			courseplay:debug(string.format("%s: [filter] searchTermClean = %q", nameNum(vehicle), tostring(searchTermClean)), courseplay.DBG_COURSE_MANAGEMENT);
 
 			-- filter courses
 			for k, course in pairs(g_currentMission.cp_courses) do
 				if string.match(course.nameClean, searchTermClean) ~= nil then
-					courseplay:debug(string.format("\tmatch: course.nameClean=%q / searchTermClean = %q", tostring(course.nameClean), tostring(searchTermClean)), 8);
+					courseplay:debug(string.format("\tmatch: course.nameClean=%q / searchTermClean = %q", tostring(course.nameClean), tostring(searchTermClean)), courseplay.DBG_COURSE_MANAGEMENT);
 					courses[k] = course
 					-- add parents
 					parent = course.parent
@@ -1356,7 +1356,7 @@ function courseplay.courses:reloadVehicleCourses(vehicle)
 		
 		-- update items for the hud
 		courseplay.hud.reloadCourses(vehicle);
-		courseplay.debugVehicle(8, vehicle, 'reloadVehicleCourses')
+		courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'reloadVehicleCourses')
 		vehicle.cp.reloadCourseItems = false
 	end -- end vehicle ~= nil
 end
@@ -1525,7 +1525,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 
 		g_currentMission.cp_sorted = self:sort(courses_by_id, folders_by_id, 0, 0)
 
-		--courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), 8);
+		--courseplay:debug(tableShow(g_currentMission.cp_sorted.item, "cp_sorted.item", 8), courseplay.DBG_COURSE_MANAGEMENT);
 
 		return g_currentMission.cp_courses;
 	elseif CpManager.cpCourseManagerXmlFilePath then
@@ -1549,7 +1549,7 @@ function courseplay:getAllowedCharacters()
 	for unicode=allowedSpan.from,allowedSpan.to do
 		prohibitedUnicodes[unicode] = prohibitedUnicodes[unicode] or false;
 		result[unicode] = not prohibitedUnicodes[unicode] and getCanRenderUnicode(unicode);
-		if courseplay.debugChannels and courseplay.debugChannels[8] and getCanRenderUnicode(unicode) then
+		if courseplay.debugChannels and courseplay.debugChannels[courseplay.DBG_COURSE_MANAGEMENT] and getCanRenderUnicode(unicode) then
 			print(string.format('allowedCharacters[%d]=%s (%q) (prohibited=%s, getCanRenderUnicode()=true)', unicode, tostring(result[unicode]), unicodeToUtf8(unicode), tostring(prohibitedUnicodes[unicode])));
 		end;
 	end;
@@ -1619,18 +1619,18 @@ end;
 function courseplay:normalizeUTF8(str)
 	local len = str:len();
 	local utfLen = utf8Strlen(str);
-	courseplay:debug(string.format("str %q: len=%d, utfLen=%d", str, len, utfLen), 8);
+	courseplay:debug(string.format("str %q: len=%d, utfLen=%d", str, len, utfLen), courseplay.DBG_COURSE_MANAGEMENT);
 
 	if len ~= utfLen then --special char in str
 		local result = "";
 		for i=0,utfLen-1 do
 			local char = utf8Substr(str,i,1);
-			courseplay:debug(string.format("\tchar=%q, replaceChar=%q", char, tostring(courseplay.utf8normalization[char])), 8);
+			courseplay:debug(string.format("\tchar=%q, replaceChar=%q", char, tostring(courseplay.utf8normalization[char])), courseplay.DBG_COURSE_MANAGEMENT);
 
 			local clean = courseplay.utf8normalization[char] or char:lower();
 			result = result .. clean;
 		end;
-		courseplay:debug(string.format("normalizeUTF8(%q) --> clean=%q", str, result), 8);
+		courseplay:debug(string.format("normalizeUTF8(%q) --> clean=%q", str, result), courseplay.DBG_COURSE_MANAGEMENT);
 		return result;
 	end;
 
@@ -1871,7 +1871,7 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 		adCourse = vehicle.spec_autodrive:GetPath(x, z, yRot, course.adDestinationId, options)
 	end
 	if adCourse then
-		courseplay.debugVehicle(8, vehicle, 'Received AD course with %d waypoints', #adCourse)
+		courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'Received AD course with %d waypoints', #adCourse)
 	else
 		courseplay.infoVehicle(vehicle, 'AutoDrive could not give us a course from the current position to %s', course.adDestinationName)
 		return nil

@@ -42,7 +42,7 @@ function clickToSwitch:updateMouseState(vehicle, posX, posY, isDown, isUp, mouse
     local activeCam = getCamera()
     if activeCam ~= nil then
         local hx, hy, hz, px, py, pz = RaycastUtil.getCameraPickingRay(posX, posY, activeCam)
-        courseplay.debugVehicle(1,vehicle,"create a clickToSwitch raycast")
+        courseplay.debugVehicle(courseplay.DBG_TRIGGERS,vehicle,"create a clickToSwitch raycast")
         raycastClosest(hx, hy, hz, px, py, pz, "vehicleClickToSwitchRaycastCallback", 1000, self, 371)
     end
 end
@@ -61,7 +61,7 @@ function clickToSwitch:vehicleClickToSwitchRaycastCallback(hitObjectId, x, y, z,
                 -- this is a valid vehicle, so enter it
                 g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetObject, g_currentMission.missionInfo.playerStyle, g_currentMission.player.ownerFarmId));
                 g_currentMission.isPlayerFrozen = false;
-                courseplay.debugFormat(1,"clickToSwitch raycastCallBack: attempt to enter vehicle: %s ",nameNum(targetObject))
+                courseplay.debugFormat(courseplay.DBG_TRIGGERS,"clickToSwitch raycastCallBack: attempt to enter vehicle: %s ",nameNum(targetObject))
                 return false
             end                
         end

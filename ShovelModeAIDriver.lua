@@ -70,7 +70,7 @@ ShovelModeAIDriver.SHOVEL_POSITIONS.UNLOADING = 4
 
 --- Constructor
 function ShovelModeAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'ShovelModeAIDriver:init') 
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'ShovelModeAIDriver:init')
 	AIDriver.init(self, vehicle)
 	self:initStates(ShovelModeAIDriver.myStates)
 	--self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
@@ -175,7 +175,7 @@ function ShovelModeAIDriver:renderText(y,text,xOffset)
 end
 
 function ShovelModeAIDriver:isDebugActive()
-	return courseplay.debugChannels[10]
+	return courseplay.debugChannels[courseplay.DBG_10]
 end
 
 function ShovelModeAIDriver:drive(dt)
@@ -349,9 +349,9 @@ function ShovelModeAIDriver:isStuck()
 	if self:doesNotMove() then
 		if self.vehicle.cp.timers.slipping == nil or self.vehicle.cp.timers.slipping == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'slipping', 2);
-			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", 3)'):format(nameNum(self.vehicle)), 10);
+			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", courseplay.DBG_TRAFFIC)'):format(nameNum(self.vehicle)), courseplay.DBG_10);
 		elseif courseplay:timerIsThrough(self.vehicle, 'slipping') then
-			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), 10);
+			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), courseplay.DBG_10);
 			courseplay:resetCustomTimer(self.vehicle, 'slipping');
 			self:debug("dropout isStuck")
 			return true
@@ -658,7 +658,7 @@ function ShovelModeAIDriver:searchForUnloadingObjectRaycast()
 		if self.shovelState == self.states.STATE_WAIT_FOR_TARGET then
 			local x,y,z = localToWorld(node.node,0,8,i/2);
 			raycastAll(x, y, z, lx, ly, lz, "searchForUnloadingObjectRaycastCallback", 10, self);
-			if courseplay.debugChannels[10] then
+			if courseplay.debugChannels[courseplay.DBG_10] then
 				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx*10, y+ly*10, z+lz*10);
 			end;
 		end
@@ -800,7 +800,7 @@ function ShovelModeAIDriver:findNextRevWaypoint(currentPoint)
 end
 
 function ShovelModeAIDriver:debug(...)
-	courseplay.debugVehicle(10, self.vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_10, self.vehicle, ...)
 end
 
 function ShovelModeAIDriver:setShovelState(state, extraText)

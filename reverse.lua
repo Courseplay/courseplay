@@ -40,7 +40,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			end;
 		end;
 	end;
-	local debugActive = courseplay.debugChannels[13];
+	local debugActive = courseplay.debugChannels[courseplay.DBG_13];
 	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
 	if isNotValid then
 		-- Simple reversing, no trailer to back up, so set the direction and get out of here, no need for
@@ -139,13 +139,13 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 					local _,_,z = worldToLocal(workTool.cp.realUnloadOrFillNode, getX(waypoints, waitingPoint), y, getZ(waypoints, waitingPoint));
 					if z >= 0 then
 						courseplay:setWaypointIndex(vehicle, waitingPoint + 1);
-						courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
+						courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), courseplay.DBG_13);
 						break;
 					end;
 				else
 					if distance <= 2 then
 						courseplay:setWaypointIndex(vehicle, waitingPoint + 1);
-						courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), 13);
+						courseplay:debug(string.format("%s: Is at waiting point", nameNum(vehicle)), courseplay.DBG_13);
 						break;
 					end;
 				end;
@@ -164,10 +164,10 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 					local tipRefPoint = workTool.tipReferencePoints[workTool.cp.rearTipRefPoint].node
 					local x,y,z = getWorldTranslation(tipRefPoint);
 					local tipDistanceToPoint = courseplay:distance(x,z,getX(waypoints, unloadPoint),getZ(waypoints, unloadPoint))
-					courseplay:debug(string.format("%s:workTool.cp.rearTipRefPoint: tipDistanceToPoint: %s", nameNum(vehicle),tostring(tipDistanceToPoint)), 13);
+					courseplay:debug(string.format("%s:workTool.cp.rearTipRefPoint: tipDistanceToPoint: %s", nameNum(vehicle),tostring(tipDistanceToPoint)), courseplay.DBG_13);
 					if tipDistanceToPoint  < 0.5 then
 						courseplay:setWaypointIndex(vehicle, unloadPoint + 1);
-						courseplay:debug(string.format("%s: Is at unload point", nameNum(vehicle)), 13);
+						courseplay:debug(string.format("%s: Is at unload point", nameNum(vehicle)), courseplay.DBG_13);
 						break;
 					end;		
 				end
@@ -182,7 +182,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			-- SWITCH TO FORWARD
 			elseif waypoints[i-1].rev and not waypoints[i].rev then
 				if distance <= 2 then
-					courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), 13);
+					courseplay:debug(string.format("%s: Change direction to forward", nameNum(vehicle)), courseplay.DBG_13);
 				end;
 				break;
 
@@ -193,7 +193,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 					local _,_,tsrZ = worldToLocal(node,srX,yTipper,srZ);
 					if tsrZ < -2 then
 						courseplay:setWaypointIndex(vehicle, recNum);
-						courseplay:debug(string.format("%s: First reverse point -> Change waypoint to behind trailer: %q", nameNum(vehicle), recNum), 13);
+						courseplay:debug(string.format("%s: First reverse point -> Change waypoint to behind trailer: %q", nameNum(vehicle), recNum), courseplay.DBG_13);
 						break;
 					end;
 				end;
@@ -329,7 +329,7 @@ function courseplay:getLocalYRotationToPoint(node, x, y, z, direction)
 end;
 
 function courseplay:showDirection(node,lx,lz, r, g, b)
-	if courseplay.debugChannels[13] then
+	if courseplay.debugChannels[courseplay.DBG_13] then
 		local x,y,z = getWorldTranslation(node);
 		local ctx,_,ctz = localToWorld(node,lx*5,y,lz*5);
 		cpDebug:drawLine(x, y+5, z, r or 1, g or 0, b or 0, ctx, y+5, ctz);
@@ -340,7 +340,7 @@ end
 function courseplay:getNextFwdPoint(vehicle, isTurning)
 	local directionNode	= AIDriverUtil.getDirectionNode(vehicle)
 	if isTurning then
-		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 14);
+		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), courseplay.DBG_14);
     -- scan only the next few waypoints, we don't want to end up way further in the course, missing 
     -- many waypoints. The proper solution here would be to take the workarea into account as the tractor may 
     -- be well ahead of the turnEnd point in case of long implements. Instead we just assume 10 waypoints is
@@ -354,20 +354,20 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 				local wpX, wpZ = waypointToCheck.cx, waypointToCheck.cz;
 				local _, _, disZ = worldToLocal(directionNode, wpX, getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wpX, 300, wpZ), wpZ);
 				local vX, _, vZ = localToWorld( directionNode, 0, 0, 0 )
-				courseplay:debug(('%s: getNextFwdPoint(), vX = %.1f, vZ = %.1f, i = %d, wpX = %.1f, wpZ = %.1f, disZ = %.1f '):format(nameNum(vehicle), vX, vZ, i, wpX, wpZ, disZ ), 14);
+				courseplay:debug(('%s: getNextFwdPoint(), vX = %.1f, vZ = %.1f, i = %d, wpX = %.1f, wpZ = %.1f, disZ = %.1f '):format(nameNum(vehicle), vX, vZ, i, wpX, wpZ, disZ ), courseplay.DBG_14);
 				if disZ > 5 then
-					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), 14);
+					courseplay:debug(('--> return (%d) as waypointIndex'):format(i), courseplay.DBG_14);
 					return i;
 				end;
 			end;
 		end;
 		local ix = math.min(vehicle.cp.waypointIndex + 1, vehicle.cp.numWaypoints)
-		courseplay:debug(('\tno waypoint found in front of us, returning next waypoint (%d)'):format(ix), 14);
+		courseplay:debug(('\tno waypoint found in front of us, returning next waypoint (%d)'):format(ix), courseplay.DBG_14);
 		return ix
 	else
 		local maxVarianceX = sin(rad(30));
 		local firstFwd, firstFwdOver3;
-		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), 13);
+		courseplay:debug(('%s: getNextFwdPoint()'):format(nameNum(vehicle)), courseplay.DBG_13);
 		for i = vehicle.cp.waypointIndex, vehicle.cp.numWaypoints do
 			if not vehicle.Waypoints[i].rev then
 				local x, y, z = getWorldTranslation(directionNode);
@@ -375,54 +375,54 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
 				local dx,_,dz = worldDirectionToLocal(directionNode, wdx, 0, wdz);
 				if not firstFwd then
 					firstFwd = i;
-					courseplay:debug(('--> set firstFwd as %d'):format(i), 13);
+					courseplay:debug(('--> set firstFwd as %d'):format(i), courseplay.DBG_13);
 				end;
 				if not firstFwdOver3 and dz and dist and dz * dist >= 3 then
 					firstFwdOver3 = i;
-					courseplay:debug(('--> set firstFwdOver3 as %d'):format(i), 13);
+					courseplay:debug(('--> set firstFwdOver3 as %d'):format(i), courseplay.DBG_13);
 				end;
-				courseplay:debug(('--> point %d, dx=%.4f, dz=%.4f, dist=%.2f, maxVarianceX=%.4f'):format(i, dx, dz, dist, maxVarianceX), 13);
+				courseplay:debug(('--> point %d, dx=%.4f, dz=%.4f, dist=%.2f, maxVarianceX=%.4f'):format(i, dx, dz, dist, maxVarianceX), courseplay.DBG_13);
 				if dz > 0 and abs(dx) <= maxVarianceX then -- forward and x angle <= 30°
-					courseplay:debug('----> return as waypointIndex', 13);
+					courseplay:debug('----> return as waypointIndex', courseplay.DBG_13);
 					return i;
 				end;
 			end;
 		end;
 
 		if firstFwdOver3 then
-			courseplay:debug(('\treturn firstFwdOver3 (%d)'):format(firstFwdOver3), 13);
+			courseplay:debug(('\treturn firstFwdOver3 (%d)'):format(firstFwdOver3), courseplay.DBG_13);
 			return firstFwdOver3;
 		elseif firstFwd then
-			courseplay:debug(('\treturn firstFwd (%d)'):format(firstFwd), 13);
+			courseplay:debug(('\treturn firstFwd (%d)'):format(firstFwd), courseplay.DBG_13);
 			return firstFwd;
 		end;
 	end;
 
-	courseplay:debug('\treturn 1', 13);
+	courseplay:debug('\treturn 1', courseplay.DBG_13);
 	return 1;
 end;
 
 function courseplay:getReverseProperties(vehicle, workTool)
-	courseplay:debug(('getReverseProperties(%q, %q)'):format(nameNum(vehicle), nameNum(workTool)), 13);
+	courseplay:debug(('getReverseProperties(%q, %q)'):format(nameNum(vehicle), nameNum(workTool)), courseplay.DBG_13);
 
 	-- Make sure they are reset so they wont conflict when changing worktools
 	workTool.cp.frontNode		= nil;
 	workTool.cp.isPivot			= nil;
 
 	if workTool == vehicle then
-		courseplay:debug('--> workTool is vehicle (steerable) -> return', 13);
+		courseplay:debug('--> workTool is vehicle (steerable) -> return', courseplay.DBG_13);
 		return;
 	end;
 	if vehicle.cp.hasSpecializationShovel then
-		courseplay:debug('--> vehicle has "Shovel" spec -> return', 13);
+		courseplay:debug('--> vehicle has "Shovel" spec -> return', courseplay.DBG_13);
 		return;
 	end;
 	if workTool.cp.hasSpecializationShovel then
-		courseplay:debug('--> workTool has "Shovel" spec -> return', 13);
+		courseplay:debug('--> workTool has "Shovel" spec -> return', courseplay.DBG_13);
 		return;
 	end;
 	if not courseplay:isWheeledWorkTool(workTool) or courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then
-		courseplay:debug('--> workTool doesn\'t need reverse properties -> return', 13);
+		courseplay:debug('--> workTool doesn\'t need reverse properties -> return', courseplay.DBG_13);
 		return;
 	end;
 
@@ -443,22 +443,22 @@ function courseplay:getReverseProperties(vehicle, workTool)
 	else
 		workTool.cp.frontNode = courseplay:getRealDollyFrontNode(attacherVehicle);
 		if workTool.cp.frontNode then
-			courseplay:debug(string.format('--> workTool %q has dolly', nameNum(workTool)), 13);
+			courseplay:debug(string.format('--> workTool %q has dolly', nameNum(workTool)), courseplay.DBG_13);
 		else
-			courseplay:debug(string.format('--> workTool %q has invalid dolly -> return', nameNum(workTool)), 13);
+			courseplay:debug(string.format('--> workTool %q has invalid dolly -> return', nameNum(workTool)), courseplay.DBG_13);
 			return;
 		end;
 	end;
 
 	workTool.cp.nodeDistance = courseplay:getRealTrailerDistanceToPivot(workTool);
-	courseplay:debug("--> tz: "..tostring(workTool.cp.nodeDistance).."  workTool.cp.realTurningNode: "..tostring(workTool.cp.realTurningNode), 13);
+	courseplay:debug("--> tz: "..tostring(workTool.cp.nodeDistance).."  workTool.cp.realTurningNode: "..tostring(workTool.cp.realTurningNode), courseplay.DBG_13);
 
 	if workTool.cp.realTurningNode == workTool.cp.frontNode then
-		courseplay:debug('--> workTool.cp.realTurningNode == workTool.cp.frontNode', 13);
+		courseplay:debug('--> workTool.cp.realTurningNode == workTool.cp.frontNode', courseplay.DBG_13);
 		workTool.cp.isPivot = false;
 	else
 		workTool.cp.isPivot = true;
 	end;
 
-	courseplay:debug(('--> isPivot=%s, frontNode=%s'):format(tostring(workTool.cp.isPivot), tostring(workTool.cp.frontNode)), 13);
+	courseplay:debug(('--> isPivot=%s, frontNode=%s'):format(tostring(workTool.cp.isPivot), tostring(workTool.cp.frontNode)), courseplay.DBG_13);
 end;

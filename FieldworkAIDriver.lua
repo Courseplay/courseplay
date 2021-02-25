@@ -49,10 +49,10 @@ FieldworkAIDriver.myStates = {
 -- through multiple level of inheritances therefore we must explicitly call
 -- the base class ctr.
 function FieldworkAIDriver:init(vehicle)
-	courseplay.debugVehicle(11,vehicle,'FieldworkAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'FieldworkAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
-	self.debugChannel = 14
+	self.debugChannel = courseplay.DBG_14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
 	self.aiDriverData.continueFieldworkAtWaypoint = 1
@@ -1350,7 +1350,7 @@ end
 
 function FieldworkAIDriver:onDraw()
 
-	if not courseplay.debugChannels[6] then return end
+	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
 
 	local function showAIMarkersOfObject(object)
 		if object.getAIMarkers then

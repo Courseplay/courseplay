@@ -15,7 +15,7 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 	
 		density, totalArea = FieldUtil.getFruitArea(x, z, x - widthX, z - widthZ, x + widthX, z + widthZ, {}, {}, fruitType, minHarvestable , maxHarvestable, 0, 0, 0,false);
 		if density > 0 then
-			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
+			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), courseplay.DBG_TRAFFIC)
 			return true, fruitType, density, totalArea
 		end;
 	else
@@ -32,13 +32,13 @@ function courseplay:areaHasFruit(x, z, fruitType, widthX, widthZ)
 			end;
 		end;
 		if maxDensity > 0 then
-			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), 3)
+			--courseplay:debug(string.format("checking x: %d z %d - density: %d", x, z, density ), courseplay.DBG_TRAFFIC)
 			--print("areaHasFruit: return "..tostring(maxFruitType))
 			return true, maxFruitType, maxDensity, totalArea
 		end;
 	end;
 
-	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), 3)
+	--courseplay:debug(string.format(" x: %d z %d - is really cut!", x, z ), courseplay.DBG_TRAFFIC)
 	return false, nil, 0, 0;
 end;
 
