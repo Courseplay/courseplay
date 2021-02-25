@@ -52,7 +52,7 @@ function LevelCompactAIDriver:init(vehicle)
 	AIDriver.init(self, vehicle)
 	self:initStates(LevelCompactAIDriver.myStates)
 	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
-	self.debugChannel = 10
+	self.debugChannel = courseplay.DBG_10
 	self.refSpeed = 10
 	self.fillUpState = self.states.PUSH
 	self:setLevelerWorkWidth()

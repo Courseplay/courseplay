@@ -1598,7 +1598,7 @@ Corner = CpObject()
 ---@param offsetX number left/right offset of the course. The Corner uses the un-offset coordinates of the start/end
 --- waypoints and the offsetX to move the corner point diagonally inward or outward if the course has a side offset
 function Corner:init(vehicle, startAngleDeg, startWp, endAngleDeg, endWp, turnRadius, offsetX)
-	self.debugChannel = 14
+	self.debugChannel = courseplay.DBG_14
 	self.vehicle = vehicle
 	self.startWp = startWp
 	self.endWp = endWp

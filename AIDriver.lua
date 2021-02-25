@@ -142,7 +142,7 @@ AIDriver.myStates = {
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'AIDriver:init()')
-	self.debugChannel = 14
+	self.debugChannel = courseplay.DBG_14
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
 	self:initStates(AIDriver.myStates)

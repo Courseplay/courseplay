@@ -52,7 +52,7 @@ function FieldworkAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'FieldworkAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self:initStates(FieldworkAIDriver.myStates)
-	self.debugChannel = 14
+	self.debugChannel = courseplay.DBG_14
 	-- waypoint index on main (fieldwork) course where we aborted the work before going on
 	-- an unload/refill course
 	self.aiDriverData.continueFieldworkAtWaypoint = 1

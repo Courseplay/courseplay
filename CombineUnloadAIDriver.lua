@@ -118,7 +118,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'CombineUnloadAIDriver:init()')
 	self.assignedCombinesSetting = AssignedCombinesSetting(vehicle)
 	AIDriver.init(self, vehicle)
-	self.debugChannel = 4
+	self.debugChannel = courseplay.DBG_MODE_2_3
 	self.mode = courseplay.MODE_COMBI
 	self:initStates(CombineUnloadAIDriver.myStates)
 	self.combineOffset = 0
