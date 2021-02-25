@@ -63,8 +63,8 @@ function BaleLoaderAIDriver:init(vehicle)
 	self:debug('baleloader %s', tostring(self.baleLoader))
 	-- Bale loaders have no AI markers (as they are not AIImplements according to Giants) so add a function here
 	-- to get the markers
-	self.baleLoader.getAIMarkers = function(self)
-		return UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(self, self.spec_baleLoader)
+	self.baleLoader.getAIMarkers = function(object)
+		return UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(object, object.spec_baleLoader)
 	end
 
 	self:initStates(BaleLoaderAIDriver.myStates)
