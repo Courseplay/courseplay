@@ -191,6 +191,21 @@ local function setGlobalData()
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
+
+	--mode 1 to mode 10 class init calls and names for error handling
+	courseplay.driverSetup = {
+		[courseplay.MODE_GRAIN_TRANSPORT] 		= {GrainTransportAIDriver,"GrainTransportAIDriver"},
+		[courseplay.MODE_COMBI] 				= {CombineUnloadAIDriver,"CombineUnloadAIDriver"},
+		[courseplay.MODE_OVERLOADER] 			= {OverloaderAIDriver,"OverloaderAIDriver"},
+		[courseplay.MODE_SEED_FERTILIZE] 		= {FillableFieldworkAIDriver,"FillableFieldworkAIDriver"},
+		[courseplay.MODE_TRANSPORT] 			= {AIDriver,"AIDriver"},
+		[courseplay.MODE_FIELDWORK] 			= {UnloadableFieldworkAIDriver.create,"UnloadableFieldworkAIDriver"},
+		[courseplay.MODE_BALE_COLLECTOR] 		= {BaleCollectorAIDriver,"BaleCollectorAIDriver"},
+		[courseplay.MODE_FIELD_SUPPLY] 			= {FieldSupplyAIDriver,"FieldSupplyAIDriver"},
+		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY] = {ShovelModeAIDriver.create,"ShovelModeAIDriver"},
+		[courseplay.MODE_BUNKERSILO_COMPACTER] 	= {LevelCompactAIDriver,"LevelCompactAIDriver"}
+	}	
+
 	------------------------------------------------------------
 	courseplay.SHOW_COVERS = true
 	courseplay.OPEN_COVERS = false

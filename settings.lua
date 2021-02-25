@@ -28,39 +28,16 @@ function courseplay:setAIDriver(vehicle, mode)
 	if vehicle.cp.driver then
 		vehicle.cp.driver:delete()
 	end
-	local driver
-	if mode == courseplay.MODE_TRANSPORT then
-		---@type AIDriver
-		driver = courseplay:initAIDriver(AIDriver,vehicle,"AIDriver")
-	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
-		driver = courseplay:initAIDriver(GrainTransportAIDriver,vehicle,"GrainTransportAIDriver")
-	elseif mode == courseplay.MODE_COMBI then
-		driver = courseplay:initAIDriver(CombineUnloadAIDriver,vehicle,"CombineUnloadAIDriver")
-	elseif mode == courseplay.MODE_OVERLOADER then
-		driver = courseplay:initAIDriver(OverloaderAIDriver,vehicle,"OverloaderAIDriver")
-	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		driver = courseplay:initAIDriver(ShovelModeAIDriver.create,vehicle,"ShovelModeAIDriver")
-	elseif mode == courseplay.MODE_SEED_FERTILIZE then
-		driver = courseplay:initAIDriver(FillableFieldworkAIDriver,vehicle,"FillableFieldworkAIDriver")
-	elseif mode == courseplay.MODE_FIELDWORK then
-		driver = courseplay:initAIDriver(UnloadableFieldworkAIDriver.create,vehicle,"UnloadableFieldworkAIDriver")
-	elseif mode == courseplay.MODE_BALE_COLLECTOR then
-		driver = courseplay:initAIDriver(BaleCollectorAIDriver,vehicle,"BaleCollectorAIDriver")
-	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		driver = courseplay:initAIDriver(LevelCompactAIDriver,vehicle,"LevelCompactAIDriver")
-	elseif mode == courseplay.MODE_FIELD_SUPPLY then
-		driver = courseplay:initAIDriver(FieldSupplyAIDriver,vehicle,"FieldSupplyAIDriver")
-	end
-	vehicle.cp.driver = driver
-end
-
-function courseplay:initAIDriver(Driver,vehicle,driverName)	
-	local status, err, driver = xpcall(Driver, function(err) printCallstack(); return err end,vehicle)
+	--init function call for the driver
+	local driverFunctionCall = courseplay.driverSetup[mode][1]
+	local driverName = courseplay.driverSetup[mode][2]
+	--for some reason the second return of xpcall is either the driverFunctionCall return or the error msg...
+	local status, driverOrErr = xpcall(driverFunctionCall, function(err) printCallstack(); return err end,vehicle)
 	if not status then
-		courseplay.infoVehicle(vehicle, "Exception, error in %s:init(), %s", driverName,tostring(err))
-		return nil
+		courseplay.infoVehicle(vehicle, "Exception, error in %s:init(), %s", driverName,tostring(driverOrErr))
 	end
-	return driver
+
+	vehicle.cp.driver = driverOrErr
 end
 
 function courseplay:setDriveNow(vehicle)
