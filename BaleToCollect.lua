@@ -29,7 +29,13 @@ BaleToCollect = CpObject()
 function BaleToCollect:init(baleObject)
 	self.bale = baleObject
 	local x, _, z = getWorldTranslation(self.bale.nodeId)
-	self.fieldId = PathfinderUtil.getFieldIdAtWorldPosition(x, z)
+	-- this finds bales on merged fields too, but the bale must be on the field
+	self.fieldId = courseplay.fields:getFieldNumForPosition(x, z)
+	if self.fieldId == 0 then
+		-- this does not find bales on merged fields, but finds them if they are on the
+		-- field border too (just off the field)
+		self.fieldId = PathfinderUtil.getFieldIdAtWorldPosition(x, z)
+	end
 end
 
 --- Call this before attempting to construct a BaleToCollect to check the validity of the object

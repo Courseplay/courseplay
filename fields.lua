@@ -579,6 +579,7 @@ function courseplay.fields:onWhichFieldAmI(vehicle)
 	return self:getFieldNumForPosition( positionX, positionZ )
 end
 
+---@return number field number at position, 0 if it is not on a field.
 function courseplay.fields:getFieldNumForPosition(positionX, positionZ)
 	local fieldNum = 0
 	for index, field in pairs(courseplay.fields.fieldData) do
