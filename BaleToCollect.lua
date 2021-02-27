@@ -41,7 +41,7 @@ end
 --- Call this before attempting to construct a BaleToCollect to check the validity of the object
 function BaleToCollect.isValidBale(object)
 	-- nodeId is sometimes 0, causing issues for the BaleToCollect constructor
-	return object:isa(Bale) and object.nodeId and entityExists(object.nodeId)
+	return object.isa and object:isa(Bale) and object.nodeId and entityExists(object.nodeId)
 end
 
 function BaleToCollect:getFieldId()
