@@ -164,13 +164,16 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			courseplay:setMultiTools(vehicle, course.multiTools)
 
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s",
-				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses)), 8);
+				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName),
+				tostring(vehicle.cp.numCourses)), courseplay.DBG_COURSE_MANAGEMENT);
 
 		else -- add new course to old course
 			if vehicle.cp.currentCourseName == nil then --recorded but not saved course
 				vehicle.cp.numCourses = 1;
 			end;
-			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q", debug.getinfo(courseplay.DBG_TRIGGERS).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName), tostring(vehicle.cp.numCourses), tostring(course.name)), courseplay.DBG_COURSE_MANAGEMENT);
+			courseplay:debug(string.format("course_management %d: %s: currentCourseName=%q, numCourses=%s -> add new course %q",
+				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName),
+				tostring(vehicle.cp.numCourses), tostring(course.name)), courseplay.DBG_COURSE_MANAGEMENT);
 
 
 			local course1, course2 = vehicle.Waypoints, course.waypoints;

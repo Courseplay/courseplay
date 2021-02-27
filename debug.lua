@@ -22,7 +22,7 @@ courseplay.DBG_20 = 20
 courseplay.DBG_21 = 21
 courseplay.DBG_22 = 22
 courseplay.DBG_23 = 23
-courseplay.DBG_24 = 24
+courseplay.DBG_CYCLIC = 24
 
 function CpManager:setUpDebugChannels()
 	print('## Courseplay: setting up debug channels');
@@ -100,7 +100,7 @@ function CpManager:setUpDebugChannels()
 		[courseplay.DBG_21] = 'Debug: Speed setting';
 		[courseplay.DBG_22] = 'Debug: temp MP';
 		[courseplay.DBG_23] = 'Debug: mode8: liquid product transport';
-		[courseplay.DBG_24] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
+		[courseplay.DBG_CYCLIC] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
 	};
 
 	courseplay.debugButtonPosData = {};

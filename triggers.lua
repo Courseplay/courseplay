@@ -54,7 +54,7 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 end;
 
 function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x, y, z, nx, ny, nz, distance, debugChannel, r, g, b, raycastNumber)
-	if courseplay.debugChannels[debugChannel] and  courseplay.debugChannels[courseplay.DBG_24] then
+	if courseplay.debugChannels[debugChannel] and  courseplay.debugChannels[courseplay.DBG_CYCLIC] then
 		courseplay:debug(('%s: call %s raycast (%s) #%d'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 	end;
 	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
