@@ -88,6 +88,8 @@ function DevHelper:update()
 
     self.data.landId =  PathfinderUtil.getFieldIdAtWorldPosition(self.data.x, self.data.z)
     self.data.owned =  PathfinderUtil.isWorldPositionOwned(self.data.x, self.data.z)
+	self.data.farmlandId = g_farmlandManager:getFarmlandIdAtWorldPosition(self.data.x, self.data.z)
+	self.data.farmland = g_farmlandManager:getFarmlandAtWorldPosition(self.data.x, self.data.z)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
 
     self.data.collidingShapes = ''
