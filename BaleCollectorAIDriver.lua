@@ -43,8 +43,6 @@ function BaleCollectorAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_BALE_COLLECTOR
 	self.fieldId = 0
 	self.bales = {}
-	-- make sure we have a good turning radius set
-	self.turnRadius = AIDriverUtil.getTurningRadius(self.vehicle)
 end
 
 function BaleCollectorAIDriver:setHudContent()
@@ -54,6 +52,8 @@ function BaleCollectorAIDriver:setHudContent()
 end
 
 function BaleCollectorAIDriver:setUpAndStart(startingPoint)
+	-- make sure we have a good turning radius set
+	self.turnRadius = AIDriverUtil.getTurningRadius(self.vehicle)
 	-- we only have an unload course since we are driving on the field autonomously
 	self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false)
 	-- Set the offset to 0, we'll take care of getting the grabber to the right place
