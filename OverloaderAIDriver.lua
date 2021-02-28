@@ -30,6 +30,7 @@ function OverloaderAIDriver:init(vehicle)
     --there seems to be a bug, where "vehicle" is not always set once start is pressed
 	CombineUnloadAIDriver.init(self, vehicle)
     self:initStates(OverloaderAIDriver.myStates)
+	self.debugChannel = courseplay.DBG_MODE_3
     self:debug('OverloaderAIDriver:init()')
     self.mode = courseplay.MODE_OVERLOADER
 	self.unloadCourseState = self.states.ENROUTE

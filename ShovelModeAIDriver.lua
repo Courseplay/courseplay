@@ -44,7 +44,6 @@ TODO:
 ]]--
 
 ---@class ShovelModeAIDriver : AIDriver
-
 ShovelModeAIDriver = CpObject(AIDriver)
 
 ShovelModeAIDriver.myStates = {
@@ -70,11 +69,12 @@ ShovelModeAIDriver.SHOVEL_POSITIONS.UNLOADING = 4
 
 --- Constructor
 function ShovelModeAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'ShovelModeAIDriver:init')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'ShovelModeAIDriver:init')
 	AIDriver.init(self, vehicle)
 	self:initStates(ShovelModeAIDriver.myStates)
 	--self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 	self.shovelState = self.states.STATE_TRANSPORT
+	self.debugChannel = courseplay.DBG_MODE_9
 	self.refSpeed = 15
 end
 

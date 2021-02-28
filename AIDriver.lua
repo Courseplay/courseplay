@@ -141,8 +141,8 @@ AIDriver.myStates = {
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
 -- @param vehicle to drive. Will set up a course to drive from vehicle.Waypoints
 function AIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'AIDriver:init()')
-	self.debugChannel = courseplay.DBG_14
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'AIDriver:init()')
+	self.debugChannel = courseplay.DBG_MODE_5
 	self.mode = courseplay.MODE_TRANSPORT
 	self.states = {}
 	self:initStates(AIDriver.myStates)
@@ -1348,7 +1348,8 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 			-- This is used in case we already registered a tipTrigger but changed the direction and might not be in that tipTrigger when unloading. (Bug Fix)
 			local startReversing = self.course:switchingToReverseAt(self.ppc:getCurrentWaypointIx() - 1)
 			if startReversing then
-				courseplay:debug(string.format(2,"%s: Is starting to reverse. Tip trigger is reset.", nameNum(self.vehicle)), courseplay.DBG_13);
+				courseplay:debug(string.format(2,"%s: Is starting to reverse. Tip trigger is reset.",
+					nameNum(self.vehicle)), courseplay.DBG_REVERSE);
 			end
 
 			local isBGA = t.bunkerSilo ~= nil

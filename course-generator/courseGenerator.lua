@@ -82,7 +82,7 @@ end
 --  or use the CP debug channel when running in the game.
 function courseGenerator.debug( ... )
 	if courseGenerator.isRunningInGame() then
-		courseplay:debug( string.format( ... ), courseplay.DBG_COURSE_GENERATOR )
+		courseplay:debug( string.format( ... ), courseplay.DBG_COURSES )
 	else
 		print( string.format( ... ))
 		io.stdout:flush()

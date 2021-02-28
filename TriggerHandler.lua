@@ -657,7 +657,7 @@ function TriggerHandler:activateTriggerForVehicle(trigger, vehicle)
 	--Override farm id to match the calling vehicle (fixes issue when obtaining fill levels)
 	local overriddenFarmIdFunc = function()
 		local ownerFarmId = vehicle:getOwnerFarmId()
-		courseplay.debugVehicle(courseplay.DBG_19, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
+		courseplay.debugVehicle(courseplay.DBG_TRIGGERS, vehicle, 'Overriding farm id during trigger activation to %d', ownerFarmId);
 		return ownerFarmId;
 	end
 	g_currentMission.getFarmId = overriddenFarmIdFunc;

@@ -209,7 +209,7 @@ function courseplay:onLoad(savegame)
 	else
 		self.cp.steeringAngle = 30;
 	end
-	courseplay.debugVehicle( courseplay.DBG_COURSE_GENERATOR, self, 'steering angle is %.1f', self.cp.steeringAngle)
+	courseplay.debugVehicle( courseplay.DBG_COURSES, self, 'steering angle is %.1f', self.cp.steeringAngle)
 	if isTruck then
 		self.cp.revSteeringAngle = self.cp.steeringAngle * 0.25;
 	end;
@@ -461,27 +461,9 @@ function courseplay:onDraw()
 			courseplay:showWorkWidth(self);
 		end;
 	end;
-	--DEBUG Speed Setting
-	if courseplay.debugChannels[courseplay.DBG_21] then
-		renderText(0.2, 0.105, 0.02, string.format("mode%d waypointIndex: %d",self.cp.mode,self.cp.waypointIndex));
-		renderText(0.2, 0.075, 0.02, self.cp.speedDebugLine);
-		if self.cp.speedDebugStreet then
-			local mode = "max"
-			local speed = self.cp.speeds.street
-			if self.cp.settings.useRecordingSpeed:is(true) then
-				mode = "wpt"
-				if self.Waypoints and self.Waypoints[self.cp.waypointIndex] and self.Waypoints[self.cp.waypointIndex].speed then
-					speed = self.Waypoints[self.cp.waypointIndex].speed
-				else
-					speed = "no speed"
-				end
-			end			
-			renderText(0.2, 0.045, 0.02, string.format("mode[%s] speed: %s",mode,tostring(speed)));
-		end	
-	end
-	
+
 	--DEBUG SHOW DIRECTIONNODE
-	if courseplay.debugChannels[courseplay.DBG_12] then
+	if courseplay.debugChannels[courseplay.DBG_PPC] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
 		if self.cp.oldDirectionNode then
 			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);

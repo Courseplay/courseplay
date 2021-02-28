@@ -40,8 +40,6 @@ at the moment.
 ---@class CombineUnloadmanager
 CombineUnloadManager = CpObject()
 
-CombineUnloadManager.debugChannel = 4
-
 -- Constructor
 function CombineUnloadManager:init()
 	self.combines = {}
@@ -61,8 +59,15 @@ function CombineUnloadManager:addNewCombines()
 	end
 end
 
+--- Debug is enabled in mode 2 and 3
+function CombineUnloadManager:debugEnabled()
+	return courseplay.debugChannels[courseplay.DBG_MODE_2] or courseplay.debugChannels[courseplay.DBG_MODE_3]
+end
+
 function CombineUnloadManager:debug(...)
-	courseplay.debugFormat(self.debugChannel, 'CombineUnloadManager: ' .. string.format( ... ))
+	if self:debugEnabled() then
+		courseplay.debugFormat(courseplay.DBG_MODE_2, 'CombineUnloadManager: ' .. string.format( ... ))
+	end
 end
 
 function CombineUnloadManager:debugSparse(...)
@@ -354,7 +359,7 @@ function CombineUnloadManager:updateCombinesAttributes()
 		attributes.fillLevelPct = self:getCombinesFillLevelPercent(combine)
 		attributes.fillLevel = self:getCombinesFillLevel(combine)
 		self:updateFillSpeed(combine,attributes)
-		if courseplay.debugChannels[self.debugChannel] then
+		if self:debugEnabled() then
 			renderText(0.1,0.175+(0.02*number) ,0.015,
 					string.format("%s: leftOK: %s; rightOK:%s numUnloaders:%d",
 							nameNum(combine), tostring(attributes.leftOkToDrive), tostring(attributes.rightOKToDrive),

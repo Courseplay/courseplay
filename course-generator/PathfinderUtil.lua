@@ -66,7 +66,7 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
         -- TODO: this should be the attacher joint's offset, not the back of the vehicle.
         self.trailerHitchOffset = self.dRear
         self.trailerHitchLength = AIDriverUtil.getTowBarLength(vehicle)
-    courseplay.debugVehicle(courseplay.DBG_COURSE_GENERATOR, vehicle, 'trailer for the pathfinding is %s, hitch offset is %.1f',
+    courseplay.debugVehicle(courseplay.DBG_PATHFINDER, vehicle, 'trailer for the pathfinding is %s, hitch offset is %.1f',
                 self.trailer:getName(), self.trailerHitchOffset)
     end
     if withImplements then
@@ -90,7 +90,7 @@ function PathfinderUtil.VehicleData:getRectangleForImplement(implement, referenc
         -- we call this offset, and is negative when behind the reference node, positive when in front of it
         -- (need to reverse attacherJointToImplementRoot)
         rootToReferenceNodeOffset = - attacherJointToImplementRoot + referenceToAttacherJoint
-        courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, '%s: ref to attacher joint %.1f, att to implement root %.1f, impl root to ref %.1f',
+        courseplay.debugFormat(courseplay.DBG_PATHFINDER, '%s: ref to attacher joint %.1f, att to implement root %.1f, impl root to ref %.1f',
             nameNum(implement.object), referenceToAttacherJoint, attacherJointToImplementRoot, rootToReferenceNodeOffset)
     else
         _, _, rootToReferenceNodeOffset = localToLocal(implement.object.rootNode, referenceNode, 0, 0, 0)
@@ -142,7 +142,7 @@ function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implement
             self.dRight = math.min(self.dRight, rectangle.dRight)
         end
     end
-    --courseplay.debugVehicle(courseplay.DBG_COURSE_GENERATOR, vehicle, 'Size: dFront %.1f, dRear %.1f, dLeft = %.1f, dRight = %.1f',
+    --courseplay.debugVehicle(courseplay.DBG_PATHFINDER, vehicle, 'Size: dFront %.1f, dRear %.1f, dLeft = %.1f, dRight = %.1f',
     --        self.dFront, self.dRear, self.dLeft, self.dRight)
 end
 
@@ -242,10 +242,10 @@ function PathfinderUtil.setUpVehicleCollisionData(myVehicle, vehiclesToIgnore)
         local ignore = PathfinderUtil.elementOf(vehiclesToIgnore, vehicle) or
                 (otherRootVehicle and PathfinderUtil.elementOf(vehiclesToIgnore, otherRootVehicle))
         if ignore then
-            courseplay.debugVehicle(courseplay.DBG_14, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
+            courseplay.debugVehicle(courseplay.DBG_PATHFINDER, myVehicle, 'ignoring %s for collisions during pathfinding', vehicle:getName())
         elseif vehicle:getRootVehicle() ~= myRootVehicle and vehicle.rootNode and vehicle.sizeWidth and vehicle.sizeLength then
             local x, _, z = getWorldTranslation(vehicle.rootNode)
-            courseplay.debugVehicle(courseplay.DBG_14, myVehicle, 'othervehicle %s at %.1f %.1f, otherroot %s, myroot %s',
+            courseplay.debugVehicle(courseplay.DBG_PATHFINDER, myVehicle, 'othervehicle %s at %.1f %.1f, otherroot %s, myroot %s',
                     vehicle:getName(), x, z, vehicle:getRootVehicle():getName(), myRootVehicle:getName())
             table.insert(vehicleCollisionData, PathfinderUtil.getBoundingBoxInWorldCoordinates(vehicle.rootNode, PathfinderUtil.VehicleData(vehicle)))
         end
@@ -259,7 +259,7 @@ function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleDa
         -- check for collision with the vehicle's bounding box
         if PathfinderUtil.doRectanglesOverlap(myCollisionData.corners, collisionData.corners) then
             if log then
-                courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'pathfinder colliding vehicle x = %.1f, z = %.1f, %s', myCollisionData.center.x, myCollisionData.center.z, collisionData.name)
+                courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'pathfinder colliding vehicle x = %.1f, z = %.1f, %s', myCollisionData.center.x, myCollisionData.center.z, collisionData.name)
             end
             -- check for collision of the individual parts
             for _, rectangle in ipairs(myVehicleData.rectangles) do
@@ -290,7 +290,7 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        --courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'collision: %s', collidingObject:getName())
+        --courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'collision: %s', collidingObject:getName())
     end
    if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
         --[[
@@ -300,7 +300,7 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
                 text = text .. ' ' .. key
             end
         end
-        courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'collision %d, %s', transformId, text)
+        courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'collision %d, %s', transformId, text)
         -- ignore collision with terrain (may happen on slopes)
         ]]--
         self.collidingShapes = self.collidingShapes + 1
@@ -327,7 +327,7 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     if log and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
                 { x = x, y = y + 0.2, z = z, yRot = yRot, width = width, length = length})
-        courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
+        courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
                 vehicleData.name, x, z, width, length, math.deg(yRot))
     end
     DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
@@ -351,7 +351,7 @@ function PathfinderUtil.hasFruit(x, z, length, width)
             -- if the last boolean parameter is true then it returns fruitValue > 0 for fruits/states ready for forage also
             local fruitValue, a, b, c = FSDensityMapUtil.getFruitArea(fruitType.index, x - width / 2, z - length / 2, x + width / 2, z, x, z + length / 2, true, true)
             --if g_updateLoopIndex % 200 == 0 then
-                --courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
+                --courseplay.debugFormat(courseplay.DBG_PATHFINDER, '%.1f, %s, %s, %s %s', fruitValue, tostring(a), tostring(b), tostring(c), g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name)
             --end
             if fruitValue > 0 then
                 return true, fruitValue, g_fruitTypeManager:getFruitTypeByIndex(fruitType.index).name
@@ -465,7 +465,7 @@ function PathfinderConstraints:init(context, maxFruitPercent, offFieldPenalty, f
     self.initialMaxFruitPercent = self.maxFruitPercent
     self.initialOffFieldPenalty = self.offFieldPenalty
     self:resetCounts()
-    courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'Pathfinder constraints: off field penalty %.1f, max fruit percent: %d, field number %d',
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'Pathfinder constraints: off field penalty %.1f, max fruit percent: %d, field number %d',
         self.offFieldPenalty, self.maxFruitPercent, self.fieldNum)
 end
 
@@ -527,7 +527,7 @@ function PathfinderConstraints:isValidAnalyticSolutionNode(node, log)
     local analyticLimit = self.maxFruitPercent * 2
     if hasFruit and fruitValue > analyticLimit then
         if log then
-            courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'isValidAnalyticSolutionNode: fruitValue %.1f, max %.1f @ %.1f, %.1f',
+            courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'isValidAnalyticSolutionNode: fruitValue %.1f, max %.1f @ %.1f, %.1f',
                     fruitValue, analyticLimit, node.x, -node.y)
         end
         return false
@@ -577,20 +577,20 @@ end
 
 function PathfinderConstraints:relaxConstraints()
     self:showStatistics()
-    courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'relaxing pathfinder constraints: allow driving through fruit')
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'relaxing pathfinder constraints: allow driving through fruit')
     self.maxFruitPercent = math.huge
     self:resetCounts()
 end
 
 function PathfinderConstraints:showStatistics()
-    courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'Nodes: %d, Penalties: fruit: %d, off-field: %d, collisions: %d',
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'Nodes: %d, Penalties: fruit: %d, off-field: %d, collisions: %d',
             self.totalNodeCount, self.fruitPenaltyNodeCount, self.offFieldPenaltyNodeCount, self.collisionNodeCount)
-    courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, '  max fruit %.1f %%, off-field penalty: %.1f',
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER, '  max fruit %.1f %%, off-field penalty: %.1f',
             self.maxFruitPercent, self.offFieldPenalty)
 end
 
 function PathfinderConstraints:resetConstraints()
-    courseplay.debugFormat(courseplay.DBG_COURSE_GENERATOR, 'resetting pathfinder constraints: maximum fruit percent allowed is now %d',
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'resetting pathfinder constraints: maximum fruit percent allowed is now %d',
             self.initialMaxFruitPercent)
     self.maxFruitPercent = self.initialMaxFruitPercent
     self:resetCounts()
