@@ -284,7 +284,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Punto actual" />
 		<text name="COURSEPLAY_NEXT_POINT" 							    	text="Siguiente punto más cercano" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Zona de descarga" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Recoger pacas" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Ruta del borde del campo" />
 		<text name="COURSEPLAY_FIELD" 										text="Campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Ruta actualmente cargada)" />
