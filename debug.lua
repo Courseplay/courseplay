@@ -50,7 +50,6 @@ function CpManager:setUpDebugChannels()
 			defaultActive[courseplay.DBG_TURN] = true;
 			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
 			defaultActive[courseplay.DBG_COURSES] = true;
-			defaultActive[courseplay.DBG_COURSES] = true;
 			defaultActive[courseplay.DBG_PATHFINDER] = true;
 			defaultActive[courseplay.DBG_MODE_4] = true;
 			defaultActive[courseplay.DBG_TRAFFIC] = true;
@@ -94,7 +93,7 @@ function CpManager:setUpDebugChannels()
 		[courseplay.DBG_REVERSE] = 'Debug: reverse driving';
 		[courseplay.DBG_TURN] = 'Debug: driving specific';
 		[courseplay.DBG_PPC] = 'Debug: pure pursuit controller';
-		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: Load and unload tippers';
+		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: load and unload tippers';
 		[courseplay.DBG_TRAFFIC] = 'Debug: traffic collision/proximity';
 		[courseplay.DBG_HUD] = 'Debug: hud action';
 		[courseplay.DBG_COURSES] = 'Debug: course save/load/generation';
