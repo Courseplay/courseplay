@@ -428,9 +428,9 @@ function LevelCompactAIDriver:isStuck()
 	if self:doesNotMove() then
 		if self.vehicle.cp.timers.slipping == nil or self.vehicle.cp.timers.slipping == 0 then
 			courseplay:setCustomTimer(self.vehicle, 'slipping', 3);
-			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", courseplay.DBG_TRAFFIC)'):format(nameNum(self.vehicle)), courseplay.DBG_10);
+			--courseplay:debug(('%s: setCustomTimer(..., "slippingStage", courseplay.DBG_TRAFFIC)'):format(nameNum(self.vehicle)), courseplay.DBG_MODE_10);
 		elseif courseplay:timerIsThrough(self.vehicle, 'slipping') then
-			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), courseplay.DBG_10);
+			--courseplay:debug(('%s: timerIsThrough(..., "slippingStage") -> return isStuck(), reset timer'):format(nameNum(self.vehicle)), courseplay.DBG_MODE_10);
 			courseplay:resetCustomTimer(self.vehicle, 'slipping');
 			self:debug("dropout isStuck")
 			return true
@@ -553,7 +553,7 @@ function LevelCompactAIDriver:getSpeed()
 end
 
 function LevelCompactAIDriver:debug(...)
-	courseplay.debugVehicle(courseplay.DBG_10, self.vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_MODE_10, self.vehicle, ...)
 end
 
 function LevelCompactAIDriver:checkSilo()
@@ -609,7 +609,7 @@ function LevelCompactAIDriver:getLevelerNode(blade)
 end
 
 function LevelCompactAIDriver:printMap()
-	if courseplay.debugChannels[courseplay.DBG_10] and self.bunkerSiloManager.siloMap then
+	if courseplay.debugChannels[courseplay.DBG_MODE_10] and self.bunkerSiloManager.siloMap then
 		for _, line in pairs(self.bunkerSiloManager.siloMap) do
 			local printString = ""
 			for _, fillUnit in pairs(line) do
@@ -761,7 +761,7 @@ function LevelCompactAIDriver:getValidBackImplement()
 end
 
 function LevelCompactAIDriver:isDebugActive()
-	return courseplay.debugChannels[courseplay.DBG_10]
+	return courseplay.debugChannels[courseplay.DBG_MODE_10]
 end
 
 
