@@ -21,9 +21,10 @@ GrainTransportAIDriver = CpObject(AIDriver)
 
 --- Constructor
 function GrainTransportAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'GrainTransportAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'GrainTransportAIDriver:init()')
 	AIDriver.init(self, vehicle)
 	self.mode = courseplay.MODE_GRAIN_TRANSPORT
+	self.debugChannel = courseplay.DBG_MODE_1
 	self.totalFillCapacity = 0
 end
 

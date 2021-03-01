@@ -30,10 +30,11 @@ PlowAIDriver.myStates = {
 }
 
 function PlowAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'PlowAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'PlowAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(PlowAIDriver.myStates)
 	self.mode = courseplay.MODE_FIELDWORK
+	self.debugChannel = courseplay.DBG_MODE_6
 	self.plow = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Plow)
 	self:setOffsetX()
 	if self:hasRotatablePlow() then

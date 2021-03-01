@@ -39,7 +39,8 @@ function FieldSupplyAIDriver:init(vehicle)
 	self.triggerHandler.driveOnAtFillLevel = settings.driveOnAtFillLevel
 	self:initStates(FieldSupplyAIDriver.myStates)
 	self.supplyState = self.states.ON_REFILL_COURSE
-	self.mode=courseplay.MODE_FIELD_SUPPLY 
+	self.mode=courseplay.MODE_FIELD_SUPPLY
+	self.debugChannel = courseplay.DBG_MODE_8
 	self:setHudContent()
 end
 

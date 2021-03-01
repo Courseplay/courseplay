@@ -163,7 +163,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 	else
 		vehicle.cp.hud.recordingTurnManeuverButton:setToolTip(courseplay:loc('COURSEPLAY_RECORDING_TURN_START'));
 	end;
-	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), courseplay.DBG_16);
+	courseplay:debug(string.format('%s: set "isRecordingTurnManeuver" to %s', nameNum(vehicle), tostring(vehicle.cp.isRecordingTurnManeuver)), courseplay.DBG_UNCATEGORIZED);
 
 	local cx, cy, cz = getWorldTranslation(vehicle.cp.directionNode);
 	local newAngle = courseplay:currentVehAngle(vehicle);
@@ -192,7 +192,7 @@ function courseplay:setRecordingTurnManeuver(vehicle)
 			turnVerticalDirStr = 'down';
 		end;
 
-		if courseplay.debugChannels[courseplay.DBG_16] then
+		if courseplay.debugChannels[courseplay.DBG_UNCATEGORIZED] then
 			local printStr = '';
 			printStr = printStr .. string.format('\tvx1,vz1=%.2f,%.2f\n', vx1,vz1);
 			printStr = printStr .. string.format('\tvx2,vz2=%.2f,%.2f\n', vx2,vz2);
@@ -276,7 +276,7 @@ end;
 
 function courseplay:setNewWaypointFromRecording(vehicle, cx, cz, angle, wait,unload, rev, crossing, speed, turnStart, turnEnd)
 	vehicle.Waypoints[vehicle.cp.waypointIndex] = { cx = cx, cz = cz, angle = angle, wait = wait,unload = unload, rev = rev, crossing = crossing, speed = speed, turnStart = turnStart, turnEnd = turnEnd };
-	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turnStart), tostring(turnEnd)), courseplay.DBG_16);
+	courseplay:debug(string.format('%s: recording: set new waypoint (#%d): cx,cz=%.1f,%.1f, angle=%.1f, wait=%s, rev=%s, crossing=%s, speed=%.5f, turnStart=%s, turnEnd=%s', nameNum(vehicle), vehicle.cp.waypointIndex, cx, cz, angle, tostring(wait), tostring(rev), tostring(crossing), speed, tostring(turnStart), tostring(turnEnd)), courseplay.DBG_UNCATEGORIZED);
 	vehicle.cp.numWayPoints = vehicle.cp.waypointIndex
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
 end;
@@ -290,7 +290,7 @@ function courseplay:addSplitRecordingPoints(vehicle)
 	local dx, dz = (cx - prevCx) / dist, (cz - prevCz) / dist;
 	local angle = deg(MathUtil.getYRotationFromDirection(dx, dz));
 	local speed = prevPoint.speed;
-	courseplay:debug(('%s: addSplitRecordingPoints: dist=%.1f, numPointsNeeded=%d, angle=%.1f, speed=%.1f'):format(nameNum(vehicle), dist, numPointsNeeded, angle, speed), courseplay.DBG_16);
+	courseplay:debug(('%s: addSplitRecordingPoints: dist=%.1f, numPointsNeeded=%d, angle=%.1f, speed=%.1f'):format(nameNum(vehicle), dist, numPointsNeeded, angle, speed), courseplay.DBG_UNCATEGORIZED);
 
 	-- change previous point sign from 'stop' to 'normal'
 	local oldSignIndex = #vehicle.cp.signs.current;

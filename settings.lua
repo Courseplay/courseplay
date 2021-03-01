@@ -146,7 +146,6 @@ function courseplay:changeCombineOffset(vehicle, changeBy)
 		vehicle.cp.combineOffsetAutoMode = true;
 	end;
 
-	courseplay:debug(nameNum(vehicle) .. ": manual combine_offset change: prev " .. previousOffset .. " // new " .. vehicle.cp.combineOffset .. " // auto = " .. tostring(vehicle.cp.combineOffsetAutoMode), courseplay.DBG_MODE_2_3);
 end
 
 function courseplay:changeTipperOffset(vehicle, changeBy)
@@ -469,7 +468,7 @@ function courseplay.settings.setReloadCourseItems(vehicle)
 		for k,v in pairs(g_currentMission.enterables) do
 			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
 				v.cp.reloadCourseItems = true
-				courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, v,"courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName)
+				courseplay.debugVehicle(courseplay.DBG_COURSES, v,"courseplay.hud:setReloadPageOrder(%s, 2, true) TypeName: %s ;",tostring(v.name), v.typeName)
 				courseplay.hud:setReloadPageOrder(v, 2, true);
 			end
 		end
@@ -761,7 +760,7 @@ end;
 function courseplay:toggleHeadlandOrder(vehicle)
 	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
 	--vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
-	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), courseplay.DBG_COURSE_GENERATOR);
+	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), courseplay.DBG_COURSES);
 end;
 
 function courseplay:changeIslandBypassMode(vehicle)
@@ -825,21 +824,25 @@ function courseplay:validateCourseGenerationData(vehicle)
 	end;
 	--courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s", nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSE_GENERATOR);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s",
+		nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSES);
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
-	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
-	courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording), tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_12);
+	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and
+		not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
+	courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(
+		nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording),
+		tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_UNCATEGORIZED);
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
-	courseplay:debug("reloadCoursesFromXML()", courseplay.DBG_COURSE_MANAGEMENT);
+	courseplay:debug("reloadCoursesFromXML()", courseplay.DBG_COURSES);
 	if g_server ~= nil then
 		courseplay.courses:loadCoursesAndFoldersFromXml();
 
-		--courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), courseplay.DBG_COURSE_MANAGEMENT);
-		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", courseplay.DBG_COURSE_MANAGEMENT);
+		--courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), courseplay.DBG_COURSES);
+		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", courseplay.DBG_COURSES);
 		if not vehicle:getIsCourseplayDriving() then
 			local loadedCoursesBackup = vehicle.cp.loadedCourses;
 			courseplay:clearCurrentLoadedCourse(vehicle);
@@ -1088,7 +1091,7 @@ end;
 
 function courseplay:setSlippingStage(vehicle, stage)
 	if vehicle.cp.slippingStage ~= stage then
-		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), courseplay.DBG_14);
+		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), courseplay.DBG_AI_DRIVER);
 		vehicle.cp.slippingStage = stage;
 	end;
 end;
@@ -1754,7 +1757,7 @@ function AutoDriveModeSetting:init(vehicle)
 end
 
 function AutoDriveModeSetting:next()
-	courseplay.debugVehicle(courseplay.DBG_12, vehicle, 'AutoDrive mode: %d', vehicle.cp.settings.autoDriveMode:get())
+	courseplay.debugVehicle(courseplay.DBG_UNCATEGORIZED, self.vehicle, 'AutoDrive mode: %d', self.vehicle.cp.settings.autoDriveMode:get())
 	SettingList.next(self)
 end
 

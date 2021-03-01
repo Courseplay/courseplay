@@ -72,7 +72,12 @@ function PathfinderInterface:resume(...)
 end
 
 function PathfinderInterface:debug(...)
-    courseGenerator.debug(...)
+	if courseGenerator.isRunningInGame() then
+		courseplay.debugFormat(courseplay.DBG_PATHFINDER, ...)
+	else
+		print(string.format( ...))
+		io.stdout:flush()
+	end
 end
 
 --- Interface definition for pathfinder constraints (for dependency injection of node penalty/validity checks

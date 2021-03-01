@@ -37,10 +37,11 @@ BaleCollectorAIDriver.myStates = {
 }
 
 function BaleCollectorAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'BaleCollectorAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'BaleCollectorAIDriver:init()')
 	BaleLoaderAIDriver.init(self, vehicle)
 	self:initStates(BaleCollectorAIDriver.myStates)
 	self.mode = courseplay.MODE_BALE_COLLECTOR
+	self.debugChannel = courseplay.DBG_MODE_7
 	self.fieldId = 0
 	self.bales = {}
 end

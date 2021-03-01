@@ -320,18 +320,21 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 
 					if workToolDistances.attacherJointToPivot then
 						totalDistance = totalDistance + workToolDistances.attacherJointToPivot;
-						courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToPivot=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointToPivot), courseplay.DBG_14);
+						courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToPivot=%.2fm'):format(
+							nameNum(workTool), workToolDistances.attacherJointToPivot), courseplay.DBG_IMPLEMENTS);
 					end;
 
 					totalDistance = totalDistance + workToolDistances.attacherJointOrPivotToTurningNode;
-					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointOrPivotToTurningNode=%.2fm'):format(nameNum(workTool), workToolDistances.attacherJointOrPivotToTurningNode), courseplay.DBG_14);
-					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToTurningNode=%.2fm'):format(nameNum(workTool), totalDistance), courseplay.DBG_14);
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointOrPivotToTurningNode=%.2fm'):format(
+						nameNum(workTool), workToolDistances.attacherJointOrPivotToTurningNode), courseplay.DBG_IMPLEMENTS);
+					courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: attacherJointToTurningNode=%.2fm'):format(
+						nameNum(workTool), totalDistance), courseplay.DBG_IMPLEMENTS);
 				else
 					if not distances.attacherJointOrPivotToTurningNode and distances.attacherJointToRearTrailerAttacherJoints then
 						totalDistance = totalDistance + distances.attacherJointToRearTrailerAttacherJoints[activeInputAttacherJoint.jointType];
 					end;
 					totalDistance = totalDistance + courseplay:getDirectionNodeToTurnNodeLength(workTool);
-					--courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), courseplay.DBG_14);
+					--courseplay:debug(('%s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(workTool), totalDistance), courseplay.DBG_IMPLEMENTS);
 				end;
 				break;
 			end;
@@ -347,7 +350,8 @@ function courseplay:getDirectionNodeToTurnNodeLength(vehicle)
 				end;
 			end;
 			vehicle.cp.directionNodeToTurnNodeLength = totalDistance;
-			courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: directionNodeToTurnNodeLength=%.2fm'):format(nameNum(vehicle), totalDistance), courseplay.DBG_14);
+			courseplay:debug(('getDirectionNodeToTurnNodeLength() -> %s: directionNodeToTurnNodeLength=%.2fm'):format(
+				nameNum(vehicle), totalDistance), courseplay.DBG_IMPLEMENTS);
 		end;
 	end;
 
@@ -1494,7 +1498,9 @@ function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, 
 
     -- smooth the offset a bit to avoid sudden changes
     tightTurnOffset = smoothOffset(offset)
-    courseplay.debugVehicle(courseplay.DBG_14, vehicle, 'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',	r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
+    courseplay.debugVehicle(courseplay.DBG_AI_DRIVER, vehicle,
+		'Tight turn, r = %.1f, tow bar = %.1f m, currentAngle = %.0f, nextAngle = %.0f, offset = %.1f, smoothOffset = %.1f',
+		r, towBarLength, currentAngle, nextAngle, offset, tightTurnOffset )
     -- remember the last value for smoothing
     return tightTurnOffset
 end

@@ -1,7 +1,7 @@
 ---@class BunkerSiloManager
 BunkerSiloManager = CpObject()
 
-BunkerSiloManager.debugChannel = 10
+BunkerSiloManager.debugChannel = courseplay.DBG_MODE_10
 
 BunkerSiloManager.MODE = {}
 BunkerSiloManager.MODE.COMPACTING = 0 --LevelCompactAIDriver compacting without shield

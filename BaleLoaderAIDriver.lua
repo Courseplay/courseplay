@@ -57,7 +57,7 @@ end
 
 
 function BaleLoaderAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'BaleLoaderAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.baleLoader = AIDriverUtil.getImplementWithSpecialization(vehicle, BaleLoader)
 	self:debug('baleloader %s', tostring(self.baleLoader))

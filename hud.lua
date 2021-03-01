@@ -611,7 +611,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	-- there is a change, they set forceUpdate to force the update of the HUD page, otherwise there's only an empty
 	-- row shown until the page is reselected
 	local forceUpdate = false
-	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), courseplay.DBG_18);
+	courseplay:debug(string.format('%s: loadPage(..., %d), set content', nameNum(vehicle), page), courseplay.DBG_HUD);
 	--go through all the HUD stuff and update the content	
 	for line,columns in pairs(vehicle.cp.hud.content.pages[page]) do
 		for column,entry in pairs(columns) do
@@ -1250,7 +1250,7 @@ function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 
 	if vehicle.cp.hud.reloadPage[page] ~= bool then
 		vehicle.cp.hud.reloadPage[page] = bool;
-		courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_18);
+		courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_HUD);
 	end;
 end;
 
@@ -1704,7 +1704,7 @@ end
 --update functions 
 function courseplay.hud:updateCourseList(vehicle, page)
 	-- update courses?
-	courseplay.debugVehicle(courseplay.DBG_COURSE_MANAGEMENT, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
 	if vehicle.cp.reloadCourseItems then
 		courseplay.courses:reloadVehicleCourses(vehicle)
 		CourseplayEvent.sendEvent(vehicle,'self.cp.onMpSetCourses',true)
@@ -2320,7 +2320,7 @@ function courseplay.hud:addSettingsRowWithArrows(vehicle,setting,funct, hudPage,
 end
 		
 function courseplay.hud:debug(vehicle,...)
-	courseplay.debugVehicle(courseplay.DBG_18, vehicle, ...)
+	courseplay.debugVehicle(courseplay.DBG_HUD, vehicle, ...)
 end	
 	
 -- do not remove this comment

@@ -259,7 +259,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
-			--courseplay:debug("got course", courseplay.DBG_COURSE_MANAGEMENT);
+			--courseplay:debug("got course", courseplay.DBG_COURSES);
 			local course_name = streamDebugReadString(streamId)
 			local courseUid = streamDebugReadString(streamId)
 			local courseType = streamDebugReadString(streamId)
@@ -270,7 +270,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			local waypoints = {}
 			if wp_count >= 0 then
 				for w = 1, wp_count do
-					--courseplay:debug("got waypoint", courseplay.DBG_COURSE_MANAGEMENT);
+					--courseplay:debug("got waypoint", courseplay.DBG_COURSES);
 					table.insert(waypoints, CourseEvent:readWaypoint(streamId))
 				end
 			else
@@ -326,7 +326,7 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 end
 
 function CourseplayJoinFixEvent:run(connection)
-	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", courseplay.DBG_COURSE_MANAGEMENT);
+	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", courseplay.DBG_COURSES);
 end;
 
 ---------------------------------

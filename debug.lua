@@ -1,27 +1,29 @@
 courseplay = courseplay or {}
-courseplay.DBG_TRIGGERS = 1
-courseplay.DBG_LOAD_UNLOAD = 2
-courseplay.DBG_TRAFFIC = 3
-courseplay.DBG_MODE_2_3 = 4
-courseplay.DBG_MULTIPLAYER = 5
-courseplay.DBG_IMPLEMENTS = 6
-courseplay.DBG_COURSE_GENERATOR = 7
-courseplay.DBG_COURSE_MANAGEMENT = 8
-courseplay.DBG_PATHFINDING = 9
-courseplay.DBG_10 = 10
-courseplay.DBG_11 = 11
-courseplay.DBG_12 = 12
-courseplay.DBG_13 = 13
-courseplay.DBG_14 = 14
-courseplay.DBG_15 = 15
-courseplay.DBG_16 = 16
-courseplay.DBG_17 = 17
-courseplay.DBG_18 = 18
-courseplay.DBG_19 = 19
-courseplay.DBG_20 = 20
-courseplay.DBG_21 = 21
-courseplay.DBG_22 = 22
-courseplay.DBG_23 = 23
+
+-- Debug channels. The numbers represent the channel numbers on the HUD
+courseplay.DBG_MODE_1 = 1
+courseplay.DBG_MODE_2 = 2
+courseplay.DBG_MODE_3 = 3
+courseplay.DBG_MODE_4 = 4
+courseplay.DBG_MODE_5 = 5
+courseplay.DBG_MODE_6 = 6
+courseplay.DBG_MODE_7 = 7
+courseplay.DBG_MODE_8 = 8
+courseplay.DBG_MODE_9 = 9
+courseplay.DBG_MODE_10 = 10
+courseplay.DBG_PATHFINDER = 11
+courseplay.DBG_TRIGGERS = 12
+courseplay.DBG_REVERSE = 13
+courseplay.DBG_TURN = 14
+courseplay.DBG_PPC = 15
+courseplay.DBG_LOAD_UNLOAD = 16
+courseplay.DBG_TRAFFIC = 17
+courseplay.DBG_HUD = 18
+courseplay.DBG_COURSES = 19
+courseplay.DBG_MULTIPLAYER = 20
+courseplay.DBG_IMPLEMENTS = 21
+courseplay.DBG_UNCATEGORIZED = 22
+courseplay.DBG_AI_DRIVER = 23
 courseplay.DBG_CYCLIC = 24
 
 function CpManager:setUpDebugChannels()
@@ -33,24 +35,23 @@ function CpManager:setUpDebugChannels()
 		-- Enable specified debugmode by default for Satis Only!
 		if getMD5(g_gameSettings:getValue("nickname")) == "9a9f028043394ff9de1cf6c905b515c1" then
 			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
-			defaultActive[courseplay.DBG_12] = true;
-			defaultActive[courseplay.DBG_13] = true;
-			defaultActive[courseplay.DBG_14] = true;
+			defaultActive[courseplay.DBG_PPC] = true;
+			defaultActive[courseplay.DBG_REVERSE] = true;
+			defaultActive[courseplay.DBG_TURN] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "b74ad095badc54d4334039f2f73f240e" then
 			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
-			defaultActive[courseplay.DBG_13] = true;
+			defaultActive[courseplay.DBG_REVERSE] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
-			defaultActive[courseplay.DBG_11] = true;
-			defaultActive[courseplay.DBG_12] = true;
-			defaultActive[courseplay.DBG_13] = true;
-			defaultActive[courseplay.DBG_14] = true;
+			defaultActive[courseplay.DBG_AI_DRIVER] = true;
+			defaultActive[courseplay.DBG_PPC] = true;
+			defaultActive[courseplay.DBG_REVERSE] = true;
+			defaultActive[courseplay.DBG_TURN] = true;
 			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
-			defaultActive[courseplay.DBG_COURSE_GENERATOR] = true;
-			defaultActive[courseplay.DBG_COURSE_MANAGEMENT] = true;
-			defaultActive[courseplay.DBG_PATHFINDING] = true;
-			defaultActive[courseplay.DBG_MODE_2_3] = true;
+			defaultActive[courseplay.DBG_COURSES] = true;
+			defaultActive[courseplay.DBG_PATHFINDER] = true;
+			defaultActive[courseplay.DBG_MODE_4] = true;
 			defaultActive[courseplay.DBG_TRAFFIC] = true;
 		end;
 	end;
@@ -77,30 +78,30 @@ function CpManager:setUpDebugChannels()
 	--]]
 	-- Debug channels legend:
 	courseplay.debugChannelsDesc = {
-		[courseplay.DBG_TRIGGERS] = 'Debug: Raycast (drive + tipTriggers)';
-		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: Load and unload tippers';
-		[courseplay.DBG_TRAFFIC] = 'Debug: Traffic collision';
-		[courseplay.DBG_MODE_2_3] = 'Debug: Mode 2/3, combi/overloader';
-		[courseplay.DBG_MULTIPLAYER] = 'Debug: Multiplayer';
-		[courseplay.DBG_IMPLEMENTS] = 'Debug: implements (updateWorkTools etc.)';
-		[courseplay.DBG_COURSE_GENERATOR] = 'Debug: course generation';
-		[courseplay.DBG_COURSE_MANAGEMENT] = 'Debug: course management';
-		[courseplay.DBG_PATHFINDING] = 'Debug: path finding';
-		[courseplay.DBG_10] = 'Debug: mode9: shovel loading/unloading';
-		[courseplay.DBG_11] = 'Debug: AIDriver management';
-		[courseplay.DBG_12] = 'Debug: all other debugs (uncategorized)';
-		[courseplay.DBG_13] = 'Debug: reverse driving';
-		[courseplay.DBG_14] = 'Debug: driving specific';
-		[courseplay.DBG_15] = 'Debug: not used';
-		[courseplay.DBG_16] = 'Debug: recording courses';
-		[courseplay.DBG_17] = 'Debug: mode4/6: seeding/fieldWork';
-		[courseplay.DBG_18] = 'Debug: hud action';
-		[courseplay.DBG_19] = 'Debug: special triggers';
-		[courseplay.DBG_20] = 'Debug: WeightStation';
-		[courseplay.DBG_21] = 'Debug: Speed setting';
-		[courseplay.DBG_22] = 'Debug: temp MP';
-		[courseplay.DBG_23] = 'Debug: mode8: liquid product transport';
-		[courseplay.DBG_CYCLIC] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not nessesary (e.g. raycasts)
+		[courseplay.DBG_MODE_1] = 'Debug: mode 1 - grain transport';
+		[courseplay.DBG_MODE_2] = 'Debug: mode 2 - unload combine';
+		[courseplay.DBG_MODE_3] = 'Debug: mode 3 - overloader';
+		[courseplay.DBG_MODE_4] = 'Debug: mode 4 - fertilizing and seeding';
+		[courseplay.DBG_MODE_5] = 'Debug: mode 5 - transport';
+		[courseplay.DBG_MODE_6] = 'Debug: mode 6 - fieldwork';
+		[courseplay.DBG_MODE_7] = 'Debug: mode 7 - bale collector';
+		[courseplay.DBG_MODE_8] = 'Debug: mode 8 - field supply';
+		[courseplay.DBG_MODE_9] = 'Debug: mode 9 - shovel fill/empty';
+		[courseplay.DBG_MODE_10] = 'Debug: mode 10 - bunker silo compacter';
+		[courseplay.DBG_PATHFINDER] = 'Debug: pathfinder';
+		[courseplay.DBG_TRIGGERS] = 'Debug: triggers';
+		[courseplay.DBG_REVERSE] = 'Debug: reverse driving';
+		[courseplay.DBG_TURN] = 'Debug: turns';
+		[courseplay.DBG_PPC] = 'Debug: pure pursuit controller';
+		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: load and unload tippers';
+		[courseplay.DBG_TRAFFIC] = 'Debug: traffic collision/proximity';
+		[courseplay.DBG_HUD] = 'Debug: hud action';
+		[courseplay.DBG_COURSES] = 'Debug: course save/load/generation';
+		[courseplay.DBG_MULTIPLAYER] = 'Debug: multiplayer';
+		[courseplay.DBG_IMPLEMENTS] = 'Debug: implements';
+		[courseplay.DBG_UNCATEGORIZED] = 'Debug: other';
+		[courseplay.DBG_AI_DRIVER] = 'Debug: AIDriver common';
+		[courseplay.DBG_CYCLIC] = 'Debug: activate cyclic prints'; --this is to prevent spamming the log if not necessary (e.g. raycasts)
 	};
 
 	courseplay.debugButtonPosData = {};
@@ -135,7 +136,7 @@ function courseplay:debug(str, channel)
 end;
 
 -- convenience debug function that expects string.format() arguments,
--- courseplay.debugVehicle( courseplay.DBG_14, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_TURN, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugFormat(channel, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
@@ -146,7 +147,7 @@ function courseplay.debugFormat(channel, ...)
 end
 
 -- convenience debug function to show the vehicle name and expects string.format() arguments, 
--- courseplay.debugVehicle( courseplay.DBG_14, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
+-- courseplay.debugVehicle( courseplay.DBG_TURN, vehicle, "fill level is %.1f, mode = %d", fillLevel, mode )
 ---@param channel number
 function courseplay.debugVehicle(channel, vehicle, ...)
 	if courseplay.debugChannels and channel ~= nil and courseplay.debugChannels[channel] ~= nil and courseplay.debugChannels[channel] == true then
@@ -498,7 +499,7 @@ end
 -- TODO: there could be a drawTemporaryLine in cpDebug that already has a buffer for all draw data, there's no need to
 -- create a separate one
 function courseplay:showTemporaryMarkers(vehicle)
-	if not courseplay.debugChannels[courseplay.DBG_14] then return end
+	if not courseplay.debugChannels[courseplay.DBG_AI_DRIVER] then return end
 	if vehicle.cp.showMarkers then
 		if vehicle.cp.showMarkers.timer < vehicle.timer then
 			-- time is up, remove markers

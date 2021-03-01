@@ -295,7 +295,7 @@ function courseplay:setTipRefOffset(vehicle)
 				for n=1 ,#(vehicle.cp.workTools[i].tipReferencePoints) do
 					local tipperX, tipperY, tipperZ = getWorldTranslation(vehicle.cp.workTools[i].tipReferencePoints[n].node);
 					local tipRefPointX, tipRefPointY, tipRefPointZ = worldToLocal(vehicle.cp.workTools[i].rootNode, tipperX, tipperY, tipperZ);
-					courseplay:debug(string.format("point%s : tipRefPointX (%s), tipRefPointY (%s), tipRefPointZ(%s)",tostring(n),tostring(tipRefPointX),tostring(tipRefPointY),tostring( tipRefPointZ)),courseplay.DBG_13)
+					courseplay:debug(string.format("point%s : tipRefPointX (%s), tipRefPointY (%s), tipRefPointZ(%s)",tostring(n),tostring(tipRefPointX),tostring(tipRefPointY),tostring( tipRefPointZ)),courseplay.DBG_REVERSE)
 					tipRefPointX = abs(tipRefPointX);
 					if tipRefPointX > vehicle.cp.tipRefOffset then
 						if tipRefPointX > 0.1 then
@@ -309,7 +309,7 @@ function courseplay:setTipRefOffset(vehicle)
 					if tipRefPointX < 0.1 and tipRefPointZ < 0 then
 						if not vehicle.cp.workTools[i].cp.rearTipRefPoint or vehicle.cp.workTools[i].tipReferencePoints[n].width > vehicle.cp.workTools[i].tipReferencePoints[vehicle.cp.workTools[i].cp.rearTipRefPoint].width then
 							vehicle.cp.workTools[i].cp.rearTipRefPoint = n;
-							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), courseplay.DBG_13);
+							courseplay:debug(string.format("%s: Found rear TipRefPoint: %d - tipRefPointZ = %f", nameNum(vehicle), n, tipRefPointZ), courseplay.DBG_REVERSE);
 						end;
 					end;
 				end;
@@ -322,17 +322,47 @@ function courseplay:setTipRefOffset(vehicle)
 end;
 
 
+function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolded
+	if not courseplay:isFoldable(workTool) then
+		return false, false, true;
+	end;
+
+	local isFolding, isFolded, isUnfolded = false, true, true;
+	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s',
+		nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection),
+		tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), courseplay.DBG_IMPLEMENTS);
+
+	if workTool.spec_foldable.foldAnimTime ~= (workTool.spec_foldable.oldFoldAnimTime or 0) then
+		if workTool.spec_foldable.foldMoveDirection > 0 and workTool.spec_foldable.foldAnimTime < 1 then
+			isFolding = true;
+		elseif workTool.spec_foldable.foldMoveDirection < 0 and workTool.spec_foldable.foldAnimTime > 0 then
+			isFolding = true;
+		end;
+		workTool.spec_foldable.oldFoldAnimTime = workTool.spec_foldable.foldAnimTime;
+	end;
+
+	isUnfolded = workTool:getIsUnfolded();
+	isFolded = not isUnfolded and not isFolding;
+
+	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s',
+		tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), courseplay.DBG_IMPLEMENTS);
+	return isFolding, isFolded, isUnfolded;
+end;
+
+
 function courseplay:setFoldedStates(object)
 	if courseplay:isFoldable(object) and object.spec_foldable.turnOnFoldDirection then
-		courseplay.debugLine(courseplay.DBG_17);
-		courseplay:debug(nameNum(object) .. ': setFoldedStates()', courseplay.DBG_17);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
+		courseplay:debug(nameNum(object) .. ': setFoldedStates()', courseplay.DBG_IMPLEMENTS);
 
 		object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection;
 		if object.cp.foldingPartsStartMoveDirection and object.cp.foldingPartsStartMoveDirection ~= 0 and object.cp.foldingPartsStartMoveDirection ~= object.spec_foldable.turnOnFoldDirection then
 			object.cp.realUnfoldDirection = object.spec_foldable.turnOnFoldDirection * object.cp.foldingPartsStartMoveDirection;
 		end;
 
-		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), tostring(object.cp.realUnfoldDirection)), courseplay.DBG_17);
+		courseplay:debug(string.format('startAnimTime=%s, turnOnFoldDirection=%s, foldingPartsStartMoveDirection=%s --> realUnfoldDirection=%s', 
+			tostring(object.startAnimTime), tostring(object.turnOnFoldDirection), tostring(object.cp.foldingPartsStartMoveDirection), 
+			tostring(object.cp.realUnfoldDirection)), courseplay.DBG_IMPLEMENTS);
 
 		for i,foldingPart in pairs(object.spec_foldable.foldingParts) do
 			foldingPart.isFoldedAnimTime = 0;
@@ -346,9 +376,11 @@ function courseplay:setFoldedStates(object)
 				foldingPart.isUnfoldedAnimTime = 0;
 				foldingPart.isUnfoldedAnimTimeNormal = 0;
 			end;
-			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)', i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), foldingPart.isUnfoldedAnimTimeNormal), courseplay.DBG_17);
+			courseplay:debug(string.format('\tfoldingPart %d: isFoldedAnimTime=%s (normal: %d), isUnfoldedAnimTime=%s (normal: %d)',
+				i, tostring(foldingPart.isFoldedAnimTime), foldingPart.isFoldedAnimTimeNormal, tostring(foldingPart.isUnfoldedAnimTime), 
+				foldingPart.isUnfoldedAnimTimeNormal), courseplay.DBG_IMPLEMENTS);
 		end;
-		courseplay.debugLine(courseplay.DBG_17);
+		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 	end;
 end;
 

@@ -33,10 +33,11 @@ FillableFieldworkAIDriver.myStates = {
 }
 
 function FillableFieldworkAIDriver:init(vehicle)
-	courseplay.debugVehicle(courseplay.DBG_11,vehicle,'FillableFieldworkAIDriver:init()')
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'FillableFieldworkAIDriver:init()')
 	FieldworkAIDriver.init(self, vehicle)
 	self:initStates(FillableFieldworkAIDriver.myStates)
 	self.mode = courseplay.MODE_SEED_FERTILIZE
+	self.debugChannel = courseplay.DBG_MODE_4
 	self.refillState = self.states.TO_BE_REFILLED
 	self.lastTotalFillLevel = math.huge
 end
