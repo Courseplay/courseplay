@@ -91,7 +91,7 @@ function CpManager:setUpDebugChannels()
 		[courseplay.DBG_PATHFINDER] = 'Debug: pathfinder';
 		[courseplay.DBG_TRIGGERS] = 'Debug: triggers';
 		[courseplay.DBG_REVERSE] = 'Debug: reverse driving';
-		[courseplay.DBG_TURN] = 'Debug: driving specific';
+		[courseplay.DBG_TURN] = 'Debug: turns';
 		[courseplay.DBG_PPC] = 'Debug: pure pursuit controller';
 		[courseplay.DBG_LOAD_UNLOAD] = 'Debug: load and unload tippers';
 		[courseplay.DBG_TRAFFIC] = 'Debug: traffic collision/proximity';
