@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="punto corrente" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="punto successivo" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Scarico" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Raccogli le balle" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Percorso perimetrale del" />
 		<text name="COURSEPLAY_FIELD" 										text="campo" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(percorso attualmente caricato)" />
