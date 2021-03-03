@@ -273,6 +273,37 @@ function PathfinderUtil.findCollidingVehicles(myCollisionData, node, myVehicleDa
     return false
 end
 
+--- Place node on a world position, point it to the heading and set the rotation so the y axis is parallel
+--- to the terrain normal vector. In other words, set the location and rotation of this node as if it was the
+--- root node of a vehicle at that position, the vehicle's chassis parallel to the terrain
+---@param node number
+---@param x number
+---@param z number
+---@param heading number heading as y rotation
+---@param yOffset number position offset above ground
+function PathfinderUtil.setWorldPositionAndRotationOnTerrain(node, x, z, heading, yOffset)
+	local xRot, yRot, zRot = PathfinderUtil.getNormalWorldRotation(x, z)
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z);
+
+	setTranslation(node, x, y + yOffset, z)
+	setRotation(node, xRot, 0, zRot)
+	xRot, yRot, zRot = localRotationToWorld(node, 0, heading, 0)
+	setRotation(node, xRot, yRot, zRot)
+end
+
+--- Get the world rotation of a node at x, z when the y axis is parallel to the normal vector at that position
+--- (y axis is perpendicular to the terrain)
+function PathfinderUtil.getNormalWorldRotation(x, z)
+	local nx, ny, nz = getTerrainNormalAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+
+	local xRot = MathUtil.getYRotationFromDirection(nz, ny)
+	local yRot = MathUtil.getYRotationFromDirection(nx, nz)
+	local zRot = -MathUtil.getYRotationFromDirection(nx, ny)
+
+	return xRot, yRot, zRot
+end
+
+
 ---@class PathfinderUtil.CollisionDetector
 PathfinderUtil.CollisionDetector = CpObject()
 
@@ -318,19 +349,19 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     local width = (math.abs(vehicleData.dRight) + math.abs(vehicleData.dLeft)) / 2
     local length = (math.abs(vehicleData.dFront) + math.abs(vehicleData.dRear)) / 2
 
-    local _, _, yRot = PathfinderUtil.getNodePositionAndDirection(node)
+    local xRot, yRot, zRot = getWorldRotation(node)
     local x, y, z = localToWorld(node, xOffset, 1, zOffset)
 
     self.collidingShapes = 0
 
-    overlapBox(x, y + 0.2, z, 0, yRot, 0, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    overlapBox(x, y + 0.2, z, xRot, yRot, zRot, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
     if log and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
-                { x = x, y = y + 0.2, z = z, yRot = yRot, width = width, length = length})
+                { x = x, y = y + 0.2, z = z, xRot = xRot, yRot = yRot, zRot = zRot, width = width, length = length})
         courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'pathfinder colliding shapes (%s) at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
                 vehicleData.name, x, z, width, length, math.deg(yRot))
     end
-    DebugUtil.drawOverlapBox(x, y, z, 0, yRot, 0, width, 1, length, 100, 0, 0)
+    DebugUtil.drawOverlapBox(x, y, z, xRot, yRot, zRot, width, 1, length, 100, 0, 0)
 
     return self.collidingShapes
 end
@@ -544,9 +575,9 @@ function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
     if not PathfinderUtil.helperNode then
         PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', node.x, -node.y, 0)
     end
-    local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, node.x, 0, -node.y);
-    setTranslation(PathfinderUtil.helperNode, node.x, y + 0.5, -node.y)
-    setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.t), 0)
+
+		PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
+			node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
 
     -- check the vehicle and all implements attached to it except a trailer or towed implement
     local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
@@ -563,8 +594,10 @@ function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
         -- now check the trailer or towed implement
         -- move the node to the rear of the vehicle (where approximately the trailer is attached)
         local x, y, z = localToWorld(PathfinderUtil.helperNode, 0, 0, self.context.vehicleData.trailerHitchOffset)
-        setTranslation(PathfinderUtil.helperNode, x, y, z)
-        setRotation(PathfinderUtil.helperNode, 0, courseGenerator.toCpAngle(node.tTrailer), 0)
+
+				PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode, x, z,
+					courseGenerator.toCpAngle(node.tTrailer), 0.5)
+
         node.collidingShapes = node.collidingShapes + PathfinderUtil.collisionDetector:findCollidingShapes(
                 PathfinderUtil.helperNode, self.context.vehicleData.trailerRectangle, self.context.vehiclesToIgnore, log)
     end
@@ -931,6 +964,6 @@ end
 function PathfinderUtil.showOverlapBoxes()
     if not PathfinderUtil.overlapBoxes then return end
     for _, box in ipairs(PathfinderUtil.overlapBoxes) do
-        DebugUtil.drawOverlapBox(box.x, box.y, box.z, 0, box.yRot, 0, box.width, 1, box.length, 0, 100, 0)
+        DebugUtil.drawOverlapBox(box.x, box.y, box.z, box.xRot, box.yRot, box.zRot, box.width, 1, box.length, 0, 100, 0)
     end
 end

@@ -80,6 +80,7 @@ function DevHelper:update()
 
     self.yRot = math.atan2( lx, lz )
     self.data.yRotDeg = math.deg(self.yRot)
+    self.data.yRotDeg2 = math.deg(MathUtil.getYRotationFromDirection(lx, lz))
     self.data.x, self.data.y, self.data.z = getWorldTranslation(self.node)
     self.data.fieldNum = courseplay.fields:getFieldNumForPosition(self.data.x, self.data.z)
 
@@ -91,6 +92,15 @@ function DevHelper:update()
 	self.data.farmlandId = g_farmlandManager:getFarmlandIdAtWorldPosition(self.data.x, self.data.z)
 	self.data.farmland = g_farmlandManager:getFarmlandAtWorldPosition(self.data.x, self.data.z)
     self.data.fieldAreaPercent = 100 * self.fieldArea / self.totalFieldArea
+
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, self.data.x, self.data.y, self.data.z)
+	self.data.nx, self.data.ny, self.data.nz = getTerrainNormalAtWorldPos(g_currentMission.terrainRootNode, self.data.x, y, self.data.z)
+
+	local xRot, yRot, zRot = PathfinderUtil.getNormalWorldRotation(self.data.x, self.data.z)
+
+	self.data.txRotDeg = math.deg(xRot)
+	self.data.tyRotDeg = math.deg(yRot)
+	self.data.tzRotDeg = math.deg(zRot)
 
     self.data.collidingShapes = ''
     overlapBox(self.data.x, self.data.y + 0.2, self.data.z, 0, self.yRot, 0, 1.6, 1, 8, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
@@ -232,7 +242,7 @@ function DevHelper:draw()
     for key, value in pairs(self.data) do
         table.insert(data, {name = key, value = value})
     end
-    DebugUtil.renderTable(0.65, 0.3, 0.018, data, 0.05)
+    DebugUtil.renderTable(0.65, 0.3, 0.013, data, 0.05)
     self:drawCourse()
     self:showVehicleSize()
     self:showFillNodes()
@@ -243,6 +253,23 @@ function DevHelper:draw()
     end
     PathfinderUtil.showNodes(self.pathfinder)
     PathfinderUtil.showOverlapBoxes()
+
+	if not self.tNode then
+		self.tNode = createTransformGroup("devhelper")
+		link(g_currentMission.terrainRootNode, self.tNode)
+	end
+
+	PathfinderUtil.setWorldPositionAndRotationOnTerrain(self.tNode, self.data.x, self.data.z, self.yRot, 0.5)
+
+	DebugUtil.drawDebugNode(self.tNode, 'Terrain normal')
+	local nx, ny, nz = getTerrainNormalAtWorldPos(g_currentMission.terrainRootNode, self.data.x, self.data.y, self.data.z)
+
+	local x, y, z = localToWorld(self.node, 0, -1, -3)
+
+	cpDebug:drawLine(x, y, z, 1, 1, 1, x + nx, y + ny, z + nz)
+	local xRot, yRot, zRot = getWorldRotation(self.tNode)
+	DebugUtil.drawOverlapBox(self.data.x, self.data.y, self.data.z, xRot, yRot, zRot, 4, 1, 4, 0, 100, 0)
+
 end
 
 ---@param path State3D[]
