@@ -2756,7 +2756,7 @@ end
 function SiloSelectedFillTypeSetting:cleanUpOldFillTypes(noEventSend)
 	local supportedFillTypes = {}
 	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
-	self:checkSelectedFillTypes(supportedFillTypes,true)
+	self:checkSelectedFillTypes(supportedFillTypes,true, noEventSend)
 	if not noEventSend then
 		self:sendEvent(self.NetworkTypes.CLEANUP_OLD_FILLTYPES)
 	end
@@ -2767,14 +2767,14 @@ function SiloSelectedFillTypeSetting:validateCurrentValue()
 end
 
 
-function SiloSelectedFillTypeSetting:checkSelectedFillTypes(supportedFillTypes,cleanUp)
+function SiloSelectedFillTypeSetting:checkSelectedFillTypes(supportedFillTypes, cleanUp, noEventSend)
 	totalData = self:getData()
 	for index,data in ipairs(totalData) do 
 		if supportedFillTypes[data.fillType] then --already selected fillTypes disable multi select
 			supportedFillTypes[data.fillType]=0
 		elseif cleanUp then	--delete not supported fillTypes 
-			self:deleteByIndex(index) 
-			return self:checkSelectedFillTypes(supportedFillTypes,cleanUp)
+			self:deleteByIndex(index, noEventSend)
+			return self:checkSelectedFillTypes(supportedFillTypes, cleanUp, noEventSend)
 		end
 	end
 end 
@@ -2993,7 +2993,7 @@ function SiloSelectedFillTypeSetting:moveDownByIndex(index,noEventSend)
 	end
 end
 
-function SiloSelectedFillTypeSetting:deleteByIndex(index,noEventSend)
+function SiloSelectedFillTypeSetting:deleteByIndex(index, noEventSend)
 	LinkedListSetting.deleteByIndex(self,index)
 	if not noEventSend then
 		self:sendEvent(self.NetworkTypes.DELETE_X,index)
