@@ -1025,8 +1025,9 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	courseplay:getRealTurningNode(vehicle);
 
 	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+		turnRadius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
 		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), courseplay.DBG_IMPLEMENTS);
-		return g_vehicleConfigurations:get(vehicle, 'turnRadius')
+		return turnRadius
 	else
 		-- We need to calculate it ourself.
 		-- ArticulatedAxis Steering
@@ -1562,9 +1563,19 @@ end
 -- Get the turning radius of the vehicle and its implements (copied from AIDriveStrategyStraight.updateTurnData())
 function AIDriverUtil.getTurningRadius(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, 'Finding turn radius:')
-
-	local radius = vehicle.maxTurningRadius * 1.05 -- TODO: do we really need this buffer?
-	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  maxTurningRadius by Giants is %.1f', vehicle.maxTurningRadius)
+	
+	local radius = vehicle.maxTurningRadius or 6
+	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set to %.1f', radius)
+	
+	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+			radius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
+			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set from configfile to %.1f', radius)
+	end
+	if vehicle.cp.turnDiameterAutoMode == false and vehicle.cp.turnDiameter ~= nil then
+		radius = vehicle.cp.turnDiameter / 2
+		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius manually set to %.1f', radius)
+	end
+	
 	if vehicle:getAIMinTurningRadius() ~= nil then
 		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  AIMinTurningRadius by Giants is %.1f', vehicle:getAIMinTurningRadius())
 		radius = math.max(radius, vehicle:getAIMinTurningRadius())
