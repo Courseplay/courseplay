@@ -1025,8 +1025,9 @@ function courseplay:getVehicleTurnRadius(vehicle)
 	courseplay:getRealTurningNode(vehicle);
 
 	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+		turnRadius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
 		courseplay:debug(('%s -> TurnRadius: using configured value of %.2fm'):format(nameNum(vehicle), turnRadius), courseplay.DBG_IMPLEMENTS);
-		return g_vehicleConfigurations:get(vehicle, 'turnRadius')
+		return turnRadius
 	else
 		-- We need to calculate it ourself.
 		-- ArticulatedAxis Steering
@@ -1059,9 +1060,6 @@ function courseplay:getVehicleTurnRadius(vehicle)
 		if vehicle.maxTurningRadius then
 			turnRadius = vehicle.maxTurningRadius;
 			courseplay:debug(('%s -> TurnRadius: Using Giants maxTurningRadius: %.2fm'):format(nameNum(vehicle), vehicle.maxTurningRadius), courseplay.DBG_IMPLEMENTS);
-		elseif g_vehicleConfigurations:get(vehicle, 'turnRadius') then
-			turnRadius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
-			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set from configfile to %.1f', radius)
 		else
 			turnRadius = TR;
 			courseplay:debug(('%s -> TurnRadius: (Steering Type: %s) Calculated turnRadius set to %.2fm'):format(nameNum(vehicle), steeringType, turnRadius), courseplay.DBG_IMPLEMENTS);
@@ -1566,21 +1564,16 @@ end
 function AIDriverUtil.getTurningRadius(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, 'Finding turn radius:')
 	
-	local radiusMultiplier = 1.05
-	local radius = 5
-	-- default value if all others fail
-	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set to a default %.1f', radius)
-	local TR = ceil(courseplay:calculateTurnRadius(steeringType, wheelBase, rotMax, CPRatio) * radiusMultiplier)
-	-- copied from courseplay:getVehicleTurnRadius
-	if vehicle.maxTurningRadius then
-			radius = vehicle.maxTurningRadius * radiusMultiplier
-			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  maxTurningRadius by Giants is %.1f', radius)
-	elseif g_vehicleConfigurations:get(vehicle, 'turnRadius') then
+	local radius = vehicle.maxTurningRadius or 6
+	courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set to %.1f', radius)
+	
+	if g_vehicleConfigurations:get(vehicle, 'turnRadius') then
 			radius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
 			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set from configfile to %.1f', radius)
-	elseif TR > 0 then
-			radius = TR
-			courseplay:debug(('%s -> TurnRadius: Calculated turnRadius set to %.2fm'):format(nameNum(vehicle), radius), courseplay.DBG_IMPLEMENTS)
+	end
+	if vehicle.cp.turnDiameterAutoMode == false and vehicle.cp.turnDiameter ~= nil then
+		radius = vehicle.cp.turnDiameter / 2
+		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius manually set to %.1f', radius)
 	end
 	
 	if vehicle:getAIMinTurningRadius() ~= nil then
