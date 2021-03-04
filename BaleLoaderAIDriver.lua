@@ -59,7 +59,17 @@ end
 function BaleLoaderAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'BaleLoaderAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baleLoader = AIDriverUtil.getImplementWithSpecialization(vehicle, BaleLoader)
+	self:initStates(BaleLoaderAIDriver.myStates)
+	self:initializeBaleLoader()
+end
+
+function BaleLoaderAIDriver:start(startingPoint)
+	self:initializeBaleLoader()
+	UnloadableFieldworkAIDriver.start(self, startingPoint)
+end
+
+function BaleLoaderAIDriver:initializeBaleLoader()
+	self.baleLoader = AIDriverUtil.getImplementWithSpecialization(self.vehicle, BaleLoader)
 	self:debug('baleloader %s', tostring(self.baleLoader))
 	-- Bale loaders have no AI markers (as they are not AIImplements according to Giants) so add a function here
 	-- to get the markers
@@ -67,7 +77,6 @@ function BaleLoaderAIDriver:init(vehicle)
 		return UnloadableFieldworkAIDriver.getAIMarkersFromGrabberNode(object, object.spec_baleLoader)
 	end
 
-	self:initStates(BaleLoaderAIDriver.myStates)
 	self.manualUnloadNode = WaypointNode(self.vehicle:getName() .. 'unloadNode')
 	if self.baleLoader.cp.realUnloadOrFillNode then
 		-- use that realUnloadOrFillNode for now as it includes the balerUnloadDistance config value
