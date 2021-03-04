@@ -88,9 +88,20 @@ end;
 function courseplay:isCombine(workTool)
 	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
 end;
+
 function courseplay:isChopper(workTool)
-	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex) > 10000000
+	if workTool.cp.hasSpecializationCombine then
+		local fillUnitCapacity = workTool:getFillUnitCapacity(workTool.spec_combine.fillUnitIndex)
+		if not fillUnitCapacity then
+			courseplay.infoVehicle(workTool, 'has no fill capacity, so it is not a chopper')
+			return false
+		end
+		return workTool.startThreshing ~= nil and fillUnitCapacity > 10000000
+	else
+		return false
+	end
 end;
+
 function courseplay:isFoldable(workTool) --is the tool foldable?
 	return SpecializationUtil.hasSpecialization(Foldable, workTool.specializations) and
 			workTool.spec_foldable.foldingParts ~= nil and #workTool.spec_foldable.foldingParts > 0;
