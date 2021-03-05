@@ -25,6 +25,14 @@ function BaleWrapperAIDriver:init(vehicle)
 	-- derived classes may not fly when there are multiple specializations to handle, if we had a bale loader
 	-- which is also a bale wrapper then we would probably have to put everything back into the baler.
 	BalerAIDriver.init(self, vehicle)
+end
+
+function BaleWrapperAIDriver:start(startingPoint)
+	BalerAIDriver.start(self,startingPoint)
+	self:initializeBaleWrapper()
+end
+
+function BaleWrapperAIDriver:initializeBaleWrapper()
 	self.baleWrapper = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleWrapper)
 
 	if not self.baler then
@@ -38,8 +46,8 @@ end
 
 function BaleWrapperAIDriver:driveFieldwork(dt)
 	-- Don't drop the bale in the turn or on temporary alignment or connecting tracks
-	if BalerAIDriver.isHandlingAllowed(self) then
-		-- stop while wrapping only if we deon't have a baler. If we do we should continue driving and working
+	if self:isHandlingAllowed() then
+		-- stop while wrapping only if we don't have a baler. If we do we should continue driving and working
 		-- on the next bale, the baler code will take care about stopping if we need to
 		if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE and not self.baler then
 			self:setSpeed(0)

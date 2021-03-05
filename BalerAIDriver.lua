@@ -22,10 +22,6 @@ BalerAIDriver = CpObject(UnloadableFieldworkAIDriver)
 function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.baler = AIDriverUtil.getAIImplementWithSpecialization(vehicle, Baler)
-	if self.baler then
-		self.balerSpec = self.baler.spec_baler
-	end
 	self.slowDownFillLevel = 200
     self.slowDownStartSpeed = 20
 end
@@ -41,10 +37,18 @@ end
 
 function BalerAIDriver:start(startingPoint)
 	UnloadableFieldworkAIDriver.start(self,startingPoint)
-	--use giants automaticDrop, so we don't have to do it 
-	if self.balerSpec then
-		self.oldAutomaticDrop = self.balerSpec.automaticDrop
-		self.balerSpec.automaticDrop = true
+	self:initializeBaler()
+end
+
+function BalerAIDriver:initializeBaler()
+	self.baler = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Baler)
+	if self.baler then
+		self.balerSpec = self.baler.spec_baler
+		--use giants automaticDrop, so we don't have to do it
+		if self.balerSpec then
+			self.oldAutomaticDrop = self.balerSpec.automaticDrop
+			self.balerSpec.automaticDrop = true
+		end
 	end
 end
 
