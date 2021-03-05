@@ -1596,7 +1596,8 @@ function AIDriverUtil.getTurningRadius(vehicle)
 				courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: using the Giants turn radius %.1f',
 					implement.object:getName(), turnRadius)
 			end
-		else
+		end
+		if turnRadius == 0 then
 			turnRadius = courseplay:getToolTurnRadius(implement.object)
 			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  %s: no Giants turn radius, we calculated %.1f',
 				implement.object:getName(), turnRadius)
