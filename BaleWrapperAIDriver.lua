@@ -33,7 +33,7 @@ function BaleWrapperAIDriver:start(startingPoint)
 end
 
 function BaleWrapperAIDriver:initializeBaleWrapper()
-	self.baleWrapper = AIDriverUtil.getAIImplementWithSpecialization(vehicle, BaleWrapper)
+	self.baleWrapper = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, BaleWrapper)
 
 	if not self.baler then
 		-- Bale wrappers which aren't balers have no AI markers as they have no pick up so add a function here
