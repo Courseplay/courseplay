@@ -61,6 +61,7 @@ function BaleLoaderAIDriver:init(vehicle)
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self:initStates(BaleLoaderAIDriver.myStates)
 	self:initializeBaleLoader()
+	self.unloadDoneX, self.unloadDoneZ = 0, 0
 end
 
 function BaleLoaderAIDriver:start(startingPoint)
@@ -119,9 +120,9 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 			end
 		elseif self.unloadRefillState == self.states.MOVE_FORWARD_AFTER_UNLOADING then
 			self:setSpeed(self.vehicle.cp.speeds.approach)
-			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
-			local _, _, dz = localToLocal(unloadNode, self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
-			if math.abs(dz) > 3 then
+			local x, _, z = getWorldTranslation(self.vehicle.rootNode)
+			local dFromUnloadDonePosition = courseplay:distance(x, z, self.unloadDoneX, self.unloadDoneZ)
+			if math.abs(dFromUnloadDonePosition) > 3 then
 				self:debug('Moved away from unload point')
 				-- transition to the next stage (out of EMPTY_WAIT_TO_SINK)
 				g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(self.baleLoader, BaleLoader.CHANGE_BUTTON_EMPTY))
@@ -136,6 +137,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 				if self.baleLoader.spec_baleLoader.emptyState == BaleLoader.EMPTY_WAIT_TO_SINK then
 					self:debug('Bales unloaded, moving forward a bit, emptyState: %d...', self.baleLoader.spec_baleLoader.emptyState)
 					self.unloadRefillState = self.states.MOVE_FORWARD_AFTER_UNLOADING
+					self.unloadDoneX, _, self.unloadDoneZ = getWorldTranslation(self.vehicle.rootNode)
 					-- make sure we are driving forward now
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 				-- EMPTY_NONE is the base position (loaded or unloaded)
