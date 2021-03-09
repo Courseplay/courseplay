@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Modo: Fertilizar y sembrar" />
 		<text name="COURSEPLAY_MODE_5" 										text="Modo: Traslado (conducir de un punto a otro)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Modo: Trabajo de campo" />
-		<text name="COURSEPLAY_MODE_7" 										text="Modo: Cosechadora ir a remolque y descargar" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Modo: Transporte de producto líquido" />
 		<text name="COURSEPLAY_MODE_9" 										text="Modo: Cargar y descargar con pala" />
 		<text name="COURSEPLAY_MODE_10" 									text="Modo: Nivelando y compactando" />

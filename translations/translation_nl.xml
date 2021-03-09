@@ -25,7 +25,7 @@
 	    <text name="COURSEPLAY_MODE_4" 										text="Type: Kunstmest en zaaien" />
 		<text name="COURSEPLAY_MODE_5" 										text="Type: Verladen (van start naar finish)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Type: Veldwerk" />
-		<text name="COURSEPLAY_MODE_7" 										text="Type: Combine zelflossen" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Type: Vloeibare lading transport" />
 		<text name="COURSEPLAY_MODE_9" 										text="Type: Vullen en legen shovel" />
 		<text name="COURSEPLAY_MODE_10" 									text="Type: Egaliseren en comprimeren" />
@@ -279,7 +279,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="huidige markering" />
 		<text name="COURSEPLAY_NEXT_POINT" 							    	text="volgende markering" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect or wrap bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Veldrand route" />
 		<text name="COURSEPLAY_FIELD" 										text="Veld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(huidige route)" />

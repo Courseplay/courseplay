@@ -370,12 +370,6 @@ function courseplay:onLoad(savegame)
 	};
 	};
 
-	-- WOOD CUTTING: increase max cut length
-	if CpManager.isDeveloper then
-	self.cutLengthMax = 15;
-	self.cutLengthStep = 1;
-	end;
-
 	self.cp.mouseCursorActive = false;
 
 	-- 2D course

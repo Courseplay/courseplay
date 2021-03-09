@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="タイプ: 散布/播種" />
 		<text name="COURSEPLAY_MODE_5" 										text="タイプ: 回送 (スタートポイントからエンドポイントへ)" />
 		<text name="COURSEPLAY_MODE_6" 										text="タイプ: フィールドワーク" />
-		<text name="COURSEPLAY_MODE_7" 										text="タイプ: コンバイン セルフアンロード" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="タイプ: 液体輸送" />
 		<text name="COURSEPLAY_MODE_9" 										text="タイプ: バケット/ローダー" />
 		<text name="COURSEPLAY_MODE_10" 									text="タイプ: レベリング/圧縮" />
@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="記憶中のウェイポイント" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="次のウェイポイント" />
 		<text name="COURSEPLAY_UNLOAD" 										text="アンロード中" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect or wrap bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="フィールド境界線" />
 		<text name="COURSEPLAY_FIELD" 										text="フィールド" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(現在読み込まれているコース)" />

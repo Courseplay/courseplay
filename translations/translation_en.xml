@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Type: Fertilize and seeding" />
 		<text name="COURSEPLAY_MODE_5" 										text="Type: Transfer (drive from start to finish)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Type: Fieldwork" />
-		<text name="COURSEPLAY_MODE_7" 										text="Type: Combine self-unloading" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Type: Field Supply" />
 		<text name="COURSEPLAY_MODE_9" 										text="Type: Fill and empty shovel" />
 		<text name="COURSEPLAY_MODE_10" 									text="Type: Leveling and compacting" />
@@ -284,7 +284,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="Current waypoint" />
 		<text name="COURSEPLAY_NEXT_POINT" 									text="Next closest waypoint" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect or wrap bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Field edge path" />
 		<text name="COURSEPLAY_FIELD" 										text="Field" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(Currently loaded course)" />

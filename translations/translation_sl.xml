@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Način: Gnojenje in sejanje" />
 		<text name="COURSEPLAY_MODE_5" 										text="Način: Prevoz (vozi od začetka do konca)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Način: delo na polju" />
-		<text name="COURSEPLAY_MODE_7" 										text="Način: Combine avtomatska izpraznitev" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Način: Liquid product transport" />
 		<text name="COURSEPLAY_MODE_9" 										text="Način: Napolni in izprazni kiblo" />
 		<text name="COURSEPLAY_MODE_10" 									text="Način: Ravnanje in stiskanje (silaže)" />
@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="trenutna točka" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="next waypoint" />  <!-- TODO: TRANSLATE -->
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect or wrap bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Pot okrog polja" />
 		<text name="COURSEPLAY_FIELD" 										text="Polje" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(trenutno naložena pot)" />

@@ -176,6 +176,9 @@
 			<Setup>
 				<Specialization name="spec_baleLoader"/>
 			</Setup>
+			<Setup>
+				<Specialization name="spec_baleWrapper"/>
+			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
 			<Setup>

@@ -231,8 +231,8 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SEED_FERTILIZE]		 = { 220, 72, 252,40 };
 		[courseplay.MODE_TRANSPORT]				 = {   4,108,  36,76 };
 		[courseplay.MODE_FIELDWORK]				 = {  40,108,  72,76 };
-		[courseplay.MODE_BALE_COLLECTOR] = {  76,108, 108,76 };
-		[courseplay.MODE_FIELD_SUPPLY] = { 112,108, 144,76 };
+		[courseplay.MODE_BALE_COLLECTOR] 		 = {  76,108, 108,76 };
+		[courseplay.MODE_FIELD_SUPPLY]  		 = { 112,108, 144,76 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 148,108, 180,76 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,431, 251,399 };
 	};
@@ -323,8 +323,8 @@ function courseplay.hud:setup()
 		[courseplay.MODE_SEED_FERTILIZE]		 = {  40,144,  72,112 };
 		[courseplay.MODE_TRANSPORT]				 = {  76,144, 108,112 };
 		[courseplay.MODE_FIELDWORK]				 = { 112,144, 144,112 };
-		[courseplay.MODE_BALE_COLLECTOR] = { 148,144, 180,112 };
-		[courseplay.MODE_FIELD_SUPPLY] = { 184,144, 216,112 };
+		[courseplay.MODE_BALE_COLLECTOR] 		 = { 148,144, 180,112 };
+		[courseplay.MODE_FIELD_SUPPLY] 			 = { 184,144, 216,112 };
 		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = { 220,144, 252,112 };
 		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = { 219,394, 251,362 };
 	};

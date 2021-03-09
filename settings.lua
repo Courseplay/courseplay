@@ -11,50 +11,57 @@ function courseplay:openCloseHud(vehicle, open)
 	end;
 end;
 
-function courseplay:setCpMode(vehicle, modeNum, dontSetAIDriver)
+function courseplay:setCpMode(vehicle, modeNum)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
 		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		if not dontSetAIDriver then
-			-- another ugly hack: when this is called from loadVehicleCPSettings,
-			-- setAIDriver fails as not everything is loaded yet, so just for that case,
-			-- don't call it from here.
-			courseplay:setAIDriver(vehicle, modeNum)
-		end
+		courseplay.infoVehicle(vehicle, 'Setting mode %d', modeNum)
+		courseplay:setAIDriver(vehicle, modeNum)
 	end;
 end;
 
 function courseplay:setAIDriver(vehicle, mode)
+
+	local errorHandler = function(err)
+		printCallstack()
+		courseplay.infoVehicle(vehicle, "Exception, can't init mode %d: %s", mode, tostring(err))
+		return err
+	end
+
 	if vehicle.cp.driver then
 		vehicle.cp.driver:delete()
 	end
-	local status,driver,err
+
+	local status, result
 	if mode == courseplay.MODE_TRANSPORT then
-		---@type AIDriver
-		status,driver,err,errDriverName = xpcall(AIDriver, function(err) printCallstack(); return self,err,"AIDriver" end, vehicle)
-	--local status, err = xpcall(self.cp.driver.update, function(err) printCallstack(); return err end, self.cp.driver, dt)
+		status, result = xpcall(AIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_GRAIN_TRANSPORT then
-		status,driver,err,errDriverName = xpcall(GrainTransportAIDriver, function(err) printCallstack(); return self,err,"GrainTransportAIDriver" end, vehicle)
+		status, result = xpcall(GrainTransportAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_COMBI then
-		status,driver,err,errDriverName = xpcall(CombineUnloadAIDriver, function(err) printCallstack(); return self,err,"CombineUnloadAIDriver" end, vehicle)
+		status, result = xpcall(CombineUnloadAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_OVERLOADER then
-		status,driver,err,errDriverName = xpcall(OverloaderAIDriver, function(err) printCallstack(); return self,err,"OverloaderAIDriver" end, vehicle)
+		status, result = xpcall(OverloaderAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		status,driver,err,errDriverName = xpcall(ShovelModeAIDriver.create, function(err) printCallstack(); return self,err,"ShovelModeAIDriver" end, vehicle)
+		status, result = xpcall(ShovelModeAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
-		status,driver,err,errDriverName = xpcall(FillableFieldworkAIDriver, function(err) printCallstack(); return self,err,"FillableFieldworkAIDriver" end, vehicle)
+		status, result = xpcall(FillableFieldworkAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
-		status,driver,err,errDriverName = xpcall(UnloadableFieldworkAIDriver.create, function(err) printCallstack(); return self,err,"UnloadableFieldworkAIDriver" end, vehicle)
+		status, result = xpcall(UnloadableFieldworkAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_BALE_COLLECTOR then
-		status,driver,err,errDriverName = xpcall(BaleCollectorAIDriver, function(err) printCallstack(); return self,err,"BaleCollectorAIDriver" end, vehicle)
+		status, result = xpcall(BaleCollectorAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		status,driver,err,errDriverName = xpcall(LevelCompactAIDriver, function(err) printCallstack(); return self,err,"LevelCompactAIDriver" end, vehicle)
+		status, result = xpcall(LevelCompactAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
-		status,driver,err,errDriverName = xpcall(FieldSupplyAIDriver, function(err) printCallstack(); return self,err,"FieldSupplyAIDriver" end, vehicle)
+		status, result = xpcall(FieldSupplyAIDriver, errorHandler, vehicle)
 	end
-	vehicle.cp.driver = driver
-	if not status then
-		courseplay.infoVehicle(vehicle, "Exception, can't init %s, %s", errDriverName,tostring(err))
+	if status then
+		vehicle.cp.driver = result
+	else
+		-- give it another try as a fallback level
+		courseplay.infoVehicle(vehicle, 'Retrying initialization in mode 5')
+		status, result = xpcall(AIDriver, errorHandler, vehicle)
+		vehicle.cp.driver = status and result or nil
+		vehicle.cp.mode = courseplay.MODE_TRANSPORT
 	end
 end
 
@@ -1817,6 +1824,7 @@ function StartingPointSetting:init(vehicle)
 		'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle, values, texts)
 end
 
+-- TODO: this should probably part of the specific driver mode?
 function StartingPointSetting:getValuesForMode(mode)
 	if mode == courseplay.MODE_COMBI or mode == courseplay.MODE_OVERLOADER then
 		return {

@@ -1050,17 +1050,20 @@ end
 ---@param dx number	direction to extend
 ---@param dz number direction to extend
 function Course:extend(length, dx, dz)
+	self:print()
 	local lastWp = self.waypoints[#self.waypoints]
 	local len = self.waypoints[#self.waypoints - 1].dToNext
-	dx, dz = dx or lastWp.dx / len, dz or lastWp.dz / len
+	dx, dz = dx or lastWp.dx, dz or lastWp.dz
+	print(dx, dz)
 	local wpDistance = 2
-	for _ = wpDistance, math.max(length, wpDistance), wpDistance do
+	for i = wpDistance, math.max(length, wpDistance), wpDistance do
 		lastWp = self.waypoints[#self.waypoints]
 		local x = lastWp.x + dx * wpDistance
 		local z = lastWp.z + dz * wpDistance
 		self:appendWaypoint({x = x, z = z})
 	end
 	self:enrichWaypointData()
+	self:print()
 end
 
 --- Create a new (straight) temporary course based on a node

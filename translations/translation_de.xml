@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Typ: Düngen und Säen" />
 		<text name="COURSEPLAY_MODE_5" 										text="Typ: Überführung (Route abfahren)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Typ: Feldarbeit" />
-		<text name="COURSEPLAY_MODE_7" 										text="Typ: Drescher fährt selbst abtanken" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Typ: Feldversorgung" />
 		<text name="COURSEPLAY_MODE_9" 										text="Typ: Schaufel befüllen und entleeren" />
 		<text name="COURSEPLAY_MODE_10" 									text="Typ: Bunkersilo befüllen und verdichten" />
@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="aktuellen Wegpunkt" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="nächsten passenden Wegpunkt" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect bales" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Collect or wrap bales" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Feldrandkurs" />
 		<text name="COURSEPLAY_FIELD" 										text="Feld" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="(aktuell geladener Kurs)" />

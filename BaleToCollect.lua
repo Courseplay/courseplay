@@ -39,9 +39,21 @@ function BaleToCollect:init(baleObject)
 end
 
 --- Call this before attempting to construct a BaleToCollect to check the validity of the object
-function BaleToCollect.isValidBale(object)
+---@param baleWrapper table bale wrapper, if exists
+function BaleToCollect.isValidBale(object, baleWrapper)
 	-- nodeId is sometimes 0, causing issues for the BaleToCollect constructor
-	return object.isa and object:isa(Bale) and object.nodeId and entityExists(object.nodeId)
+	if object.isa and object:isa(Bale) and object.nodeId and entityExists(object.nodeId) then
+		if baleWrapper then
+			-- if there is a bale wrapper, the bale must be wrappable and the wrapper does not want to skip this fill type
+			-- (and yes, this is another typo in Giants code
+			local wrappedBaleType = baleWrapper:getWrapperBaleType(object)
+			courseplay.debugFormat(courseplay.DBG_MODE_7, '  bale %d wrapping state: %d, wrapped bale type: %s',
+				object.id, tostring(object.wrappingState), tostring(wrappedBaleType))
+			return wrappedBaleType and object.wrappingState < 0.99
+		else
+			return true
+		end
+	end
 end
 
 function BaleToCollect:getFieldId()

@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Mod: Hnojení a setí" />
 		<text name="COURSEPLAY_MODE_5" 										text="Mod: Průjezd (projede trasu bez zastavení)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Mod: Polní práce" />
-		<text name="COURSEPLAY_MODE_7" 										text="Mod: Kombajn se jede sám vysypat" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Mod: Převoz kapalin" />
 		<text name="COURSEPLAY_MODE_9" 										text="Mod: Nakladač" />
 		<text name="COURSEPLAY_MODE_10" 									text="Mod: Nahrnování a dusání" />

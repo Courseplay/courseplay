@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Modalità: Concimazione e semina" />
 		<text name="COURSEPLAY_MODE_5" 										text="Modalità: Trasferimento (vai dall'inizio alla fine)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Modalità: Lavoro in campo" />
-		<text name="COURSEPLAY_MODE_7" 										text="Modalità: Auto-scarico (La trebbia va a scaricare nel rimorchio)" />
+		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
 		<text name="COURSEPLAY_MODE_8" 										text="Modalità: Trasporto liquidi" />
 		<text name="COURSEPLAY_MODE_9" 										text="Modalità: Movimento pala" />
 		<text name="COURSEPLAY_MODE_10" 									text="Modalità: Livellare e compattare trincea" />

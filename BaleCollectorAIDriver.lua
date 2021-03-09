@@ -23,6 +23,8 @@ without a field course.
 
 For unloading, it has the same behavior as the BaleLoaderAIDriver.
 
+It also works with a bale wrapper, find and wrap all wrappable bales.
+
 --]]
 
 ---@class BaleCollectorAIDriver : BaleLoaderAIDriver
@@ -33,7 +35,7 @@ BaleCollectorAIDriver.myStates = {
 	WAITING_FOR_PATHFINDER = {},
 	DRIVING_TO_NEXT_BALE = {},
 	APPROACHING_BALE = {},
-	PICKING_UP_BALE = {}
+	WORKING_ON_BALE = {}
 }
 
 function BaleCollectorAIDriver:init(vehicle)
@@ -69,6 +71,7 @@ function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 			self:stop("NO_FIELD_SELECTED")
 			return
 		end
+		BaleWrapperAIDriver.initializeBaleWrapper(self)
 		self.bales = self:findBales(myField)
 		self:changeToFieldwork()
 		self:collectNextBale()
@@ -97,8 +100,15 @@ function BaleCollectorAIDriver:collectNextBale()
 	if #self.bales > 0 then
 		self:findPathToNextBale()
 	else
-		self:info('No bales found.')
-		if self:getFillLevel() > 0.1 then
+		self:info('No bales found, scan the field once more before leaving for the unload course.')
+		self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+		if #self.bales > 0 then
+			self:info('Found more bales, collecting them')
+			self:findPathToNextBale()
+			return
+		end
+		self:info('There really is no more bales on the field')
+		if self.baleLoader and self:getFillLevel() > 0.1 then
 			self:changeToUnloadOrRefill()
 			self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 		else
@@ -113,7 +123,7 @@ function BaleCollectorAIDriver:findBales(fieldId)
 	self:debug('Finding bales on field %d...', fieldId or 0)
 	local balesFound = {}
 	for _, object in pairs(g_currentMission.nodeToObject) do
-		if BaleToCollect.isValidBale(object) then
+		if BaleToCollect.isValidBale(object, self.baleWrapper) then
 			local bale = BaleToCollect(object)
 			-- if the bale has a mountObject it is already on the loader so ignore it
 			if (not fieldId or fieldId == 0 or bale:getFieldId() == fieldId) and
@@ -224,8 +234,8 @@ function BaleCollectorAIDriver:onLastWaypoint()
 	if self.state == self.states.ON_FIELDWORK_COURSE and self.fieldworkState == self.states.WORKING then
 		if self.baleCollectingState == self.states.DRIVING_TO_NEXT_BALE then
 			self:debug('last waypoint while driving to next bale reached')
-			self:approachBale()
-		elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
+			self:startApproachingBale()
+		elseif self.baleCollectingState == self.states.WORKING_ON_BALE then
 			self:debug('last waypoint on bale pickup reached, start collecting bales again')
 			self:collectNextBale()
 		elseif self.baleCollectingState == self.states.APPROACHING_BALE then
@@ -250,7 +260,7 @@ function BaleCollectorAIDriver:onEndCourse()
 	end
 end
 
-function BaleCollectorAIDriver:approachBale()
+function BaleCollectorAIDriver:startApproachingBale()
 	self:debug('Approaching bale...')
 	self:startCourse(self:getStraightForwardCourse(20), 1)
 	self:setBaleCollectingState(self.states.APPROACHING_BALE)
@@ -269,18 +279,44 @@ function BaleCollectorAIDriver:work()
 		self:setSpeed(self.vehicle:getSpeedLimit())
 	elseif self.baleCollectingState == self.states.APPROACHING_BALE then
 		self:setSpeed(self:getWorkSpeed() / 2)
+		self:approachBale()
+	elseif self.baleCollectingState == self.states.WORKING_ON_BALE then
+		self:workOnBale()
+		self:setSpeed(0)
+	end
+	self:checkFillLevels()
+end
+
+function BaleCollectorAIDriver:approachBale()
+	if self.baleLoader then
 		if self.baleLoader.spec_baleLoader.grabberMoveState then
 			self:debug('Start picking up bale')
-			self:setBaleCollectingState(self.states.PICKING_UP_BALE)
+			self:setBaleCollectingState(self.states.WORKING_ON_BALE)
 		end
-	elseif self.baleCollectingState == self.states.PICKING_UP_BALE then
-		self:setSpeed(0)
+	end
+	if self.baleWrapper then
+		BaleWrapperAIDriver.handleBaleWrapper(self)
+		if self.baleWrapper.spec_baleWrapper.baleWrapperState ~= BaleWrapper.STATE_NONE then
+			self:debug('Start wrapping bale')
+			self:setBaleCollectingState(self.states.WORKING_ON_BALE)
+		end
+	end
+end
+
+function BaleCollectorAIDriver:workOnBale()
+	if self.baleLoader then
 		if not self.baleLoader.spec_baleLoader.grabberMoveState then
 			self:debug('Bale picked up, moving on to the next')
 			self:collectNextBale()
 		end
 	end
-	self:checkFillLevels()
+	if self.baleWrapper then
+		BaleWrapperAIDriver.handleBaleWrapper(self)
+		if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_NONE then
+			self:debug('Bale wrapped, moving on to the next')
+			self:collectNextBale()
+		end
+	end
 end
 
 function BaleCollectorAIDriver:calculateTightTurnOffset()
