@@ -52,7 +52,7 @@ function CombineUnloadManager:addNewCombines()
 		-- this isn't needed as combines will be added when an CombineAIDriver is created for them
 		-- but we want to be able to reload this file on the fly when developing/troubleshooting
 		for _, vehicle in pairs(g_currentMission.vehicles) do
-			if vehicle.cp.driver and vehicle.cp.driver.isACombineAIDriver and not self.combines[vehicle] then
+			if vehicle.cp and vehicle.cp.driver and vehicle.cp.driver.isACombineAIDriver and not self.combines[vehicle] then
 				self:addCombineToList(vehicle, vehicle.cp.driver)
 			end
 		end
