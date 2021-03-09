@@ -25,8 +25,8 @@
 		<text name="COURSEPLAY_MODE_4" 										text="Tipo: Fertilizar e semear" />
 		<text name="COURSEPLAY_MODE_5" 										text="Tipo: Transferir (dirigir do início ao fim da rota)" />
 		<text name="COURSEPLAY_MODE_6" 										text="Tipo: Trabalho no campo" />
-		<text name="COURSEPLAY_MODE_7" 										text="Type: Collect or wrap bales" />
-		<text name="COURSEPLAY_MODE_8" 										text="Type: Transporte de produtos Líquidos" />
+		<text name="COURSEPLAY_MODE_7" 										text="Tipoe: Coletar ou embalar fardos" />
+		<text name="COURSEPLAY_MODE_8" 										text="Tipo: Transporte de produtos Líquidos" />
 		<text name="COURSEPLAY_MODE_9" 										text="Tipo: Encher e esvaziar pá carregadeira" />
 		<text name="COURSEPLAY_MODE_10" 									text="Tipo: Nivelar e compactar" />
 		<text name="COURSEPLAY_CONTINUE" 									text="Continua" />
