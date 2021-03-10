@@ -25,7 +25,7 @@
 		<text name="COURSEPLAY_MODE_4"									 	text="Tryb: Użyźnianie i siew" />
 		<text name="COURSEPLAY_MODE_5"									 	text="Tryb: Transport (jazda od początku do końca)" />
 		<text name="COURSEPLAY_MODE_6"									 	text="Tryb: Prace polowe" />
-		<text name="COURSEPLAY_MODE_7"									 	text="Type: Collect or wrap bales" />
+		<text name="COURSEPLAY_MODE_7"									 	text="Type: Zbieranie lub owijanie bel" />
 		<text name="COURSEPLAY_MODE_8" 									 	text="Tryb: Transport płynnego produktu" />
 		<text name="COURSEPLAY_MODE_9"									 	text="Tryb: Napełnij i rozładuj łychę" />
 		<text name="COURSEPLAY_MODE_10" 								 	text="Tryb: Wyrównywanie i ugniatanie" />
@@ -283,7 +283,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT"							 	text="Obecny punkt trasy" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 	 	text="Następny punkt trasy" />
 		<text name="COURSEPLAY_UNLOAD" 										text="Rozładunek" />
-		<text name="COURSEPLAY_COLLECT_BALES" 								text="Zbieranie bel" />
+		<text name="COURSEPLAY_COLLECT_BALES" 								text="Zbieranie lub owijanie bel" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH"							 	text="Ścieżka krawędzi pola:" />
 		<text name="COURSEPLAY_FIELD"									 	text="Pole" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE"					 	text="(obecnie załadowany kurs)" />
