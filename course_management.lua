@@ -367,6 +367,8 @@ function courseplay:copyCourse(vehicle)
 			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
 			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
 			courseplay:setMultiTools(vehicle, src.cp.multiTools)
+		else
+			courseplay:setMultiTools(vehicle, 1)
 		end;
 		
 		courseplay:validateCanSwitchMode(vehicle);
