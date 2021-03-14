@@ -35,7 +35,8 @@ BaleCollectorAIDriver.myStates = {
 	WAITING_FOR_PATHFINDER = {},
 	DRIVING_TO_NEXT_BALE = {},
 	APPROACHING_BALE = {},
-	WORKING_ON_BALE = {}
+	WORKING_ON_BALE = {},
+	REVERSING_AFTER_PATHFINDER_FAILURE ={}
 }
 
 function BaleCollectorAIDriver:init(vehicle)
@@ -61,6 +62,7 @@ function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 	self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false)
 	-- Set the offset to 0, we'll take care of getting the grabber to the right place
 	self.vehicle.cp.settings.toolOffsetX:set(0)
+	self.pathfinderFailureCount = 0
 
 	if startingPoint:is(StartingPointSetting.START_COLLECTING_BALES) then
 		-- to always have a valid course (for the traffic conflict detector mainly)
@@ -85,7 +87,7 @@ function BaleCollectorAIDriver:setUpAndStart(startingPoint)
 			startIx = closestIxRightDirection
 		end
 		self:changeToUnloadOrRefill()
-		self:startCourseWithAlignment(self.unloadRefillCourse, startIx)
+		self:startCourseWithPathfinding(self.unloadRefillCourse, startIx)
 	end
 end
 
@@ -107,7 +109,7 @@ function BaleCollectorAIDriver:collectNextBale()
 			self:findPathToNextBale()
 			return
 		end
-		self:info('There really is no more bales on the field')
+		self:info('There really are no more bales on the field')
 		if self.baleLoader and self:getFillLevel() > 0.1 then
 			self:changeToUnloadOrRefill()
 			self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
@@ -218,6 +220,7 @@ end
 
 function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid)
 	if path and #path > 2 then
+		self.pathfinderFailureCount = 0
 		self:debug('Found path (%d waypoints, %d ms)', #path, self.vehicle.timer - (self.pathfindingStartedAt or 0))
 		self.fieldworkCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(self.fieldworkCourse, 1)
@@ -225,7 +228,19 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 		self:setBaleCollectingState(self.states.DRIVING_TO_NEXT_BALE)
 		return true
 	else
-		self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
+		self.pathfinderFailureCount = self.pathfinderFailureCount + 1
+		if self.pathfinderFailureCount == 1 then
+			self:debug('Finding path to next bale failed, trying next bale')
+			self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
+		elseif self.pathfinderFailureCount == 2 then
+			self:debug('Finding path to next bale failed twice, back up a bit and then try again')
+			self:startCourse(self:getStraightReverseCourse(15), 1)
+			self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+		else
+			self:info('Pathfinding failed three times, giving up')
+			self.pathfinderFailureCount = 0
+			courseplay:stop(self.vehicle)
+		end
 		return false
 	end
 end
@@ -242,6 +257,9 @@ function BaleCollectorAIDriver:onLastWaypoint()
 			self:debug('looks like somehow missed a bale, rescanning field')
 			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
 			self:collectNextBale()
+		elseif self.baleCollectingState == self.states.REVERSING_AFTER_PATHFINDER_FAILURE then
+			self:debug('backed up after pathfinder failed, trying again')
+			self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 		end
 	else
 		BaleLoaderAIDriver.onLastWaypoint(self)
@@ -283,6 +301,8 @@ function BaleCollectorAIDriver:work()
 	elseif self.baleCollectingState == self.states.WORKING_ON_BALE then
 		self:workOnBale()
 		self:setSpeed(0)
+	elseif self.baleCollectingState == self.states.REVERSING_AFTER_PATHFINDER_FAILURE then
+		self:setSpeed(self.vehicle.cp.speeds.reverse)
 	end
 	self:checkFillLevels()
 end
