@@ -54,6 +54,13 @@ You can define the following custom settings:
 - implementWheelAlwaysOnGround:	boolean
     Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
 
+- ignoreCollisionBoxesWhenFolded: boolean
+	This is for the case where the collision boxes of the vehicle are very wide, for example
+    a sprayer's box is as wide as the extended sprayer arms. This works on the field but will cause conflict when
+    the vehicle drives with folded sprayer for instance on an unload course.
+	For this scenario the collision box is useless when folded, so when ignoreCollisionBoxesOnStreet is true,
+    Courseplay will not detect collisions for this vehicle when it is folded.
+
 -->
 <VehicleConfigurations>
     <!--[GIANTS]-->
@@ -160,6 +167,10 @@ You can define the following custom settings:
     <Vehicle name="series71300.xml"
              noReverse="true"
     />
+	<Vehicle name="rubicon9000.xml"
+			 ignoreCollisionBoxesWhenFolded="true"
+	/>
+
     <!--[MODS]-->
 
 	<!--Mod: KOECKERLING Vector 460-->

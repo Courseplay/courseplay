@@ -1676,6 +1676,16 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 	return lastImplement, minDistance
 end
 
+function AIDriverUtil.isAllUnfolded(vehicle)
+	for _,workTool in pairs(vehicle.cp.workTools) do
+		if courseplay:isFoldable(workTool) then
+			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
+			if not isUnfolded then return false end
+		end
+	end
+	return true
+end
+
 function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
 	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
 end

@@ -422,6 +422,16 @@ function TrafficConflictDetector:init(vehicle, course, collisionTriggerObject)
 	self:debug('TrafficConflictDetector:init()')
 	self.speedControlEnabled = true
 	self.ignoreVehicleForSpeedControl = nil
+	self.invalid = false
+end
+
+--- Mark this detector as invalid. This is for the case where the collision boxes are very wide, for example
+--- a sprayer's box is as wide as the extended sprayer arms. This works on the field but will cause conflict when
+--- the vehicle drives with folded sprayer for instance on an unload course.
+--- For this scenario the collision box is useless, so we mark it invalid, it will not detect collisions and
+--- other vehicles won't detect collisions with this vehicle.
+function TrafficConflictDetector:setInvalid(invalid)
+	self.invalid = invalid
 end
 
 -- This currently does not do anything in TrafficConflictDetector, just provides a container
@@ -532,6 +542,7 @@ function TrafficConflictDetector:updateCollisionBoxes(course, ix, nominalSpeed, 
 			setUserAttribute(trigger, 'distance', 'Integer', d)
 			setUserAttribute(trigger, 'eta', 'Integer', eta)
 			setUserAttribute(trigger, 'yRot', 'Float', positions[posIx].yRot)
+			setUserAttribute(trigger, 'invalid', 'Boolean', self.invalid)
 			if posIx < #positions then
 				-- if we have less positions than triggers, just use the last position for the rest of the triggers
 				posIx = posIx + 1
@@ -578,6 +589,12 @@ end
 function TrafficConflictDetector:onCollision(triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 	-- is this even a traffic conflict detector trigger?
 	if not getUserAttribute(triggerId, 'trafficConflictDetector') then return end
+
+	-- ignore my invalid boxes
+	if getUserAttribute(triggerId, 'invalid') then return end
+	-- ignore the other vehicle's invalid boxes
+	if getUserAttribute(otherId, 'invalid') then return end
+
 	local otherVehicleRootNode = getUserAttribute(otherId, 'vehicleRootNode')
 	if otherVehicleRootNode and otherVehicleRootNode ~= self.vehicle.rootNode then
 		local otherYRot = getUserAttribute(otherId, 'yRot')

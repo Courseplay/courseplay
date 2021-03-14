@@ -1713,10 +1713,15 @@ end
 
 function AIDriver:createTrafficConflictDetector()
 	self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course)
+	self.ignoreTrafficConflictWhenFolded = g_vehicleConfigurations:getRecursively(self.vehicle, 'ignoreCollisionBoxesWhenFolded')
 end
 
 function AIDriver:updateTrafficConflictDetector(course, ix, speed, moveForwards, node)
 	if self.trafficConflictDetector then
+		if self.ignoreTrafficConflictWhenFolded then
+			-- conflict detector is invalid when folded
+			self.trafficConflictDetector:setInvalid(not AIDriverUtil.isAllUnfolded(self.vehicle))
+		end
 		if self:isTrafficConflictDetectionEnabled() then
 			self.trafficConflictDetector:update(course, ix, speed, moveForwards, node or self:getDirectionNode())
 		else
