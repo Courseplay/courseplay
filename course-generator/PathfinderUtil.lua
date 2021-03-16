@@ -35,7 +35,6 @@ PathfinderUtil.VehicleData = CpObject()
 --- If the vehicle has a trailer, it is handled separately from other implements to allow for the
 --- pathfinding to consider the trailer's heading (which will be different from the vehicle's heading)
 function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
-    self.turnRadius = vehicle.cp and vehicle.cp.driver and AIDriverUtil.getTurningRadius(vehicle) or 10
     self.vehicle = vehicle
     self.rootVehicle = vehicle:getRootVehicle()
     self.name = vehicle.getName and vehicle:getName() or 'N/A'
@@ -65,8 +64,7 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
         }
         -- TODO: this should be the attacher joint's offset, not the back of the vehicle.
         self.trailerHitchOffset = self.dRear
-        self.trailerHitchLength = AIDriverUtil.getTowBarLength(vehicle)
-    courseplay.debugVehicle(courseplay.DBG_PATHFINDER, vehicle, 'trailer for the pathfinding is %s, hitch offset is %.1f',
+    		courseplay.debugVehicle(courseplay.DBG_PATHFINDER, vehicle, 'trailer for the pathfinding is %s, hitch offset is %.1f',
                 self.trailer:getName(), self.trailerHitchOffset)
     end
     if withImplements then
@@ -200,9 +198,11 @@ end
 --- Pathfinder context
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
-function PathfinderUtil.Context:init(vehicleData, vehiclesToIgnore, otherVehiclesCollisionData)
-    self.vehicleData = vehicleData
-    self.vehiclesToIgnore = vehiclesToIgnore
+function PathfinderUtil.Context:init(vehicle, vehiclesToIgnore, otherVehiclesCollisionData)
+    self.vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
+		self.trailerHitchLength = AIDriverUtil.getTowBarLength(vehicle)
+		self.turnRadius = vehicle.cp and vehicle.cp.driver and AIDriverUtil.getTurningRadius(vehicle) or 10
+		self.vehiclesToIgnore = vehiclesToIgnore
     self.otherVehiclesCollisionData = otherVehiclesCollisionData
 end
 
@@ -653,7 +653,7 @@ function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
     initializeTrailerHeading(start, vehicleData)
 
     local context = PathfinderUtil.Context(
-            vehicleData,
+            vehicle,
             vehiclesToIgnore,
             otherVehiclesCollisionData)
 
@@ -706,9 +706,9 @@ end
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfinding(start, goal, context, constraints, allowReverse, mustBeAccurate)
     PathfinderUtil.overlapBoxes = {}
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.vehicleData.turnRadius * 4, 100, 40000, mustBeAccurate)
-    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, allowReverse,
-            constraints, context.vehicleData.trailerHitchLength)
+    local pathfinder = HybridAStarWithAStarInTheMiddle(context.turnRadius * 4, 100, 40000, mustBeAccurate)
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.turnRadius, allowReverse,
+            constraints, context.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid
 end
 
@@ -750,12 +750,12 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
     local fieldNum = PathfinderUtil.getFieldNumUnderVehicle(vehicle)
     local otherVehiclesCollisionData =PathfinderUtil.setUpVehicleCollisionData(vehicle, vehiclesToIgnore)
     local context = PathfinderUtil.Context(
-            PathfinderUtil.VehicleData(vehicle, true, 0.5),
+            vehicle,
             vehiclesToIgnore,
             otherVehiclesCollisionData)
     local constraints = PathfinderConstraints(context, nil, vehicle.cp.settings.turnOnField:is(true) and 10 or nil, fieldNum)
     local done, path, goalNodeInvalid = pathfinder:start(start, goal, turnRadius, allowReverse,
-            constraints, context.vehicleData.trailerHitchLength)
+            constraints, context.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid
 end
 
@@ -867,7 +867,7 @@ function PathfinderUtil.startAStarPathfindingFromVehicleToNode(vehicle, goalNode
     initializeTrailerHeading(start, vehicleData)
 
     local context = PathfinderUtil.Context(
-            vehicleData,
+            vehicle,
             vehiclesToIgnore,
             otherVehiclesCollisionData)
 
@@ -877,8 +877,8 @@ function PathfinderUtil.startAStarPathfindingFromVehicleToNode(vehicle, goalNode
             fieldNum)
 
     local pathfinder = AStar(100, 10000)
-    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.vehicleData.turnRadius, false,
-            constraints, context.vehicleData.trailerHitchLength)
+    local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.turnRadius, false,
+            constraints, context.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid
 end
 

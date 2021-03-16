@@ -778,7 +778,9 @@ end;
 
 function courseplay:getToolTurnRadius(workTool)
 	local turnRadius	= 0; -- Default value if none is set
-	if courseplay:isWheeledWorkTool(workTool) then
+	-- only object with the AttacherJoints spec have the upperRotLimit set up.
+	if courseplay:isWheeledWorkTool(workTool) and
+		SpecializationUtil.hasSpecialization(AttacherJoints, workTool.specializations) then
 		local radiusMultiplier = 1.05; -- Used to add a little bit to the radius, for safer turns.
 
 		local wheelBase		= 0;
@@ -917,7 +919,7 @@ function courseplay:getToolTurnRadius(workTool)
 			end;
 		end;
 	else
-		courseplay:debug(('%s -> TurnRadius: Have no wheels. turnRadius set to 0m'):format(nameNum(workTool)), courseplay.DBG_IMPLEMENTS);
+		courseplay:debug(('%s -> TurnRadius: Have no wheels or has no attacher joints. turnRadius set to 0m'):format(nameNum(workTool)), courseplay.DBG_IMPLEMENTS);
 	end;
 
 	return turnRadius;
