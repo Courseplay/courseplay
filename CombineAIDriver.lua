@@ -141,7 +141,7 @@ function CombineAIDriver:setUpPipe()
 				self.pipe:setAnimationTime(self.pipe.animation.name, 1, true)
 			else
 				-- as seen in the Giants pipe code
-				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
+				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN, true)
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
@@ -158,7 +158,7 @@ function CombineAIDriver:setUpPipe()
 			if self.pipe.animation.name then
 				self.pipe:setAnimationTime(self.pipe.animation.name, 0, true)
 			else
-				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
+				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED, true)
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
