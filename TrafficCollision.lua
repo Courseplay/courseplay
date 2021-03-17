@@ -518,10 +518,10 @@ function TrafficConflictDetector:updateCollisionBoxes(course, ix, nominalSpeed, 
 	if course then
 		positions = course:getPositionsOnCourse(nominalSpeed, ix,
 				TrafficConflictDetector.boxDistance, TrafficConflictDetector.numTrafficCollisionTriggers)
-		self:debug('updating collision boxes at waypoint %d, have %d positions', ix, #positions)
+		self:debug('updating collision boxes at waypoint %d, have %d positions, invalid: %s', ix, #positions, tostring(self.invalid))
 	else
 		positions = self:getPositionsAtDirection(nominalSpeed, moveForwards, directionNode)
-		self:debug('updating collision boxes (no course), have %d positions', #positions)
+		self:debug('updating collision boxes (no course), have %d positions, invalid: %s', #positions, tostring(self.invalid))
 	end
 	local posIx = 1
 	local eta = 0

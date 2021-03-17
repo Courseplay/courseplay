@@ -429,7 +429,7 @@ function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 	-- collision detection
-	self:detectCollision(dt)
+	--self:detectCollision(dt)
 
 	self:updateInfoText()
 
@@ -1009,7 +1009,7 @@ end
 function AIDriver:detectCollision(dt)
 	-- if no detector yet, no problem, create it now.
 	if not self.collisionDetector then
-		self.collisionDetector = CollisionDetector(self.vehicle)
+		--self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 
 	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
