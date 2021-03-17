@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 CollisionDetector = CpObject()
 
 CollisionDetector.numTrafficCollisionTriggers = 4
-CollisionDetector.debugChannel = 3
+CollisionDetector.debugChannel = courseplay.DBG_TRAFFIC
 
 function CollisionDetector:init(vehicle, course)
 	self.debugTicks = 100 -- show sparse debug information only at every debugTicks update
@@ -36,6 +36,7 @@ function CollisionDetector:init(vehicle, course)
 	self.trafficCollisionTriggers[1] = nil
 	self:createTriggers()
 	self:adaptCollisHeight()
+	self.invalid = false
 end
 
 -- destructor
@@ -59,6 +60,15 @@ function CollisionDetector:reset()
 		self:delete()
 	end
 	self:createTriggers()
+end
+
+--- Mark this detector as invalid. This is for the case where the collision boxes are very wide, for example
+--- a sprayer's box is as wide as the extended sprayer arms. This works on the field but will cause conflict when
+--- the vehicle drives with folded sprayer for instance on an unload course.
+--- For this scenario the collision box is useless, so we mark it invalid, it will not detect collisions and
+--- other vehicles won't detect collisions with this vehicle.
+function CollisionDetector:setInvalid(invalid)
+	self.invalid = invalid
 end
 
 --- Create collision detection triggers: make four copies of the existing collision box and link them together
@@ -155,6 +165,10 @@ function CollisionDetector:onCollision(triggerId, otherId, onEnter, onLeave, onS
 end
 
 function CollisionDetector:getStatus(dt)
+	-- ignore collisions if the collision detector is invalid, for instance an very wide collision box of a
+	-- sprayer when it is folded
+	if self.invalid then return false end
+
 	local isInTraffic = false
 	local trafficSpeed = 0
 	if self.nCollidingObjects > 0 then
@@ -398,7 +412,7 @@ end
 
 ---@class TrafficConflictDetector : CollisionDetector
 TrafficConflictDetector = CpObject(CollisionDetector)
-TrafficConflictDetector.debugChannel = 3
+TrafficConflictDetector.debugChannel = courseplay.DBG_TRAFFIC
 TrafficConflictDetector.boxDistance = 4
 TrafficConflictDetector.numTrafficCollisionTriggers = 20
 TrafficConflictDetector.timeScale = 2
@@ -422,16 +436,6 @@ function TrafficConflictDetector:init(vehicle, course, collisionTriggerObject)
 	self:debug('TrafficConflictDetector:init()')
 	self.speedControlEnabled = true
 	self.ignoreVehicleForSpeedControl = nil
-	self.invalid = false
-end
-
---- Mark this detector as invalid. This is for the case where the collision boxes are very wide, for example
---- a sprayer's box is as wide as the extended sprayer arms. This works on the field but will cause conflict when
---- the vehicle drives with folded sprayer for instance on an unload course.
---- For this scenario the collision box is useless, so we mark it invalid, it will not detect collisions and
---- other vehicles won't detect collisions with this vehicle.
-function TrafficConflictDetector:setInvalid(invalid)
-	self.invalid = invalid
 end
 
 -- This currently does not do anything in TrafficConflictDetector, just provides a container

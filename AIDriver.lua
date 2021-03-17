@@ -429,7 +429,7 @@ function AIDriver:drive(dt)
 	-- update current waypoint/goal point
 	self.ppc:update()
 	-- collision detection
-	--self:detectCollision(dt)
+	self:detectCollision(dt)
 
 	self:updateInfoText()
 
@@ -1009,13 +1009,19 @@ end
 function AIDriver:detectCollision(dt)
 	-- if no detector yet, no problem, create it now.
 	if not self.collisionDetector then
-		--self.collisionDetector = CollisionDetector(self.vehicle)
+		self.collisionDetector = CollisionDetector(self.vehicle)
+	end
+
+	if self.ignoreTrafficConflictWhenFolded then
+		-- conflict detector is invalid when folded
+		self.collisionDetector:setInvalid(AIDriverUtil.isAllFolded(self.vehicle))
 	end
 
 	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
 
 	if self.collisionDetectionEnabled then
-		if trafficSpeed ~= 0 then
+
+		if trafficSpeed and trafficSpeed ~= 0 then
 			--get the speed from the target vehicle
 			self:setSpeed(trafficSpeed)
 		end
@@ -1720,7 +1726,7 @@ function AIDriver:updateTrafficConflictDetector(course, ix, speed, moveForwards,
 	if self.trafficConflictDetector then
 		if self.ignoreTrafficConflictWhenFolded then
 			-- conflict detector is invalid when folded
-			self.trafficConflictDetector:setInvalid(not AIDriverUtil.isAllUnfolded(self.vehicle))
+			self.trafficConflictDetector:setInvalid(AIDriverUtil.isAllFolded(self.vehicle))
 		end
 		if self:isTrafficConflictDetectionEnabled() then
 			self.trafficConflictDetector:update(course, ix, speed, moveForwards, node or self:getDirectionNode())
