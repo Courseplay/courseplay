@@ -163,6 +163,10 @@
 			<Setup>
 				<Specialization name="spec_strawHarvestPelletizer"/>
 			</Setup>
+			<Setup>
+				<!-- catch all for everything foldable, like some auto bale loaders -->
+				<Specialization name="spec_foldable"/>
+			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
 
