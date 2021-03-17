@@ -169,7 +169,18 @@
 			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
-
+			<Setup>
+				<Specialization name="spec_sprayer"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_sowingMachine"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_spec_fertilizingSowingMachine"/>
+			</Setup>
+			<Setup>
+				<Specialization name="spec_treePlanter"/>
+			</Setup>
 		</DisallowedSetups>
 	</Mode>
 	<!--not used (mode 7)
