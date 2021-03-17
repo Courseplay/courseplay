@@ -1,60 +1,61 @@
-StartStopEvent = {};
-StartStopEvent.TYPE_START = 0
-StartStopEvent.TYPE_STOP = 1
-local StartStopEvent_mt = Class(StartStopEvent, Event);
+--the same event as giants AIVehicleSetStartedEvent, but customized for cp
 
-InitEventClass(StartStopEvent, "StartStopEvent");
+AIVehicleSetStartedEventCP = {}
+local AIVehicleSetStartedEventCP_mt = Class(AIVehicleSetStartedEventCP, Event);
 
-function StartStopEvent:emptyNew()
-	local self = Event:new(StartStopEvent_mt);
-	self.className = "StartStopEvent";
-	return self;
+InitEventClass(AIVehicleSetStartedEventCP, "AIVehicleSetStartedEventCP");
+
+function AIVehicleSetStartedEventCP:emptyNew()
+    local self = Event:new(AIVehicleSetStartedEventCP_mt)
+    return self
 end
 
-function StartStopEvent:new(vehicle, eventType)
-
-	self.vehicle = vehicle
-	self.eventType = eventType
-
-	return self
-end
-
-function StartStopEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
-	self.vehicle = NetworkUtil.readNodeObject(streamId)
-	self.eventType = streamReadUIntN(streamId, 1)
-
-	self:run(connection);
-end
-
-function StartStopEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 	
-	NetworkUtil.writeNodeObject(streamId, self.vehicle);
-	--NetworkUtil.writeNodeObjectId(streamId, NetworkUtil.getObjectId(self.vehicle))
-    streamWriteUIntN(streamId, self.eventType, 1)
-
-end
-
-function StartStopEvent:run(connection) -- wir fuehren das empfangene event aus
-
-	if self.eventType == self.TYPE_START then
-        SpecializationUtil.raiseEvent(self.vehicle, "onStartCpAIDriver")
-    elseif self.eventType == self.TYPE_STOP then
-        SpecializationUtil.raiseEvent(self.vehicle, "onStopCpAIDriver")
+function AIVehicleSetStartedEventCP:new(object, reason, isStarted, helper, startedFarmId)
+    local self = AIVehicleSetStartedEventCP:emptyNew()
+    self.object = object
+    self.isStarted = isStarted
+    self.reason = reason
+    self.startedFarmId = startedFarmId
+    if helper ~= nil then
+        self.helperIndex = helper.index
     end
-	self.vehicle.cp.driver:refreshHUD()
+    return self
 end
 
+function AIVehicleSetStartedEventCP:readStream(streamId, connection)
+    self.object = NetworkUtil.readNodeObject(streamId)
+    self.isStarted = streamReadBool(streamId)
+    if not self.isStarted then
+        self.reason = streamReadUIntN(streamId, AIVehicle.NUM_BITS_REASONS)
+    else
+        self.helperIndex = streamReadUInt8(streamId)
+    end
+    self.startedFarmId = streamReadUIntN(streamId, FarmManager.FARM_ID_SEND_NUM_BITS)
+    self:run(connection)
+end
 
-
-function StartStopEvent:sendStartEvent(vehicle)
-    if g_server ~= nil then
-        -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(StartStopEvent:new(vehicle, self.TYPE_START), true)
+function AIVehicleSetStartedEventCP:run(connection)
+    if self.isStarted then
+        courseplay.onStartCpAIDriver(self.object,self.helperIndex, true, self.startedFarmId)
+    else
+        courseplay.onStopCpAIDriver(self.object,self.reason, true)
+    end
+    if not connection:getIsServer() then
+        for _, v in pairs(g_server.clientConnections) do
+            if v ~= connection and not v:getIsLocal() then
+                v:sendEvent(AIVehicleSetStartedEventCP:new(self.object, self.reason, self.isStarted, g_helperManager:getHelperByIndex(self.helperIndex), self.startedFarmId))
+            end
+        end
     end
 end
 
-function StartStopEvent:sendStopEvent(vehicle)
-    if g_server ~= nil then
-        -- Server have to broadcast to all clients and himself
-        g_server:broadcastEvent(StartStopEvent:new(vehicle, self.TYPE_STOP), true)
+function AIVehicleSetStartedEventCP:writeStream(streamId, connection)
+    NetworkUtil.writeNodeObject(streamId, self.object)
+    streamWriteBool(streamId, self.isStarted)
+    if not self.isStarted then
+        streamWriteUIntN(streamId, self.reason, AIVehicle.NUM_BITS_REASONS)
+    else
+        streamWriteUInt8(streamId, self.helperIndex)
     end
+    streamWriteUIntN(streamId, self.startedFarmId, FarmManager.FARM_ID_SEND_NUM_BITS)
 end

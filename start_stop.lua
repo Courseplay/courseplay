@@ -11,17 +11,17 @@ function courseplay:start(self)
 	end;
 
 	-- TODO: move this to TrafficCollision.lua
-	if self:getAINeedsTrafficCollisionBox() then
-		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
-		if collisionRoot ~= nil and collisionRoot ~= 0 then
-			local collision = getChildAt(collisionRoot, 0)
-			link(getRootNode(), collision)
+--	if self:getAINeedsTrafficCollisionBox() then
+--		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
+--		if collisionRoot ~= nil and collisionRoot ~= 0 then
+--			local collision = getChildAt(collisionRoot, 0)
+--			link(getRootNode(), collision)
 
-			self.spec_aiVehicle.aiTrafficCollision = collision
+--			self.spec_aiVehicle.aiTrafficCollision = collision
 
-			delete(collisionRoot)
-		end
-	end
+--			delete(collisionRoot)
+--		end
+--	end
 
 	self.cp.numWayPoints = #self.Waypoints;
 	--self:setCpVar('numWaypoints', #self.Waypoints,courseplay.isClient);
@@ -61,37 +61,6 @@ function courseplay:start(self)
 	-- distance (in any direction)
 	local dist = courseplay:distance(ctx, ctz, cx, cz)
 
-	local setLaneNumber = false;
-	local isFrontAttached = false;
-	local isReversePossible = true;
-	local tailerCount = 0;
-	for k,workTool in pairs(self.cp.workTools) do    --TODO temporary solution (better would be Tool:getIsAnimationPlaying(animationName))
-		--DrivingLine spec: set lane numbers
-		if self.cp.mode == 4 and not setLaneNumber and workTool.cp.hasSpecializationDrivingLine and not workTool.manualDrivingLine then
-			setLaneNumber = true;
-		end;
-		if self.cp.mode == 10 then
-			local x,y,z = getWorldTranslation(workTool.rootNode)  
-			local _,_,tz = worldToLocal(self.cp.directionNode,x,y,z)
-			if tz > 0 then
-				isFrontAttached = true
-			end
-		end
-		if workTool.cp.hasSpecializationTrailer then
-			tailerCount = tailerCount + 1
-			if tailerCount > 1 then
-				isReversePossible = false
-			end
-		end
-
-		
-		if workTool.cp.isSugarCaneAugerWagon then
-			isReversePossible = false
-		end
-		
-	end;
-	self.cp.isReversePossible = isReversePossible
-		
 	local numWaitPoints = 0
 	local numUnloadPoints = 0
 	local numCrossingPoints = 0
@@ -156,7 +125,6 @@ function courseplay:start(self)
 	-- ok i am near the waypoint, let's go
 	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
-	self:setIsCourseplayDriving(true);
 	courseplay:setIsRecording(self, false);
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
 
@@ -172,7 +140,9 @@ function courseplay:start(self)
 		self.cp.driver:delete()
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
-	StartStopEvent:sendStartEvent(self)
+	---Make sure the clients and the server have the same farmId
+	local farmIndex = self.spec_enterable.controllerFarmId or self:getOwnerFarmId()
+	courseplay.onStartCpAIDriver(self,nil, false, farmIndex)
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
@@ -188,10 +158,10 @@ function courseplay:stop(self)
 	
 
 	-- TODO: move this to TrafficCollision.lua
-    if self:getAINeedsTrafficCollisionBox() then
-        setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
-        self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
-    end
+ --   if self:getAINeedsTrafficCollisionBox() then
+ --       setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
+ --       self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
+ --   end
 	--is this one still used ?? 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
@@ -225,7 +195,6 @@ function courseplay:stop(self)
 
 	self.spec_lights.aiLightsTypesMask = self.cp.aiLightsTypesMaskBackup
 		
-	self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF)
 	self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.settings.forcedToStop:set(false)
 	self.cp.waitingForTrailerToUnload = false
@@ -246,7 +215,7 @@ function courseplay:stop(self)
 	-- resetting variables
 	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
-	self:setIsCourseplayDriving(false);
+	
 	self:setCpVar('canDrive',true,courseplay.isClient)
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
 	if self.cp.checkReverseValdityPrinted then
@@ -293,7 +262,7 @@ function courseplay:stop(self)
 	
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
-	StartStopEvent:sendStopEvent(self)
+	courseplay.onStopCpAIDriver(self,AIVehicle.STOP_REASON_USER)
 	-- reactivate load/add/delete course buttons
 	--courseplay.buttons:setActiveEnabled(self, 'page2');
 end

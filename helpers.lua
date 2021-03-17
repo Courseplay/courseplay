@@ -772,6 +772,24 @@ function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSiz
 	end;
 end;
 
+function courseplay.utils:getUvs(UVs, textureSizeX, textureSizeY)
+	local leftX, bottomY, rightX, topY = unpack(UVs);
+
+	local fromTop = false;
+	if topY < bottomY then
+		fromTop = true;
+	end;
+	local leftXNormal = leftX / textureSizeX;
+	local rightXNormal = rightX / textureSizeX;
+	local bottomYNormal = bottomY / textureSizeY;
+	local topYNormal = topY / textureSizeY;
+	if fromTop then
+		bottomYNormal = 1 - bottomYNormal;
+		topYNormal = 1 - topYNormal;
+	end
+	return {leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal}
+end
+
 function courseplay.utils:roundToLowerInterval(num, idp)
 	return floor(num / idp) * idp;
 end;

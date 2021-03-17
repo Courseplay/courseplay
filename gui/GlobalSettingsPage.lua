@@ -88,7 +88,17 @@ end
 function GlobalSettingsPage:updateMyGUISettings()
     for _, setting in pairs(courseplay.globalSettings) do
 		if setting.getGuiElement then 
-			setting:getGuiElement():setState(setting:getGuiElementState(), false)
+			local element = setting:getGuiElement()
+			if element then 
+				local state = setting:getGuiElementState()
+				if state then 
+					element:setState(state, false)
+				else 
+					courseplay.info('GlobalSettingsPage: can\'t find GUI element state for  %s', setting.name)
+				end
+			else 
+				courseplay.info('GlobalSettingsPage: can\'t find GUI element for  %s', setting.name)
+			end
 		end
 	end
 end

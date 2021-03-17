@@ -20,13 +20,6 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onWriteStream", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onReadUpdateStream", courseplay)
 	SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", courseplay)
-	SpecializationUtil.registerEventListener(vehicleType, "onStartCpAIDriver",courseplay)
-	SpecializationUtil.registerEventListener(vehicleType, "onStopCpAIDriver",courseplay)
-end
-
-function courseplay.registerEvents(vehicleType)
-    SpecializationUtil.registerEvent(vehicleType, "onStartCpAIDriver")
-    SpecializationUtil.registerEvent(vehicleType, "onStopCpAIDriver")
 end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
@@ -137,15 +130,6 @@ end;
 
 Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
 -- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
-
-
-function courseplay:prePreDelete(self)
-	if self.cp and self.cp.settings and self.cp.settings.showMapHotspot ~= nil then
-		self.cp.settings.showMapHotspot:deleteMapHotspot();
-		-- combineUnloadManager
-	end
-end;
-FSBaseMission.removeVehicle = Utils.prependedFunction(FSBaseMission.removeVehicle, courseplay.prePreDelete);
 
 FieldworkAIDriver.register()
 

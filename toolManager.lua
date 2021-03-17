@@ -39,7 +39,6 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 
 	courseplay:resetTools(vehicle)
 	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
-
 	vehicle.cp.settings:validateCurrentValues()
 
 	-- reset tool offset to the preconfigured value if exists

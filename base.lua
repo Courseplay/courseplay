@@ -662,6 +662,7 @@ function courseplay:onUpdate(dt)
 	if not courseplay.isEnabled(self) then
 		return 
 	end
+
 	if self.cp.infoText ~= nil then
 		self.cp.infoText = nil
 	end
@@ -966,8 +967,11 @@ function courseplay:onReadStream(streamId, connection)
 	if streamReadBool(streamId) then 
 		self.cp.infoText = streamReadString(streamId)
 	end
+
 	--Make sure every vehicle has same AIDriver as the Server
 	courseplay:setAIDriver(self, self.cp.mode)
+
+
 	self.cp.driver:onReadStream(streamId)
 	
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", courseplay.DBG_MULTIPLAYER)
@@ -1027,7 +1031,7 @@ function courseplay:onWriteStream(streamId, connection)
 	else 
 		streamWriteBool(streamId,false)
 	end
-	
+
 	self.cp.driver:onWriteStream(streamId)
 	
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", courseplay.DBG_MULTIPLAYER)
@@ -1282,6 +1286,42 @@ end
 AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, courseplay.stopAIVehicle)
 
 
+function courseplay:onSetBrokenAIVehicle(superFunc)
+	if self:getIsCourseplayDriving() then
+		if g_server ~= nil then 
+			courseplay:stop(self)
+		end
+	else 
+		superFunc(self)
+	end
+end
+AIVehicle.onSetBroken = Utils.overwrittenFunction(AIVehicle.onSetBroken, courseplay.onSetBrokenAIVehicle)
+
+function courseplay:onWriteStreamAIVehicle(superFunc,streamId, connection)
+	if self:getIsCourseplayDriving() then 
+		streamWriteBool(streamId,true)
+		local spec = self.spec_aiVehicle
+		streamWriteUInt8(streamId, spec.currentHelper.index)
+		streamWriteUIntN(streamId, spec.startedFarmId, FarmManager.FARM_ID_SEND_NUM_BITS)
+	else 
+		streamWriteBool(streamId,false)
+		superFunc(self,streamId, connection)
+	end
+end
+AIVehicle.onWriteStream = Utils.overwrittenFunction(AIVehicle.onWriteStream, courseplay.onWriteStreamAIVehicle)
+
+function courseplay:onReadStreamAIVehicle(superFunc,streamId, connection)
+	if streamReadBool(streamId) then
+		local helperIndex = streamReadUInt8(streamId)
+		local farmId = streamReadUIntN(streamId, FarmManager.FARM_ID_SEND_NUM_BITS)
+		courseplay.onStartCpAIDriver(self,helperIndex, true, farmId)
+	else 
+		superFunc(self,streamId, connection)
+	end
+end
+AIVehicle.onReadStream = Utils.overwrittenFunction(AIVehicle.onReadStream, courseplay.onReadStreamAIVehicle)
+
+
 function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, workArea, dt)
 	local rootVehicle = tool:getRootVehicle()
 	if courseplay:isAIDriverActive(rootVehicle) then
@@ -1322,7 +1362,7 @@ function courseplay:setWaypointIndex(vehicle, number,isRecording)
 end;
 
 function courseplay:getIsCourseplayDriving()
-	return self.cp.isDriving;
+	return self.cp.isDriving or false
 end;
 
 function courseplay:setIsCourseplayDriving(active)
@@ -1330,71 +1370,113 @@ function courseplay:setIsCourseplayDriving(active)
 	self.cp.isDriving = active
 end;
 
---This is a copy from the Autodrive code "https://github.com/Stephan-S/FS19_AutoDrive" 
---all credits go to their Dev team
---All the code that has to be run on Server and Client from the "start_stop" file has to get in here
-function courseplay:onStartCpAIDriver()
-	self.forceIsActive = true
-    self.spec_motorized.stopMotorOnLeave = false
-    self.spec_enterable.disableCharacterOnLeave = false
-    self.spec_aiVehicle.isActive = true
-    self.steeringEnabled = false
+--the same code as giants AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
-    if self.currentHelper == nil then
-		self.currentHelper = g_helperManager:getRandomHelper()
+--All the code that has to be run on Server and Client from the "start_stop" file has to get in here
+function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
+	local spec = self.spec_aiVehicle
+    if not self:getIsAIActive() then
+        if helperIndex ~= nil then
+            spec.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
+        else
+            spec.currentHelper = g_helperManager:getRandomHelper()
+        end
+        g_helperManager:useHelper(spec.currentHelper)
+        spec.startedFarmId = startedFarmId
+        if g_server ~= nil then
+            g_farmManager:updateFarmStats(startedFarmId, "workersHired", 1)
+        end
+        if noEventSend == nil or noEventSend == false then
+            local event = AIVehicleSetStartedEventCP:new(self, nil, true, spec.currentHelper, startedFarmId)
+            if g_server ~= nil then
+                g_server:broadcastEvent(event, nil, nil, self)
+            else
+                g_client:getServerConnection():sendEvent(event)
+            end
+        end
+        AIVehicle.numHirablesHired = AIVehicle.numHirablesHired + 1
+        AIVehicle.hiredHirables[self] = self
         if self.setRandomVehicleCharacter ~= nil then
             self:setRandomVehicleCharacter()
-            self.cp.vehicleCharacter = self.spec_enterable.vehicleCharacter
         end
-        if self.spec_enterable.controllerFarmId ~= 0 then
-            self.spec_aiVehicle.startedFarmId = self.spec_enterable.controllerFarmId
+		spec.mapAIHotspot = ShowMapHotspotSetting.createMapHotSpot(self)
+        g_currentMission:addMapHotspot(spec.mapAIHotspot)
+        spec.isActive = true
+        if g_server ~= nil then
+            self:updateAIImplementData()
         end
-	end
-	if self.cp.coursePlayerNum == nil then
-		self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
-	end;
-	
-	--add to activeCoursePlayers
-	CpManager:addToActiveCoursePlayers(self)
-	
-	-- add ingameMap Hotspot
-	self.cp.settings.showMapHotspot:createMapHotspot();
-	
-	--legancy 
-	self:setIsCourseplayDriving(true)
-	
+        if self:getAINeedsTrafficCollisionBox() then
+            local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, g_currentMission.baseDirectory, false, true, false)
+            if collisionRoot ~= nil and collisionRoot ~= 0 then
+                local collision = getChildAt(collisionRoot, 0)
+                link(getRootNode(), collision)
+                spec.aiTrafficCollision = collision
+                delete(collisionRoot)
+            end
+        end
+
+		if self.cp.coursePlayerNum == nil then
+			self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
+		end;
+		
+		--add to activeCoursePlayers
+		CpManager:addToActiveCoursePlayers(self)
+		
+		
+		--legancy 
+		self:setIsCourseplayDriving(true)
+    end
 end
 
-function courseplay:onStopCpAIDriver()
-	
-    --if self.raiseAIEvent ~= nil then
-     --   self:raiseAIEvent("onAIEnd", "onAIImplementEnd")
-    --end
+--the same code as giants AIVehicle:stopAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
-    self.spec_aiVehicle.isActive = false
-    self.forceIsActive = false
-    self.spec_motorized.stopMotorOnLeave = true
-    self.spec_enterable.disableCharacterOnLeave = true
-    self.currentHelper = nil
+--All the code that has to be run on Server and Client from the "start_stop" file has to get in here
+function courseplay:onStopCpAIDriver(reason,noEventSend)
+	local spec = self.spec_aiVehicle
+    if self:getIsAIActive() then
+        if noEventSend == nil or noEventSend == false then
+            local event = AIVehicleSetStartedEventCP:new(self, reason, false, nil, spec.startedFarmId)
+            if g_server ~= nil then
+                g_server:broadcastEvent(event, nil, nil, self)
+            else
+                g_client:getServerConnection():sendEvent(event)
+            end
+        end
+        g_helperManager:releaseHelper(spec.currentHelper)
+        spec.currentHelper = nil
+        if g_server ~= nil then
+            g_farmManager:updateFarmStats(spec.startedFarmId, "workersHired", -1)
+        end
+        AIVehicle.numHirablesHired = math.max(AIVehicle.numHirablesHired - 1, 0)
+        AIVehicle.hiredHirables[self] = nil
+        if self.restoreVehicleCharacter ~= nil then
+            self:restoreVehicleCharacter()
+        end
+        if spec.mapAIHotspot ~= nil then
+            g_currentMission:removeMapHotspot(spec.mapAIHotspot)
+            spec.mapAIHotspot:delete()
+            spec.mapAIHotspot = nil
+        end
+        self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
+        if g_server ~= nil then
+            WheelsUtil.updateWheelsPhysics(self, 0, spec.lastSpeedReal*spec.movingDirection, 0, true, true)
+        end
+        spec.isActive = false
+        spec.isTurning = false
+        -- move the collision far under the ground
+        if self:getAINeedsTrafficCollisionBox() then
+            setTranslation(spec.aiTrafficCollision, 0, -1000, 0)
+        end
+        if self.brake ~= nil then
+            self:brake(1)
+        end
 
-    if self.restoreVehicleCharacter ~= nil then
-        self:restoreVehicleCharacter()
+		--remove from activeCoursePlayers
+		CpManager:removeFromActiveCoursePlayers(self);
+		
+		--legancy
+		self:setIsCourseplayDriving(false)
     end
-
-    if self.steeringEnabled == false then
-        self.steeringEnabled = true
-    end
-
-    self:requestActionEventUpdate()
-	
-	--remove from activeCoursePlayers
-	CpManager:removeFromActiveCoursePlayers(self);
-
-	-- remove ingame map hotspot
-	self.cp.settings.showMapHotspot:deleteMapHotspot();
-	
-	--legancy
-	self:setIsCourseplayDriving(false)
 end
 
 ---vehicle is not attached to another one and vehicle has CourseplaySpec 

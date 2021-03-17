@@ -2493,143 +2493,6 @@ function WarningLightsModeSetting:init(vehicle)
 	self:set(1)
 end
 
----@class ShowMapHotspotSetting : SettingList
-ShowMapHotspotSetting = CpObject(SettingList)
-ShowMapHotspotSetting.DEACTIVED = 0;
-ShowMapHotspotSetting.NAME_ONLY = 1;
-ShowMapHotspotSetting.NAME_AND_COURSE = 2;
-
-function ShowMapHotspotSetting:init(vehicle)
-	SettingList.init(self, 'showMapHotspot', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', vehicle,
-		{ 
-			ShowMapHotspotSetting.DEACTIVED,
-			ShowMapHotspotSetting.NAME_ONLY,
-			ShowMapHotspotSetting.NAME_AND_COURSE
-		},
-		{ 	
-			'COURSEPLAY_DEACTIVATED',
-			'COURSEPLAY_NAME_ONLY',
-			'COURSEPLAY_NAME_AND_COURSE'
-		}
-		)
-	self:set(2)
-	self.mapHotspot=nil
-end
-
-function ShowMapHotspotSetting:onChange()
-	--TODO get the other components in here ??
-	for _,vehicle in pairs(CpManager.activeCoursePlayers) do
-		local showMapHotspot = vehicle.cp.settings.showMapHotspot
-		if showMapHotspot and showMapHotspot:getMapHotspot() then
-			showMapHotspot:getMapHotspot():setText('CP\n' .. showMapHotspot:getMapHotspotText(vehicle))
-			courseplay.hud:setReloadPageOrder(vehicle, 7, true)
-		end
-	end
-end
-
-function ShowMapHotspotSetting:getMapHotspot()
-	return self.mapHotspot
-end
-
-function ShowMapHotspotSetting:deleteMapHotspot()
-	if self.mapHotspot then
-		g_currentMission:removeMapHotspot(self.mapHotspot)
-		self.mapHotspot:delete()
-		self.mapHotspot = nil
-	end
-end
-
-function ShowMapHotspotSetting:getMapHotspotText(vehicle)
-	local text = '';
-	if vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_ONLY) then 
-		text = nameNum(vehicle, true) .. '\n';
-	elseif vehicle.cp.settings.showMapHotspot:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
-		text = nameNum(vehicle, true) .. '\n';
-		text = text .. ('(%s)'):format(vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'));
-	end
-	return text
-end
-
-function ShowMapHotspotSetting:createMapHotspot()
-	--[[
-	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode);
-	local _, textSize = getNormalizedScreenValues(0, 6);
-	local _, textOffsetY = getNormalizedScreenValues(0, 9.5);
-	local width, height = getNormalizedScreenValues(11,11);
-]]	local helperName = self.vehicle.currentHelper and self.vehicle.currentHelper.name or ".."
-	local hotspotX, _, hotspotZ = getWorldTranslation(self.vehicle.rootNode)
-	local _, textSize = getNormalizedScreenValues(0, 9)
-	local _, textOffsetY = getNormalizedScreenValues(0, 18)
-	local width, height = getNormalizedScreenValues(24, 24)
-	self.mapHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
-	self.mapHotspot:setSize(width, height)
-	self.mapHotspot:setLinkedNode(self.vehicle.components[1].node)											-- objectId to what the hotspot is attached to
-	self.mapHotspot:setText(string.format('CP(%s)\n%s', tostring(helperName),self:getMapHotspotText(self.vehicle)))
-	self.mapHotspot:setImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER), {0.052, 0.1248, 0.672, 1})
-	self.mapHotspot:setBackgroundImage(nil, getNormalizedUVs(MapHotspot.UV.HELPER))
-	self.mapHotspot:setIconScale(0.7)
-	self.mapHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
-	self.mapHotspot:setColor(Utils.getNoNil(courseplay.hud.ingameMapIconsUVs[self.vehicle.cp.mode], courseplay.hud.ingameMapIconsUVs[courseplay.MODE_GRAIN_TRANSPORT]))
-	g_currentMission:addMapHotspot(self.mapHotspot)
-
-
-	--[[ FS17 doc, left here for later reference only
-		"cpHelper",                                 -- name: 				mapHotspot Name
-		"CP\n"..name,                               -- fullName: 			Text shown in icon
-		nil,                                        -- imageFilename:		Image path for custome images (If nil, then it will use Giants default image file)
-		getNormalizedUVs({768, 768, 256, 256}),     -- imageUVs:			UVs location of the icon in the image file. Use getNormalizedUVs to get an correct UVs array
-		colour,                                     -- baseColor:			What colour to show
-		hotspotX,                                   -- xMapPos:				x position of the hotspot on the map
-		hotspotZ,                                   -- zMapPos:				z position of the hotspot on the map
-		width,                                      -- width:				Image width
-		height,                                     -- height:				Image height
-		false,                                      -- blinking:			If the hotspot is blinking (Like the icons do, when a great demands is active)
-		false,                                      -- persistent:			Do the icon needs to be shown even when outside map ares (Like Greatdemands are shown at the minimap edge if outside the minimap)
-		true,                                       -- showName:			Should we show the fullName or not.
-		vehicle.components[1].node,                 -- objectId:			objectId to what the hotspot is attached to
-		true,                                       -- renderLast:			Does this need to be renderes as one of the last icons
-		MapHotspot.CATEGORY_VEHICLE_STEERABLE,      -- category:			The MapHotspot category.
-		textSize,                                   -- textSize:			fullName text size. you can use getNormalizedScreenValues(x, y) to get the normalized text size by using the return value of the y.
-		textOffsetY,                                -- textOffsetY:			Text offset horizontal
-		{1, 1, 1, 1},                               -- textColor:			Text colour (r, g, b, a) in 0-1 format
-		nil,                                        -- bgImageFilename:		Image path for custome background images (If nil, then it will use Giants default image file)
-		getNormalizedUVs({768, 768, 256, 256}),     -- bgImageUVs:			UVs location of the background icon in the image file. Use getNormalizedUVs to get an correct UVs array
-		Overlay.ALIGN_VERTICAL_MIDDLE,              -- verticalAlignment:	The alignment of the image based on the attached node
-		0.8                                         -- overlayBgScale:		Background icon scale, like making an border. (smaller is bigger border)
-	) ]]
-end
-
-
-function ShowMapHotspotSetting:onWriteStream(stream)
-	SettingList.onWriteStream(self,stream)
-	if self.mapHotspot~=nil then 
-		streamWriteBool(stream,true)
-		if self.vehicle.currentHelper and self.vehicle.currentHelper.index ~= nil then 
-			streamWriteBool(stream,true)
-			streamWriteUInt8(stream, self.vehicle.currentHelper.index)
-		else 
-			streamWriteBool(stream,false)
-		end
-	else 
-		streamWriteBool(stream,false)
-	end
-end
-
-function ShowMapHotspotSetting:onReadStream(stream)
-	SettingList.onReadStream(self,stream)
-	if streamReadBool(stream) then
-		if streamReadBool(stream) then
-			local helperIndex = streamReadUInt8(stream)
-			self.vehicle.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
-		end
-		--add to activeCoursePlayers
-		CpManager:addToActiveCoursePlayers(self.vehicle)	
-		-- add ingameMap icon
-		self:createMapHotspot();
-	end
-end
-
-
 ---@class SaveFuelOptionSetting : BooleanSetting
 SaveFuelOptionSetting = CpObject(BooleanSetting)
 function SaveFuelOptionSetting:init(vehicle)
@@ -4149,6 +4012,7 @@ function SettingsContainer.createGlobalSettings()
 	container:addSetting(ShowMiniHudSetting)
 	container:addSetting(EnableOpenHudWithMouseGlobalSetting)
 	container:addSetting(AutoRepairSetting)
+	container:addSetting(ShowMapHotspotSetting)
 	return container
 end
 
@@ -4197,7 +4061,6 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(DriverPriorityUseFillLevelSetting, vehicle)
 	container:addSetting(UseRecordingSpeedSetting, vehicle)
 	container:addSetting(WarningLightsModeSetting, vehicle)
-	container:addSetting(ShowMapHotspotSetting, vehicle)
 	container:addSetting(SaveFuelOptionSetting, vehicle)
 	container:addSetting(AlwaysSearchFuelSetting, vehicle)
 	container:addSetting(RealisticDrivingSetting, vehicle)

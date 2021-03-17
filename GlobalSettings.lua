@@ -91,3 +91,92 @@ function AutoRepairSetting:onUpdateTick(dt, isActive, isActiveForInput, isSelect
 	end
 end
 Wearable.onUpdateTick = Utils.appendedFunction(Wearable.onUpdateTick, AutoRepairSetting.onUpdateTick)
+
+
+---@class ShowMapHotspotSetting : SettingList
+ShowMapHotspotSetting = CpObject(SettingList)
+ShowMapHotspotSetting.DEACTIVED = 0
+ShowMapHotspotSetting.NAME_ONLY = 1
+ShowMapHotspotSetting.NAME_AND_COURSE = 2
+
+function ShowMapHotspotSetting:init()
+	SettingList.init(self, 'showMapHotspot', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', nil,
+		{ 
+			ShowMapHotspotSetting.DEACTIVED,
+			ShowMapHotspotSetting.NAME_ONLY,
+			ShowMapHotspotSetting.NAME_AND_COURSE
+		},
+		{ 	
+			'COURSEPLAY_DEACTIVATED',
+			'COURSEPLAY_NAME_ONLY',
+			'COURSEPLAY_NAME_AND_COURSE'
+		}
+		)
+	self:set(ShowMapHotspotSetting.NAME_ONLY)
+
+	ShowMapHotspotSetting.modeButtonsUVsPx = {
+		[courseplay.MODE_GRAIN_TRANSPORT]		 = "112px 72px 144px 40px",
+		[courseplay.MODE_COMBI]					 = "148px 72px 180px 40px",
+		[courseplay.MODE_OVERLOADER]			 = "184px 72px 216px 40px",
+		[courseplay.MODE_SEED_FERTILIZE]		 = "220px 72px 252px 40px",
+		[courseplay.MODE_TRANSPORT]				 = "4px 108px 36px 76px",
+		[courseplay.MODE_FIELDWORK]				 = "40px 108px 72px 76px",
+		[courseplay.MODE_BALE_COLLECTOR] 		 = "76px 108px 108px 76px",
+		[courseplay.MODE_FIELD_SUPPLY]  		 = "112px 108px 144px 76px",
+		[courseplay.MODE_SHOVEL_FILL_AND_EMPTY]	 = "148px 108px 180px 76px",
+		[courseplay.MODE_BUNKERSILO_COMPACTER]	 = "219px 431px 251px 399px"
+	}
+end
+
+---If the setting changes force update all mapHotSpot texts
+function ShowMapHotspotSetting:onChange()
+	self:updateHotSpotTexts()
+end
+
+function ShowMapHotspotSetting:updateHotSpotTexts()
+	if CpManager.activeCoursePlayers then
+		for _,vehicle in pairs(CpManager.activeCoursePlayers) do
+			if vehicle.spec_aiVehicle.mapAIHotspot then
+				vehicle.spec_aiVehicle.mapAIHotspot:setText(self:getMapHotspotText(vehicle))
+			end
+		end
+	end
+end
+
+function ShowMapHotspotSetting:getMapHotspotText(vehicle)
+	local text = ''
+	if self:is(ShowMapHotspotSetting.NAME_ONLY) then 
+		text = string.format("%s%s\n",text,nameNum(vehicle, true))
+	elseif self:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
+		text = string.format("%s%s\n%s",text,nameNum(vehicle, true),vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'))
+	end
+	return text
+end
+
+---Creates a mapHotSpot, for reference AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId)
+function ShowMapHotspotSetting.createMapHotSpot(vehicle,text)
+	
+	local mapAIHotspotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(vehicle)
+
+	local rawUvs = courseplay.hud:getModeUvs() 
+	local uvsSize = courseplay.hud:getIconSpriteSize()
+	local imagePath = courseplay.hud:getIconSpritePath()
+	local uvs = courseplay.utils:getUvs(rawUvs[vehicle.cp.mode], uvsSize.x,uvsSize.y)
+
+	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
+	local _, textSize = getNormalizedScreenValues(0, 9)
+	local _, textOffsetY = getNormalizedScreenValues(0, 5)
+	local width, height = getNormalizedScreenValues(18, 18)
+	local color = courseplay.utils:rgbToNormal(255, 113,  16, 1) --orange
+
+	local mapAIHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
+	mapAIHotspot:setSize(width, height)
+	mapAIHotspot:setLinkedNode(vehicle.components[1].node)
+	mapAIHotspot:setText(mapAIHotspotText)
+	mapAIHotspot:setImage(imagePath, uvs,color)
+	mapAIHotspot:setBackgroundImage()
+	mapAIHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
+	mapAIHotspot:setHasDetails(false)
+	g_currentMission:addMapHotspot(mapAIHotspot)
+	return mapAIHotspot
+end

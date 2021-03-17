@@ -370,6 +370,20 @@ function courseplay.hud:setup()
 	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.ogg', courseplay.path), false);
 end;
 
+---Getter functions
+
+function courseplay.hud:getModeUvs()
+	return self.modeButtonsUVsPx
+end
+
+function courseplay.hud:getIconSpriteSize()
+	return self.iconSpriteSize
+end
+
+function courseplay.hud:getIconSpritePath()
+	return self.iconSpritePath
+end
+
 
 -- ####################################################################################################
 -- set the content cyclic
