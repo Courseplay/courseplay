@@ -58,18 +58,21 @@ local function getLocalDeltaOffset( polygon, point, mode, centerSettings, deltaO
 	end
 end
 
--- smooth adds new points where we loose the passNumber attribute.
+-- smooth adds new points where we lose the passNumber attribute.
 -- here we fix that. I know it's ugly and there must be a better way to
 -- do this somehow smooth should preserve these, but whatever...
-local function addMissingPassNumber( headlandPath )
+local function addMissingPassNumber(headlandPath)
 	local currentPassNumber = 0
-	for i, point in headlandPath:iterator() do
-		if point.passNumber then
-			if point.passNumber ~= currentPassNumber then
-				currentPassNumber = point.passNumber
+	-- headlandPath as generated starts at the outermost headland and spirals towards the center of the field.headlandPath
+	-- we iterate backwards here so the transition from headland n-1 to headland n will get the pass number n. This makes
+	-- sure the headland based pathfinder always stays on the outermost headland
+	for i = #headlandPath, 1, -1 do
+		if headlandPath[i].passNumber then
+			if headlandPath[i].passNumber ~= currentPassNumber then
+				currentPassNumber = headlandPath[i].passNumber
 			end
 		else
-			point.passNumber = currentPassNumber
+			headlandPath[i].passNumber = currentPassNumber
 		end
 	end
 end

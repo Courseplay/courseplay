@@ -25,8 +25,9 @@ function courseplay.turn() end
 function courseplay.lowerImplements() end
 function courseplay.raiseImplements() end
 
+courseplay.DBG_COURSES = 19
 courseplay.debugChannels = {}
-courseplay.debugChannels[courseplay.DBG_PPC] = true
+courseplay.debugChannels[courseplay.DBG_COURSES] = true
 
 courseplay.settings = {}
 courseplay.hud = {}
