@@ -1012,10 +1012,16 @@ function AIDriver:detectCollision(dt)
 		self.collisionDetector = CollisionDetector(self.vehicle)
 	end
 
+	if self.ignoreTrafficConflictWhenFolded then
+		-- conflict detector is invalid when folded
+		self.collisionDetector:setInvalid(AIDriverUtil.isAllFolded(self.vehicle))
+	end
+
 	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
 
 	if self.collisionDetectionEnabled then
-		if trafficSpeed ~= 0 then
+
+		if trafficSpeed and trafficSpeed ~= 0 then
 			--get the speed from the target vehicle
 			self:setSpeed(trafficSpeed)
 		end
@@ -1713,10 +1719,15 @@ end
 
 function AIDriver:createTrafficConflictDetector()
 	self.trafficConflictDetector = TrafficConflictDetector(self.vehicle, self.course)
+	self.ignoreTrafficConflictWhenFolded = g_vehicleConfigurations:getRecursively(self.vehicle, 'ignoreCollisionBoxesWhenFolded')
 end
 
 function AIDriver:updateTrafficConflictDetector(course, ix, speed, moveForwards, node)
 	if self.trafficConflictDetector then
+		if self.ignoreTrafficConflictWhenFolded then
+			-- conflict detector is invalid when folded
+			self.trafficConflictDetector:setInvalid(AIDriverUtil.isAllFolded(self.vehicle))
+		end
 		if self:isTrafficConflictDetectionEnabled() then
 			self.trafficConflictDetector:update(course, ix, speed, moveForwards, node or self:getDirectionNode())
 		else

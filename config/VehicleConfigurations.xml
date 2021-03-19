@@ -54,6 +54,13 @@ You can define the following custom settings:
 - implementWheelAlwaysOnGround:	boolean
     Implements that have the topReferenceNode set, but still have the wheels on the ground all the time.
 
+- ignoreCollisionBoxesWhenFolded: boolean
+	This is for the case where the collision boxes of the vehicle are very wide, for example
+    a sprayer's box is as wide as the extended sprayer arms. This works on the field but will cause conflict when
+    the vehicle drives with folded sprayer for instance on an unload course.
+	For this scenario the collision box is useless when folded, so when ignoreCollisionBoxesOnStreet is true,
+    Courseplay will not detect collisions for this vehicle when it is folded.
+
 -->
 <VehicleConfigurations>
     <!--[GIANTS]-->
@@ -82,6 +89,16 @@ You can define the following custom settings:
     <Vehicle name="kuhnSW4014.xml"
              toolOffsetX="-2.5"
              noReverse="true"
+    />
+    <Vehicle name="kuhnDeltis1302.xml"
+             ignoreCollisionBoxesWhenFolded="true"
+    />
+    <Vehicle name="kuhnMetris4102.xml"
+             ignoreCollisionBoxesWhenFolded="true"
+    />
+    <!--\vehicles\hardi-->
+    <Vehicle name="navigator6000.xml"
+             ignoreCollisionBoxesWhenFolded="true"
     />
     <!--\vehicles\salford-->
     <Vehicle name="salford4204.xml"
@@ -140,13 +157,27 @@ You can define the following custom settings:
     />
 
     <!--Tractors-->
+    <!--\vehicles\stara-->
+    <Vehicle name="imperador3.xml"
+             ignoreCollisionBoxesWhenFolded="true"
+    />
+    <!--\vehicles\hardi-->
+    <Vehicle name="rubicon9000.xml"
+			 ignoreCollisionBoxesWhenFolded="true"
+	/>
 
     <!--[DLC]-->
 
     <!--Harvester-->
 
     <!--Implements-->
-
+    <!--Kverneland-->
+    <Vehicle name="iXterB18.xml"
+             ignoreCollisionBoxesWhenFolded="true"
+    />
+    <Vehicle name="iXtrackT4.xml"
+             ignoreCollisionBoxesWhenFolded="true"
+    />
     <!--Bourgault-->
     <Vehicle name="series3320.xml"
              noReverse="true"
@@ -160,9 +191,15 @@ You can define the following custom settings:
     <Vehicle name="series71300.xml"
              noReverse="true"
     />
+	
     <!--[MODS]-->
 
-	<!--Mod: KOECKERLING Vector 460-->
+	
+
+    <!--Harvester-->
+
+    <!--Implements-->
+    <!--Mod: KOECKERLING Vector 460-->
 	<Vehicle name="vector460.xml"
 			 implementWheelAlwaysOnGround = "true"
 	/>
@@ -170,11 +207,6 @@ You can define the following custom settings:
 	<Vehicle name="vector620.xml"
 			 implementWheelAlwaysOnGround = "true"
 	/>
-
-    <!--Harvester-->
-
-    <!--Implements-->
-
     <!--Mod: Ursus T-127 (Bale Collector)-->
     <Vehicle name="ursusT127.xml"
              toolOffsetX="-2.4"
@@ -195,5 +227,9 @@ You can define the following custom settings:
     <!--Mod: JCB 435S-->
     <Vehicle name="jcb435s.xml"
              directionNodeOffsetZ="-0.705"
+    />
+    <!--Mod: Horsch Pack-->
+    <Vehicle name="leebPT350.xml"
+             ignoreCollisionBoxesWhenFolded="true"
     />
 </VehicleConfigurations>

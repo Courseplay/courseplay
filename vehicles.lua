@@ -1676,6 +1676,23 @@ function AIDriverUtil.getLastAttachedImplement(vehicle)
 	return lastImplement, minDistance
 end
 
+function AIDriverUtil.isAllFolded(object)
+	if SpecializationUtil.hasSpecialization(Foldable, object.specializations) then
+		if object:getIsUnfolded() then
+			-- object is unfolded, so all can't be folded
+			return false
+		end
+	end
+	for _, implement in pairs(object:getAttachedImplements()) do
+		if not AIDriverUtil.isAllFolded(implement.object) then
+			-- at least on implement is not completely folded so all can't be folded
+			return false
+		end
+	end
+	-- nothing is unfolded
+	return true
+end
+
 function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
 	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
 end

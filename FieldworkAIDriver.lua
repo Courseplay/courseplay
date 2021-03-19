@@ -937,16 +937,6 @@ function FieldworkAIDriver:foldImplements()
 	end
 end
 
-function FieldworkAIDriver:isAllUnfolded()
-	for _,workTool in pairs(self.vehicle.cp.workTools) do
-		if courseplay:isFoldable(workTool) then
-			local isFolding, isFolded, isUnfolded = courseplay:isFolding(workTool)
-			if not isUnfolded then return false end
-		end
-	end
-	return true
-end
-
 function FieldworkAIDriver:clearRemainingTime()
 	self.vehicle.cp.timeRemaining = nil
 end
@@ -1009,22 +999,6 @@ end
 function FieldworkAIDriver:updateLightsOnField()
 	-- there are no beacons used on the field by default
 	self.vehicle:setBeaconLightsVisibility(false)
-end
-
-function FieldworkAIDriver:startLoweringDurationTimer()
-	-- then start but only after everything is unfolded as we don't want to include the
-	-- unfold duration (since we don't fold at the end of the row).
-	if self:isAllUnfolded() then
-		self.startedLoweringAt = self.vehicle.timer
-	end
-end
-
-function FieldworkAIDriver:calculateLoweringDuration()
-	if self.startedLoweringAt then
-		self.loweringDurationMs = self.vehicle.timer - self.startedLoweringAt
-		self:debug('Measured implement lowering duration is %.0f ms', self.loweringDurationMs)
-		self.startedLoweringAt = nil
-	end
 end
 
 function FieldworkAIDriver:getLoweringDurationMs()

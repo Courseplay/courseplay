@@ -341,7 +341,7 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	local isFolding, isFolded, isUnfolded = false, true, true;
 	courseplay:debug(string.format('%s: isFolding(): realUnfoldDirection=%s, turnOnFoldDirection=%s, startAnimTime=%s, foldMoveDirection=%s',
 		nameNum(workTool), tostring(workTool.cp.realUnfoldDirection), tostring(workTool.turnOnFoldDirection),
-		tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), courseplay.DBG_IMPLEMENTS);
+		tostring(workTool.startAnimTime), tostring(workTool.foldMoveDirection)), courseplay.DBG_CYCLIC);
 
 	if workTool.spec_foldable.foldAnimTime ~= (workTool.spec_foldable.oldFoldAnimTime or 0) then
 		if workTool.spec_foldable.foldMoveDirection > 0 and workTool.spec_foldable.foldAnimTime < 1 then
@@ -356,7 +356,7 @@ function courseplay:isFolding(workTool) --returns isFolding, isFolded, isUnfolde
 	isFolded = not isUnfolded and not isFolding;
 
 	courseplay:debug(string.format('\treturn isFolding=%s, isFolded=%s, isUnfolded=%s',
-		tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), courseplay.DBG_IMPLEMENTS);
+		tostring(isFolding), tostring(isFolded), tostring(isUnfolded)), courseplay.DBG_CYCLIC);
 	return isFolding, isFolded, isUnfolded;
 end;
 

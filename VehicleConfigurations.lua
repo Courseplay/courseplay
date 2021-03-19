@@ -35,7 +35,8 @@ VehicleConfigurations.attributes = {
     {name = 'workingWidth', getXmlFunction = getXMLFloat},
     {name = 'balerUnloadDistance', getXmlFunction = getXMLFloat},
     {name = 'directionNodeToOffsetZ', getXmlFunction = getXMLFloat},
-    {name = 'implementWheelAlwaysOnGround', getXmlFunction = getXMLBool}
+    {name = 'implementWheelAlwaysOnGround', getXmlFunction = getXMLBool},
+    {name = 'ignoreCollisionBoxesWhenFolded', getXmlFunction = getXMLBool}
 }
 
 function VehicleConfigurations:init()
