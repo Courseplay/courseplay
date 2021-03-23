@@ -88,6 +88,8 @@ end
 function BaleToCollect:getSafeDistance()
 	-- round bales don't have length, just diameter
 	local length = self.bale.baleDiameter and self.bale.baleDiameter or self.bale.baleLength
-	-- no matter what kind of bale, the footprint is a rectangle, get the diagonal
-	return math.sqrt(length * length + self.bale.baleWidth * self.bale.baleWidth) / 2
+	-- no matter what kind of bale, the footprint is a rectangle, get the diagonal (which, is BTW, not
+	-- exact math as it depends on the angle we are approaching the bale, so add a little buffer instead of
+	-- thinking about the math...
+	return math.sqrt(length * length + self.bale.baleWidth * self.bale.baleWidth) / 2 + 0.2
 end

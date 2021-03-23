@@ -233,16 +233,42 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 			self:debug('Finding path to next bale failed, trying next bale')
 			self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 		elseif self.pathfinderFailureCount == 2 then
-			self:debug('Finding path to next bale failed twice, back up a bit and then try again')
-			self:startCourse(self:getStraightReverseCourse(15), 1)
-			self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+			if self:isNearFieldEdge() or self:isObstacleAhead() then
+				self:debug('Finding path to next bale failed twice, we are close to the field edge, back up a bit and then try again')
+				self:startCourse(self:getStraightReverseCourse(15), 1)
+				self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+			else
+				self:debug('Finding path to next bale failed twice, but we are not too close to the field edge, trying another bale')
+				self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
+			end
 		else
 			self:info('Pathfinding failed three times, giving up')
 			self.pathfinderFailureCount = 0
-			courseplay:stop(self.vehicle)
+			self:stop('WORK_END')
 		end
 		return false
 	end
+end
+
+function BaleCollectorAIDriver:isObstacleAhead()
+	if self.forwardLookingProximitySensorPack then
+		local d, vehicle, _, deg, dAvg = self.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+		if d < 1.2 * self.turnRadius then
+			self:debug('Obstacle ahead at %.1f m', d)
+			return true
+		end
+	end
+	return false
+end
+
+function BaleCollectorAIDriver:isNearFieldEdge()
+	local x, _, z = localToWorld(AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
+	local vehicleIsOnField = courseplay:isField(x, z, 1, 1)
+	x, _, z = localToWorld(AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 1.2 * self.turnRadius)
+	local isFieldInFrontOfVehicle = courseplay:isField(x, z, 1, 1)
+	self:debug('vehicle is on field: %s, field in front of vehicle: %s',
+		tostring(vehicleIsOnField), tostring(isFieldInFrontOfVehicle))
+	return vehicleIsOnField and not isFieldInFrontOfVehicle
 end
 
 function BaleCollectorAIDriver:onLastWaypoint()

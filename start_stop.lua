@@ -267,8 +267,6 @@ function courseplay:stop(self)
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');
 
-	courseplay:resetCustomTimer(self, 'foldBaleLoader', true);
-
 	self.cp.hasBaleLoader = false;
 	
 	if self.cp.manualWorkWidth ~= nil then
