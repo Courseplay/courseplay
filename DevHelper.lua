@@ -43,7 +43,6 @@ function DevHelper:update()
     if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle.spec_aiVehicle then
 
         if self.vehicle ~= g_currentMission.controlledVehicle then
-            self.otherVehiclesCollisionData = PathfinderUtil.setUpVehicleCollisionData(g_currentMission.controlledVehicle)
             self.vehicleData = PathfinderUtil.VehicleData(g_currentMission.controlledVehicle, true)
         end
 
@@ -61,20 +60,6 @@ function DevHelper:update()
         else
             self.proxySensor:update()
             self.proxySensor:showDebugInfo()
-        end
-    end
-
-    if self.vehicleData then
-        self.collisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(self.node, self.vehicleData, 'me')
-        hasCollision, vehicle = PathfinderUtil.findCollidingVehicles(
-                self.collisionData,
-                self.node,
-                self.vehicleData,
-                self.otherVehiclesCollisionData)
-        if hasCollision then
-            self.data.vehicleOverlap = vehicle
-        else
-            self.data.vehicleOverlap = 'none'
         end
     end
 
@@ -103,7 +88,8 @@ function DevHelper:update()
 	self.data.tzRotDeg = math.deg(zRot)
 
     self.data.collidingShapes = ''
-    overlapBox(self.data.x, self.data.y + 0.2, self.data.z, 0, self.yRot, 0, 1.6, 1, 8, "overlapBoxCallback", self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
+    overlapBox(self.data.x, self.data.y + 0.2, self.data.z, 0, self.yRot, 0, 1.6, 1, 8, "overlapBoxCallback", self,
+		bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
 
     if self.pathfinder and self.pathfinder:isActive() then
         local done, path = self.pathfinder:resume()
@@ -333,6 +319,7 @@ function DevHelper:showVehicleSize()
             drawDebugLine(x3,y3,z3,0.2, 0.2 ,1,x4,y4,z4,0.2, 0.2,1);
         end
         if self.vehicleData.trailerRectangle then
+			PathfinderUtil.initializeTrailerHeading(node, self.vehicleData)
             local x, y, z = localToWorld(g_devHelper.helperNode, 0, 0, self.vehicleData.trailerHitchOffset)
             setTranslation(g_devHelper.helperNode, x, y, z)
             setRotation(g_devHelper.helperNode, 0, courseGenerator.toCpAngle(node.tTrailer), 0)
@@ -345,13 +332,6 @@ function DevHelper:showVehicleSize()
             drawDebugLine(x1,y1,z1,0,1,0,x3,y3,z3,0,1,0);
             drawDebugLine(x2,y2,z2,0,1,0,x4,y4,z4,0,1,0);
             drawDebugLine(x3,y3,z3,0,1,0,x4,y4,z4,0,1,0);
-        end
-    end
-    if self.collisionData then
-        for i = 1, 4 do
-            local cp = self.collisionData.corners[i]
-            local pp = self.collisionData.corners[i > 1 and i - 1 or 4]
-            cpDebug:drawLine(cp.x, cp.y + 0.4, cp.z, 1, 0, 0, pp.x, pp.y + 0.4, pp.z)
         end
     end
     DebugUtil.drawDebugNode(g_devHelper.helperNode, 'devhelper')
