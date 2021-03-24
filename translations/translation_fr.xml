@@ -25,7 +25,7 @@
     <text name="COURSEPLAY_MODE_4" 							 			text="Fertiliser, pulvériser et semer" />
     <text name="COURSEPLAY_MODE_5" 							 			text="Aller à" />
     <text name="COURSEPLAY_MODE_6" 							 			text="Travail dans la parcelle" />
-    <text name="COURSEPLAY_MODE_7" 							 			text="Type: Collect or wrap bales" />
+    <text name="COURSEPLAY_MODE_7" 							 			text="Ramasser ou enrubanner les balles" />
     <text name="COURSEPLAY_MODE_8" 							 			text="Ravitaillement à la parcelle" />
     <text name="COURSEPLAY_MODE_9" 							 			text="Charger et décharger avec un godet" />
     <text name="COURSEPLAY_MODE_10" 									text="Nivellement et tassement" />
@@ -284,7 +284,7 @@
     <text name="COURSEPLAY_CURRENT_POINT" 						 		text="Au point actuel" />
     <text name="COURSEPLAY_NEXT_POINT" 									text="Au prochain point" />
 	<text name="COURSEPLAY_UNLOAD" 										text="Dans la parcelle" />
-	<text name="COURSEPLAY_COLLECT_BALES" 								text="Ramasser les balles" />
+	<text name="COURSEPLAY_COLLECT_BALES" 								text="Ramasser/Enrubanner les balles" />
     <text name="COURSEPLAY_FIELD_EDGE_PATH" 					 		text="Contour de la parcelle" />
     <text name="COURSEPLAY_FIELD" 							 			text="Parcelle" />
     <text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 					text="Course actuelle" />
