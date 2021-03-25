@@ -284,7 +284,7 @@
 		<text name="COURSEPLAY_CURRENT_POINT" 												text="продолжить маршрут" />
 		<text name="COURSEPLAY_NEXT_POINT" 													text="с ближайшей подходящей точки" />
 		<text name="COURSEPLAY_UNLOAD" 														text="с разгрузки" />
-		<text name="COURSEPLAY_COLLECT_BALES" 												text="Сбор или обмотка тюков" />
+		<text name="COURSEPLAY_COLLECT_BALES" 												text="со сбора или обмотки тюков" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 											text="Выбрать границу" />
 		<text name="COURSEPLAY_FIELD" 														text="поле №" />
 		<text name="COURSEPLAY_CURRENTLY_LOADED_COURSE" 									text="(загруженный маршрут)" />
