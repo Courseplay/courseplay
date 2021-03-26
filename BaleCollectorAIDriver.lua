@@ -178,7 +178,10 @@ function BaleCollectorAIDriver:findPathToNextBale()
 	if not self.bales then return end
 	local bale, d, ix = self:findClosestBale(self.bales)
 	if ix then
-		if not self:isObstacleAhead() then
+		if bale:isLoaded() then
+			self:debug('Bale %d is already loaded, skipping', bale:getId())
+			table.remove(self.bales, ix)
+		elseif not self:isObstacleAhead() then
 			self:startPathfindingToBale(bale)
 			-- remove bale from list
 			table.remove(self.bales, ix)

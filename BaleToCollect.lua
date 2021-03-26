@@ -56,6 +56,10 @@ function BaleToCollect.isValidBale(object, baleWrapper)
 	end
 end
 
+function BaleToCollect:isLoaded()
+	return self.bale.mountObject
+end
+
 function BaleToCollect:getFieldId()
 	return self.fieldId
 end

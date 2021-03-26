@@ -796,7 +796,6 @@ function PathfinderUtil.checkForObstaclesAhead(vehicle, turnRadius)
 		local yRot = MathUtil.getYRotationFromDirection(dx, dz)
 		setRotation(PathfinderUtil.helperNode, 0, yRot, 0)
 		local path, len = PathfinderUtil.findDubinsPath(vehicle, 0, PathfinderUtil.helperNode, 0, 0, turnRadius)
-		courseplay.debugFormat(courseplay.DBG_PATHFINDER, '  path length %.1f m', len)
 		-- making sure we continue with the correct trailer heading
 		path[1]:setTrailerHeading(start:getTrailerHeading())
 		State3D.calculateTrailerHeadings(path, hitchLength)
