@@ -252,20 +252,22 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 	local combineToReturn
 	for combine, _ in pairs(unloader.cp.driver:getAssignedCombines()) do
 		local data = self.combines[combine]
-		-- if there is no unloader assigned or this unloader is already assigned as the first
-		local numUnloaders = self:getNumUnloaders(combine)
-		local unloaderIndex = self:getUnloaderIndex(unloader, combine)
-		local fillLevelPct = combine.cp.driver:getFillLevelPercentage()
-		local combineReadyToUnload = combine.cp.driver:isReadyToUnload(unloader.cp.settings.useRealisticDriving:is(true))
-		self:debug('For unloader %s: %s (fill level %.1f, ready to unload: %s) has %d unloaders, this unloader is # %d',
+		if data then
+			-- if there is no unloader assigned or this unloader is already assigned as the first
+			local numUnloaders = self:getNumUnloaders(combine)
+			local unloaderIndex = self:getUnloaderIndex(unloader, combine)
+			local fillLevelPct = combine.cp.driver:getFillLevelPercentage()
+			local combineReadyToUnload = combine.cp.driver:isReadyToUnload(unloader.cp.settings.useRealisticDriving:is(true))
+			self:debug('For unloader %s: %s (fill level %.1f, ready to unload: %s) has %d unloaders, this unloader is # %d',
 				nameNum(unloader), nameNum(combine), fillLevelPct, tostring(combineReadyToUnload), numUnloaders, unloaderIndex or -1)
-		if data and data.isCombine and (numUnloaders == 0 or unloaderIndex == 1) and combineReadyToUnload then
-			if combine.cp.settings.combineWantsCourseplayer:is(true) then
-				return combine
-			end
-			if mostFillLevel < fillLevelPct then
-				mostFillLevel = fillLevelPct
-				combineToReturn = combine
+			if data.isCombine and (numUnloaders == 0 or unloaderIndex == 1) and combineReadyToUnload then
+				if combine.cp.settings.combineWantsCourseplayer:is(true) then
+					return combine
+				end
+				if mostFillLevel < fillLevelPct then
+					mostFillLevel = fillLevelPct
+					combineToReturn = combine
+				end
 			end
 		end
 	end
@@ -337,6 +339,10 @@ function CombineUnloadManager:onUpdate(dt)
 end
 
 --- Remove everyone from the list who does not have a CombineAIDriver (for instance because the mode was changed)
+-- TODO: this whole assigned combine is a mess, especially when an assigned combine is sold or a towed harvester
+-- detached. There is currently no notification of the drivers who have it assigned. It would probably be the
+-- easiest to keep the list of assigned combines here, in the manager, one place only so we have one master of
+-- truth about the assignments.
 function CombineUnloadManager:removeInactiveCombines()
 	local vehiclesToRemove = {}
 	for vehicle, _ in pairs (self.combines) do

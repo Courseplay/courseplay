@@ -310,7 +310,15 @@ function CombineUnloadAIDriver:driveOnField(dt)
 
 	-- make sure if we have a combine we stay registered
 	if self.combineToUnload then
-		self.combineToUnload.cp.driver:registerUnloader(self)
+		if not self.combineToUnload.cp.driver.isACombineAIDriver then
+			-- assigned combine sold or stopped and mode changed.
+			-- TODO: handle this more gracefully
+			self:info('Lost my combine.')
+			self.combineToUnload = nil
+			self:setNewOnFieldState(self.states.WAITING_FOR_COMBINE_TO_CALL)
+		else
+			self.combineToUnload.cp.driver:registerUnloader(self)
+		end
 	end
 
 	-- safety check: combine has active AI driver
