@@ -178,9 +178,14 @@ function BaleCollectorAIDriver:findPathToNextBale()
 	if not self.bales then return end
 	local bale, d, ix = self:findClosestBale(self.bales)
 	if ix then
-		self:startPathfindingToBale(bale)
-		-- remove bale from list
-		table.remove(self.bales, ix)
+		if not self:isObstacleAhead() then
+			self:startPathfindingToBale(bale)
+			-- remove bale from list
+			table.remove(self.bales, ix)
+		else
+			self:debug('There is an obstacle ahead, backing up a bit and retry')
+			self:startReversing()
+		end
 	end
 end
 
@@ -233,10 +238,10 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 			self:debug('Finding path to next bale failed, trying next bale')
 			self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 		elseif self.pathfinderFailureCount == 2 then
-			if self:isNearFieldEdge() or self:isObstacleAhead() then
+			if self:isNearFieldEdge() then
+				self.pathfinderFailureCount = 0
 				self:debug('Finding path to next bale failed twice, we are close to the field edge, back up a bit and then try again')
-				self:startCourse(self:getStraightReverseCourse(15), 1)
-				self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+				self:startReversing()
 			else
 				self:debug('Finding path to next bale failed twice, but we are not too close to the field edge, trying another bale')
 				self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
@@ -250,7 +255,13 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 	end
 end
 
+function BaleCollectorAIDriver:startReversing()
+	self:startCourse(self:getStraightReverseCourse(10), 1)
+	self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+end
+
 function BaleCollectorAIDriver:isObstacleAhead()
+	-- check the proximity sensor first
 	if self.forwardLookingProximitySensorPack then
 		local d, vehicle, _, deg, dAvg = self.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
 		if d < 1.2 * self.turnRadius then
@@ -258,7 +269,10 @@ function BaleCollectorAIDriver:isObstacleAhead()
 			return true
 		end
 	end
-	return false
+	-- then a more thorough check
+	local leftOk, rightOk, straightOk = PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius)
+	-- if at least one is ok, we are good to go.
+	return not (leftOk or rightOk or straightOk)
 end
 
 function BaleCollectorAIDriver:isNearFieldEdge()
