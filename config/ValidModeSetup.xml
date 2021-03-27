@@ -164,23 +164,12 @@
 				<Specialization name="spec_strawHarvestPelletizer"/>
 			</Setup>
 			<Setup>
-				<!-- catch all for everything foldable, like some auto bale loaders -->
-				<Specialization name="spec_foldable"/>
+				<!-- catch all for everything with tension belts, like some auto bale loaders -->
+				<Specialization name="spec_tensionBelts"/>
 			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
-			<Setup>
-				<Specialization name="spec_sprayer"/>
-			</Setup>
-			<Setup>
-				<Specialization name="spec_sowingMachine"/>
-			</Setup>
-			<Setup>
-				<Specialization name="spec_spec_fertilizingSowingMachine"/>
-			</Setup>
-			<Setup>
-				<Specialization name="spec_treePlanter"/>
-			</Setup>
+
 		</DisallowedSetups>
 	</Mode>
 	<!--not used (mode 7)
