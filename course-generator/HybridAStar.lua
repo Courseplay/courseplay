@@ -791,7 +791,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 				end
 			end
 		elseif self.phase == self.MIDDLE then
-			if not path then return true, nil end
+			if not path then return true, nil, goalNodeInvalid end
 			local lMiddlePath = HybridAStar.length(path)
 			self:debug('Direct path is %d m', lMiddlePath)
 			-- do we even need to use the normal A star or the nodes are close enough that the hybrid A star will be fast enough?

@@ -178,9 +178,17 @@ function BaleCollectorAIDriver:findPathToNextBale()
 	if not self.bales then return end
 	local bale, d, ix = self:findClosestBale(self.bales)
 	if ix then
-		self:startPathfindingToBale(bale)
-		-- remove bale from list
-		table.remove(self.bales, ix)
+		if bale:isLoaded() then
+			self:debug('Bale %d is already loaded, skipping', bale:getId())
+			table.remove(self.bales, ix)
+		elseif not self:isObstacleAhead() then
+			self:startPathfindingToBale(bale)
+			-- remove bale from list
+			table.remove(self.bales, ix)
+		else
+			self:debug('There is an obstacle ahead, backing up a bit and retry')
+			self:startReversing()
+		end
 	end
 end
 
@@ -233,16 +241,51 @@ function BaleCollectorAIDriver:onPathfindingDoneToNextBale(path, goalNodeInvalid
 			self:debug('Finding path to next bale failed, trying next bale')
 			self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
 		elseif self.pathfinderFailureCount == 2 then
-			self:debug('Finding path to next bale failed twice, back up a bit and then try again')
-			self:startCourse(self:getStraightReverseCourse(15), 1)
-			self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+			if self:isNearFieldEdge() then
+				self.pathfinderFailureCount = 0
+				self:debug('Finding path to next bale failed twice, we are close to the field edge, back up a bit and then try again')
+				self:startReversing()
+			else
+				self:debug('Finding path to next bale failed twice, but we are not too close to the field edge, trying another bale')
+				self:setBaleCollectingState(self.states.SEARCHING_FOR_NEXT_BALE)
+			end
 		else
 			self:info('Pathfinding failed three times, giving up')
 			self.pathfinderFailureCount = 0
-			courseplay:stop(self.vehicle)
+			self:stop('WORK_END')
 		end
 		return false
 	end
+end
+
+function BaleCollectorAIDriver:startReversing()
+	self:startCourse(self:getStraightReverseCourse(10), 1)
+	self:setBaleCollectingState(self.states.REVERSING_AFTER_PATHFINDER_FAILURE)
+end
+
+function BaleCollectorAIDriver:isObstacleAhead()
+	-- check the proximity sensor first
+	if self.forwardLookingProximitySensorPack then
+		local d, vehicle, _, deg, dAvg = self.forwardLookingProximitySensorPack:getClosestObjectDistanceAndRootVehicle()
+		if d < 1.2 * self.turnRadius then
+			self:debug('Obstacle ahead at %.1f m', d)
+			return true
+		end
+	end
+	-- then a more thorough check
+	local leftOk, rightOk, straightOk = PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius)
+	-- if at least one is ok, we are good to go.
+	return not (leftOk or rightOk or straightOk)
+end
+
+function BaleCollectorAIDriver:isNearFieldEdge()
+	local x, _, z = localToWorld(AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 0)
+	local vehicleIsOnField = courseplay:isField(x, z, 1, 1)
+	x, _, z = localToWorld(AIDriverUtil.getDirectionNode(self.vehicle), 0, 0, 1.2 * self.turnRadius)
+	local isFieldInFrontOfVehicle = courseplay:isField(x, z, 1, 1)
+	self:debug('vehicle is on field: %s, field in front of vehicle: %s',
+		tostring(vehicleIsOnField), tostring(isFieldInFrontOfVehicle))
+	return vehicleIsOnField and not isFieldInFrontOfVehicle
 end
 
 function BaleCollectorAIDriver:onLastWaypoint()
