@@ -2103,7 +2103,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	--page 3 settings
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRow(vehicle,nil,'changeTurnDiameter', 3, 1, 1 )
-	self:addSettingsRow(vehicle,nil,'changeWorkWidth', 3, 2, 1 )
+	self:addSettingsRow(vehicle,nil,'changeWorkWidth', 3, 2, 1, 0.1 )
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,vehicle.cp.settings.convoyActive,'toggle', 3, 3, 1 )
 	self:addSettingsRow(vehicle,vehicle.cp.settings.convoyMinDistance,'changeByX', 3, 4, 1 )
