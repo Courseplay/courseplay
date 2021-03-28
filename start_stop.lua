@@ -1,6 +1,6 @@
 local curFile = 'start_stop.lua';
 
--- starts driving the course
+-- starts driving the course only runs on the server
 function courseplay:start(self)
 	if g_server == nil then 
 		return
@@ -9,19 +9,6 @@ function courseplay:start(self)
 	if not CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] then			-- ???
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
-
-	-- TODO: move this to TrafficCollision.lua
---	if self:getAINeedsTrafficCollisionBox() then
---		local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, self.baseDirectory, false, true, false)
---		if collisionRoot ~= nil and collisionRoot ~= 0 then
---			local collision = getChildAt(collisionRoot, 0)
---			link(getRootNode(), collision)
-
---			self.spec_aiVehicle.aiTrafficCollision = collision
-
---			delete(collisionRoot)
---		end
---	end
 
 	self.cp.numWayPoints = #self.Waypoints;
 	--self:setCpVar('numWaypoints', #self.Waypoints,courseplay.isClient);
@@ -46,6 +33,7 @@ function courseplay:start(self)
 		courseplay:setWaypointIndex(self, 1);
 	end
 
+	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
 	-- show arrow
 	self:setCpVar('distanceCheck',true,courseplay.isClient);
 	-- current position
@@ -126,6 +114,8 @@ function courseplay:start(self)
 	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
 	courseplay:setIsRecording(self, false);
+	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
+	---Do we need to set distanceCheck==true at the beginning of courseplay:start() and set now set it to false 50 lines later ??
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
@@ -146,7 +136,7 @@ function courseplay:start(self)
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
--- stops driving the course
+-- stops driving the course only runs on the server
 function courseplay:stop(self)
 	if g_server == nil then 
 		return
@@ -156,12 +146,6 @@ function courseplay:stop(self)
 		self.cp.driver:dismiss()
 	end
 	
-
-	-- TODO: move this to TrafficCollision.lua
- --   if self:getAINeedsTrafficCollisionBox() then
- --       setTranslation(self.spec_aiVehicle.aiTrafficCollision, 0, -1000, 0)
- --       self.spec_aiVehicle.aiTrafficCollisionRemoveDelay = 200
- --   end
 	--is this one still used ?? 
 	if g_currentMission.missionInfo.automaticMotorStartEnabled and self.cp.saveFuel and not self.spec_motorized.isMotorStarted then
 		courseplay:setEngineState(self, true);
@@ -172,6 +156,7 @@ function courseplay:stop(self)
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
 
+	--Is this one still needed ??
 	--stop special tools
 	for _, tool in pairs (self.cp.workTools) do
 		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
@@ -186,8 +171,6 @@ function courseplay:stop(self)
 		self.cp.directionNodeToTurnNodeLength = nil
 	end
 
-	self.cp.lastInfoText = nil
-
 	if self.cp.cruiseControlSpeedBackup then
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
@@ -200,6 +183,8 @@ function courseplay:stop(self)
 	self.cp.waitingForTrailerToUnload = false
 	courseplay:setIsRecording(self, false);
 	courseplay:setRecordingIsPaused(self, false);
+	
+	---Is this one still used as cp.isTurning isn't getting set to true ??
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
 	self.cp.fillTrigger = nil;
@@ -215,7 +200,7 @@ function courseplay:stop(self)
 	-- resetting variables
 	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
-	
+	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
 	self:setCpVar('canDrive',true,courseplay.isClient)
 	self:setCpVar('distanceCheck',false,courseplay.isClient);
 	if self.cp.checkReverseValdityPrinted then
@@ -267,7 +252,7 @@ function courseplay:stop(self)
 	--courseplay.buttons:setActiveEnabled(self, 'page2');
 end
 
-
+---Could probably be moved to AIDriverUtil if it is still needed ??
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	local startHeight = math.max(self.sizeLength,5)
 	local height = startHeight - distance

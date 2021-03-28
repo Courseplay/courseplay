@@ -1256,6 +1256,8 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 
 end
 
+---Is this one still used as cp.isTurning isn't getting set to true ??
+
 -- This is to prevent the selfPropelledPotatoHarvester from turning off while turning
 function courseplay.setIsTurnedOn(self, originalFunction, isTurnedOn, noEventSend)
 	if self.typeName and self.typeName == "selfPropelledPotatoHarvester" then
@@ -1297,6 +1299,11 @@ function courseplay:onSetBrokenAIVehicle(superFunc)
 end
 AIVehicle.onSetBroken = Utils.overwrittenFunction(AIVehicle.onSetBroken, courseplay.onSetBrokenAIVehicle)
 
+---These two AIVehicle function are overwritten for multiplayer compatibility, 
+---a better way would probably be to overwrite AIVehicle:startAIVehicle() 
+---and AIVehicle:stopAIVehicle(). For MP they could then be overloaded with
+---a boolean to make sure we set a CP driver and not a giants helper or we would need to make sure 
+---courseplay:getIsCourseplayDriving() is set on the client before any other calls.
 function courseplay:onWriteStreamAIVehicle(superFunc,streamId, connection)
 	if self:getIsCourseplayDriving() then 
 		streamWriteBool(streamId,true)
@@ -1376,7 +1383,9 @@ end;
 function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
 	local spec = self.spec_aiVehicle
     if not self:getIsAIActive() then
-        if helperIndex ~= nil then
+        --giants code from AIVehicle:startAIVehicle()
+
+		if helperIndex ~= nil then
             spec.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
         else
             spec.currentHelper = g_helperManager:getRandomHelper()
@@ -1415,6 +1424,8 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
             end
         end
 
+		--cp code
+
 		if self.cp.coursePlayerNum == nil then
 			self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
 		end;
@@ -1434,7 +1445,9 @@ end
 function courseplay:onStopCpAIDriver(reason,noEventSend)
 	local spec = self.spec_aiVehicle
     if self:getIsAIActive() then
-        if noEventSend == nil or noEventSend == false then
+        --giants code from AIVehicle:stopAIVehicle()
+		
+		if noEventSend == nil or noEventSend == false then
             local event = AIVehicleSetStartedEventCP:new(self, reason, false, nil, spec.startedFarmId)
             if g_server ~= nil then
                 g_server:broadcastEvent(event, nil, nil, self)
@@ -1471,11 +1484,14 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
             self:brake(1)
         end
 
+		--cp code
+
 		--remove from activeCoursePlayers
 		CpManager:removeFromActiveCoursePlayers(self);
 		
-		--legancy
 		self:setIsCourseplayDriving(false)
+
+		self.cp.lastInfoText = nil
     end
 end
 
