@@ -1465,11 +1465,9 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
         if self.restoreVehicleCharacter ~= nil then
             self:restoreVehicleCharacter()
         end
-        if spec.mapAIHotspot ~= nil then
-            g_currentMission:removeMapHotspot(spec.mapAIHotspot)
-            spec.mapAIHotspot:delete()
-            spec.mapAIHotspot = nil
-        end
+
+        ShowMapHotspotSetting.deleteMapHotSpot(self)
+
         self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
         if g_server ~= nil then
             WheelsUtil.updateWheelsPhysics(self, 0, spec.lastSpeedReal*spec.movingDirection, 0, true, true)
@@ -1483,7 +1481,8 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
         if self.brake ~= nil then
             self:brake(1)
         end
-
+		self:requestActionEventUpdate()
+		
 		--cp code
 
 		--remove from activeCoursePlayers

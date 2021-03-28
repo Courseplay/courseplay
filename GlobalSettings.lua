@@ -155,7 +155,6 @@ end
 
 ---Creates a mapHotSpot, for reference AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId)
 function ShowMapHotspotSetting.createMapHotSpot(vehicle,text)
-	
 	local mapAIHotspotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(vehicle)
 
 	local rawUvs = courseplay.hud:getModeUvs() 
@@ -177,6 +176,14 @@ function ShowMapHotspotSetting.createMapHotSpot(vehicle,text)
 	mapAIHotspot:setBackgroundImage()
 	mapAIHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
 	mapAIHotspot:setHasDetails(false)
-	g_currentMission:addMapHotspot(mapAIHotspot)
 	return mapAIHotspot
+end
+
+function ShowMapHotspotSetting.deleteMapHotSpot(vehicle)
+	local spec = vehicle.spec_aiVehicle
+	if spec and spec.mapAIHotspot ~= nil then		
+		g_currentMission:removeMapHotspot(spec.mapAIHotspot)
+		spec.mapAIHotspot:delete()
+		spec.mapAIHotspot = nil
+	end
 end
