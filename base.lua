@@ -1394,7 +1394,8 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
         if self.setRandomVehicleCharacter ~= nil then
             self:setRandomVehicleCharacter()
         end
-		spec.mapAIHotspot = ShowMapHotspotSetting.createMapHotSpot(self,courseplay.globalSettings.showMapHotspot)
+		local mapHotSpotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(self)
+		spec.mapAIHotspot = CpMapHotSpot.createMapHotSpot(self,mapHotSpotText)
         g_currentMission:addMapHotspot(spec.mapAIHotspot)
         spec.isActive = true
         if g_server ~= nil then
@@ -1456,7 +1457,7 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
             self:restoreVehicleCharacter()
         end
 
-        ShowMapHotspotSetting.deleteMapHotSpot(self)
+        CpMapHotSpot.deleteMapHotSpot(self)
 
         self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
         if g_server ~= nil then
@@ -1503,6 +1504,42 @@ function courseplay.isEnabled(vehicle)
 	local vehicle = vehicle
 	return vehicle and vehicle.hasCourseplaySpec and not (vehicle.spec_attachable and vehicle.spec_attachable.attacherVehicle)
 end
+
+CpMapHotSpot = {}
+---Creates a mapHotSpot, for reference AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId)
+function CpMapHotSpot.createMapHotSpot(vehicle,text)
+	---Gets the mode button uvs
+	local rawUvs = courseplay.hud:getModeUvs() 
+	local uvsSize = courseplay.hud:getIconSpriteSize()
+	local imagePath = courseplay.hud:getIconSpritePath()
+	local uvs = courseplay.utils:getUvs(rawUvs[vehicle.cp.mode], uvsSize.x,uvsSize.y)
+
+	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
+	local _, textSize = getNormalizedScreenValues(0, 9)
+	local _, textOffsetY = getNormalizedScreenValues(0, 5)
+	local width, height = getNormalizedScreenValues(18, 18)
+	local color = courseplay.utils:rgbToNormal(255, 113,  16, 1) --orange
+
+	local mapAIHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
+	mapAIHotspot:setSize(width, height)
+	mapAIHotspot:setLinkedNode(vehicle.components[1].node)
+	mapAIHotspot:setText(text)
+	mapAIHotspot:setImage(imagePath, uvs,color)
+	mapAIHotspot:setBackgroundImage()
+	mapAIHotspot:setTextOptions(textSize, nil, textOffsetY, {1, 1, 1, 1}, Overlay.ALIGN_VERTICAL_MIDDLE)
+	mapAIHotspot:setHasDetails(false)
+	return mapAIHotspot
+end
+
+function CpMapHotSpot.deleteMapHotSpot(vehicle)
+	local spec = vehicle.spec_aiVehicle
+	if spec and spec.mapAIHotspot ~= nil then		
+		g_currentMission:removeMapHotspot(spec.mapAIHotspot)
+		spec.mapAIHotspot:delete()
+		spec.mapAIHotspot = nil
+	end
+end
+
 
 -- do not remove this comment
 -- vim: set noexpandtab:
