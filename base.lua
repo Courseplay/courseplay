@@ -1356,7 +1356,7 @@ function courseplay:setWaypointIndex(vehicle, number,isRecording)
 end;
 
 function courseplay:getIsCourseplayDriving()
-	return self.cp.isDriving or false
+	return self.cp.isDriving
 end;
 
 function courseplay:setIsCourseplayDriving(active)
@@ -1394,7 +1394,7 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
         if self.setRandomVehicleCharacter ~= nil then
             self:setRandomVehicleCharacter()
         end
-		spec.mapAIHotspot = ShowMapHotspotSetting.createMapHotSpot(self)
+		spec.mapAIHotspot = ShowMapHotspotSetting.createMapHotSpot(self,courseplay.globalSettings.showMapHotspot)
         g_currentMission:addMapHotspot(spec.mapAIHotspot)
         spec.isActive = true
         if g_server ~= nil then

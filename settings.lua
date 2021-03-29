@@ -4004,7 +4004,7 @@ function SettingsContainer:validateSetting(setting)
 end
 
 function SettingsContainer.createGlobalSettings()
-	container = SettingsContainer("globalSettings")
+	local container = SettingsContainer("globalSettings")
 	container:addSetting(LoadCoursesAtStartupSetting)
 	container:addSetting(AutoFieldScanSetting)
 	container:addSetting(WorkerWagesSetting)

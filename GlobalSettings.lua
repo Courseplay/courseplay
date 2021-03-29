@@ -95,14 +95,14 @@ Wearable.onUpdateTick = Utils.appendedFunction(Wearable.onUpdateTick, AutoRepair
 
 ---@class ShowMapHotspotSetting : SettingList
 ShowMapHotspotSetting = CpObject(SettingList)
-ShowMapHotspotSetting.DEACTIVED = 0
+ShowMapHotspotSetting.DEACTIVATED = 0
 ShowMapHotspotSetting.NAME_ONLY = 1
 ShowMapHotspotSetting.NAME_AND_COURSE = 2
 
 function ShowMapHotspotSetting:init()
 	SettingList.init(self, 'showMapHotspot', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', nil,
 		{ 
-			ShowMapHotspotSetting.DEACTIVED,
+			ShowMapHotspotSetting.DEACTIVATED,
 			ShowMapHotspotSetting.NAME_ONLY,
 			ShowMapHotspotSetting.NAME_AND_COURSE
 		},
@@ -154,8 +154,8 @@ function ShowMapHotspotSetting:getMapHotspotText(vehicle)
 end
 
 ---Creates a mapHotSpot, for reference AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId)
-function ShowMapHotspotSetting.createMapHotSpot(vehicle,text)
-	local mapAIHotspotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(vehicle)
+function ShowMapHotspotSetting.createMapHotSpot(vehicle,showMapHotspotSetting)
+	local mapAIHotspotText = showMapHotspotSetting:getMapHotspotText(vehicle)
 
 	local rawUvs = courseplay.hud:getModeUvs() 
 	local uvsSize = courseplay.hud:getIconSpriteSize()

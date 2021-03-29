@@ -209,7 +209,7 @@ function courseplay:stop(self)
 	--courseplay.buttons:setActiveEnabled(self, 'page2');
 end
 
----Could probably be moved to AIDriverUtil if it is still needed ??
+---TODO: move this to TrafficCollision.lua
 function courseplay:findVehicleHeights(transformId, x, y, z, distance)
 	local startHeight = math.max(self.sizeLength,5)
 	local height = startHeight - distance
