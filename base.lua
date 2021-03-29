@@ -424,10 +424,6 @@ function courseplay:onEnterVehicle()
 		courseplay:setMouseCursor(self, true);
 	end;
 
-	if self:getIsCourseplayDriving() and self.steeringEnabled then
-		self.steeringEnabled = false;
-	end;
-
 	--show visual i3D waypoint signs only when in vehicle
 	courseplay.signs:setSignsVisibility(self);
 end
@@ -822,16 +818,10 @@ function courseplay:setInfoText(vehicle, text)
 		return
 	end
 	if vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText ~= text then
-	--	vehicle:setCpVar('infoText',text,courseplay.isClient)
-	--	vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 		vehicle.cp.infoText = text
 		vehicle.cp.lastInfoText = text
---		vehicle.cp.infoTextNilSent = false
 	elseif vehicle.cp.infoText ~= text and  text ~= nil and vehicle.cp.lastInfoText == text then
---		vehicle:setCpVar('infoText',text,true)
 		vehicle.cp.infoText = text
---		vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
---		vehicle.cp.infoTextNilSent = false
 	end;
 end;
 
@@ -896,7 +886,7 @@ function courseplay:setVehicleWaypoints(vehicle, waypoints)
 	vehicle.cp.numWaypoints = #waypoints
 	courseplay.signs:updateWaypointSigns(vehicle, "current");
 	if vehicle.cp.numWaypoints > 3 then
-		vehicle:setCpVar('canDrive',true,courseplay.isClient);
+		vehicle.cp.canDrive = true
 	end
 end;
 
@@ -1328,7 +1318,7 @@ function courseplay:onReadStreamAIVehicle(superFunc,streamId, connection)
 end
 AIVehicle.onReadStream = Utils.overwrittenFunction(AIVehicle.onReadStream, courseplay.onReadStreamAIVehicle)
 
-
+---Disables fertilizing while sowing, if SowingMachineFertilizerEnabledSetting is false.
 function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, workArea, dt)
 	local rootVehicle = tool:getRootVehicle()
 	if courseplay:isAIDriverActive(rootVehicle) then
@@ -1354,11 +1344,8 @@ function courseplay:setWaypointIndex(vehicle, number,isRecording)
 		vehicle.cp.course.hasChangedTheWaypointIndex = true
 		if isRecording then
 			vehicle.cp.waypointIndex = number
-			--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
 		else
-		--	vehicle:setCpVar('waypointIndex',number,courseplay.isClient);
 			vehicle.cp.waypointIndex = number
---			vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 		end
 		if vehicle.cp.waypointIndex > 1 then
 			vehicle.cp.previousWaypointIndex = vehicle.cp.waypointIndex - 1;
@@ -1373,7 +1360,6 @@ function courseplay:getIsCourseplayDriving()
 end;
 
 function courseplay:setIsCourseplayDriving(active)
-	--self:setCpVar('isDriving',active,courseplay.isClient)
 	self.cp.isDriving = active
 end;
 
@@ -1434,8 +1420,12 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
 		CpManager:addToActiveCoursePlayers(self)
 		
 		
-		--legancy 
 		self:setIsCourseplayDriving(true)
+		self.cp.distanceCheck = false
+
+		courseplay:setIsRecording(self, false);
+		courseplay:setRecordingIsPaused(self, false);
+
     end
 end
 
@@ -1485,12 +1475,26 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
 		
 		--cp code
 
+		--remove any global info texts
+		if g_server ~= nil then
+			for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
+				if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
+					CpManager:setGlobalInfoText(self, refIdx, true);
+				end;
+			end;
+		end
+
 		--remove from activeCoursePlayers
 		CpManager:removeFromActiveCoursePlayers(self);
 		
 		self:setIsCourseplayDriving(false)
 
+		self.cp.distanceCheck = false 
+		self.cp.canDrive = true
+		self.cp.infoText = nil
 		self.cp.lastInfoText = nil
+		courseplay:setIsRecording(self, false);
+		courseplay:setRecordingIsPaused(self, false);
     end
 end
 

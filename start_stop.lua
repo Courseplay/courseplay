@@ -11,7 +11,6 @@ function courseplay:start(self)
 	end;
 
 	self.cp.numWayPoints = #self.Waypoints;
-	--self:setCpVar('numWaypoints', #self.Waypoints,courseplay.isClient);
 	if self.cp.numWaypoints < 1 then
 		return
 	end
@@ -22,10 +21,6 @@ function courseplay:start(self)
 	courseplay.alreadyPrinted = {}
 
 	self.cpTrafficCollisionIgnoreList = {}
-	
-	self:setIsCourseplayDriving(false);
-	courseplay:setIsRecording(self, false);
-	courseplay:setRecordingIsPaused(self, false);
 
 	courseplay:resetTools(self)
 
@@ -33,9 +28,8 @@ function courseplay:start(self)
 		courseplay:setWaypointIndex(self, 1);
 	end
 
-	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
 	-- show arrow
-	self:setCpVar('distanceCheck',true,courseplay.isClient);
+--	self.cp.distanceCheck = true
 	-- current position
 	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
 
@@ -107,16 +101,13 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
-	self.cp.aiLightsTypesMaskBackup  = self.spec_lights.aiLightsTypesMask
 	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
 
 	-- ok i am near the waypoint, let's go
 	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
 	self.checkSpeedLimit = false
-	courseplay:setIsRecording(self, false);
-	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
 	---Do we need to set distanceCheck==true at the beginning of courseplay:start() and set now set it to false 50 lines later ??
-	self:setCpVar('distanceCheck',false,courseplay.isClient);
+--	self.cp.distanceCheck = false
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
@@ -156,53 +147,31 @@ function courseplay:stop(self)
 		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
 	end
 
-	--Is this one still needed ??
-	--stop special tools
-	for _, tool in pairs (self.cp.workTools) do
-		--  vehicle, workTool, unfold, lower, turnOn, allowedToDrive, cover, unload, ridgeMarker,forceSpeedLimit)
-		if tool.cp.originalCapacities then
-			for index,fillUnit in pairs(tool:getFillUnits()) do
-				fillUnit.capacity =  tool.cp.originalCapacities[index]
-			end
-			tool.cp.originalCapacities = nil
-		end
-	end
 	if self.cp.directionNodeToTurnNodeLength ~= nil then
 		self.cp.directionNodeToTurnNodeLength = nil
 	end
 
-	if self.cp.cruiseControlSpeedBackup then
+	---This is not working correctly on the server!
+	if self.cp.cruiseControlSpeedBackup then		
 		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
 		self.cp.cruiseControlSpeedBackup = nil;
 	end; 
 
-	self.spec_lights.aiLightsTypesMask = self.cp.aiLightsTypesMaskBackup
 		
 	self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.settings.forcedToStop:set(false)
 	self.cp.waitingForTrailerToUnload = false
-	courseplay:setIsRecording(self, false);
-	courseplay:setRecordingIsPaused(self, false);
 	
 	---Is this one still used as cp.isTurning isn't getting set to true ??
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
 	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
-	-- deactivate beacon and hazard lights
-	if self.beaconLightsActive then
-		self:setBeaconLightsVisibility(false);
-	end;
-	if self.spec_lights.turnLightState and self.spec_lights.turnLightState ~= Lights.TURNLIGHT_OFF then
-		self:setTurnLightState(Lights.TURNLIGHT_OFF);
-	end;
 
 	-- resetting variables
 	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
-	---Seems like this variable only get set on the server anyway, so no need to use setCpVar() ??
-	self:setCpVar('canDrive',true,courseplay.isClient)
-	self:setCpVar('distanceCheck',false,courseplay.isClient);
+
 	if self.cp.checkReverseValdityPrinted then
 		self.cp.checkReverseValdityPrinted = false
 
@@ -232,18 +201,6 @@ function courseplay:stop(self)
 	
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;
-
-	--remove any local and global info texts
-	if g_server ~= nil then
-		courseplay:setInfoText(self, nil);
-
-		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
-			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				CpManager:setGlobalInfoText(self, refIdx, true);
-			end;
-		end;
-	end
-	
 	
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
