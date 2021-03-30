@@ -151,11 +151,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		if #vehicle.Waypoints == 0 then
 			vehicle.cp.numCourses = 1;
 			vehicle.Waypoints = course.waypoints
-			--vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
 			vehicle.cp.numWayPoints = #vehicle.Waypoints;
-		--	vehicle:setCpVar('currentCourseName',course.name,courseplay.isClient)
 			vehicle.cp.currentCourseName = course.name
---			vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 			-- for turn maneuver
 			vehicle.cp.courseWorkWidth = course.workWidth;
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
@@ -275,11 +272,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				table.insert(vehicle.Waypoints, course2[i]);
 			end;
 			vehicle.cp.numWayPoints = #vehicle.Waypoints;
-			--vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
 			vehicle.cp.numCourses = vehicle.cp.numCourses + 1;
-		--	vehicle:setCpVar('currentCourseName',string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES')),courseplay.isClient);
 			vehicle.cp.currentCourseName = string.format("%d %s", vehicle.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'))
---			vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 			-- for turn maneuver
 			if not vehicle.cp.courseWorkWidth then
 				vehicle.cp.courseWorkWidth = course.workWidth;
@@ -325,9 +319,7 @@ function courseplay:copyCourse(vehicle)
 		local src = vehicle.cp.copyCourseFromDriver;
 
 		vehicle.Waypoints = src.Waypoints;
-	--	vehicle:setCpVar('currentCourseName',src.cp.currentCourseName,courseplay.isClient);
 		vehicle.cp.currentCourseName = src.cp.currentCourseName
-	--	vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 		vehicle.cp.loadedCourses = src.cp.loadedCourses;
 		vehicle.cp.numCourses = src.cp.numCourses;
 		courseplay:setWaypointIndex(vehicle, 1);
@@ -396,9 +388,7 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.curTarget.x, vehicle.cp.curTarget.y, vehicle.cp.curTarget.z = nil, nil, nil;
 	vehicle.cp.nextTargets = {};
 	vehicle.cp.loadedCourses = {}
---	vehicle:setCpVar('currentCourseName',nil,courseplay.isClient)
 	vehicle.cp.currentCourseName = nil
---	vehicle:raiseDirtyFlags(vehicle:getNextDirtyFlag())
 	vehicle.cp.recordingTimer = 1;
 	vehicle.Waypoints = {}
 	vehicle:setCpVar('canDrive',false,courseplay.isClient);

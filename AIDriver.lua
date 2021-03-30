@@ -319,7 +319,9 @@ function AIDriver:dismiss()
 	if self.collisionDetector then
 		self.collisionDetector:reset()		-- restore the default direction of the colli boxes
 	end
+	---disable turn lights and beacon lights
 	self.vehicle:setBeaconLightsVisibility(false)
+	self.vehicle:setTurnLightState(Lights.TURNLIGHT_OFF)
 	self:clearAllInfoTexts()
 	self:stop()
 	self.active = false

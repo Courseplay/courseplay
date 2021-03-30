@@ -39,7 +39,6 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 
 	courseplay:resetTools(vehicle)
 	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
-
 	vehicle.cp.settings:validateCurrentValues()
 
 	-- reset tool offset to the preconfigured value if exists
@@ -581,12 +580,6 @@ function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
 	end
 	local fillUnits = workTool:getFillUnits()
 	for index,fillUnit in pairs(fillUnits) do
-		if mode == 10 and workTool.cp.hasSpecializationLeveler then
-			if not workTool.cp.originalCapacities then
-				workTool.cp.originalCapacities = {}
-				workTool.cp.originalCapacities[index]= fillUnit.capacity
-			end
-		end
 		-- TODO: why not fillUnit.fillType == FillType.DIESEL? answer: because you may have diesel in your trailer
 		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL)
 				or index == workTool:getConsumerFillUnitIndex(FillType.DEF)

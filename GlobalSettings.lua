@@ -91,3 +91,51 @@ function AutoRepairSetting:onUpdateTick(dt, isActive, isActiveForInput, isSelect
 	end
 end
 Wearable.onUpdateTick = Utils.appendedFunction(Wearable.onUpdateTick, AutoRepairSetting.onUpdateTick)
+
+
+---@class ShowMapHotspotSetting : SettingList
+ShowMapHotspotSetting = CpObject(SettingList)
+ShowMapHotspotSetting.DEACTIVATED = 0
+ShowMapHotspotSetting.NAME_ONLY = 1
+ShowMapHotspotSetting.NAME_AND_COURSE = 2
+
+function ShowMapHotspotSetting:init()
+	SettingList.init(self, 'showMapHotspot', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', 'COURSEPLAY_INGAMEMAP_ICONS_SHOWTEXT', nil,
+		{ 
+			ShowMapHotspotSetting.DEACTIVATED,
+			ShowMapHotspotSetting.NAME_ONLY,
+			ShowMapHotspotSetting.NAME_AND_COURSE
+		},
+		{ 	
+			'COURSEPLAY_DEACTIVATED',
+			'COURSEPLAY_NAME_ONLY',
+			'COURSEPLAY_NAME_AND_COURSE'
+		}
+		)
+	self:set(ShowMapHotspotSetting.NAME_ONLY)
+end
+
+---If the setting changes force update all mapHotSpot texts
+function ShowMapHotspotSetting:onChange()
+	self:updateHotSpotTexts()
+end
+
+function ShowMapHotspotSetting:updateHotSpotTexts()
+	if CpManager.activeCoursePlayers then
+		for _,vehicle in pairs(CpManager.activeCoursePlayers) do
+			if vehicle.spec_aiVehicle.mapAIHotspot then
+				vehicle.spec_aiVehicle.mapAIHotspot:setText(self:getMapHotspotText(vehicle))
+			end
+		end
+	end
+end
+
+function ShowMapHotspotSetting:getMapHotspotText(vehicle)
+	local text = ''
+	if self:is(ShowMapHotspotSetting.NAME_ONLY) then 
+		text = string.format("%s%s\n",text,nameNum(vehicle, true))
+	elseif self:is(ShowMapHotspotSetting.NAME_AND_COURSE) then
+		text = string.format("%s%s\n%s",text,nameNum(vehicle, true),vehicle.cp.currentCourseName or courseplay:loc('COURSEPLAY_TEMP_COURSE'))
+	end
+	return text
+end
