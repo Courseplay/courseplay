@@ -1828,7 +1828,6 @@ function AIDriver:updateAILowFrequency(superFunc,dt)
 		superFunc(self,dt)
 	end
 end
-AIVehicle.updateAILowFrequency = Utils.overwrittenFunction(AIVehicle.updateAILowFrequency, AIDriver.updateAILowFrequency)
 
 function AIDriver:getAllowReversePathfinding()
 	return self.allowReversePathfinding and self.vehicle.cp.settings.allowReverseForPathfindingInTurns:is(true)

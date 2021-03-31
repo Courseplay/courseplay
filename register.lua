@@ -22,6 +22,11 @@ function courseplay.registerEventListeners(vehicleType)
 	SpecializationUtil.registerEventListener(vehicleType, "onWriteUpdateStream", courseplay)
 end
 
+function courseplay.registerOverwrittenFunctions(vehicleType)
+    SpecializationUtil.registerOverwrittenFunction(vehicleType, "updateAILowFrequency", AIDriver.updateAILowFrequency)
+end
+
+
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
 	--print(string.format("%s: courseplay:onRegisterActionEvents(isActiveForInput(%s) (%s), isActiveForInputIgnoreSelection(%s))",tostring(self:getName()),tostring(isActiveForInput),tostring(self:getIsActiveForInput(true, true)),tostring(isActiveForInputIgnoreSelection)))
 	if self:getIsActiveForInput(true, true) then 
