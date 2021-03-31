@@ -1366,9 +1366,9 @@ end;
 --the same code as giants AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
 --All the code that has to be run on Server and Client from the "start_stop" file has to get in here
-function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
-	local spec = self.spec_aiVehicle
-    if not self:getIsAIActive() then
+function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFarmId)
+	local spec = vehicle.spec_aiVehicle
+    if not vehicle:getIsAIActive() then
         --giants code from AIVehicle:startAIVehicle()
 
 		if helperIndex ~= nil then
@@ -1390,18 +1390,18 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
             end
         end
         AIVehicle.numHirablesHired = AIVehicle.numHirablesHired + 1
-        AIVehicle.hiredHirables[self] = self
-        if self.setRandomVehicleCharacter ~= nil then
-            self:setRandomVehicleCharacter()
+        AIVehicle.hiredHirables[vehicle] = vehicle
+        if vehicle.setRandomVehicleCharacter ~= nil then
+            vehicle:setRandomVehicleCharacter()
         end
-		local mapHotSpotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(self)
-		spec.mapAIHotspot = CpMapHotSpot.createMapHotSpot(self,mapHotSpotText)
+		local mapHotSpotText = courseplay.globalSettings.showMapHotspot:getMapHotspotText(vehicle)
+		spec.mapAIHotspot = CpMapHotSpot.createMapHotSpot(vehicle,mapHotSpotText)
         g_currentMission:addMapHotspot(spec.mapAIHotspot)
         spec.isActive = true
         if g_server ~= nil then
-            self:updateAIImplementData()
+            vehicle:updateAIImplementData()
         end
-        if self:getAINeedsTrafficCollisionBox() then
+        if vehicle:getAINeedsTrafficCollisionBox() then
             local collisionRoot = g_i3DManager:loadSharedI3DFile(AIVehicle.TRAFFIC_COLLISION_BOX_FILENAME, g_currentMission.baseDirectory, false, true, false)
             if collisionRoot ~= nil and collisionRoot ~= 0 then
                 local collision = getChildAt(collisionRoot, 0)
@@ -1413,19 +1413,19 @@ function courseplay:onStartCpAIDriver(helperIndex,noEventSend, startedFarmId)
 
 		--cp code
 
-		if self.cp.coursePlayerNum == nil then
-			self.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(self)
+		if vehicle.cp.coursePlayerNum == nil then
+			vehicle.cp.coursePlayerNum = CpManager:addToTotalCoursePlayers(vehicle)
 		end;
 		
 		--add to activeCoursePlayers
-		CpManager:addToActiveCoursePlayers(self)
+		CpManager:addToActiveCoursePlayers(vehicle)
 		
 		
-		self:setIsCourseplayDriving(true)
-		self.cp.distanceCheck = false
+		vehicle:setIsCourseplayDriving(true)
+		vehicle.cp.distanceCheck = false
 
-		courseplay:setIsRecording(self, false);
-		courseplay:setRecordingIsPaused(self, false);
+		courseplay:setIsRecording(vehicle, false);
+		courseplay:setRecordingIsPaused(vehicle, false);
 
     end
 end
@@ -1433,15 +1433,15 @@ end
 --the same code as giants AIVehicle:stopAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
 --All the code that has to be run on Server and Client from the "start_stop" file has to get in here
-function courseplay:onStopCpAIDriver(reason,noEventSend)
-	local spec = self.spec_aiVehicle
-    if self:getIsAIActive() then
+function courseplay.onStopCpAIDriver(vehicle,reason,noEventSend)
+	local spec = vehicle.spec_aiVehicle
+    if vehicle:getIsAIActive() then
         --giants code from AIVehicle:stopAIVehicle()
 		
 		if noEventSend == nil or noEventSend == false then
-            local event = AIVehicleSetStartedEventCP:new(self, reason, false, nil, spec.startedFarmId)
+            local event = AIVehicleSetStartedEventCP:new(vehicle, reason, false, nil, spec.startedFarmId)
             if g_server ~= nil then
-                g_server:broadcastEvent(event, nil, nil, self)
+                g_server:broadcastEvent(event, nil, nil, vehicle)
             else
                 g_client:getServerConnection():sendEvent(event)
             end
@@ -1452,50 +1452,50 @@ function courseplay:onStopCpAIDriver(reason,noEventSend)
             g_farmManager:updateFarmStats(spec.startedFarmId, "workersHired", -1)
         end
         AIVehicle.numHirablesHired = math.max(AIVehicle.numHirablesHired - 1, 0)
-        AIVehicle.hiredHirables[self] = nil
-        if self.restoreVehicleCharacter ~= nil then
-            self:restoreVehicleCharacter()
+        AIVehicle.hiredHirables[vehicle] = nil
+        if vehicle.restoreVehicleCharacter ~= nil then
+            vehicle:restoreVehicleCharacter()
         end
 
-        CpMapHotSpot.deleteMapHotSpot(self)
+        CpMapHotSpot.deleteMapHotSpot(vehicle)
 
-        self:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
+        vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
         if g_server ~= nil then
-            WheelsUtil.updateWheelsPhysics(self, 0, spec.lastSpeedReal*spec.movingDirection, 0, true, true)
+            WheelsUtil.updateWheelsPhysics(vehicle, 0, spec.lastSpeedReal*spec.movingDirection, 0, true, true)
         end
         spec.isActive = false
         spec.isTurning = false
         -- move the collision far under the ground
-        if self:getAINeedsTrafficCollisionBox() then
+        if vehicle:getAINeedsTrafficCollisionBox() then
             setTranslation(spec.aiTrafficCollision, 0, -1000, 0)
         end
-        if self.brake ~= nil then
-            self:brake(1)
+        if vehicle.brake ~= nil then
+            vehicle:brake(1)
         end
-		self:requestActionEventUpdate()
+		vehicle:requestActionEventUpdate()
 		
 		--cp code
 
 		--remove any global info texts
 		if g_server ~= nil then
 			for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
-				if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-					CpManager:setGlobalInfoText(self, refIdx, true);
+				if vehicle.cp.activeGlobalInfoTexts[refIdx] ~= nil then
+					CpManager:setGlobalInfoText(vehicle, refIdx, true);
 				end;
 			end;
 		end
 
 		--remove from activeCoursePlayers
-		CpManager:removeFromActiveCoursePlayers(self);
+		CpManager:removeFromActiveCoursePlayers(vehicle);
 		
-		self:setIsCourseplayDriving(false)
+		vehicle:setIsCourseplayDriving(false)
 
-		self.cp.distanceCheck = false 
-		self.cp.canDrive = true
-		self.cp.infoText = nil
-		self.cp.lastInfoText = nil
-		courseplay:setIsRecording(self, false);
-		courseplay:setRecordingIsPaused(self, false);
+		vehicle.cp.distanceCheck = false 
+		vehicle.cp.canDrive = true
+		vehicle.cp.infoText = nil
+		vehicle.cp.lastInfoText = nil
+		courseplay:setIsRecording(vehicle, false);
+		courseplay:setRecordingIsPaused(vehicle, false);
     end
 end
 
