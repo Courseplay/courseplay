@@ -1420,7 +1420,9 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
 		--add to activeCoursePlayers
 		CpManager:addToActiveCoursePlayers(vehicle)
 		
-		
+		---Making sure the client hud gets correctly updated.
+		vehicle.cp.driver:refreshHUD()
+
 		vehicle:setIsCourseplayDriving(true)
 		vehicle.cp.distanceCheck = false
 
@@ -1489,6 +1491,9 @@ function courseplay.onStopCpAIDriver(vehicle,reason,noEventSend)
 		CpManager:removeFromActiveCoursePlayers(vehicle);
 		
 		vehicle:setIsCourseplayDriving(false)
+
+		---Making sure the client hud gets correctly updated.
+		vehicle.cp.driver:refreshHUD()
 
 		vehicle.cp.distanceCheck = false 
 		vehicle.cp.canDrive = true
