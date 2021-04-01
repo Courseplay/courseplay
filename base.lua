@@ -1370,7 +1370,7 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
 	local spec = vehicle.spec_aiVehicle
     if not vehicle:getIsAIActive() then
         --giants code from AIVehicle:startAIVehicle()
-
+		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'Started cp driver, farmID: %s, helperIndex: %s', tostring(startedFarmId),tostring(helperIndex))
 		if helperIndex ~= nil then
             spec.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
         else
@@ -1382,9 +1382,9 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
             g_farmManager:updateFarmStats(startedFarmId, "workersHired", 1)
         end
         if noEventSend == nil or noEventSend == false then
-            local event = AIVehicleSetStartedEventCP:new(self, nil, true, spec.currentHelper, startedFarmId)
+            local event = AIVehicleSetStartedEventCP:new(vehicle, nil, true, spec.currentHelper, startedFarmId)
             if g_server ~= nil then
-                g_server:broadcastEvent(event, nil, nil, self)
+                g_server:broadcastEvent(event, nil, nil, vehicle)
             else
                 g_client:getServerConnection():sendEvent(event)
             end
