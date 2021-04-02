@@ -636,9 +636,7 @@ end
 function FieldworkAIDriver:shouldDriverBeReleased()
 	if (self.vehicle:getIsEntered() or self.vehicle:getIsControlled()) and self.shouldBeReleasedOnceEntered then
 		self.shouldBeReleasedOnceEntered = nil
-		--unitl there is leftover code in courseplay:stop() we need to use it
-		--setCourseplayFunc used as a way to call it on server and client
-		self.vehicle:setCourseplayFunc("stop", nil, false);
+		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_REGULAR)
 	end
 end
 

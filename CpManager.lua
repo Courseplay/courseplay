@@ -498,7 +498,7 @@ end;
 function CpManager:devStopAll()
 	if g_server ~= nil then
 		for _,vehicle in pairs (self.activeCoursePlayers) do
-			courseplay:stop(vehicle);
+			courseplay.onStopCpAIDriver(vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		end
 	else
 		CommandEvents.sendEvent("devStopAll")

@@ -671,7 +671,7 @@ function AIDriver:onEndCourse()
 		if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
 			self:debug('Let AutoDrive park this vehicle')
 			-- we are not needed here anymore
-			courseplay:stop(self.vehicle)
+			courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_REGULAR)
 			-- TODO: encapsulate this in an AutoDriveInterface class
 			local parkDestination = self.vehicle.spec_autodrive:GetParkDestination(self.vehicle)
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, parkDestination, -3, nil, nil, nil)

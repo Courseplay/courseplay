@@ -36,7 +36,7 @@ function TriggerShovelModeAIDriver:start(startingPoint)
 	self:findShovel(self.vehicle)
 	if not self.shovel then 
 		self:error("Error: shovel not found!!")
-		courseplay:stop(self.vehicle)
+		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		return
 	end
 	self:setShovelState(self.states.STATE_TRANSPORT, 'setup');

@@ -688,7 +688,7 @@ function courseplay:onUpdate(dt)
 
 		if not status then
 			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
-			courseplay:stop(self)
+			courseplay.onStopCpAIDriver(self,AIVehicle.STOP_REASON_UNKOWN)
 			return
 		end
 	end
@@ -747,7 +747,7 @@ function courseplay:onUpdateTick(dt)
 		local status, err = xpcall(self.cp.driver.updateTick, function(err) printCallstack(); return err end, self.cp.driver, dt)
 		if not status then
 			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
-			courseplay:stop(self)
+			courseplay.onStopCpAIDriver(self,AIVehicle.STOP_REASON_UNKOWN)
 			return
 		end
 	end
@@ -1281,7 +1281,7 @@ AIVehicle.stopAIVehicle = Utils.overwrittenFunction(AIVehicle.stopAIVehicle, cou
 function courseplay:onSetBrokenAIVehicle(superFunc)
 	if self:getIsCourseplayDriving() then
 		if g_server ~= nil then 
-			courseplay:stop(self)
+			courseplay.onStopCpAIDriver(self,AIVehicle.STOP_REASON_UNKOWN)
 		end
 	else 
 		superFunc(self)

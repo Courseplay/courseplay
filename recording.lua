@@ -115,8 +115,6 @@ function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
 	courseplay:setIsRecording(vehicle, false);
 	courseplay:setRecordingIsPaused(vehicle, false);
-	--probably not needed as courseplay:stop called it already!!
---	vehicle:setIsCourseplayDriving(false);
 	vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
 	vehicle:setCpVar('canDrive',true,courseplay.isClient);
 	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex - 1;
