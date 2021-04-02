@@ -1,6 +1,6 @@
 local curFile = 'start_stop.lua';
 
--- starts driving the course only runs on the server
+-- starts driving the course only runs on the server!
 function courseplay:start(self)
 	if g_server == nil then 
 		return
@@ -121,13 +121,10 @@ function courseplay:start(self)
 		self.cp.driver:delete()
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
 	end
-	---Make sure the clients and the server have the same farmId
-	local farmIndex = self.spec_enterable.controllerFarmId or self:getOwnerFarmId()
-	courseplay.onStartCpAIDriver(self,nil, false, farmIndex)
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 
--- stops driving the course only runs on the server
+-- stops driving the course only runs on the server!
 function courseplay:stop(self)
 	if g_server == nil then 
 		return
@@ -204,7 +201,6 @@ function courseplay:stop(self)
 	
 	--validation: can switch mode?
 	courseplay:validateCanSwitchMode(self);
-	courseplay.onStopCpAIDriver(self,AIVehicle.STOP_REASON_USER)
 	-- reactivate load/add/delete course buttons
 	--courseplay.buttons:setActiveEnabled(self, 'page2');
 end

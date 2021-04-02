@@ -2034,6 +2034,14 @@ function courseplay.hud:disableButtonWithFunction(vehicle,page, func,class)
 	end
 end
 
+---Should consider making all simple row buttons callback functions 
+---into Action events callbacks, this one would make it easier
+---for multiplayer and also for easier implementations of 
+---key action events.
+---For example: giants AIVehicle.actionEventToggleAIState(self, actionName, inputValue, callbackState, isAnalog)
+---For cp : ActionEvents.actionEventStartStop(self, actionName, inputValue, callbackState, isAnalog)
+---ActionEvents.actionEventStartStopRecording(self, actionName, inputValue, callbackState, isAnalog) and so on ...
+
 --call the setup for the different modes
 function courseplay.hud:setAIDriverContent(vehicle)
 	self:debug(vehicle,"setAIDriverContent")
@@ -2042,7 +2050,9 @@ function courseplay.hud:setAIDriverContent(vehicle)
 		
 	--page 1 driving
 	self:enablePageButton(vehicle,1)
-	self:addRowButton(vehicle,nil,'startStop', 1, 1, 1 )
+	---Only call this function 'startStop' locally, like an actionEvent.
+	---Reference should be: giants AIVehicle.actionEventToggleAIState() 
+	self:addRowButton(vehicle,nil,'startStop', 1, 1, 1 ):setOnlyCallLocal()
 	self:addRowButton(vehicle,nil,'start_record', 1, 1, 2 )
 	self:addRowButton(vehicle,vehicle.cp.settings.startingPoint,'next', 1, 2, 2 )
 	self:addRowButton(vehicle,nil,'setDriveNow', 1, 2, 3 )

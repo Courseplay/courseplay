@@ -1370,7 +1370,7 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
 	local spec = vehicle.spec_aiVehicle
     if not vehicle:getIsAIActive() then
         --giants code from AIVehicle:startAIVehicle()
-		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,'Started cp driver, farmID: %s, helperIndex: %s', tostring(startedFarmId),tostring(helperIndex))
+		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'Started cp driver, farmID: %s, helperIndex: %s', tostring(startedFarmId),tostring(helperIndex))
 		if helperIndex ~= nil then
             spec.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
         else
@@ -1420,15 +1420,17 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
 		--add to activeCoursePlayers
 		CpManager:addToActiveCoursePlayers(vehicle)
 		
-		---Making sure the client hud gets correctly updated.
-		vehicle.cp.driver:refreshHUD()
 
 		vehicle:setIsCourseplayDriving(true)
 		vehicle.cp.distanceCheck = false
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
-
+		if g_server then 
+			courseplay:start(vehicle)
+		end
+		---Making sure the client hud gets correctly updated.
+		vehicle.cp.driver:refreshHUD()
     end
 end
 
@@ -1439,7 +1441,7 @@ function courseplay.onStopCpAIDriver(vehicle,reason,noEventSend)
 	local spec = vehicle.spec_aiVehicle
     if vehicle:getIsAIActive() then
         --giants code from AIVehicle:stopAIVehicle()
-		
+		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'Stopped cp driver')
 		if noEventSend == nil or noEventSend == false then
             local event = AIVehicleSetStartedEventCP:new(vehicle, reason, false, nil, spec.startedFarmId)
             if g_server ~= nil then
@@ -1492,15 +1494,17 @@ function courseplay.onStopCpAIDriver(vehicle,reason,noEventSend)
 		
 		vehicle:setIsCourseplayDriving(false)
 
-		---Making sure the client hud gets correctly updated.
-		vehicle.cp.driver:refreshHUD()
-
 		vehicle.cp.distanceCheck = false 
 		vehicle.cp.canDrive = true
 		vehicle.cp.infoText = nil
 		vehicle.cp.lastInfoText = nil
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
+		if g_server then 
+			courseplay:stop(vehicle)
+		end
+		---Making sure the client hud gets correctly updated.
+		vehicle.cp.driver:refreshHUD()
     end
 end
 

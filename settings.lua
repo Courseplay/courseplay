@@ -73,14 +73,20 @@ function courseplay:toggleOppositeTurnMode(vehicle)
 	vehicle.cp.oppositeTurnMode = not vehicle.cp.oppositeTurnMode
 end
 
+---This function gets only called locally like an actionEvent,
+---For reference: giants AIVehicle.actionEventToggleAIState() 
 function courseplay:startStop(vehicle)
 	if vehicle.cp.canDrive then
+		---These to function also handle the sync for multiplayer
 		if not vehicle:getIsCourseplayDriving() then
-			courseplay:start(vehicle);
+		
+			courseplay.onStartCpAIDriver(vehicle,nil,false, g_currentMission.player.farmId)
 		else
-			courseplay:stop(vehicle);
+			courseplay.onStopCpAIDriver(vehicle,AIVehicle.STOP_REASON_USER)
 		end
 	else
+		---Not sure why this is hear might be related to an key actionEvent,
+		---Should currently be broken in multiplayer now...
 		courseplay:start_record(vehicle);
 	end
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
