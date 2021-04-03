@@ -1872,6 +1872,7 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 		return nil
 	end
 	local c = Course(vehicle, adCourse)
+	c:addReverseForAutoDriveCourse()
 	course.waypoints = c:createLegacyCourse()
 	return course
 end
