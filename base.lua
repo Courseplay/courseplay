@@ -1363,12 +1363,22 @@ function courseplay:setIsCourseplayDriving(active)
 	self.cp.isDriving = active
 end;
 
+--- Explicit interface function for other mods (like AutoDrive) to start the Courseplay driver (by vehicle:startCpDriver())
+function courseplay:startCpDriver()
+	courseplay.onStartCpAIDriver(self, nil, false, g_currentMission.player.farmId)
+end
+
+--- Explicit interface function for other mods (like AutoDrive) to stop the Courseplay driver (by vehicle:stopCpDriver())
+function courseplay:stopCpDriver()
+	courseplay.onStopCpAIDriver(self, AIVehicle.STOP_REASON_REGULAR)
+end
+
 --the same code as giants AIVehicle:startAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
 --All the code that has to be run on Server and Client from the "start_stop" file has to get in here
 function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFarmId)
 	local spec = vehicle.spec_aiVehicle
-    if not vehicle:getIsAIActive() then
+    if not vehicle:getIsCourseplayDriving() then
         --giants code from AIVehicle:startAIVehicle()
 		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'Started cp driver, farmID: %s, helperIndex: %s', tostring(startedFarmId),tostring(helperIndex))
 		if helperIndex ~= nil then
@@ -1437,9 +1447,9 @@ end
 --the same code as giants AIVehicle:stopAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp
 
 --All the code that has to be run on Server and Client from the "start_stop" file has to get in here
-function courseplay.onStopCpAIDriver(vehicle,reason,noEventSend)
+function courseplay.onStopCpAIDriver(vehicle, reason, noEventSend)
 	local spec = vehicle.spec_aiVehicle
-    if vehicle:getIsAIActive() then
+    if vehicle:getIsCourseplayDriving() then
         --giants code from AIVehicle:stopAIVehicle()
 		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'Stopped cp driver')
 		if noEventSend == nil or noEventSend == false then
