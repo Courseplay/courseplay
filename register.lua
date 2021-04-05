@@ -26,6 +26,11 @@ function courseplay.registerOverwrittenFunctions(vehicleType)
     SpecializationUtil.registerOverwrittenFunction(vehicleType, "updateAILowFrequency", AIDriver.updateAILowFrequency)
 end
 
+-- Register interface functions to start/stop the Courseplay driver
+function courseplay.registerFunctions(vehicleType)
+	SpecializationUtil.registerFunction(vehicleType, "startCpDriver",  courseplay.startCpDriver)
+	SpecializationUtil.registerFunction(vehicleType, "stopCpDriver",   courseplay.stopCpDriver)
+end
 
 function courseplay:onRegisterActionEvents(isActiveForInput, isActiveForInputIgnoreSelection)
 	--print(string.format("%s: courseplay:onRegisterActionEvents(isActiveForInput(%s) (%s), isActiveForInputIgnoreSelection(%s))",tostring(self:getName()),tostring(isActiveForInput),tostring(self:getIsActiveForInput(true, true)),tostring(isActiveForInputIgnoreSelection)))
