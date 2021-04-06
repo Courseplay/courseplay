@@ -101,8 +101,7 @@ You can define the following custom settings:
              ignoreCollisionBoxesWhenFolded="true"
     />
     <!--\vehicles\salford-->
-    <Vehicle name="salford4204.xml"
-             noReverse="true"
+    <Vehicle name="salford4204.xml" 
              turnRadius = "3"
     />
     <Vehicle name="salford8312.xml"
