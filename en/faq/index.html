@@ -114,6 +114,28 @@
 		</article>
 
 		<article id="faqToolSupport" class="singleFaq">
+			<h2>Which turn to use?</h2>
+			<div class="faqContent">
+				<h3>What all those turn settings on the Advanced Settings page mean?</h3>
+				<p>By default, Courseplay calculates trajectories for turns (headland or an 180° from one row to the next) based on pure geometry, ignoring fruit or any obstacles that may be in the way.
+
+					You can change this behavior on the Advanced Settings dialog, here are the details:</p>
+				<h3>Use AI turn maneuvers</h3>
+				<p>AI Turn is not using pre-calculated trajectories, just tries to make a simple 3 point turn.
+
+					It is great when the next row is close (narrow working width) and the headland is about a 90° to the up/down rows. It also has some logic to recover from hitting obstacles like trees or fences. Works best with implements mounted on the tractor (not towed) or with combines.
+					
+					Do not use AI turns when the next row is far away as it won't make sure to stay on field or avoid obstacles.</p>
+				<h3>Use pathfinding in turns</h3>
+				<p>Activate this if your field isn't rectangular and the next row is far away, so a direct line to it would go through the woods or some other obstacles. This happens often when the working width is high, for example sprayers or spreaders, or if you are using multiple vehicles (convoy). Also, some patterns like lands or racetrack, or skipping rows may result in turns where the vehicle must drive quite a distance to the start of the next row.
+
+					Pathfinding in turns will find the shortest path to the next row, staying on the headland, avoiding fruit and any obstacles off the field.</p>
+				<h3>Reversing for pathfinding in turns</h3>
+				<p>When pathfinding is enabled in turns, it'll generate paths driving forward only. If you activate this setting and the vehicle can easily be reversed, such as a combine or a tractor with a non-towed implement, Courseplay may generate a turn with a vehicle reversing if that results in a shorter path then a forward only course.</p>
+			</div>
+		</article>
+
+		<article id="faqToolSupport" class="singleFaq">
 			<h2>Which tools and vehicles does Courseplay support?</h2>
 			<div class="faqContent">
 				<p>Courseplay supports most default game vehicles and tools as well as most modifications which use the default game scripts.</p>
