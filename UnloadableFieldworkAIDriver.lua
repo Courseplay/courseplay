@@ -55,7 +55,8 @@ function UnloadableFieldworkAIDriver.create(vehicle)
 		-- Bale wrapper is derived from baler so must check it first to make sure that we instantiate a
 		-- BaleWrapperAIDriver if we have both the baler and the balewrapper specialization
 		return BaleWrapperAIDriver(vehicle)
-	elseif AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Baler) then
+	elseif SpecializationUtil.hasSpecialization(Baler, vehicle.specializations) or
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Baler) then
 		return BalerAIDriver(vehicle)
 	elseif SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
 		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Combine) then

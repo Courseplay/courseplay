@@ -1013,7 +1013,9 @@ end
 
 function FieldworkAIDriver:lowerImplements()
 	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
-		implement.object:aiImplementStartLine()
+		if implement.object ~= self.vehicle then
+			implement.object:aiImplementStartLine()
+		end
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_START_LINE)
 		
@@ -1026,7 +1028,9 @@ end
 
 function FieldworkAIDriver:raiseImplements()
 	for _, implement in pairs(self.vehicle:getAttachedAIImplements()) do
-		implement.object:aiImplementEndLine()
+		if implement.object ~= self.vehicle then
+			implement.object:aiImplementEndLine()
+		end
 	end
 	self.vehicle:raiseStateChange(Vehicle.STATE_CHANGE_AI_END_LINE)
 end
