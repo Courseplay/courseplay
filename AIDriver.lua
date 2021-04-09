@@ -2136,6 +2136,10 @@ function AIDriver:isFuelLevelOk()
 	return true
 end
 
+function AIDriver:isValidFillType(fillType)
+	return not self:isValidFuelType(self.vehicle, fillType) and fillType ~= FillType.DEF and fillType ~= FillType.AIR
+end
+
 function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
 	if object.getConsumerFillUnitIndex then 
 		local index = object:getConsumerFillUnitIndex(fillType)

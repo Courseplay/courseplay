@@ -873,8 +873,17 @@ function CombineUnloadAIDriver:setDriveNow()
 end
 
 function CombineUnloadAIDriver:getAllTrailersFull()
-	local _, allFull = self:getTrailersTargetNode()
-	return allFull
+	local fillLevelInfo = {}
+	AIDriverUtil.getAllFillLevels(self.vehicle, fillLevelInfo, self)
+	for fillType, info in pairs(fillLevelInfo) do
+		if self:isValidFillType(fillType) and info.fillLevel < info.capacity then
+			-- not fuel and not full, so not all full...
+			-- TODO: this assumes that other than diesel, air, etc. the only fill type we have is the one the
+			-- combine is harvesting. Could consider the combine's fill type but that sometimes is UNKNOWN
+			return false
+		end
+	end
+	return true
 end
 
 function CombineUnloadAIDriver:shouldDriveOn()

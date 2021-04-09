@@ -146,10 +146,6 @@ function UnloadableFieldworkAIDriver:shouldStopForUnloading(pc)
 	return false
 end
 
-function UnloadableFieldworkAIDriver:isValidFillType(fillType)
-	return not self:isValidFuelType(self.vehicle,fillType) and fillType ~= FillType.DEF	and fillType ~= FillType.AIR 
-end
-
 function UnloadableFieldworkAIDriver:atUnloadWaypoint()
 	return self.course:isUnloadAt(self.ppc:getCurrentWaypointIx())
 end
