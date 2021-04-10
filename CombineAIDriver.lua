@@ -1277,8 +1277,11 @@ end
 function CombineAIDriver:canDischarge()
 	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
 	local dischargeNode = self.combine:getCurrentDischargeNode()
-	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
-	return targetObject
+	if dischargeNode then
+		local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
+		return targetObject
+	end
+	return false
 end
 
 function CombineAIDriver:isDischarging()
