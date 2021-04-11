@@ -145,7 +145,7 @@ function CombineAIDriver:setUpPipe()
 				self.objectWithPipe:updatePipeNodes(999999, nil)
 			end
 		end
-		local dischargeNode = self.combine:getCurrentDischargeNode()
+		local dischargeNode = self:getCurrentDischargeNode()
 		self:fixDischargeDistance(dischargeNode)
 		local dx, _, _ = localToLocal(dischargeNode.node, self.combine.rootNode, 0, 0, 0)
 		self.pipeOnLeftSide = dx >= 0
@@ -1271,20 +1271,29 @@ function CombineAIDriver:getFillType()
 	return nil
 end
 
+function CombineAIDriver:getCurrentDischargeNode()
+	if self.combine and self.combine.getCurrentDischargeNode then
+		return self.combine:getCurrentDischargeNode()
+	end
+end
+
 -- even if there is a trailer in range, we should not start moving until the pipe is turned towards the
 -- trailer and can start discharging. This returning true does not mean there's a trailer under the pipe,
 -- this seems more like for choppers to check if there's a potential target around
 function CombineAIDriver:canDischarge()
 	-- TODO: self.vehicle should be the combine, which may not be the vehicle in case of towed harvesters
-	local dischargeNode = self.combine:getCurrentDischargeNode()
-	local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
-	return targetObject
+	local dischargeNode = self:getCurrentDischargeNode()
+	if dischargeNode then
+		local targetObject, _ = self.combine:getDischargeTargetObject(dischargeNode)
+		return targetObject
+	end
+	return false
 end
 
 function CombineAIDriver:isDischarging()
-	if self.combine then
-		local currentDischargeNode = self.combine:getCurrentDischargeNode()
-		return currentDischargeNode and currentDischargeNode.isEffectActive
+	local currentDischargeNode = self:getCurrentDischargeNode()
+	if currentDischargeNode then
+		return currentDischargeNode.isEffectActive
 	end
 	return false
 end
@@ -1723,7 +1732,7 @@ function CombineAIDriver:onDraw()
 
 	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
 
-	local dischargeNode = self.combine:getCurrentDischargeNode()
+	local dischargeNode = self:getCurrentDischargeNode()
 	if dischargeNode then
 		DebugUtil.drawDebugNode(dischargeNode.node, 'discharge')
 	end
