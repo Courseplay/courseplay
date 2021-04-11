@@ -80,6 +80,7 @@ local function initialize()
 		'TrafficCollision',
 		'ProximitySensor',
 		'vehicles',
+		'AIDriverUtil',
 		'PurePursuitController',
 		'Waypoint',
 		'StateModule',

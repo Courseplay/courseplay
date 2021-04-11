@@ -599,6 +599,10 @@ function TrafficConflictDetector:onCollision(triggerId, otherId, onEnter, onLeav
 	-- ignore the other vehicle's invalid boxes
 	if getUserAttribute(otherId, 'invalid') then return end
 
+	-- ignore if not updated yet
+	if not getUserAttribute(triggerId, 'eta') then return end
+	if not getUserAttribute(otherId, 'eta') then return end
+
 	local otherVehicleRootNode = getUserAttribute(otherId, 'vehicleRootNode')
 	if otherVehicleRootNode and otherVehicleRootNode ~= self.vehicle.rootNode then
 		local otherYRot = getUserAttribute(otherId, 'yRot')
