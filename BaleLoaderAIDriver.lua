@@ -65,6 +65,7 @@ end
 
 function BaleLoaderAIDriver:start(startingPoint)
 	self:initializeBaleLoader()
+	self.unloadRefillState = nil
 	UnloadableFieldworkAIDriver.start(self, startingPoint)
 end
 
@@ -115,7 +116,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
 			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
-			local _, _, dz = localToLocal(unloadNode, self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
+			dz = calcDistanceFrom(unloadNode, self.baleLoader.cp.realUnloadOrFillNode)
 			self:debugSparse('distance to unload point: %.1f', dz)
 			if math.abs(dz) < 1 or self:tooCloseToOtherBales() then
 				self:debug('Unload point reached.')
