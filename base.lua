@@ -1309,8 +1309,12 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
             spec.currentHelper = g_helperManager:getRandomHelper()
         end
         g_helperManager:useHelper(spec.currentHelper)
-        spec.startedFarmId = startedFarmId
-        if g_server ~= nil then
+		---Make sure the farmId is never: 0 == spectator farm id,
+		---which could be the case when autodrive starts a CP driver.
+		if startedFarmId ~= 0 then 
+			spec.startedFarmId = startedFarmId
+		end
+		if g_server ~= nil then
             g_farmManager:updateFarmStats(startedFarmId, "workersHired", 1)
         end
         if noEventSend == nil or noEventSend == false then
