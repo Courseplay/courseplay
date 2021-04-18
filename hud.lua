@@ -2041,10 +2041,13 @@ end
 ---Gets the next allowed hud page.
 ---@param vehicle
 function courseplay.hud.getNextPage(vehicle)
-	for i=1,11 do 
+	---self.numPages: is off by one page, as the first page is 0
+	local numPages = courseplay.hud.numPages + 1
+	for i=1,numPages do 
 		local targetPage = vehicle.cp.hud.currentPage +i
-		if targetPage > 10 then 
-			targetPage = targetPage - 11
+		---If the last page is reached continue from the beginning.
+		if targetPage > courseplay.hud.numPages then 
+			targetPage = targetPage - numPages
 		end
 		local button = vehicle.cp.hud.hudPageButtons[targetPage]
 		if button and not button:getIsDisabled() then 
@@ -2056,10 +2059,13 @@ end
 ---Gets the previous allowed hud page.
 ---@param vehicle
 function courseplay.hud.getPrevPage(vehicle)
-	for i=1,10 do 
+	---self.numPages: is off by one page, as the first page is 0
+	local numPages = courseplay.hud.numPages + 1
+	for i=1,numPages do 
 		local targetPage = vehicle.cp.hud.currentPage -i
+		---If the first page is reached continue from the last one.
 		if targetPage < 0 then 
-			targetPage = 11 + targetPage
+			targetPage = numPages + targetPage
 		end
 		local button = vehicle.cp.hud.hudPageButtons[targetPage]
 		if button and not button:getIsDisabled() then 

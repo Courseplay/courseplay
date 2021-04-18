@@ -4159,10 +4159,10 @@ SettingsUtil = {}
 
 function SettingsUtil.getNextCpMode(vehicle)
 	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
-		for i=1,10 do 
+		for i=1,courseplay.NUM_MODES do 
 			local targetMode = vehicle.cp.mode + i
-			if targetMode > 10 then 
-				targetMode = targetMode - 10
+			if targetMode > courseplay.NUM_MODES then 
+				targetMode = targetMode - courseplay.NUM_MODES
 			end
 			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
 				return targetMode
@@ -4173,10 +4173,10 @@ end
 
 function SettingsUtil.getPrevCpMode(vehicle)
 	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
-		for i=1,10 do 
+		for i=1,courseplay.NUM_MODES do 
 			local targetMode = vehicle.cp.mode - i
 			if targetMode < 1 then 
-				targetMode = 10 + targetMode
+				targetMode = courseplay.NUM_MODES + targetMode
 			end
 			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
 				return targetMode
