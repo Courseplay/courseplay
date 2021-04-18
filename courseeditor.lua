@@ -159,35 +159,26 @@ function courseEditor:setEnabled(value, vehicle)
     if not vehicle.cp.isRecording and not self:isAutoDriveCourse(vehicle) and #vehicle.Waypoints > 0 then
       self.enabled = value
       vehicle.cp.settings.showVisualWaypoints:set(ShowVisualWaypointsSetting.ALL)
-	  self:addInputHelp()
+	  ActionEventsLoader.updateAllActionEvents(vehicle)
     end
   else
     self.enabled = value
     vehicle.cp.visualWaypointsAl = false
-    self:clearInputHelp()
     self:reset()
+	ActionEventsLoader.updateAllActionEvents(vehicle)
   end
 end
 
--- add entries to the input help panel (via F1 keypress, usually)
-function courseEditor:addInputHelp()
-  g_currentMission.hud.inputHelp:clearCustomEntries()
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_TOGGLE', '', "Toggle course editor", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_UNDO', '', "Undo last course change", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_SAVE', '', "Save course changes", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_SPEED_DECREASE', '', "Decrease waypoint speed", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_SPEED_INCREASE', '', "Increase waypoint speed", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_DELETE_WAYPOINT', '', "Delete waypoint", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT', '', "Delete next waypoint", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_DELETE_TO_START', '',"Delete wayoints to start", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_DELETE_TO_END', '', "Delete waypoints to end", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_INSERT_WAYPOINT', '', "Insert waypoint", false)
-  g_currentMission.hud.inputHelp:addCustomEntry('COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE', '', "Change waypoint type", false)
+function courseEditor.setEnabledActionEvent(vehicle)
+	courseEditor:setEnabled(not courseEditor.enabled, vehicle)
 end
 
--- remove our custom input help panel entries
-function courseEditor:clearInputHelp()
-  g_currentMission.hud.inputHelp:clearCustomEntries()
+function courseEditor.getIsNotAllowedToUse(vehicle)
+	return vehicle.cp.isRecording or courseEditor:isAutoDriveCourse(vehicle) or #vehicle.Waypoints == 0
+end
+
+function courseEditor:getIsDisabled()
+	return not self.enabled
 end
 
 -- call reset when entering a vehicle or after saving a course via hotkey
@@ -211,7 +202,6 @@ function courseEditor:reset()
   self.historyAdded = false
   self.waypointTypeIndex = 0
   self:clearHistory()
-  self:clearInputHelp()
 end
 
 -- clears the undo history

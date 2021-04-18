@@ -920,7 +920,7 @@ end;
 
 function courseplay:goToVehicle(curVehicle, targetVehicle)
 	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
-	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_currentMission.missionInfo.playerStyle, g_currentMission.player.ownerFarmId));
+	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_currentMission.missionInfo.playerStyle, g_currentMission.player.farmId));
 	g_currentMission.isPlayerFrozen = false;
 	CpManager.playerOnFootMouseEnabled = false;
 	g_inputBinding:setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
@@ -1258,6 +1258,11 @@ function Setting:isDisabled()
 	return false
 end
 
+--- Action event for Keys?
+function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
+	---override
+end
+
 ---@class FloatSetting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
@@ -1575,6 +1580,13 @@ function SettingList:sendEvent()
 	end
 end
 
+function SettingList:actionEvent(actionName, inputValue, callbackState, isAnalog)
+	self:changeByX(1)
+
+	---TODO: figure out how to refresh the hud after an setting action event correctly.  
+	self.vehicle.cp.driver:refreshHUD()
+end
+
 ---WIP
 ---Generic LinkedList setting and Interface for LinkedList.lua
 ---@class LinkedList : Setting
@@ -1880,6 +1892,10 @@ function StartingPointSetting:checkAndSetValidValue(new)
 	-- make sure we always have a valid set for the current mode
 	self.values, self.texts = self:getValuesForMode(self.vehicle.cp.mode)
 	return SettingList.checkAndSetValidValue(self, new)
+end
+
+function StartingPointSetting:isDisabled() 
+	return self.vehicle:getIsCourseplayDriving() or not self.vehicle.cp.canDrive
 end
 
 ---@class StartingLocationSetting : SettingList
@@ -3674,6 +3690,10 @@ function WorkingToolPositionsSetting:getTotalPositions()
 	return self.totalPositions
 end
 
+function WorkingToolPositionsSetting:getHasPosition(x)
+	return self.hasPosition[x]
+end
+
 function WorkingToolPositionsSetting:onWriteStream(streamId)
 	for i=1,self.totalPositions do 
 		streamWriteBool(streamId,self.hasPosition[i]==true)
@@ -3793,6 +3813,22 @@ function FrontloaderToolPositionsSetting:init(vehicle)
 	local label = "front"
 	local toolTip = "front"
 	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4)
+end
+
+function FrontloaderToolPositionsSetting:actionEventSavePosition(actionName, inputValue, callbackState, isAnalog)
+	self:setOrClearPostion(callbackState)
+end
+
+function FrontloaderToolPositionsSetting:actionEventPlayPosition(actionName, inputValue, callbackState, isAnalog)
+	self:playPosition(callbackState)
+end	
+
+function FrontloaderToolPositionsSetting:isPlayingPositionDisabled(x)
+	return not self:getHasPosition(x)
+end
+
+function FrontloaderToolPositionsSetting:isDisabled()
+	return self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
 ---@class AugerPipeToolPositionsSetting : WorkingToolPositionsSetting
@@ -4117,6 +4153,38 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
 	return container
 end
+
+---TODO: create a setting for these:
+SettingsUtil = {}
+
+function SettingsUtil.getNextCpMode(vehicle)
+	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
+		for i=1,courseplay.NUM_MODES do 
+			local targetMode = vehicle.cp.mode + i
+			if targetMode > courseplay.NUM_MODES then 
+				targetMode = targetMode - courseplay.NUM_MODES
+			end
+			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
+				return targetMode
+			end
+		end
+	end
+end
+
+function SettingsUtil.getPrevCpMode(vehicle)
+	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
+		for i=1,courseplay.NUM_MODES do 
+			local targetMode = vehicle.cp.mode - i
+			if targetMode < 1 then 
+				targetMode = courseplay.NUM_MODES + targetMode
+			end
+			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
+				return targetMode
+			end
+		end
+	end
+end
+
 
 
 -- do not remove this comment

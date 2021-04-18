@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<!--
+	All action events need to be moved here.
+	Every action event needs the action event name reference defined in the modDesc.xml
+
+-->
+
+<ActionEventsConfig>
+	<ActionEvents>
+		<!--
+			name: is the action event name defined in the modDesc.xml
+			class: class object
+			callbackFunc: is the function triggered by the action event
+			callbackParameter: should be a callback parameter, but it's not working yet. TODO!
+			isDisabledCallbackFunc: is used to disable a action event after a action event refresh or on load.
+			callbackState: isDisabledCallbackFunc parameter, this is an int!
+			text: is the action event text, by default it returns courseplay:loc(name), where 'name' is the previous defined action event name.
+		-->
+		<!--HUD Actions-->
+		<ActionEvent name="COURSEPLAY_ACTION_OPEN_CLOSE_HUD" callbackFunc="actionEventOpenCloseHud" isDisabledCallbackFunc="isActionEventOpenCloseHudDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_NEXT_DRIVER_MODE" callbackFunc="actionEventNextDriverMode" isDisabledCallbackFunc="isActionEventChangeDriverModeDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE" callbackFunc="actionEventPreviousDriverMode" isDisabledCallbackFunc="isActionEventChangeDriverModeDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_NEXT_HUD_PAGE" callbackFunc="actionEventNextHudPage" isDisabledCallbackFunc="isActionEventChangeHudPageDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE" callbackFunc="actionEventPreviousHudPage" isDisabledCallbackFunc="isActionEventChangeHudPageDisabled"/>
+
+		<!--Recording-->
+		<ActionEvent name="COURSEPLAY_ACTION_START_STOP_RECORDING" callbackFunc="actionEventStartStopRecording" isDisabledCallbackFunc="isActionEventStartStopRecordingDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_PAUSE_RECORDING" callbackFunc="actionEventPauseRecording" isDisabledCallbackFunc="isActionEventPauseRecordingDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING" callbackFunc="actionEventToggleReverseRecording" isDisabledCallbackFunc="isActionEventToggleReverseRecortdingDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_START_STOP_DRIVING" callbackFunc="actionEventStartStopDriving" isDisabledCallbackFunc="isActionEventStartStopDrivingDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_DRIVE_NOW" callbackFunc="actionEventDriveNow" isDisabledCallbackFunc="isActionEventDriveNowDisabled"/>
+
+		<!--Editor Actions-->
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_TOGGLE" class="courseEditor" callbackFunc="setEnabledActionEvent" isDisabledCallbackFunc="getIsNotAllowedToUse"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_UNDO" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="undo" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SAVE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="save" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="increaseSpeed" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="decreaseSpeed" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="delete" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteNext" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToStart" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToEnd" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="insert" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="cycleType" isDisabledCallbackFunc="getIsDisabled"/>
+
+	</ActionEvents>
+
+	<SettingActionEvents>
+		<!--
+			name: is the action event name defined in the modDesc.xml
+			setting: is the defined setting from cp.settings 
+			callbackFunc: is the function triggered by the action event
+			callbackParameter: should be a callback parameter, but it's not working yet. TODO!
+			isDisabledCallbackFunc: is used to disable a action event after a action event refresh or on load optional, default is setting:isDisabled().
+			callbackState: isDisabledCallbackFunc parameter, this is an int!
+			text: is the action event text, by default it returns courseplay:loc(name), where 'name' is the previous defined action event name.
+		-->
+		<!--Starting point driver-->
+		<SettingActionEvent name="COURSEPLAY_ACTION_CHANGE_STARTING_POINT" setting="startingPoint" callbackFunc="actionEvent"/>
+
+		<!--Shovel positions Save and Move-->
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventSavePosition" callbackState="1"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventPlayPosition" callbackState="1" isDisabledCallbackFunc="isPlayingPositionDisabled"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventSavePosition" callbackState="2"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_MOVE_TRANSPORT_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventPlayPosition" callbackState="2" isDisabledCallbackFunc="isPlayingPositionDisabled"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_SAVE_PRE_UNLOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventSavePosition" callbackState="3"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_MOVE_PRE_UNLOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventPlayPosition" callbackState="3" isDisabledCallbackFunc="isPlayingPositionDisabled"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_SAVE_UNLOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventSavePosition" callbackState="4"/>
+		<SettingActionEvent name="COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION" setting="frontloaderToolPositions" callbackFunc="actionEventPlayPosition" callbackState="4" isDisabledCallbackFunc="isPlayingPositionDisabled"/>
+
+	</SettingActionEvents>
+
+	<GlobalActionEvents>
+	<!--
+		<GlobalActionEvent name="COURSEPLAY_MOUSEACTION_PRIMARY" callbackFunc="actionEventPrimaryMouseButton" isDisabledCallbackFunc="isActionEventPrimaryMouseButtonDisabled"/>
+		<GlobalActionEvent name="COURSEPLAY_MOUSEACTION_SECONDARY" callbackFunc="actionEventSecondaryMouseButton" isDisabledCallbackFunc="isActionEventSecondaryMouseButtonDisabled"/>
+	-->
+	</GlobalActionEvents>
+
+</ActionEventsConfig>

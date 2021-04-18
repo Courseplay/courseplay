@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="47">
-	<version>6.03.00052</version>
+	<version>6.03.00053</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
 		<en>CoursePlay SIX</en>
@@ -84,122 +84,161 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 	</extraSourceFiles>
 
 	<actions>
-		<action name="COURSEPLAY_MODIFIER" axisType="HALF"  />
-		<action name="COURSEPLAY_HUD" axisType="HALF"  />
-		<action name="COURSEPLAY_MENU_ACCEPT_SECONDARY" axisType="HALF"  />
-		<action name="COURSEPLAY_START_STOP" axisType="HALF"  />
-		<action name="COURSEPLAY_CANCELWAIT" axisType="HALF"  />
-		<action name="COURSEPLAY_DRIVENOW" axisType="HALF"  />
-		<action name="COURSEPLAY_STOP_AT_END" axisType="HALF"  />
-		<action name="COURSEPLAY_NEXTMODE" axisType="HALF"  />
-		<action name="COURSEPLAY_PREVMODE" axisType="HALF"  />
+		<!--Mouse actions-->
 		<action name="COURSEPLAY_MOUSEACTION_PRIMARY" axisType="HALF"  />
 		<action name="COURSEPLAY_MOUSEACTION_SECONDARY" axisType="HALF"  />
-		<action name="COURSEPLAY_DEBUG_MARKER" axisType="HALF"  />
-    <action name="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" axisType="HALF"  />
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" axisType="HALF"  />
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION" axisType="HALF"  />
-		<action name="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" axisType="HALF"  />
-		<action name="COURSEPLAY_TOGGLE_FERTILIZER" axisType="HALF" />
-    <action name="COURSEPLAY_EDITOR_TOGGLE" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_UNDO" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_SAVE" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_SPEED_INCREASE" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_SPEED_DECREASE" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_DELETE_WAYPOINT" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT" axisType="HALF"  />    
-    <action name="COURSEPLAY_EDITOR_DELETE_TO_START" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_DELETE_TO_END" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
-    <action name="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  /> 
+
+		<!--HUD Actions-->
+		<action name="COURSEPLAY_ACTION_OPEN_CLOSE_HUD" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_NEXT_DRIVER_MODE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_NEXT_HUD_PAGE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE" axisType="HALF"  />
+
+		<!--Recording/ driving-->
+		<action name="COURSEPLAY_ACTION_START_STOP_RECORDING" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_PAUSE_RECORDING" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_START_STOP_DRIVING" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_DRIVE_NOW" axisType="HALF"  />
+		
+		<!--Starting point driver-->
+		<action name="COURSEPLAY_ACTION_CHANGE_STARTING_POINT" axisType="HALF"  />
+
+		<!--Editor Actions-->
+		<action name="COURSEPLAY_ACTION_EDITOR_TOGGLE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_EDITOR_UNDO" axisType="HALF"  />
+   		<action name="COURSEPLAY_ACTION_EDITOR_SAVE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT" axisType="HALF"  />
+		<action name="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT" axisType="HALF" />
+    	<action name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  />
+    	
+		<!--Shovel positions save and play-->
+		<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION" axisType="HALF"  />    
+    	<action name="COURSEPLAY_ACTION_SHOVEL_MOVE_TRANSPORT_POSITION" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_PRE_UNLOADING_POSITION" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_SHOVEL_MOVE_PRE_UNLOADING_POSITION" axisType="HALF"  />
+    	<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_UNLOADING_POSITION" axisType="HALF"  /> 
+		<action name="COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION" axisType="HALF"  /> 
     </actions>
 
 	<inputBinding>
-		<actionBinding action="COURSEPLAY_MODIFIER">
-			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl" />
-		</actionBinding>
-		<actionBinding action="COURSEPLAY_HUD">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_MENU_ACCEPT_SECONDARY">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_enter" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_START_STOP">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_7" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_CANCELWAIT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_8" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_DRIVENOW">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_KP_9" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_EDITOR_TOGGLE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_KP_0" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_EDITOR_UNDO">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl z" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_EDITOR_SAVE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_f6" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_SPEED_INCREASE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_2" />
-        </actionBinding>
- 	<actionBinding action="COURSEPLAY_EDITOR_SPEED_DECREASE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_1" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_DELETE_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_5" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_6" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_START">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_leftbracket" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_DELETE_TO_END">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_rightbracket" />
-        </actionBinding>
- 	<actionBinding action="COURSEPLAY_EDITOR_INSERT_WAYPOINT">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_7" />
-        </actionBinding>
-  <actionBinding action="COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_8" />
-        </actionBinding>
-		<!-- Possible to delete blank input bindings -->
-		<actionBinding action="COURSEPLAY_STOP_AT_END">
-            <binding device="KB_MOUSE_DEFAULT" input="" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_NEXTMODE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_pageup" />
-        </actionBinding>
-		<actionBinding action="COURSEPLAY_PREVMODE">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_pagedown" />
-        </actionBinding>
+		<!--Mouse actions-->
 		<actionBinding action="COURSEPLAY_MOUSEACTION_PRIMARY">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_LEFT" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_MOUSEACTION_SECONDARY">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_RIGHT" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_DEBUG_MARKER">
-            <binding device="KB_MOUSE_DEFAULT" input="KEY_lalt KEY_d" />
+
+		<!--HUD Actions-->
+		<actionBinding action="COURSEPLAY_ACTION_OPEN_CLOSE_HUD">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />
+		</actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_NEXT_DRIVER_MODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_4" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION">
+		<actionBinding action="COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_6" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_NEXT_HUD_PAGE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_plus" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_minus" />
+        </actionBinding>
+
+		<!--Recording/ driving-->
+		<actionBinding action="COURSEPLAY_ACTION_START_STOP_RECORDING">
+			<binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_1" />
+		</actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_PAUSE_RECORDING">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_2" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_3" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_START_STOP_DRIVING">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_0" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_DRIVE_NOW">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION">
+		
+		<!--Starting point driver-->
+		<actionBinding action="COURSEPLAY_ACTION_CHANGE_STARTING_POINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_5" />
+        </actionBinding>
+
+		<!--Editor Actions-->
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_TOGGLE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_0" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_UNDO">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_2" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_SAVE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_1" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_4" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_3" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_5" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_6" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_7" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_8" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_9" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_backslash" />
+        </actionBinding>
+
+		<!--Shovel positions save and play-->
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION">
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION">
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-		<actionBinding action="COURSEPLAY_TOGGLE_FERTILIZER">
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_MOVE_TRANSPORT_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_SAVE_PRE_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_MOVE_PRE_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_SAVE_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION">
+            <binding device="KB_MOUSE_DEFAULT" input="" />
+        </actionBinding>
+
+
     </inputBinding>
 	<credits><![CDATA[
 ## Contributors

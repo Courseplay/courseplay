@@ -349,35 +349,6 @@
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Prikaži Courseplay HUD" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Skrij Courseplay HUD" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay funkcije" />
-		<text name="input_COURSEPLAY_MODIFIER" 								text="Courseplay: urejevalnik" />
-		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 				text="Courseplay: secondary menu accept" />
-		<text name="input_COURSEPLAY_HUD" 									text="Prikaži/skrij Courseplay HUD" />
-		<text name="input_COURSEPLAY_START_STOP" 							text="Courseplay: vozi pot/ustavi voznika" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 							text="Courseplay: nadaljuj" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								text="Courseplay: vozi zdaj" />
-		<text name="input_COURSEPLAY_STOP_AT_END"							text="Courseplay: ustavi se na zadnji točki ali na naslednjem prožilcu" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								text="Courseplay: naslednji način" />
-		<text name="input_COURSEPLAY_PREVMODE" 								text="Courseplay: prejšnji način" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="Courseplay: akcija miške" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 				text="Courseplay: druga akcija miške" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="Courseplay: place debug marker in log" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION"		text="CP: Move to loading position" /> <!-- TODO TRANSLATE: -->
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION"		text="CP: Move to transport position" /> <!-- TODO TRANSLATE: -->
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text="CP: Move to pre-unloading position" /> <!-- TODO TRANSLATE: -->
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION"		text="CP: Move to unloading position" /> <!-- TODO TRANSLATE: -->
-		
-		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="Courseplay Editor: Toggle course editor" />
-		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="Courseplay Editor: Undo last course edit" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="Courseplay Editor: Save course changes" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="Courseplay Editor: Increase waypoint speed" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="Courseplay Editor: Decrease waypoint speed" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="Courseplay Editor: Delete waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="Courseplay Editor: Delete next waypoint" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="Courseplay Editor: Delete all waypoints to start" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="Courseplay Editor: Delete all waypoints to end" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="Courseplay Editor: Insert waypoint" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="Courseplay Editor: Change waypoint type" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Fertilizer of seeder" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wait" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Crossing" />
@@ -505,6 +476,46 @@
 		
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+		
+		<!--Action Events-->
+		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->
+		<!--Mouse-->
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY"							text="CP: primary Mousebutton" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"						text="CP: secondary Mousebutton" />
+		<!--HUD-->
+		<text name="input_COURSEPLAY_ACTION_OPEN_CLOSE_HUD" 						text="CP: open/close HUD" />
+		<text name="input_COURSEPLAY_ACTION_NEXT_DRIVER_MODE" 					text="CP: next mode" />
+		<text name="input_COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE" 				text="CP: previous mode" />
+		<text name="input_COURSEPLAY_ACTION_NEXT_HUD_PAGE"		 				text="CP: next page" />
+		<text name="input_COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE" 					text="CP: previous page" />
+		<text name="input_COURSEPLAY_ACTION_CHANGE_STARTING_POINT" 				text="CP: change starting point" />
+		<!--Recording/Driving-->
+		<text name="input_COURSEPLAY_ACTION_START_STOP_RECORDING" 				text="CP: start/stop recording" />
+		<text name="input_COURSEPLAY_ACTION_PAUSE_RECORDING" 						text="CP: pause recording" />
+		<text name="input_COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING" 			text="CP: toggle reverse recording" />
+		<text name="input_COURSEPLAY_ACTION_START_STOP_DRIVING"					text="CP: start/stop driver" />
+		<text name="input_COURSEPLAY_ACTION_DRIVE_NOW"							text="CP: drive now" />
+		<!--Shovel-->
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION"			text="CP Shovel: Save loading position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION"			text="CP Shovel: Move to loading position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION"		text="CP Shovel: Save transport position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_TRANSPORT_POSITION"		text="CP Shovel: Move to transport position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_PRE_UNLOADING_POSITION"	text="CP Shovel: Save pre-unloading position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_PRE_UNLOADING_POSITION"	text="CP Shovel: Move pre-unloading position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_UNLOADING_POSITION"		text="CP Shovel: Save unloading position" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION"		text="CP Shovel: Move to unloading position" />
+		<!--Editor-->
+		<text name="input_COURSEPLAY_ACTION_EDITOR_TOGGLE"						text="CP Editor: Toggle course editor" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_UNDO"							text="CP Editor: Undo last course edit" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SAVE"							text="CP Editor: Save course changes" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE"				text="CP Editor: Increase waypoint speed" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE"				text="CP Editor: Decrease waypoint speed" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT"				text="CP Editor: Delete waypoint" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT"			text="CP Editor: Delete next waypoint" />  
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_START"				text="CP Editor: Delete all waypoints to start" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_END"					text="CP Editor: Delete all waypoints to end" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Insert waypoint" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Change waypoint type" />
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

@@ -657,12 +657,13 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'startingPoint:next' then
 					--StartingPointSetting
-					if not vehicle:getIsCourseplayDriving() and vehicle.cp.canDrive then
-						self:enableButtonWithFunction(vehicle,page, 'next',vehicle.cp.settings.startingPoint)
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.startingPoint:getLabel()
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.startingPoint:getText()
+					local setting = vehicle.cp.settings.startingPoint
+					if not setting:isDisabled() then
+						self:enableButtonWithFunction(vehicle,page, 'next',setting)
+						vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
+						vehicle.cp.hud.content.pages[page][line][2].text = setting:getText()
 					else
-						self:disableButtonWithFunction(vehicle,page, 'next',vehicle.cp.settings.startingPoint)
+						self:disableButtonWithFunction(vehicle,page, 'next',setting)
 					end				
 				elseif entry.functionToCall == 'autoDriveMode:changeByX' then
 					--autoDriveModeSetting
@@ -1266,6 +1267,7 @@ function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 		vehicle.cp.hud.reloadPage[page] = bool;
 		courseplay:debug(string.format('%s: set reloadPage[%d]', nameNum(vehicle), page), courseplay.DBG_HUD);
 	end;
+	ActionEventsLoader.updateAllActionEvents(vehicle)
 end;
 
 function courseplay:setFontSettings(color, fontBold, align)
@@ -1992,6 +1994,8 @@ function courseplay.hud:disableButtonsOnThisPage(vehicle,page)
 	end
 end
 
+
+
 function courseplay.hud:enableButtonWithFunction(vehicle,page, func,class)
 	if class then 
 		self:debug(vehicle,string.format("enableButton  Setting: %s function: %s",class.name, func))
@@ -2032,6 +2036,48 @@ function courseplay.hud:disableButtonWithFunction(vehicle,page, func,class)
 			end
 		end
 	end
+end
+
+---Gets the next allowed hud page.
+---@param vehicle
+function courseplay.hud.getNextPage(vehicle)
+	---self.numPages: is off by one page, as the first page is 0
+	local numPages = courseplay.hud.numPages + 1
+	for i=1,numPages do 
+		local targetPage = vehicle.cp.hud.currentPage +i
+		---If the last page is reached continue from the beginning.
+		if targetPage > courseplay.hud.numPages then 
+			targetPage = targetPage - numPages
+		end
+		local button = vehicle.cp.hud.hudPageButtons[targetPage]
+		if button and not button:getIsDisabled() then 
+			return targetPage
+		end
+	end
+end
+
+---Gets the previous allowed hud page.
+---@param vehicle
+function courseplay.hud.getPrevPage(vehicle)
+	---self.numPages: is off by one page, as the first page is 0
+	local numPages = courseplay.hud.numPages + 1
+	for i=1,numPages do 
+		local targetPage = vehicle.cp.hud.currentPage -i
+		---If the first page is reached continue from the last one.
+		if targetPage < 0 then 
+			targetPage = numPages + targetPage
+		end
+		local button = vehicle.cp.hud.hudPageButtons[targetPage]
+		if button and not button:getIsDisabled() then 
+			return targetPage
+		end
+	end
+end
+
+---Gets the current hud page.
+---@param vehicle
+function courseplay.hud.getCurrentPage(vehicle)
+	return vehicle.cp.hud.currentPage
 end
 
 ---Should consider making all simple row buttons callback functions 

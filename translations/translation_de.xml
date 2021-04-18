@@ -348,35 +348,6 @@
 		<text name="COURSEPLAY_HUD_OPEN" 									text="Courseplay HUD öffnen" />
 		<text name="COURSEPLAY_HUD_CLOSE" 									text="Courseplay HUD schließen" />
 		<text name="COURSEPLAY_FUNCTIONS" 									text="Courseplay-Funktionen" />
-		<text name="input_COURSEPLAY_MODIFIER" 								text="CP: Modifikator" />
-		<text name="input_COURSEPLAY_MENU_ACCEPT_SECONDARY" 				text="CP: sekundäres Menü-Akzeptieren" />
-		<text name="input_COURSEPLAY_HUD" 									text="CP: HUD öffnen/schließen" />
-		<text name="input_COURSEPLAY_START_STOP" 							text="CP: Abfahrer einstellen/entlassen" />
-		<text name="input_COURSEPLAY_CANCELWAIT" 							text="CP: weiterfahren" />
-		<text name="input_COURSEPLAY_DRIVENOW" 								text="CP: sofort abfahren" />
-		<text name="input_COURSEPLAY_STOP_AT_END" 							text="CP: Warten am letzten Wegpunkt oder Trigger" />
-		<text name="input_COURSEPLAY_NEXTMODE" 								text="CP: nächster Modus" />
-		<text name="input_COURSEPLAY_PREVMODE" 								text="CP: voriger Modus" />
-		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY" 					text="CP: Maus-Aktion" />
-		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY" 				text="CP: sekundäre Maus-Aktion" />
-		<text name="input_COURSEPLAY_DEBUG_MARKER"			 				text="CP: platziere Debug-Markierung in Log" />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION" 		text='CP: Schaufel auf Position Beladen setzen' />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION" 	text='CP: Schaufel auf Position Transport setzen' />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION"	text='CP: Schaufel auf Position vor Abladen setzen' />
-		<text name="input_COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION" 	text='CP: Schaufel auf Position Abladen setzen' />
-		
-		<text name="input_COURSEPLAY_EDITOR_TOGGLE"							text="CP Editor: Ein Aus" />
-		<text name="input_COURSEPLAY_EDITOR_UNDO"							text="CP Editor: Rueckgaengig" />
-		<text name="input_COURSEPLAY_EDITOR_SAVE"							text="CP Editor: Kursaenderung speichern" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_INCREASE"					text="CP Editor: Geschwindigkeit erhoehen" />
-		<text name="input_COURSEPLAY_EDITOR_SPEED_DECREASE"					text="CP Editor: Geschwindigkeit veringern" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_WAYPOINT"				text="CP Editor: Wegpunkt löschen" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_NEXT_WAYPOINT"			text="CP Editor: Loesche nächsten Wegpunkt" />  
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_START"				text="CP Editor: Loesche Wegpunkt bis Start" />
-		<text name="input_COURSEPLAY_EDITOR_DELETE_TO_END"					text="CP Editor: Loesche Wegpunkt bis Ende" />
-		<text name="input_COURSEPLAY_EDITOR_INSERT_WAYPOINT"				text="CP Editor: Wegpunkt einfuegen" />
-		<text name="input_COURSEPLAY_EDITOR_CYCLE_WAYPOINT_TYPE"			text="CP Editor: Wegpunkttyp aendern" />
-		<text name="input_COURSEPLAY_TOGGLE_FERTILIZER"						text="CP: Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_EDITOR_NORMAL" 								text="Normal" />
 		<text name="COURSEPLAY_EDITOR_WAIT" 								text="Wartepunkt" />
 		<text name="COURSEPLAY_EDITOR_CROSSING" 							text="Kreuzungspunkt" />
@@ -504,6 +475,48 @@
 		
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+		
+		<!--Action Events-->
+		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->
+		<!--Mouse-->
+		<text name="input_COURSEPLAY_MOUSEACTION_PRIMARY"					text="CP: Primäre Maustaste" />
+		<text name="input_COURSEPLAY_MOUSEACTION_SECONDARY"					text="CP: Sekundäre Maustaste" />
+		<!--HUD-->
+		<text name="input_COURSEPLAY_ACTION_OPEN_CLOSE_HUD" 				text="CP: HUD öffnen/schließen" />
+		<text name="input_COURSEPLAY_ACTION_NEXT_DRIVER_MODE" 				text="CP: Nächster Modus" />
+		<text name="input_COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE" 			text="CP: Vorheriger Modus" />
+		<text name="input_COURSEPLAY_ACTION_NEXT_HUD_PAGE"		 			text="CP: Nächste Seite" />
+		<text name="input_COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE" 				text="CP: Vorherige Seite" />
+		<text name="input_COURSEPLAY_ACTION_CHANGE_STARTING_POINT" 			text="CP: Ändere Startpunkt" />
+		<!--Recording/Driving-->
+		<text name="input_COURSEPLAY_ACTION_START_STOP_RECORDING" 			text="CP: Aufzeichnung starten/stoppen" />
+		<text name="input_COURSEPLAY_ACTION_PAUSE_RECORDING" 				text="CP: Aufzeichnung pausieren" />
+		<text name="input_COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING" 		text="CP: Rückwärts aufzeichnen an/aus" />
+		<text name="input_COURSEPLAY_ACTION_START_STOP_DRIVING"				text="CP: Abfahrer starten/stoppen" />
+		<text name="input_COURSEPLAY_ACTION_DRIVE_NOW"						text="CP: Sofort Abfahren" />
+		<!--Shovel-->
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION"	text="CP Schaufel: Speicher Ladeposition" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION"	text="CP Schaufel: Ladeposition" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION"	text="CP Schaufel: Speicher Transportpostion" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_TRANSPORT_POSITION"	text="CP Schaufel: Transportposition" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_PRE_UNLOADING_POSITION"	text="CP Schaufel: Speicher vor Abladen" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_PRE_UNLOADING_POSITION"	text="CP Schaufel: Vor Abladen" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_SAVE_UNLOADING_POSITION"	text="CP Schaufel: Speicher Abladeposition" />
+		<text name="input_COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION"	text="CP Schaufel: Abladeposition" />
+		<!--Editor-->
+		<text name="input_COURSEPLAY_ACTION_EDITOR_TOGGLE"					text="CP Editor: Editor an/aus" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_UNDO"					text="CP Editor: Letzte Änderung rückgängig machen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SAVE"					text="CP Editor: Kursänderung speichern" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE"			text="CP Editor: Wegpunktgeschwindigkeit erhöhen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE"			text="CP Editor: Wegpunktgeschwindigkeit veringern" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT"			text="CP Editor: Wegpunkt löschen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT"	text="CP Editor: Nächsten Wegpunkt löschen" />  
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_START"			text="CP Editor: Alle Wegpunkte bis Start löschen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_END"			text="CP Editor: Alle Wegpunkte bis Ende löschen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT"			text="CP Editor: Wegpunkt einfügen" />
+		<text name="input_COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE"		text="CP Editor: Wegpunkttyp wechseln" />
+		
+		
 		<!-- Replace marker, do not remove! -->
 </texts>
 </l10n>

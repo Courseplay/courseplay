@@ -408,7 +408,8 @@ function courseplay:onLeaveVehicle()
 		courseplay:setMouseCursor(self, false);
     	courseEditor:reset()
 	end
-
+	---Update mouse action event texts
+	CpManager:updateMouseInputText()
 	--hide visual i3D waypoint signs when not in vehicle
 	courseplay.signs:setSignsVisibility(self, true);
 end
@@ -423,7 +424,8 @@ function courseplay:onEnterVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
-
+	---Update mouse action event texts
+	CpManager:updateMouseInputText()
 	--show visual i3D waypoint signs only when in vehicle
 	courseplay.signs:setSignsVisibility(self);
 end
@@ -464,88 +466,8 @@ function courseplay:onDraw()
 		end
 		local nx,ny,nz = getWorldTranslation(self.cp.directionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
-	end;
-
-
-	-- HELP BUTTON TEXTS
-	--renderText(0.2, 0.5, 0.02, string.format("InputBinding.wrapMousePositionEnabled(%s),g_currentMission.isPlayerFrozen(%s) self:getIsActive(%s) and Enterable.getIsEntered(self)(%s) then"
-	--,tostring(InputBinding.wrapMousePositionEnabled),tostring(g_currentMission.isPlayerFrozen),tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))));
-	--print(string.format("if self:getIsActive(%s) and self.isEntered(%s) then",tostring(self:getIsActive()),tostring(Enterable.getIsEntered(self))))
+	end;		
 		
-										
-	if self:getIsActive() and self:getIsEntered() then
-		local modifierPressed = courseplay.inputModifierIsPressed;
-		--missing hud.openWithMouse ?
-		if self.cp.canDrive and not modifierPressed then
-			g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_FUNCTIONS'), InputBinding.COURSEPLAY_MODIFIER, nil, GS_PRIO_HIGH);
-		end;
-
-		--[[if self.cp.hud.show then
-			if self.cp.mouseCursorActive then
-				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_HIDE'));
-			else
-				g_currentMission:addHelpTextFunction(CpManager.drawMouseButtonHelp, self, CpManager.hudHelpMouseLineHeight, courseplay:loc('COURSEPLAY_MOUSEARROW_SHOW'));
-			end;
-		end;]]
-		if modifierPressed then
-			if not self.cp.hud.show then
-				--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_HUD'], true)
-				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_OPEN'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
-			else
-				g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_HUD_CLOSE'), InputBinding.COURSEPLAY_HUD, nil, GS_PRIO_HIGH);
-			end;
-		end;
-
-		if modifierPressed then
-			if self.cp.canDrive then
-				if isDriving then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_STOP_COURSE'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
-					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_START_STOP'], true)
-					if self.cp.HUD1wait or (self.cp.driver and self.cp.driver:isWaiting()) then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_CONTINUE'), InputBinding.COURSEPLAY_CANCELWAIT, nil, GS_PRIO_HIGH);
-					end;
-					if self.cp.HUD1noWaitforFill then
-						g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_DRIVE_NOW'), InputBinding.COURSEPLAY_DRIVENOW, nil, GS_PRIO_HIGH);
-					end;
-				else
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_START_COURSE'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
-					--g_gui.inputManager:setActionEventTextVisibility(courseplay.inputActionEventIds['COURSEPLAY_START_STOP'], true)
-					
-					--new ShovelPositions still need info text!
-					
-					-- if self.cp.hasShovelStatePositions[2] and InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD ~= nil then
-						-- g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_LOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_LOAD, nil, GS_PRIO_HIGH);
-					-- end;
-					-- if self.cp.hasShovelStatePositions[3] and InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT ~= nil then
-						-- g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_TRANSPORT'). InputBinding.COURSEPLAY_SHOVELPOSITION_TRANSPORT, nil, GS_PRIO_HIGH);
-					-- end;
-					-- if self.cp.hasShovelStatePositions[4] and InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD ~= nil then
-						-- g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_PREUNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_PREUNLOAD, nil, GS_PRIO_HIGH);
-					-- end;
-					-- if self.cp.hasShovelStatePositions[5] and InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD ~= nil then
-						-- g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_SHOVELPOSITION_UNLOAD'). InputBinding.COURSEPLAY_SHOVELPOSITION_UNLOAD, nil, GS_PRIO_HIGH);
-					-- end;
-					--end;
-				end;
-			else
-				if not self.cp.isRecording and not self.cp.recordingIsPaused and self.cp.numWaypoints == 0 then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_START'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
-				elseif self.cp.isRecording and not self.cp.recordingIsPaused and not self.cp.isRecordingTurnManeuver then
-					g_currentMission:addHelpButtonText(courseplay:loc('COURSEPLAY_RECORDING_STOP'), InputBinding.COURSEPLAY_START_STOP, nil, GS_PRIO_HIGH);
-				end;
-			end;
-
-			if self.cp.canSwitchMode then
-				if self.cp.nextMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_NEXTMODE'), InputBinding.COURSEPLAY_NEXTMODE, nil, GS_PRIO_HIGH);
-				end;
-				if self.cp.prevMode then
-					g_currentMission:addHelpButtonText(courseplay:loc('input_COURSEPLAY_PREVMODE'), InputBinding.COURSEPLAY_PREVMODE, nil, GS_PRIO_HIGH);
-				end;
-			end;
-		end;
-	end;
-
 	if self:getIsActive() then
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);
@@ -1387,8 +1309,12 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
             spec.currentHelper = g_helperManager:getRandomHelper()
         end
         g_helperManager:useHelper(spec.currentHelper)
-        spec.startedFarmId = startedFarmId
-        if g_server ~= nil then
+		---Make sure the farmId is never: 0 == spectator farm id,
+		---which could be the case when autodrive starts a CP driver.
+		if startedFarmId ~= 0 then 
+			spec.startedFarmId = startedFarmId
+		end
+		if g_server ~= nil then
             g_farmManager:updateFarmStats(startedFarmId, "workersHired", 1)
         end
         if noEventSend == nil or noEventSend == false then
