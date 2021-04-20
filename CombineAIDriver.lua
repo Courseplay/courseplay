@@ -204,6 +204,7 @@ function CombineAIDriver:start(startingPoint)
 	self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
 	self:debug('Pipe in fruit map created, there are %d non-headland waypoints, of which at %d the pipe will be in the fruit',
 			total, pipeInFruit)
+	BalerAIDriver.initializeBaler(self)
 end
 
 function CombineAIDriver:stop(msgReference)
@@ -219,6 +220,8 @@ end
 function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
 	self:handlePipe()
+	-- if we have a baler (like cotton harvesters), take care of those
+	self:handleBaler()
 	-- the rest is the same as the parent class
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
@@ -1138,6 +1141,18 @@ function CombineAIDriver:handlePipe()
 		end
 	end
 end
+
+function CombineAIDriver:handleBaler()
+	if self.baler then
+		BalerAIDriver.handleBaler(self)
+	end
+end
+
+-- TODO: rather implement a BaleHandler which can then be used by any driver
+function CombineAIDriver:isHandlingAllowed()
+	return BalerAIDriver.isHandlingAllowed(self)
+end
+
 
 function CombineAIDriver:handleCombinePipe()
     
