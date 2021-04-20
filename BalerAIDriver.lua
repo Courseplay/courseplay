@@ -22,8 +22,6 @@ BalerAIDriver = CpObject(UnloadableFieldworkAIDriver)
 function BalerAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'BalerAIDriver:init()')
 	UnloadableFieldworkAIDriver.init(self, vehicle)
-	self.slowDownFillLevel = 200
-    self.slowDownStartSpeed = 20
 end
 
 function BalerAIDriver:driveFieldwork(dt)
@@ -41,6 +39,8 @@ function BalerAIDriver:start(startingPoint)
 end
 
 function BalerAIDriver:initializeBaler()
+	self.slowDownFillLevel = 200
+	self.slowDownStartSpeed = 20
 	self.baler = AIDriverUtil.getAIImplementWithSpecialization(self.vehicle, Baler)
 	if self.baler then
 		self.balerSpec = self.baler.spec_baler
@@ -104,7 +104,7 @@ function BalerAIDriver:handleBaler()
 		--copy of giants code:  AIDriveStrategyBaler:getDriveData(dt, vX,vY,vZ) to avoid leftover when full
 		local freeFillLevel = capacity - fillLevel
 		if freeFillLevel < self.slowDownFillLevel then
-			maxSpeed = 2 + (freeFillLevel / self.slowDownFillLevel) * self.slowDownStartSpeed
+			local maxSpeed = 2 + (freeFillLevel / self.slowDownFillLevel) * self.slowDownStartSpeed
 			self:setSpeed(maxSpeed)
 		end
 		
