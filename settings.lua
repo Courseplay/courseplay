@@ -3807,6 +3807,15 @@ function WorkingToolPositionsSetting:onLoad(savegame)
 end
 Cylindered.onLoad = Utils.appendedFunction(Cylindered.onLoad,WorkingToolPositionsSetting.onLoad)
 
+---Disabled cylinder control of frontloaders, moveable pipes and so on..., while CP is driving.
+function WorkingToolPositionsSetting.actionEventInputCylindered(object,superFunc, actionName, inputValue, callbackState, isAnalog, isMouse)
+	local rootVehicle = object:getRootVehicle()
+	if not rootVehicle:getIsCourseplayDriving() then 
+		return superFunc(object, actionName, inputValue, callbackState, isAnalog, isMouse)
+	end
+end
+Cylindered.actionEventInput = Utils.overwrittenFunction(Cylindered.actionEventInput,WorkingToolPositionsSetting.actionEventInputCylindered)
+
 ---@class FrontloaderToolPositionsSetting : WorkingToolPositionsSetting
 FrontloaderToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
 function FrontloaderToolPositionsSetting:init(vehicle)
@@ -4055,6 +4064,7 @@ function SettingsContainer.createGlobalSettings()
 	container:addSetting(EnableOpenHudWithMouseGlobalSetting)
 	container:addSetting(AutoRepairSetting)
 	container:addSetting(ShowMapHotspotSetting)
+	container:addSetting(ShowActionEventTextsSetting)
 	return container
 end
 

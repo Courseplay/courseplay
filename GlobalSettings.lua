@@ -63,6 +63,25 @@ function ShowMiniHudSetting:init()
 	self:set(false)
 end
 
+---@class ShowActionEventTextsSetting  : BooleanSetting
+ShowActionEventTextsSetting  = CpObject(BooleanSetting)
+function ShowActionEventTextsSetting:init()
+	BooleanSetting.init(self, 'showActionEventsTexts', 'COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS',
+				'COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP', nil)
+	-- set default while we are transitioning from the the old setting to this new one
+	self:set(true)
+end
+
+---On setting change, make sure the current entered vehicle gets updated.
+function ShowActionEventTextsSetting:onChange()
+	if g_currentMission then
+		local vehicle = g_currentMission.controlledVehicle
+		if vehicle ~= nil then 
+			ActionEventsLoader.updateAllActionEvents(vehicle)
+		end
+	end
+end
+
 
 ---@class AutoRepairSetting : SettingList
 AutoRepairSetting = CpObject(SettingList)

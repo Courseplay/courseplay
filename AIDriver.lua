@@ -184,6 +184,12 @@ function AIDriver:init(vehicle)
 	self.triggerHandler:enableFuelLoading()
 end
 
+---This function is called once on the first update tick,
+---for post setup possibilities.
+function AIDriver:postInit()
+	
+end
+
 function AIDriver:updateLoadingText()
 	local fillableObject = self.triggerHandler.fillableObject
 	if fillableObject then

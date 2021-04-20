@@ -174,7 +174,7 @@ function courseEditor.setEnabledActionEvent(vehicle)
 end
 
 function courseEditor.getIsNotAllowedToUse(vehicle)
-	return vehicle.cp.isRecording or courseEditor:isAutoDriveCourse(vehicle) or #vehicle.Waypoints == 0
+	return vehicle.cp.isRecording or vehicle:getIsCourseplayDriving() or courseEditor:isAutoDriveCourse(vehicle) or #vehicle.Waypoints == 0
 end
 
 function courseEditor:getIsDisabled()

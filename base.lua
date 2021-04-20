@@ -585,6 +585,16 @@ function courseplay:onUpdate(dt)
 		self.cp.infoText = nil
 	end
 
+	if self.cp.firstRun == nil then 
+		if self.cp.driver then 
+			---Post init function, as not all giants variables are
+			---set correctly at the first courseplay:setAIDriver() call.
+			self.cp.driver:postInit()
+			self.cp.firstRun = true
+		end
+	end
+
+
 	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
 		courseplay:drawWaypointsLines(self);
 	end;

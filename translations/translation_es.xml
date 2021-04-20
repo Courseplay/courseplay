@@ -473,6 +473,9 @@
 		
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Sigue descargando hasta el final de la línea" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="No deje de descargar la cosechadora hasta que esté vacía, síguela hasta el final de la línea" />
+
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Show Keybinds" />
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Activate/Deactivate the Keybinds shown in F1 menu" />
 		
 		<!--Action Events-->
 		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->
