@@ -43,12 +43,6 @@ CombineAIDriver.myStates = {
 	RETURNING_FROM_SELF_UNLOAD = {}
 }
 
-CombineAIDriver.turnTypes = {
-	HEADLAND_NORMAL = {},
-	HEADLAND_EASY = {},
-	HEADLAND_POCKET = {},
-	UP_DOWN_NORMAL = {}
-}
 
 -- Developer hack: to check the class of an object one should use the is_a() defined in CpObject.lua.
 -- However, when we reload classes on the fly during the development, the is_a() calls in other modules still
@@ -1005,27 +999,22 @@ function CombineAIDriver:startTurn(ix)
 	if self.turnContext:isHeadlandCorner() then
 		if self:isPotatoOrSugarBeetHarvester() then
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
-			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnConnectingTrack(ix) then
 			self:debug('Headland turn but this a connecting track, use normal turn maneuvers.')
-			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.settings.turnOnField:is(true) then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
 			self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
-			self.turnType = self.turnTypes.HEADLAND_POCKET
 			self.fieldworkState = self.states.TURNING
 			self.ppc:setShortLookaheadDistance()
 		else
 			self:debug('Use combine headland turn.')
 			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
-			self.turnType = self.turnTypes.HEADLAND_EASY
 			self.fieldworkState = self.states.TURNING
 		end
 	else
 		self:debug('Non headland turn.')
-		self.turnType = self.turnTypes.UP_DOWN_NORMAL
 		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 end
@@ -1051,11 +1040,6 @@ function CombineAIDriver:isTurningOnHeadland()
 	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isHeadlandCorner()
 end
 
----@param turnType table one of CombineAIDriver.turnTypes
-function CombineAIDriver:isHeadlandTurn(turnType)
-	return turnType ~= CombineAIDriver.turnTypes.UP_DOWN_NORMAL
-end
-
 function CombineAIDriver:isTurningLeft()
 	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isLeftTurn()
 end
@@ -1066,59 +1050,6 @@ end
 
 function CombineAIDriver:getWorkWidth()
 	return self.vehicle.cp.workWidth
-end
-
-
---- Create a pocket in the next row at the corner to stay on the field during the turn maneuver.
----@param turnContext TurnContext
-function CombineAIDriver:createOuterHeadlandCornerCourse(turnContext)
-	local cornerWaypoints = {}
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
-	-- this is how far we have to cut into the next headland (the position where the header will be after the turn)
-	local offset = math.min(turnRadius + self.frontMarkerDistance,  self.vehicle.cp.workWidth)
-	local corner = turnContext:createCorner(self.vehicle, turnRadius)
-	local d = -self.vehicle.cp.workWidth / 2 + self.frontMarkerDistance
-	local wp = corner:getPointAtDistanceFromCornerStart(d + 2)
-	wp.speed = self.vehicle.cp.speeds.turn * 0.75
-	table.insert(cornerWaypoints, wp)
-	-- drive forward up to the field edge
-	wp = corner:getPointAtDistanceFromCornerStart(d)
-	wp.speed = self.vehicle.cp.speeds.turn * 0.75
-	table.insert(cornerWaypoints, wp)
-	-- drive back to prepare for making a pocket
-	-- reverse back to set up for the headland after the corner
-	local reverseDistance = 2 * offset
-	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance / 2)
-	wp.rev = true
-	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance)
-	wp.rev = true
-	table.insert(cornerWaypoints, wp)
-	-- now make a pocket in the inner headland to make room to turn
-	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance * 0.75, -offset * 0.75)
-	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance * 0.5, -offset * 0.9)
-	if not courseplay:isField(wp.x, wp.z) then
-		self:debug('No field where the pocket would be, this seems to be a 270 corner')
-		corner:delete()
-		return nil
-	end
-	table.insert(cornerWaypoints, wp)
-	-- drive forward to the field edge on the inner headland
-	wp = corner:getPointAtDistanceFromCornerStart(d, -offset)
-	wp.speed = self.vehicle.cp.speeds.turn * 0.75
-	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerStart(reverseDistance / 2)
-	wp.rev = true
-	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius / 3, turnRadius / 4)
-	wp.speed = self.vehicle.cp.speeds.turn * 0.5
-	table.insert(cornerWaypoints, wp)
-	wp = corner:getPointAtDistanceFromCornerEnd(turnRadius, turnRadius / 4)
-	wp.speed = self.vehicle.cp.speeds.turn * 0.5
-	table.insert(cornerWaypoints, wp)
-	corner:delete()
-	return Course(self.vehicle, cornerWaypoints, true), turnContext.turnEndWpIx
 end
 
 function CombineAIDriver:isChopper()

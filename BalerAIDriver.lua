@@ -24,6 +24,11 @@ function BalerAIDriver:init(vehicle)
 	UnloadableFieldworkAIDriver.init(self, vehicle)
 	self.slowDownFillLevel = 200
     self.slowDownStartSpeed = 20
+
+	if SpecializationUtil.hasSpecialization(Combine, vehicle.specializations) or
+		AIDriverUtil.hasAIImplementWithSpecialization(vehicle, Combine) then
+		self.isCombine = true
+	end
 end
 
 function BalerAIDriver:driveFieldwork(dt)
@@ -49,6 +54,37 @@ function BalerAIDriver:initializeBaler()
 			self.oldAutomaticDrop = self.balerSpec.automaticDrop
 			self.balerSpec.automaticDrop = true
 		end
+	end
+end
+
+function BalerAIDriver:startTurn(ix)
+	if self.isCombine then
+		self:debug('This vehicle is also a harvester, check check for special headland turns.')
+		self:setMarkers()
+		self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+			self.frontMarkerDistance, self.backMarkerDistance,
+			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
+
+		if self.turnContext:isHeadlandCorner() then
+			if self.course:isOnConnectingTrack(ix) then
+				self:debug('Headland turn but this a connecting track, use normal turn maneuvers.')
+				UnloadableFieldworkAIDriver.startTurn(self, ix)
+			elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.settings.turnOnField:is(true) then
+				self:debug('Creating a pocket in the corner so the harvester stays on the field during the turn')
+				self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
+				self.fieldworkState = self.states.TURNING
+				self.ppc:setShortLookaheadDistance()
+			else
+				self:debug('Use combine headland turn.')
+				self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
+				self.fieldworkState = self.states.TURNING
+			end
+		else
+			self:debug('Non headland turn.')
+			UnloadableFieldworkAIDriver.startTurn(self, ix)
+		end
+	else
+		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 end
 
