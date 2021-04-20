@@ -533,15 +533,17 @@ function CombineAIDriver:unloadFinished()
 end
 
 function CombineAIDriver:shouldMakePocket()
-	if self.fruitLeft > 0.75 and self.fruitRight > 0.75 then
-		-- fruit both sides
-		return true
-	elseif self.pipeOnLeftSide then
-		-- on the outermost headland clockwise (field edge)
-		return not self.fieldOnLeft
-	else
-		-- on the outermost headland counterclockwise (field edge)
-		return not self.fieldOnRight
+	if self.pipe then
+		if self.fruitLeft > 0.75 and self.fruitRight > 0.75 then
+			-- fruit both sides
+			return true
+		elseif self.pipeOnLeftSide then
+			-- on the outermost headland clockwise (field edge)
+			return not self.fieldOnLeft
+		else
+			-- on the outermost headland counterclockwise (field edge)
+			return not self.fieldOnRight
+		end
 	end
 end
 
@@ -554,11 +556,13 @@ function CombineAIDriver:isPipeOnLeft()
 end
 
 function CombineAIDriver:isPipeInFruit()
-	-- is our pipe in the fruit?
-	if self.pipeOnLeftSide then
-		return self.fruitLeft > self.fruitRight
-	else
-		return self.fruitLeft < self.fruitRight
+	if self.pipe then
+		-- is our pipe in the fruit?
+		if self.pipeOnLeftSide then
+			return self.fruitLeft > self.fruitRight
+		else
+			return self.fruitLeft < self.fruitRight
+		end
 	end
 end
 
