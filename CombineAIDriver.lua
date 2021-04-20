@@ -1148,9 +1148,18 @@ function CombineAIDriver:handleBaler()
 	end
 end
 
--- TODO: rather implement a BaleHandler which can then be used by any driver
+-- TODO: rather implement a BalerHandler which can then be used by any driver
 function CombineAIDriver:isHandlingAllowed()
 	return BalerAIDriver.isHandlingAllowed(self)
+end
+
+-- TODO: same here, this should be part of that BalerHandler
+function CombineAIDriver:allFillLevelsOk()
+	if self.baler then
+		return BalerAIDriver.allFillLevelsOk(self)
+	else
+		return UnloadableFieldworkAIDriver.allFillLevelsOk(self)
+	end
 end
 
 
