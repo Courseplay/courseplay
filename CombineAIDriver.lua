@@ -43,12 +43,6 @@ CombineAIDriver.myStates = {
 	RETURNING_FROM_SELF_UNLOAD = {}
 }
 
-CombineAIDriver.turnTypes = {
-	HEADLAND_NORMAL = {},
-	HEADLAND_EASY = {},
-	HEADLAND_POCKET = {},
-	UP_DOWN_NORMAL = {}
-}
 
 -- Developer hack: to check the class of an object one should use the is_a() defined in CpObject.lua.
 -- However, when we reload classes on the fly during the development, the is_a() calls in other modules still
@@ -1005,27 +999,22 @@ function CombineAIDriver:startTurn(ix)
 	if self.turnContext:isHeadlandCorner() then
 		if self:isPotatoOrSugarBeetHarvester() then
 			self:debug('Headland turn but this harvester uses normal turn maneuvers.')
-			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnConnectingTrack(ix) then
 			self:debug('Headland turn but this a connecting track, use normal turn maneuvers.')
-			self.turnType = self.turnTypes.HEADLAND_NORMAL
 			UnloadableFieldworkAIDriver.startTurn(self, ix)
 		elseif self.course:isOnOutermostHeadland(ix) and self.vehicle.cp.settings.turnOnField:is(true) then
 			self:debug('Creating a pocket in the corner so the combine stays on the field during the turn')
 			self.aiTurn = CombinePocketHeadlandTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
-			self.turnType = self.turnTypes.HEADLAND_POCKET
 			self.fieldworkState = self.states.TURNING
 			self.ppc:setShortLookaheadDistance()
 		else
 			self:debug('Use combine headland turn.')
 			self.aiTurn = CombineHeadlandTurn(self.vehicle, self, self.turnContext)
-			self.turnType = self.turnTypes.HEADLAND_EASY
 			self.fieldworkState = self.states.TURNING
 		end
 	else
 		self:debug('Non headland turn.')
-		self.turnType = self.turnTypes.UP_DOWN_NORMAL
 		UnloadableFieldworkAIDriver.startTurn(self, ix)
 	end
 end
@@ -1049,11 +1038,6 @@ end
 
 function CombineAIDriver:isTurningOnHeadland()
 	return self.fieldworkState == self.states.TURNING and self.turnContext and self.turnContext:isHeadlandCorner()
-end
-
----@param turnType table one of CombineAIDriver.turnTypes
-function CombineAIDriver:isHeadlandTurn(turnType)
-	return turnType ~= CombineAIDriver.turnTypes.UP_DOWN_NORMAL
 end
 
 function CombineAIDriver:isTurningLeft()
