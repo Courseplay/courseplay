@@ -108,7 +108,7 @@ function DevHelper:overlapBoxCallback(transformId)
             text = 'vehicle' .. collidingObject:getName()
         else
 			if collidingObject:isa(Bale) then
-				text = 'Bale'
+				text = 'Bale ' .. tostring(collidingObject) .. ' ' .. tostring(NetworkUtil.getObjectId(collidingObject))
 			else
             	text = collidingObject.getName and collidingObject:getName() or 'N/A'
 			end
@@ -202,7 +202,7 @@ function DevHelper:startPathfinding()
         local start = State3D:copy(self.start)
 
         self.pathfinder, done, path =  PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, self.goal,
-                false, self.fieldNumForPathfinding or 0, {}, 10)
+                false, self.fieldNumForPathfinding or 0, {}, {}, 10)
 
     end
 

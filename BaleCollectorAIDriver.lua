@@ -151,7 +151,7 @@ function BaleCollectorAIDriver:findClosestBale(bales)
 	local closestBale, minDistance, ix = nil, math.huge
 	for i, bale in ipairs(bales) do
 		local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
-		self:debug('%d. bale (%d) in %.1f m', i, bale:getId(), d)
+		self:debug('%d. bale (%d, %s) in %.1f m', i, bale:getId(), bale:getBaleObject(), d)
 		if d < self.vehicle.cp.turnDiameter * 2 then
 			-- if it is really close, check the length of the Dubins path
 			-- as we may need to drive a loop first to get to it
@@ -213,7 +213,8 @@ function BaleCollectorAIDriver:startPathfindingToBale(bale)
 		goal:add(offset:rotate(goal.t))
 		local done, path, goalNodeInvalid
 		self.pathfinder, done, path, goalNodeInvalid =
-			PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, goal, false, self.fieldId, {})
+			PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, goal, false, self.fieldId,
+				{}, self.lastBale and {self.lastBale} or {})
 		if done then
 			return self:onPathfindingDoneToNextBale(path, goalNodeInvalid)
 		else
@@ -272,8 +273,11 @@ function BaleCollectorAIDriver:isObstacleAhead()
 			return true
 		end
 	end
-	-- then a more thorough check
-	local leftOk, rightOk, straightOk = PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius)
+	-- then a more thorough check, we want to ignore the last bale we worked on as that may lay around too close
+	-- to the baler. This happens for example to the Andersen bale wrapper.
+	self:debug('Check obstacles ahead, ignoring bale object %s', self.lastBale and self.lastBale or 'nil')
+	local leftOk, rightOk, straightOk =
+	PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius, self.lastBale and{self.lastBale})
 	-- if at least one is ok, we are good to go.
 	return not (leftOk or rightOk or straightOk)
 end
@@ -376,7 +380,8 @@ function BaleCollectorAIDriver:workOnBale()
 	if self.baleWrapper then
 		BaleWrapperAIDriver.handleBaleWrapper(self)
 		if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_NONE then
-			self:debug('Bale wrapped, moving on to the next')
+			self.lastBale = self.baleWrapper.spec_baleWrapper.lastDroppedBale
+			self:debug('Bale wrapped, moving on to the next, last dropped bale %s', self.lastBale)
 			self:collectNextBale()
 		end
 	end

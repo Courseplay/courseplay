@@ -203,11 +203,12 @@ end
 --- Pathfinder context
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
-function PathfinderUtil.Context:init(vehicle, vehiclesToIgnore)
+function PathfinderUtil.Context:init(vehicle, vehiclesToIgnore, objectsToIgnore)
     self.vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 	self.trailerHitchLength = AIDriverUtil.getTowBarLength(vehicle)
 	self.turnRadius = vehicle.cp and vehicle.cp.driver and AIDriverUtil.getTurningRadius(vehicle) or 10
-	self.vehiclesToIgnore = vehiclesToIgnore
+	self.vehiclesToIgnore = vehiclesToIgnore or {}
+	self.objectsToIgnore = objectsToIgnore or {}
 end
 
 --- Calculate the four corners of a rectangle around a node (for example the area covered by a vehicle)
@@ -276,6 +277,10 @@ end
 
 function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
     local collidingObject = g_currentMission.nodeToObject[transformId]
+	if collidingObject and PathfinderUtil.elementOf(self.objectsToIgnore, collidingObject) then
+		-- an object we want to ignore
+		return
+	end
     if collidingObject and collidingObject.getRootVehicle then
         local rootVehicle = collidingObject:getRootVehicle()
         if rootVehicle == self.vehicleData.rootVehicle or
@@ -292,13 +297,14 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
                 text = text .. ' ' .. key
             end
         end
-				self.collidingShapesText = text
+		self.collidingShapesText = text
         self.collidingShapes = self.collidingShapes + 1
     end
 end
 
-function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore, log)
+function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData, vehiclesToIgnore, objectsToIgnore, log)
     self.vehiclesToIgnore = vehiclesToIgnore or {}
+    self.objectsToIgnore = objectsToIgnore or {}
     self.vehicleData = vehicleData
     -- the box for overlapBox() is symmetric, so if our root node is not in the middle of the vehicle rectangle,
     -- we have to translate it into the middle
@@ -311,8 +317,8 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
     local xRot, yRot, zRot = getWorldRotation(node)
     local x, y, z = localToWorld(node, xOffset, 1, zOffset)
 
-    self.collidingShapes = 0
-		self.collidingShapesText = 'unknown'
+	self.collidingShapes = 0
+	self.collidingShapesText = 'unknown'
 
     overlapBox(x, y + 0.2, z, xRot, yRot, zRot, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
     if log and self.collidingShapes > 0 then
@@ -488,17 +494,18 @@ function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
     local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
     -- for debug purposes only, store validity info on node
     node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
-            PathfinderUtil.helperNode, self.context.vehicleData, self.context.vehiclesToIgnore, log)
+		PathfinderUtil.helperNode, self.context.vehicleData, self.context.vehiclesToIgnore, self.context.objectsToIgnore, log)
     if self.context.vehicleData.trailer and not ignoreTrailer then
         -- now check the trailer or towed implement
         -- move the node to the rear of the vehicle (where approximately the trailer is attached)
-        local x, y, z = localToWorld(PathfinderUtil.helperNode, 0, 0, self.context.vehicleData.trailerHitchOffset)
+		local x, y, z = localToWorld(PathfinderUtil.helperNode, 0, 0, self.context.vehicleData.trailerHitchOffset)
 
-				PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode, x, z,
-					courseGenerator.toCpAngle(node.tTrailer), 0.5)
+		PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode, x, z,
+			courseGenerator.toCpAngle(node.tTrailer), 0.5)
 
         node.collidingShapes = node.collidingShapes + PathfinderUtil.collisionDetector:findCollidingShapes(
-                PathfinderUtil.helperNode, self.context.vehicleData.trailerRectangle, self.context.vehiclesToIgnore, log)
+			PathfinderUtil.helperNode, self.context.vehicleData.trailerRectangle, self.context.vehiclesToIgnore,
+			self.context.objectsToIgnore, log)
     end
     local isValid = node.collidingShapes == 0
     if not isValid then
@@ -542,17 +549,18 @@ end
 ---@param goal State3D
 function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
                                                           allowReverse, fieldNum,
-                                                          vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+                                                          vehiclesToIgnore, objectsToIgnore,
+														  maxFruitPercent, offFieldPenalty, mustBeAccurate)
 
-		local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
+	local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
 
-    local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
+	local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 
-		PathfinderUtil.initializeTrailerHeading(start, vehicleData)
+	PathfinderUtil.initializeTrailerHeading(start, vehicleData)
 
-    local context = PathfinderUtil.Context(vehicle, vehiclesToIgnore)
+	local context = PathfinderUtil.Context(vehicle, vehiclesToIgnore, objectsToIgnore)
 
-    local constraints = PathfinderConstraints(context,
+	local constraints = PathfinderConstraints(context,
             maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge),
             offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty,
             fieldNum)
@@ -709,7 +717,7 @@ function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypo
     local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
-            vehicle, goal, allowReverse, fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+            vehicle, goal, allowReverse, fieldNum, vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty)
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
@@ -733,7 +741,7 @@ function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
             vehicle, goal, allowReverse, fieldNum,
-            vehiclesToIgnore, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+            vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty, mustBeAccurate)
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -778,7 +786,7 @@ end
 -- Then check all three for collisions with obstacles.
 ---@return boolean, boolean, boolean true if no obstacles left, right, straight ahead
 ------------------------------------------------------------------------------------------------------------------------
-function PathfinderUtil.checkForObstaclesAhead(vehicle, turnRadius)
+function PathfinderUtil.checkForObstaclesAhead(vehicle, turnRadius, objectsToIgnore)
 
 	local function isValidPath(constraints, path)
 		for i, node in ipairs(path) do
@@ -806,7 +814,7 @@ function PathfinderUtil.checkForObstaclesAhead(vehicle, turnRadius)
 	local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
 	local vehicleData = PathfinderUtil.VehicleData(vehicle, true, 0.5)
 	PathfinderUtil.initializeTrailerHeading(start, vehicleData)
-	local context = PathfinderUtil.Context(vehicle, {})
+	local context = PathfinderUtil.Context(vehicle, {}, objectsToIgnore)
 	local constraints = PathfinderConstraints(context, math.huge, 0, 0)
 	ensureHelperNode()
 
