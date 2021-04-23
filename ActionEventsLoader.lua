@@ -10,7 +10,7 @@ ActionEventsLoader.actionEventAttributes = {
 	{name = 'callbackState', getXmlFunction = getXMLInt},
 	{name = 'isDisabledCallbackFunc', getXmlFunction = getXMLString},
 	{name = 'text', getXmlFunction = getXMLString},
-	{name = 'textVisibilityNeeded', getXmlFunction = getXMLBool},
+	{name = 'textAlwaysVisible', getXmlFunction = getXMLBool},
 }
 
 ---All the setting action events attributes
@@ -22,7 +22,7 @@ ActionEventsLoader.settingActionEventAttributes = {
 	{name = 'callbackState', getXmlFunction = getXMLInt},
 	{name = 'isDisabledCallbackFunc', getXmlFunction = getXMLString},
 	{name = 'text', getXmlFunction = getXMLString},
-	{name = 'textVisibilityNeeded', getXmlFunction = getXMLBool},
+	{name = 'textAlwaysVisible', getXmlFunction = getXMLBool},
 }
 
 ---String to class reference, only for global classes.
@@ -331,7 +331,7 @@ end
 ---Needs the action event text to be visible?
 ---@param table actionEventData from the config xml
 function ActionEventsLoaderUtil.isActionEventTextVisible(actionEventData)
-	return courseplay.globalSettings.showActionEventsTexts:get() or actionEventData.textVisibilityNeeded
+	return courseplay.globalSettings.showActionEventsTexts:get() or actionEventData.textAlwaysVisible
 end
 
 ---Is the action event disabled ? 
