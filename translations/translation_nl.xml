@@ -473,6 +473,9 @@
 		
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Show Keybinds" />
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Activate/Deactivate the Keybinds shown in F1 menu" />
 		
 		<!--Action Events-->
 		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->

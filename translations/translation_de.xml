@@ -475,6 +475,9 @@
 		
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
+
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Tastenbelegung anzeigen" />
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Aktiviert/Deaktiviert die Anzeige im F1 Menü für die Tastenbelegung" />
 		
 		<!--Action Events-->
 		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->
@@ -514,8 +517,7 @@
 		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_START"			text="CP Editor: Alle Wegpunkte bis Start löschen" />
 		<text name="input_COURSEPLAY_ACTION_EDITOR_DELETE_TO_END"			text="CP Editor: Alle Wegpunkte bis Ende löschen" />
 		<text name="input_COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT"			text="CP Editor: Wegpunkt einfügen" />
-		<text name="input_COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE"		text="CP Editor: Wegpunkttyp wechseln" />
-		
+		<text name="input_COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE"		text="CP Editor: Wegpunkttyp wechseln" />	
 		
 		<!-- Replace marker, do not remove! -->
 </texts>

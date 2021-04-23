@@ -26,6 +26,9 @@ OverloaderAIDriver.myStates = {
     OVERLOADING = {},
 }
 
+OverloaderAIDriver.MIN_SPEED_UNLOAD_COURSE = 10
+
+
 function OverloaderAIDriver:init(vehicle)
     --there seems to be a bug, where "vehicle" is not always set once start is pressed
 	CombineUnloadAIDriver.init(self, vehicle)
@@ -35,6 +38,13 @@ function OverloaderAIDriver:init(vehicle)
     self:debug('OverloaderAIDriver:init()')
 	self.unloadCourseState = self.states.ENROUTE
     self.nearOverloadPoint = false
+end
+
+function OverloaderAIDriver:postInit()
+    ---Refresh the Hud content here,as otherwise the moveable pipe is not 
+    ---detected the first time after loading a savegame. 
+    self:setHudContent()
+    CombineUnloadAIDriver.postInit(self)
 end
 
 function OverloaderAIDriver:findPipeAndTrailer()
@@ -145,13 +155,13 @@ end
 function OverloaderAIDriver:onWaypointChange(ix)
     -- this is called when the next wp changes, that is well before we get there
     -- save it in a variable to avoid the relatively expensive hasWaitPointWithinDistance to be called too often
-    self.nearOverloadPoint = self.course:hasWaitPointWithinDistance(ix, 30)
+    self.nearOverloadPoint,self.closestOverloadPointIx = self.course:hasWaitPointWithinDistance(ix, 30)
     CombineUnloadAIDriver.onWaypointChange(self, ix)
 end
 
 function OverloaderAIDriver:onWaypointPassed(ix)
     -- just in case...
-    self.nearOverloadPoint = self.course:hasWaitPointWithinDistance(ix, 30)
+    self.nearOverloadPoint, self.closestOverloadPointIx = self.course:hasWaitPointWithinDistance(ix, 30)
     if self.course:isWaitAt(ix) then
         if self:isTrailerEmpty() then
             self:debug('Wait point reached but my trailer is empty, continuing')
@@ -161,6 +171,18 @@ function OverloaderAIDriver:onWaypointPassed(ix)
         end
     else
         CombineUnloadAIDriver.onWaypointPassed(self, ix)
+    end
+end
+
+function OverloaderAIDriver:getSpeed()
+    
+    local defaultSpeed = CombineUnloadAIDriver.getSpeed(self)  
+    
+    if self.unloadCourseState == self.states.ENROUTE and self.closestOverloadPointIx then
+        local distToWaitPoint = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle,self.closestOverloadPointIx)
+        return MathUtil.clamp(distToWaitPoint, self.MIN_SPEED_UNLOAD_COURSE, defaultSpeed)
+    else 
+        return defaultSpeed    
     end
 end
 

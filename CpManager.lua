@@ -26,11 +26,13 @@ function CpManager:loadMap(name)
 		self.cpCoursesFolderPath = ("%s%s/%s"):format(getUserProfileAppPath(),"CoursePlay_Courses", g_currentMission.missionInfo.mapId);
 		self.cpCourseManagerXmlFilePath = self.cpCoursesFolderPath .. "/courseManager.xml";
 		self.cpCourseStorageXmlFileTemplate = "courseStorage%04d.xml";
-		self.cpDebugPrintXmlFilePath = string.format("%s%s",getUserProfileAppPath(),"courseplayDebugPrint.xml")
+		self.cpDebugPrintXmlFolderPath = string.format("%s%s",getUserProfileAppPath(),"courseplayDebugPrint")
+		self.cpDebugPrintXmlFilePathDefault = string.format("%s/%s",self.cpDebugPrintXmlFolderPath,"courseplayDebugPrint.xml")
+		createFolder(self.cpDebugPrintXmlFolderPath)
+		
 		-- we need to create CoursePlay_Courses folder before we can create any new folders inside it.
 		createFolder(("%sCoursePlay_Courses"):format(getUserProfileAppPath()));
 		createFolder(self.cpCoursesFolderPath);
-
 		-- Add / at end of path, so we dont save that in the courseManager.xml (Needs to be done after folder creation!)
 		self.cpCoursesFolderPath = self.cpCoursesFolderPath .. "/";
 	end
@@ -104,6 +106,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand('cpStopAll', 'Stop all Courseplayers', 'devStopAll', self);
 	addConsoleCommand( 'cpSaveAllFields', 'Save all fields', 'devSaveAllFields', self )
 	addConsoleCommand( 'print', 'Print a variable', 'printVariable', self )
+	addConsoleCommand( 'printGlobalCpVariable', 'Print a global cp variable', 'printGlobalCpVariable', self )
 	addConsoleCommand( 'printVehicleVariable', 'Print g_currentMission.controlledVehicle.variable', 'printVehicleVariable', self )
 	addConsoleCommand( 'printDriverVariable', 'Print g_currentMission.controlledVehicle.cp.driver.variable', 'printDriverVariable', self )
 	addConsoleCommand( 'printSettingVariable', 'Print g_currentMission.controlledVehicle.cp.settings.variable', 'printSettingVariable', self )
@@ -550,13 +553,14 @@ function CpManager:devSaveAllFields()
 	return( 'All fields saved' )
 end
 
---- Print a global variable
--- @param string variableName name of the variable, can be multiple levels
--- @param int depth maximum depth, 1 by default
--- @param int printToXML and printToXML>0 => printing variable to xmlFile
-function CpManager:printVariable(variableName, maxDepth,printToXML, printShortVersion)
+---Prints a variable to the console or a xmlFile.
+---@param string variableName name of the variable, can be multiple levels
+---@param int depth maximum depth, 1 by default
+---@param int printToXML: should the variable be printed to an xml file ? (optional)
+---@param int printToSeparateXmlFiles: should the variable be printed to an xml file named after the variable ? (optional)
+function CpManager:printVariable(variableName, maxDepth,printToXML, printToSeparateXmlFiles)
 	if printToXML and tonumber(printToXML) and tonumber(printToXML)>0 then
-		HelperUtil.printVariableToXML(variableName, maxDepth)
+		HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXmlFiles)
 		return
 	end
 	print(string.format('%s - %s', tostring(variableName), tostring(maxDepth)))
@@ -566,17 +570,11 @@ function CpManager:printVariable(variableName, maxDepth,printToXML, printShortVe
 	if value then
 		print(string.format('Printing %s (%s), depth %d', variableName, valueType, depth))
 		if valueType == 'table' then
-			if not printShortVersion then
-				DebugUtil.printTableRecursively(value, '  ', 1, depth)
-				local mt = getmetatable(value)
-				if mt and type(mt) == 'table' then
-					print('-- metatable -->')
-					DebugUtil.printTableRecursively(mt, '  ', 1, depth)
-				end
-			else
-				--courseplay:printMeThisTable(table,level,maxlevel,upperPath)
-				courseplay.alreadyPrinted = {}
-				courseplay:printMeThisTable(value,0,depth,variableName)
+			DebugUtil.printTableRecursively(value, '  ', 1, depth)
+			local mt = getmetatable(value)
+			if mt and type(mt) == 'table' then
+				print('-- metatable -->')
+				DebugUtil.printTableRecursively(mt, '  ', 1, depth)
 			end
 		else
 			print(variableName .. ': ' .. tostring(value))
@@ -591,33 +589,37 @@ end
 
 --- Print the variable in the selected vehicle's namespace
 -- You can omit the dot for data members but if you want to call a function, you must start the variable name with a colon
-function CpManager:printVehicleVariable(variableName, maxDepth, printToXML)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle', variableName, maxDepth, printToXML)
+function CpManager:printVehicleVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
 end
 
-function CpManager:printDriverVariable(variableName, maxDepth, printToXML)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth, printToXML)
+function CpManager:printDriverVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.driver', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
 end
 
-function CpManager:printSettingVariable(variableName, maxDepth, printToXML)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.settings', variableName, maxDepth, printToXML)
+function CpManager:printSettingVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.settings', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
 end
 
-function CpManager:printCourseGeneratorSettingVariable(variableName, maxDepth, printToXML)
-	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.courseGeneratorSettings', variableName, maxDepth, printToXML)
+function CpManager:printCourseGeneratorSettingVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'g_currentMission.controlledVehicle.cp.courseGeneratorSettings', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
 end
 
-function CpManager:printGlobalSettingVariable(variableName, maxDepth, printToXML)
-	self:printVariableInternal( 'courseplay.courseplay.globalSettings', variableName, maxDepth, printToXML)
+function CpManager:printGlobalSettingVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'courseplay.courseplay.globalSettings', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+end
+
+function CpManager:printGlobalCpVariable(variableName, maxDepth, printToXML,printToSeparateXmlFiles)
+	self:printVariableInternal( 'courseplay', variableName, maxDepth, printToXML,printToSeparateXmlFiles)
 end
 
 
-function CpManager:printVariableInternal(prefix, variableName, maxDepth,printToXML)
+function CpManager:printVariableInternal(prefix, variableName, maxDepth,printToXML,printToSeparateXmlFiles)
 	if not StringUtil.startsWith(variableName, ':') and not StringUtil.startsWith(variableName, '.') then
 		-- allow to omit the . at the beginning of the variable name.
 		prefix = prefix .. '.'
 	end
-	self:printVariable(prefix .. variableName, maxDepth,printToXML)
+	self:printVariable(prefix .. variableName, maxDepth,printToXML,printToSeparateXmlFiles)
 end
 
 

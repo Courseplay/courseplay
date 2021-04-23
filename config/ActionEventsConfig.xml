@@ -16,6 +16,7 @@
 			isDisabledCallbackFunc: is used to disable a action event after a action event refresh or on load.
 			callbackState: isDisabledCallbackFunc parameter, this is an int!
 			text: is the action event text, by default it returns courseplay:loc(name), where 'name' is the previous defined action event name.
+			textAlwaysVisible: Should the action event texts always be visible, regardless of settings, etc..
 		-->
 		<!--HUD Actions-->
 		<ActionEvent name="COURSEPLAY_ACTION_OPEN_CLOSE_HUD" callbackFunc="actionEventOpenCloseHud" isDisabledCallbackFunc="isActionEventOpenCloseHudDisabled"/>
@@ -32,17 +33,17 @@
 		<ActionEvent name="COURSEPLAY_ACTION_DRIVE_NOW" callbackFunc="actionEventDriveNow" isDisabledCallbackFunc="isActionEventDriveNowDisabled"/>
 
 		<!--Editor Actions-->
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_TOGGLE" class="courseEditor" callbackFunc="setEnabledActionEvent" isDisabledCallbackFunc="getIsNotAllowedToUse"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_UNDO" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="undo" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SAVE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="save" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="increaseSpeed" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="decreaseSpeed" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="delete" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteNext" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToStart" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToEnd" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="insert" isDisabledCallbackFunc="getIsDisabled"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="cycleType" isDisabledCallbackFunc="getIsDisabled"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_TOGGLE" class="courseEditor" callbackFunc="setEnabledActionEvent" isDisabledCallbackFunc="getIsNotAllowedToUse" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_UNDO" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="undo" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SAVE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="save" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_INCREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="increaseSpeed" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="decreaseSpeed" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="delete" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteNext" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToStart" isDisabledCallbackFunc="getIsDisabled"textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToEnd" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="insert" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="cycleType" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 
 	</ActionEvents>
 
@@ -55,6 +56,7 @@
 			isDisabledCallbackFunc: is used to disable a action event after a action event refresh or on load optional, default is setting:isDisabled().
 			callbackState: isDisabledCallbackFunc parameter, this is an int!
 			text: is the action event text, by default it returns courseplay:loc(name), where 'name' is the previous defined action event name.
+			textAlwaysVisible: Should the action event texts always be visible, regardless of settings, etc..
 		-->
 		<!--Starting point driver-->
 		<SettingActionEvent name="COURSEPLAY_ACTION_CHANGE_STARTING_POINT" setting="startingPoint" callbackFunc="actionEvent"/>

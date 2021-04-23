@@ -10,6 +10,7 @@ ActionEventsLoader.actionEventAttributes = {
 	{name = 'callbackState', getXmlFunction = getXMLInt},
 	{name = 'isDisabledCallbackFunc', getXmlFunction = getXMLString},
 	{name = 'text', getXmlFunction = getXMLString},
+	{name = 'textAlwaysVisible', getXmlFunction = getXMLBool},
 }
 
 ---All the setting action events attributes
@@ -21,6 +22,7 @@ ActionEventsLoader.settingActionEventAttributes = {
 	{name = 'callbackState', getXmlFunction = getXMLInt},
 	{name = 'isDisabledCallbackFunc', getXmlFunction = getXMLString},
 	{name = 'text', getXmlFunction = getXMLString},
+	{name = 'textAlwaysVisible', getXmlFunction = getXMLBool},
 }
 
 ---String to class reference, only for global classes.
@@ -172,18 +174,18 @@ function ActionEventsLoader.registerGlobalActionEvents()
 
 			local actionEventCallback = ActionEventsLoaderUtil.getActionEventCallback(actionEventData,class)
 			local actionEventText = ActionEventsLoaderUtil.getActionEventText(actionEventData)
-
+			local actionEventTextVisible = ActionEventsLoaderUtil.isActionEventTextVisible(actionEventData,vehicle)
 			local isDisabled = ActionEventsLoaderUtil.getActionEventIsDisabled(actionEventData,class,classParameter)
 
-			courseplay.debugFormat(courseplay.DBG_HUD,"Register action event: name= %s, text= %s, isDisabled= %s",
-			actionEventName, courseplay:loc(actionEventText), tostring(isDisabled))
-			
+			courseplay.debugFormat(courseplay.DBG_HUD,"Register action event: name= %s, text= %s, isDisabled= %s, isVisible:%s",
+			actionEventName, courseplay:loc(actionEventText), tostring(isDisabled),tostring(actionEventTextVisible))
+
 			---Registers an action event.
 			local _, eventId = g_inputBinding:registerActionEvent(actionEventName, class, actionEventCallback, false, true, false, true,actionEventData.callbackState)
 			g_inputBinding:setActionEventTextPriority(eventId, GS_PRIO_HIGH)
 			g_inputBinding:setActionEventText(eventId, courseplay:loc(actionEventText))
 			g_inputBinding:setActionEventActive(eventId, not isDisabled)
-
+			g_inputBinding:setActionEventTextVisibility(eventId,actionEventTextVisible)
 			
 			ActionEventsLoader.globalActionEventNameToID[actionEventName] = eventId
 		end
@@ -208,11 +210,11 @@ function ActionEventsLoader.registerActionEvent(actionEventData,vehicle,isSettin
 	end
 	local actionEventCallback = ActionEventsLoaderUtil.getActionEventCallback(actionEventData,class)
 	local actionEventText = ActionEventsLoaderUtil.getActionEventText(actionEventData)
-
+	local actionEventTextVisible = ActionEventsLoaderUtil.isActionEventTextVisible(actionEventData,vehicle)
 	local isDisabled = ActionEventsLoaderUtil.getActionEventIsDisabled(actionEventData,class,classParameter)
 
-	courseplay.debugVehicle(courseplay.DBG_HUD,vehicle,"Register action event: name= %s, text= %s, isDisabled= %s",
-	actionEventName, courseplay:loc(actionEventText), tostring(isDisabled))
+	courseplay.debugVehicle(courseplay.DBG_HUD,vehicle,"Register action event: name= %s, text= %s, isDisabled= %s, isVisible:%s",
+	actionEventName, courseplay:loc(actionEventText), tostring(isDisabled),tostring(actionEventTextVisible))
 
 	---Registers an action event into the vehicle.
 	local _, eventId = vehicle:addActionEvent(vehicle.cpActionEvents,actionEventName, classParameter, actionEventCallback, true, false, false, true,actionEventData.callbackState)
@@ -220,6 +222,7 @@ function ActionEventsLoader.registerActionEvent(actionEventData,vehicle,isSettin
 	---Display text in the F1 window in the top left.
 	g_inputBinding:setActionEventText(eventId, courseplay:loc(actionEventText))
 	g_inputBinding:setActionEventActive(eventId, not isDisabled)
+	g_inputBinding:setActionEventTextVisibility(eventId,actionEventTextVisible)
 	---addActionEvent( action event table, action event name, action event class,
 	---				   callback function, trigger key up, trigger key down, trigger always,
 	---				   is active, callback state, action event icon)
@@ -236,6 +239,7 @@ function ActionEventsLoader.updateActionEvents(actionEvents,actionEventsNameToID
 	for _,actionEventData in ipairs(actionEvents) do 
 		local actionEventName = ActionEventsLoaderUtil.getActionEventName(actionEventData)
 		local actionEventText = ActionEventsLoaderUtil.getActionEventText(actionEventData)
+		local actionEventTextVisible = ActionEventsLoaderUtil.isActionEventTextVisible(actionEventData,vehicle)
 		local actionEvent = InputAction[actionEventName] and actionEventsNameToID[InputAction[actionEventName]]
 		if actionEvent then 
 			local class,classParameter
@@ -250,14 +254,15 @@ function ActionEventsLoader.updateActionEvents(actionEvents,actionEventsNameToID
 			local isDisabled = ActionEventsLoaderUtil.getActionEventIsDisabled(actionEventData,class,classParameter)
 			
 			if vehicle then 
-				courseplay.debugVehicle(courseplay.DBG_HUD,vehicle,"Update action event: name= %s, text= %s, isDisabled= %s",
-				actionEventName, courseplay:loc(actionEventText), tostring(isDisabled))
+				courseplay.debugVehicle(courseplay.DBG_HUD,vehicle,"Update action event: name= %s, text= %s, isDisabled= %s, isVisible:%s",
+				actionEventName, courseplay:loc(actionEventText), tostring(isDisabled),tostring(actionEventTextVisible))
 			else 
-				courseplay.debugFormat(courseplay.DBG_HUD,"Update action event: name= %s, text= %s, isDisabled= %s",
-				actionEventName, courseplay:loc(actionEventText), tostring(isDisabled))
+				courseplay.debugFormat(courseplay.DBG_HUD,"Update action event: name= %s, text= %s, isDisabled= %s, isVisible:%s",
+				actionEventName, courseplay:loc(actionEventText), tostring(isDisabled),tostring(actionEventTextVisible))
 			end
 			---Enable/disable the action event
 			g_inputBinding:setActionEventActive(actionEvent.actionEventId, not isDisabled)
+			g_inputBinding:setActionEventTextVisibility(actionEvent.actionEventId,actionEventTextVisible)
 		end
 	end
 end
@@ -321,6 +326,12 @@ function ActionEventsLoaderUtil.getActionEventText(actionEventData)
 	---as all action event translation need this to be correctly displayed 
 	---in the Input bindings menu by giants.
 	return actionEventData.text or ActionEventsLoader.textPrefix..actionEventData.name
+end
+
+---Needs the action event text to be visible?
+---@param table actionEventData from the config xml
+function ActionEventsLoaderUtil.isActionEventTextVisible(actionEventData)
+	return courseplay.globalSettings.showActionEventsTexts:get() or actionEventData.textAlwaysVisible
 end
 
 ---Is the action event disabled ? 

@@ -1227,9 +1227,17 @@ end
 ---Prints a global variable to an xml File.
 ---@param int/float/.. global variable to print to xmlFile
 ---@param int maxDepth represent the max iterations 
-function HelperUtil.printVariableToXML(variableName, maxDepth)
+function HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXmlFiles)
 	local baseKey = 'CpDebugPrint'
-	local xmlFile = createXMLFile("xmlFile", CpManager.cpDebugPrintXmlFilePath, baseKey);
+	local xmlFile
+	if printToSeparateXmlFiles and tonumber(printToSeparateXmlFiles)>0 then 
+		local fileName = string.gsub(variableName,":","_")..".xml"
+	--	fileName = string.gsub(fileName,":","_")
+		local filePath = string.format("%s/%s",CpManager.cpDebugPrintXmlFolderPath,fileName)
+		xmlFile = createXMLFile("xmlFile",filePath, baseKey);
+	else 
+		xmlFile = createXMLFile("xmlFile", CpManager.cpDebugPrintXmlFilePathDefault, baseKey);
+	end
 	local xmlFileValid = xmlFile and xmlFile ~= 0 or false
 	if not xmlFileValid then
 		courseplay.error("Xml File not valid!")
