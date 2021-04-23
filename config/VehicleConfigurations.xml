@@ -61,6 +61,11 @@ You can define the following custom settings:
 	For this scenario the collision box is useless when folded, so when ignoreCollisionBoxesOnStreet is true,
     Courseplay will not detect collisions for this vehicle when it is folded.
 
+- baleCollectorOffset: number
+	Offset in meters to use in bale collector mode (Mode 7). This is the distance between the tractor's centerline
+	and the edge of the bale when the bale grabber is right where it should be to pick up the bale.
+	Courseplay will adjust this offset according to the bale's dimensions but you may want to add a little buffer.
+
 -->
 <VehicleConfigurations>
     <!--[GIANTS]-->
@@ -170,12 +175,19 @@ You can define the following custom settings:
     <!--Harvester-->
 
     <!--Implements-->
+    <!--Anderson-->
+    <Vehicle name="RB580.xml"
+             baleCollectorOffset="1.4"
+    />
     <!--Kverneland-->
     <Vehicle name="iXterB18.xml"
              ignoreCollisionBoxesWhenFolded="true"
     />
     <Vehicle name="iXtrackT4.xml"
              ignoreCollisionBoxesWhenFolded="true"
+    />
+    <Vehicle name="wrapper7850C.xml"
+             baleCollectorOffset="1.5"
     />
     <!--Bourgault-->
     <Vehicle name="series3320.xml"
@@ -216,6 +228,7 @@ You can define the following custom settings:
     <Vehicle name="z586.xml"
              toolOffsetX="-2.5"
              noReverse="true"
+			 baleCollectorOffset="1.3"
     />
     <!--Tractors and Others-->
 

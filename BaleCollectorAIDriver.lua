@@ -149,19 +149,32 @@ end
 ---@return BaleToCollect, number closest bale and its distance
 function BaleCollectorAIDriver:findClosestBale(bales)
 	local closestBale, minDistance, ix = nil, math.huge
+	local invalidBales = 0
 	for i, bale in ipairs(bales) do
-		local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
-		self:debug('%d. bale (%d) in %.1f m', i, bale:getId(), d)
-		if d < self.vehicle.cp.turnDiameter * 2 then
-			-- if it is really close, check the length of the Dubins path
-			-- as we may need to drive a loop first to get to it
-			d = self:getDubinsPathLengthToBale(bale)
-			self:debug('    Dubins length is %.1f m', d)
-		end
-		if d < minDistance then
-			closestBale = bale
-			minDistance = d
-			ix = i
+		if bale:isStillValid() then
+			local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
+			self:debug('%d. bale (%d, %s) in %.1f m', i, bale:getId(), bale:getBaleObject(), d)
+			if d < self.vehicle.cp.turnDiameter * 2 then
+				-- if it is really close, check the length of the Dubins path
+				-- as we may need to drive a loop first to get to it
+				d = self:getDubinsPathLengthToBale(bale)
+				self:debug('    Dubins length is %.1f m', d)
+			end
+			if d < minDistance then
+				closestBale = bale
+				minDistance = d
+				ix = i
+			end
+		else
+			--- When a bale gets wrapped it changes its identity and the node becomes invalid. This can happen
+			--- when we pick up (and wrap) a bale other than the target bale, for example because there's another bale
+			--- in the grabber's way. That is now wrapped but our bale list does not know about it so let's rescan the field
+			self:debug('%d. bale (%d, %s) INVALID', i, bale:getId(), bale:getBaleObject())
+			invalidBales = invalidBales + 1
+			self:debug('Found an invalid bales, rescanning field', invalidBales)
+			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+			-- return empty, next time this is called everything should be ok
+			return
 		end
 	end
 	return closestBale, minDistance, ix
@@ -209,11 +222,14 @@ function BaleCollectorAIDriver:startPathfindingToBale(bale)
 		self:debug('Start pathfinding to next bale (%d), safe distance from bale %.1f, half vehicle width %.1f',
 			bale:getId(), safeDistanceFromBale, halfVehicleWidth)
 		local goal = self:getBaleTarget(bale)
-		local offset = Vector(0, safeDistanceFromBale + halfVehicleWidth + 0.2)
+		local configuredOffset = self:getConfiguredOffset()
+		local offset = Vector(0, safeDistanceFromBale +
+			(configuredOffset and configuredOffset or (halfVehicleWidth + 0.2)))
 		goal:add(offset:rotate(goal.t))
 		local done, path, goalNodeInvalid
 		self.pathfinder, done, path, goalNodeInvalid =
-			PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, goal, false, self.fieldId, {})
+			PathfinderUtil.startPathfindingFromVehicleToGoal(self.vehicle, goal, false, self.fieldId,
+				{}, self.lastBale and {self.lastBale} or {})
 		if done then
 			return self:onPathfindingDoneToNextBale(path, goalNodeInvalid)
 		else
@@ -272,8 +288,11 @@ function BaleCollectorAIDriver:isObstacleAhead()
 			return true
 		end
 	end
-	-- then a more thorough check
-	local leftOk, rightOk, straightOk = PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius)
+	-- then a more thorough check, we want to ignore the last bale we worked on as that may lay around too close
+	-- to the baler. This happens for example to the Andersen bale wrapper.
+	self:debug('Check obstacles ahead, ignoring bale object %s', self.lastBale and self.lastBale or 'nil')
+	local leftOk, rightOk, straightOk =
+	PathfinderUtil.checkForObstaclesAhead(self.vehicle, self.turnRadius, self.lastBale and{self.lastBale})
 	-- if at least one is ok, we are good to go.
 	return not (leftOk or rightOk or straightOk)
 end
@@ -297,7 +316,7 @@ function BaleCollectorAIDriver:onLastWaypoint()
 			self:debug('last waypoint on bale pickup reached, start collecting bales again')
 			self:collectNextBale()
 		elseif self.baleCollectingState == self.states.APPROACHING_BALE then
-			self:debug('looks like somehow missed a bale, rescanning field')
+			self:debug('looks like somehow we missed a bale, rescanning field')
 			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
 			self:collectNextBale()
 		elseif self.baleCollectingState == self.states.REVERSING_AFTER_PATHFINDER_FAILURE then
@@ -376,7 +395,8 @@ function BaleCollectorAIDriver:workOnBale()
 	if self.baleWrapper then
 		BaleWrapperAIDriver.handleBaleWrapper(self)
 		if self.baleWrapper.spec_baleWrapper.baleWrapperState == BaleWrapper.STATE_NONE then
-			self:debug('Bale wrapped, moving on to the next')
+			self.lastBale = self.baleWrapper.spec_baleWrapper.lastDroppedBale
+			self:debug('Bale wrapped, moving on to the next, last dropped bale %s', self.lastBale)
 			self:collectNextBale()
 		end
 	end
@@ -384,6 +404,14 @@ end
 
 function BaleCollectorAIDriver:calculateTightTurnOffset()
 	self.tightTurnOffset = 0
+end
+
+function BaleCollectorAIDriver:getConfiguredOffset()
+	if self.baleLoader then
+		return g_vehicleConfigurations:get(self.baleLoader, 'baleCollectorOffset')
+	elseif self.baleWrapper then
+		return g_vehicleConfigurations:get(self.baleWrapper, 'baleCollectorOffset')
+	end
 end
 
 function BaleCollectorAIDriver:getFillLevel()

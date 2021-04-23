@@ -56,6 +56,10 @@ function BaleToCollect.isValidBale(object, baleWrapper)
 	end
 end
 
+function BaleToCollect:isStillValid()
+	return BaleToCollect.isValidBale(self.bale)
+end
+
 function BaleToCollect:isLoaded()
 	return self.bale.mountObject
 end
@@ -66,6 +70,14 @@ end
 
 function BaleToCollect:getId()
 	return self.bale.id
+end
+
+function BaleToCollect:getBaleObjectId()
+	return NetworkUtil.getObjectId(self.bale)
+end
+
+function BaleToCollect:getBaleObject()
+	return self.bale
 end
 
 function BaleToCollect:getPosition()

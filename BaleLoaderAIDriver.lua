@@ -115,10 +115,9 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 			self:debug('Approaching unload point.')
 
 		elseif self:haveBales() and self.unloadRefillState == self.states.APPROACHING_UNLOAD_POINT then
-			local unloadNode = self:getUnloadNode(nearUnloadPoint, unloadPointIx)
-			dz = calcDistanceFrom(unloadNode, self.baleLoader.cp.realUnloadOrFillNode)
-			self:debugSparse('distance to unload point: %.1f', dz)
-			if math.abs(dz) < 1 or self:tooCloseToOtherBales() then
+			local d = self:getDistanceFromUnloadNode(nearUnloadPoint, unloadPointIx)
+			self:debugSparse('distance to unload point: %.1f', d)
+			if math.abs(d) < 1 or self:tooCloseToOtherBales() then
 				self:debug('Unload point reached.')
 				self.unloadRefillState = self.states.UNLOADING
 			end
@@ -203,13 +202,18 @@ function BaleLoaderAIDriver:getFillType()
 end
 
 --- Unload node is either an unload waypoint or an unload trigger
-function BaleLoaderAIDriver:getUnloadNode(isUnloadpoint, unloadPointIx)
+function BaleLoaderAIDriver:getDistanceFromUnloadNode(isUnloadpoint, unloadPointIx)
 	if isUnloadpoint then
 		self:debugSparse('manual unload point at ix = %d', unloadPointIx)
 		self.manualUnloadNode:setToWaypoint(self.course, unloadPointIx)
-		return self.manualUnloadNode.node
+		-- don't use dz here as the course to the manual unload point as it is often on a reverse
+		-- section and other parts of the course may be very close to the unload point, triggering
+		-- this way too early
+		return calcDistanceFrom(self.manualUnloadNode.node, self.baleLoader.cp.realUnloadOrFillNode)
 	else
-		return self.vehicle.cp.currentTipTrigger.triggerId
+		local _, _, d = localToLocal(self.vehicle.cp.currentTipTrigger.triggerId,
+			self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
+		return d
 	end
 end
 
