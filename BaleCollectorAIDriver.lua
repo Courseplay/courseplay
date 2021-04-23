@@ -209,7 +209,9 @@ function BaleCollectorAIDriver:startPathfindingToBale(bale)
 		self:debug('Start pathfinding to next bale (%d), safe distance from bale %.1f, half vehicle width %.1f',
 			bale:getId(), safeDistanceFromBale, halfVehicleWidth)
 		local goal = self:getBaleTarget(bale)
-		local offset = Vector(0, safeDistanceFromBale + halfVehicleWidth + 0.2)
+		local configuredOffset = self:getConfiguredOffset()
+		local offset = Vector(0, safeDistanceFromBale +
+			(configuredOffset and configuredOffset or (halfVehicleWidth + 0.2)))
 		goal:add(offset:rotate(goal.t))
 		local done, path, goalNodeInvalid
 		self.pathfinder, done, path, goalNodeInvalid =
@@ -389,6 +391,14 @@ end
 
 function BaleCollectorAIDriver:calculateTightTurnOffset()
 	self.tightTurnOffset = 0
+end
+
+function BaleCollectorAIDriver:getConfiguredOffset()
+	if self.baleLoader then
+		return g_vehicleConfigurations:get(self.baleLoader, 'baleCollectorOffset')
+	elseif self.baleWrapper then
+		return g_vehicleConfigurations:get(self.baleWrapper, 'baleCollectorOffset')
+	end
 end
 
 function BaleCollectorAIDriver:getFillLevel()
