@@ -175,12 +175,19 @@ You can define the following custom settings:
     <!--Harvester-->
 
     <!--Implements-->
+    <!--Anderson-->
+    <Vehicle name="RB580.xml"
+             baleCollectorOffset="1.4"
+    />
     <!--Kverneland-->
     <Vehicle name="iXterB18.xml"
              ignoreCollisionBoxesWhenFolded="true"
     />
     <Vehicle name="iXtrackT4.xml"
              ignoreCollisionBoxesWhenFolded="true"
+    />
+    <Vehicle name="wrapper7850C.xml"
+             baleCollectorOffset="1.5"
     />
     <!--Bourgault-->
     <Vehicle name="series3320.xml"
