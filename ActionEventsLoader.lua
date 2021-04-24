@@ -133,7 +133,7 @@ function ActionEventsLoader.onRegisterVehicleActionEvents(vehicle,isActiveForInp
 		else 
 			vehicle:clearActionEventsTable(vehicle.cpActionEvents)
 		end
-		if vehicle:getIsActiveForInput(true, true) then
+		if vehicle:getIsActive() and vehicle.hasCourseplaySpec then
 			---Register all vehicle action events
 			ActionEventsLoader.registerVehicleActionEvents(vehicle,isActiveForInput, isActiveForInputIgnoreSelection)
 			ActionEventsLoader.registerVehicleSettingActionEvents(vehicle,isActiveForInput, isActiveForInputIgnoreSelection)

@@ -48,8 +48,9 @@ function CpManager:loadMap(name)
 	if g_server ~= nil then
 		self:loadXmlSettings();
 		g_vehicleConfigurations:loadFromXml()
-		g_ActionEventsLoader:loadFromXml()
 	end
+	---Load action event configurations. Every client/server has to load them.
+	g_ActionEventsLoader:loadFromXml()
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
