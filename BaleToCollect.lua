@@ -56,6 +56,10 @@ function BaleToCollect.isValidBale(object, baleWrapper)
 	end
 end
 
+function BaleToCollect:isStillValid()
+	return BaleToCollect.isValidBale(self.bale)
+end
+
 function BaleToCollect:isLoaded()
 	return self.bale.mountObject
 end

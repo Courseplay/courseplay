@@ -149,19 +149,32 @@ end
 ---@return BaleToCollect, number closest bale and its distance
 function BaleCollectorAIDriver:findClosestBale(bales)
 	local closestBale, minDistance, ix = nil, math.huge
+	local invalidBales = 0
 	for i, bale in ipairs(bales) do
-		local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
-		self:debug('%d. bale (%d, %s) in %.1f m', i, bale:getId(), bale:getBaleObject(), d)
-		if d < self.vehicle.cp.turnDiameter * 2 then
-			-- if it is really close, check the length of the Dubins path
-			-- as we may need to drive a loop first to get to it
-			d = self:getDubinsPathLengthToBale(bale)
-			self:debug('    Dubins length is %.1f m', d)
-		end
-		if d < minDistance then
-			closestBale = bale
-			minDistance = d
-			ix = i
+		if bale:isStillValid() then
+			local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
+			self:debug('%d. bale (%d, %s) in %.1f m', i, bale:getId(), bale:getBaleObject(), d)
+			if d < self.vehicle.cp.turnDiameter * 2 then
+				-- if it is really close, check the length of the Dubins path
+				-- as we may need to drive a loop first to get to it
+				d = self:getDubinsPathLengthToBale(bale)
+				self:debug('    Dubins length is %.1f m', d)
+			end
+			if d < minDistance then
+				closestBale = bale
+				minDistance = d
+				ix = i
+			end
+		else
+			--- When a bale gets wrapped it changes its identity and the node becomes invalid. This can happen
+			--- when we pick up (and wrap) a bale other than the target bale, for example because there's another bale
+			--- in the grabber's way. That is now wrapped but our bale list does not know about it so let's rescan the field
+			self:debug('%d. bale (%d, %s) INVALID', i, bale:getId(), bale:getBaleObject())
+			invalidBales = invalidBales + 1
+			self:debug('Found an invalid bales, rescanning field', invalidBales)
+			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
+			-- return empty, next time this is called everything should be ok
+			return
 		end
 	end
 	return closestBale, minDistance, ix
@@ -303,7 +316,7 @@ function BaleCollectorAIDriver:onLastWaypoint()
 			self:debug('last waypoint on bale pickup reached, start collecting bales again')
 			self:collectNextBale()
 		elseif self.baleCollectingState == self.states.APPROACHING_BALE then
-			self:debug('looks like somehow missed a bale, rescanning field')
+			self:debug('looks like somehow we missed a bale, rescanning field')
 			self.bales = self:findBales(self.vehicle.cp.settings.baleCollectionField:get())
 			self:collectNextBale()
 		elseif self.baleCollectingState == self.states.REVERSING_AFTER_PATHFINDER_FAILURE then
