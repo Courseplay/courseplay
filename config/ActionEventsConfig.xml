@@ -40,7 +40,7 @@
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_SPEED_DECREASE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="decreaseSpeed" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="delete" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_NEXT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteNext" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
-		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToStart" isDisabledCallbackFunc="getIsDisabled"textAlwaysVisible="true"/>
+		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_START" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToStart" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="deleteToEnd" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="insert" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>
 		<ActionEvent name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" class="courseEditor" callbackParameter ="courseEditor" callbackFunc="cycleType" isDisabledCallbackFunc="getIsDisabled" textAlwaysVisible="true"/>

@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
-<modDesc descVersion="47">
+<modDesc descVersion="53">
 	<version>6.03.00055</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
 		<en>CoursePlay SIX</en>
-		<de>CoursePlay SIX</de>
-		<fr>CoursePlay SIX</fr>
-		<es>CoursePlay SIX</es>
-		<ru>CoursePlay SIX</ru>
-		<pl>CoursePlay SIX</pl>
-		<it>CoursePlay SIX</it>
-		<br>CoursePlay SIX</br>
 		<cs>课程玩法 SIX</cs>
 		<ct>課程玩法 SIX</ct>
-		<cz>CoursePlay SIX</cz>
-		<nl>CoursePlay SIX</nl>
 		<hu>CoursePlay SIX - A Vezetősegéd</hu>
 		<jp>コースプレイ SIX</jp>
 		<kr>코스 플레이 SIX</kr>
-		<pt>CoursePlay SIX</pt>
-		<ro>CoursePlay SIX</ro>
-		<tr>CoursePlay SIX</tr>
-		<sl>CoursePlay SIX</sl>
 	</title>
 
 	<description>
