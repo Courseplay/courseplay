@@ -641,33 +641,34 @@ function courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, o
 	end;
 end;
 
-local oldBunkerSiloLoad = BunkerSilo.load;
-function BunkerSilo:load(...)
-	local old = oldBunkerSiloLoad(self,...);
-	local trigger = self
-	
-	trigger.triggerId = trigger.interactionTriggerNode
-	trigger.bunkerSilo = true
-	trigger.className = "BunkerSiloTipTrigger"
-	trigger.rootNode = self.nodeId
-	trigger.triggerStartId = trigger.bunkerSiloArea.start
-	trigger.triggerEndId = trigger.bunkerSiloArea.height
-	trigger.triggerWidth = courseplay:nodeToNodeDistance(trigger.bunkerSiloArea.start, trigger.bunkerSiloArea.width)
-	--trigger.getTipDistanceFromTrailer = TipTrigger.getTipDistanceFromTrailer
-	--trigger.getTipInfoForTrailer = TipTrigger.getTipInfoForTrailer
-	--trigger.getAllowFillTypeFromTool = TipTrigger.getAllowFillTypeFromTool
-	--[[trigger.allowedToolTypes = 	{
-								[trigger.inputFillType] = 	{
-															[TipTrigger.TOOL_TYPE_TRAILER] = true
-															}
-								}
-	]]
+---Add bunker silo to a global table on create.
+local loadBunkerSilo = function(silo,superFunc,id, xmlFile, key)
+	local returnValue = superFunc(silo,id,xmlFile,key)
+
+	silo.triggerId = silo.interactionTriggerNode
+	silo.bunkerSilo = true
+	silo.className = "BunkerSiloTipTrigger"
+	silo.rootNode = silo.nodeId
+	silo.triggerStartId = silo.bunkerSiloArea.start
+	silo.triggerEndId = silo.bunkerSiloArea.height
+	silo.triggerWidth = courseplay:nodeToNodeDistance(silo.bunkerSiloArea.start, silo.bunkerSiloArea.width)
+
 	if g_currentMission.bunkerSilos == nil then
 		g_currentMission.bunkerSilos = {}
 	end
-	g_currentMission.bunkerSilos[trigger.triggerId] = trigger
-	
-	return old
+	g_currentMission.bunkerSilos[silo.triggerId] = silo
+
+	return returnValue
 end
+BunkerSilo.load = Utils.overwrittenFunction(BunkerSilo.load,loadBunkerSilo)
+
+---Delete bunker silo from the global table.
+local deleteBunkerSilo = function(silo)
+	if g_currentMission.bunkerSilos then
+		local triggerNode = silo.interactionTriggerNode
+		g_currentMission.bunkerSilos[triggerNode] = nil
+	end
+end
+BunkerSilo.delete = Utils.prependedFunction(BunkerSilo.delete,deleteBunkerSilo)
 -- do not remove this comment
 -- vim: set noexpandtab:

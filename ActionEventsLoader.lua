@@ -133,7 +133,7 @@ function ActionEventsLoader.onRegisterVehicleActionEvents(vehicle,isActiveForInp
 		else 
 			vehicle:clearActionEventsTable(vehicle.cpActionEvents)
 		end
-		if vehicle:getIsActive() and vehicle.hasCourseplaySpec then
+		if vehicle:getIsActiveForInput(true, true) then
 			---Register all vehicle action events
 			ActionEventsLoader.registerVehicleActionEvents(vehicle,isActiveForInput, isActiveForInputIgnoreSelection)
 			ActionEventsLoader.registerVehicleSettingActionEvents(vehicle,isActiveForInput, isActiveForInputIgnoreSelection)
@@ -360,7 +360,7 @@ ActionEventCallbacks = {}
 		- isAnalog: not sure
 ]]--
 function ActionEventCallbacks.actionEventOpenCloseHud(vehicle, actionName, inputValue, callbackState, isAnalog)
-	vehicle:setCourseplayFunc('openCloseHud', not vehicle.cp.hud.show);
+	courseplay:openCloseHud(vehicle, not vehicle.cp.hud.show)
 end
 
 function ActionEventCallbacks.actionEventNextDriverMode(vehicle, actionName, inputValue, callbackState, isAnalog)
@@ -416,6 +416,7 @@ function ActionEventCallbacks.actionEventStartStopDriving(vehicle, actionName, i
 	courseplay:startStop(vehicle)
 end
 
+---Not used right now.
 function ActionEventCallbacks.actionEventDriveNow(vehicle, actionName, inputValue, callbackState, isAnalog)
 
 end
@@ -423,6 +424,7 @@ end
 ---Is disabled callbacks to disable action events.
 ---@param vehicle
 
+---Not used right now.
 function ActionEventCallbacks.isActionEventOpenCloseHudDisabled(vehicle)
 
 end
@@ -452,6 +454,7 @@ function ActionEventCallbacks.isActionEventStartStopDrivingDisabled(vehicle)
 	return not vehicle.cp.canDrive
 end
 
+---Not used right now.
 function ActionEventCallbacks.isActionEventDriveNowDisabled(vehicle)
 	return true
 end
