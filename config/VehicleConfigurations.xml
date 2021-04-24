@@ -221,6 +221,7 @@ You can define the following custom settings:
     <Vehicle name="z586.xml"
              toolOffsetX="-2.5"
              noReverse="true"
+			 baleCollectorOffset="1.2"
     />
     <!--Tractors and Others-->
 
