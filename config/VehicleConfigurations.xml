@@ -230,6 +230,10 @@ You can define the following custom settings:
              noReverse="true"
 			 baleCollectorOffset="1.3"
     />
+	<!--Mod: Claas crop sensor-->
+	<Vehicle name="claasCropSensor.xml"
+			 workingWidth="18"			 
+	/>
     <!--Tractors and Others-->
 
     <!--Mod: Big Bud 747-->

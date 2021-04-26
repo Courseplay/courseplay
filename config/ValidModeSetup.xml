@@ -163,6 +163,10 @@
 			<Setup>
 				<Specialization name="spec_strawHarvestPelletizer"/>
 			</Setup>
+			<!--Claas Crop Sensor [Mod/VertexDesign]-->
+			<Setup>
+				<Specialization name="spec_liveCropScanner"/>
+			</Setup>
 			<Setup>
 				<!-- catch all for everything with tension belts, like some auto bale loaders -->
 				<Specialization name="spec_tensionBelts"/>
