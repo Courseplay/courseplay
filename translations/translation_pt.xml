@@ -475,7 +475,7 @@
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Não parar de descarregar a ceifeira quando estiver vazia, siga-a até o final da linha " />
 
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Exibir atalhos de teclado" />
-		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Exibir / ocultar atalhos de teclado no menu de ajuda (F1)" />
+		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Exibir / ocultar atalhos do teclado no menu de ajuda (F1)" />
 		
 		<!--Action Events-->
 		<!--Every action event needs the prefix: "input_", for the giants input binding menu-->
