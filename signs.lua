@@ -128,14 +128,15 @@ function courseplay.signs:setWaypointSignLine(sign, distance, vis)
 end;
 
 function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
+	local waypoints = (vehicle.cp.driver and vehicle.cp.driver:getWaypoints()) or vehicle.Waypoints
 	section = section or 'all'; --section: 'all', 'crossing', 'current'
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Updating waypoint display for %s', section)
 	vehicle.cp.numWaitPoints = 0;
 	vehicle.cp.numCrossingPoints = 0;
-	vehicle:setCpVar('numWaypoints', #vehicle.Waypoints,courseplay.isClient);
+	vehicle:setCpVar('numWaypoints', #waypoints, courseplay.isClient);
 
 	if section == 'all' or section == 'current' then
-		local neededPoints = vehicle.cp.numWaypoints;
+		local neededPoints = #waypoints;
 
 		--move not needed ones to buffer
 		if #vehicle.cp.signs.current > neededPoints then
@@ -146,14 +147,14 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 		end;
 
 		local np;
-		for i,wp in pairs(vehicle.Waypoints) do
+		for i,wp in pairs(waypoints) do
     		if idx == nil or i == idx then  -- add this for courseEditor
     			local neededSignType = 'normal';
     			if i == 1 then
     				neededSignType = 'start';
-    			elseif i == vehicle.cp.numWaypoints then
+    			elseif i == #waypoints then
     				neededSignType = 'stop';
-    			elseif wp.wait then
+    			elseif wp.wait or wp.interact then
     				neededSignType = 'wait';
     			elseif wp.unload then
     				neededSignType = 'unload';
@@ -168,8 +169,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     				wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 0, wp.cz);
     			end;
 
-    			if i < vehicle.cp.numWaypoints then
-    				np = vehicle.Waypoints[i + 1];
+    			if i < #waypoints then
+    				np = waypoints[i + 1];
 					-- TODO: remove this once we get rid of the terrible cx/cz notation
 					np.cx = np.cx or np.x np.cy = np.cy or np.y np.cz = np.cz or np.z
     				if np.cy == nil or np.cy == 0 then
@@ -178,7 +179,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 
     				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.cx, wp.cy, wp.cz, np.cx, np.cy, np.cz);
     				if wp.distToNextPoint <= 0.01 and i > 1 then
-    					local pp = vehicle.Waypoints[i - 1];
+    					local pp = waypoints[i - 1];
     					wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
     				end;
     				wp.rotY = MathUtil.getYRotationFromDirection(wp.dirX, wp.dirZ);
@@ -188,7 +189,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     				local dist2D = MathUtil.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
     				wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
     			else
-    				local pp = vehicle.Waypoints[i - 1];
+    				local pp = waypoints[i - 1];
 					if pp then
 						wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = pp.dirX, pp.dirY, pp.dirZ, 0;
 						wp.rotX = 0;

@@ -218,7 +218,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 							--courseplay:debug(string.format('course1 wp %d, course2 wp %d, dist=%s', wpNum1, wpNum2, tostring(dist)), courseplay.DBG_COURSES);
 							if dist and dist ~= 0 and dist < wpDistMax then
 								courseplay:debug(string.format('wp1 %d %.2f° wp2 %d %.2f° dist=%.1f angleTurn %.2f°, totalAngle %.2f°, lowA %.2f°, lowD %.1f',
-									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), 8);
+									wpNum1, wp1.angle, wpNum2, wp2.angle, dist, angleTurn , totalAngle, smallestAngle, smallestDist), courseplay.DBG_COURSES);
 
 								local foundBetter = false
 
@@ -700,6 +700,36 @@ function courseplay.courses:getFreeSaveSlot(course_id)
 	return freeSlot, isOwnSaveSlot;
 end
 
+function courseplay.courses:writeCourseFile(courseXmlFilePath, cp_course)
+	local courseXml = createXMLFile("courseXml", courseXmlFilePath, 'course');
+	if cp_course.workWidth then
+		setXMLFloat(courseXml, "course#workWidth", cp_course.workWidth);
+	end;
+	if cp_course.numHeadlandLanes then
+		setXMLInt(courseXml, "course#numHeadlandLanes", cp_course.numHeadlandLanes);
+	end;
+	if cp_course.headlandDirectionCW ~= nil then
+		setXMLBool(courseXml, "course#headlandDirectionCW", cp_course.headlandDirectionCW);
+	end;
+	if cp_course.multiTools ~= nil then
+		setXMLInt(courseXml, "course#multiTools", cp_course.multiTools);
+	end;
+
+	-- always use the new waypoint format
+	setXMLInt(courseXml, "course#version", 2)
+
+	if courseXml and courseXml ~= 0 then
+		setXMLString(courseXml, 'course.waypoints', Course.serializeWaypoints(cp_course.waypoints))
+		saveXMLFile(courseXml);
+		delete(courseXml);
+		courseplay.debugFormat(courseplay.DBG_COURSES, 'Waypoints saved for course %s', cp_course.nameClean)
+		return true
+	else
+		delete(courseXml);
+		return false
+	end;
+end
+
 function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSave)
 	-- save course to xml file
 	if g_server == nil then
@@ -738,85 +768,12 @@ function courseplay.courses:saveCourseToXml(course_id, cpCManXml, forceCourseSav
 
 	-- Dont save course if we already have a saveSlot.
 	if not isOwnSaveSlot or forceCourseSave then
-		-- save waypoint: rev, wait, crossing, generated, turnstart, turnend are bools; speed may be nil!
-		-- from xml: rev=int wait=int crossing=int generated=bool, turnstart=int turnend=int ridgemarker=int
-		-- xml: pos="float float" angle=float rev=0/1 wait=0/1 crossing=0/1 speed=float generated="true/false" turnstart=0/1 turnend=0/1 ridgemarker=0/1/2
-		local waypoints = {}
-		-- setXMLFloat seems imprecise...
 		local courseXmlFilePath = CpManager.cpCoursesFolderPath .. g_currentMission.cp_courseManager[freeSlot].fileName;
-		local courseXml = createXMLFile("courseXml", courseXmlFilePath, 'course');
-		if cp_course.workWidth then
-			setXMLFloat(courseXml, "course#workWidth", cp_course.workWidth);
-		end;
-		if cp_course.numHeadlandLanes then
-			setXMLInt(courseXml, "course#numHeadlandLanes", cp_course.numHeadlandLanes);
-		end;
-		if cp_course.headlandDirectionCW ~= nil then
-			setXMLBool(courseXml, "course#headlandDirectionCW", cp_course.headlandDirectionCW);
-		end;
-		if cp_course.multiTools ~= nil then
-			setXMLInt(courseXml, "course#multiTools", cp_course.multiTools);
-		end;
-
-		if courseXml and courseXml ~= 0 then
-			local types = {
-				pos='String',
-				angle='String',
-				rev='Int',
-				wait='Int',
-				unload='Int',
-				crossing='Int',
-				speed='String',
-				generated='Bool',
-				lane='Int',
-				dir='String',
-				turnstart='Int',
-				turnend='Int',
-				ridgemarker='Int',
-        		isconnectingtrack='Bool',
-				headlandheightforturn='Int',
-        		radius='String',
-				mustreach='Bool',
-				align='Bool'};
-
-			for k, v in pairs(cp_course.waypoints) do
-				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, v.cx, 0, v.cz)
-				local waypoint = {
-					-- Required Values
-					-- be nice to our fellow modders and write y to the saved course
-					pos =   ('%.2f %.2f %.2f'):format(v.cx, y, v.cz);
-					angle = ('%.2f'):format(v.angle);
-					speed = ('%d'):format(v.speed or 0);
-
-					-- Optional Values
-					rev =		   v.rev and courseplay:boolToInt(v.rev) or nil;
-					wait =		   v.wait and courseplay:boolToInt(v.wait) or nil;
-					unload =	   v.unload and courseplay:boolToInt(v.unload) or nil;
-					crossing =	   v.crossing and courseplay:boolToInt(v.crossing) or nil;
-					generated =	   v.generated and v.generated or nil;
-					turnstart =    v.turnStart and courseplay:boolToInt(v.turnStart) or nil;
-					turnend =	   v.turnEnd and courseplay:boolToInt(v.turnEnd) or nil;
-					ridgemarker = (v.ridgeMarker and v.ridgeMarker ~= 0) and v.ridgeMarker or nil;
-					lane =		  (v.lane and v.lane < 0) and v.lane or nil;
-					headlandheightforturn = v.headlandHeightForTurn and v.headlandHeightForTurn or nil;
-					isconnectingtrack =	v.isConnectingTrack and v.isConnectingTrack or nil;
-          			radius = v.radius and ('%.1f'):format( v.radius ) or nil;
-					mustreach =	v.mustReach and v.mustReach or nil;
-					align = v.align and v.align or nil
-				};
-
-				waypoints[k] = waypoint;
-			end
-
-			courseplay.utils.setMultipleXMLNodes(courseXml, "course", 'waypoint', waypoints, types, true);
-
-			saveXMLFile(courseXml);
-		else
+		if not self:writeCourseFile(courseXmlFilePath, cp_course) then
 			print(("COURSEPLAY ERROR: Could not save course to file: %q"):format(courseXmlFilePath));
 			g_currentMission.cp_courseManager[freeSlot].isUsed = false;
 			self:updateCourseManagerSlotsXml(freeSlot, cpCManXml);
-		end;
-		delete(courseXml);
+		end
 	end;
 
 	saveXMLFile(cpCManXml)
@@ -1651,74 +1608,85 @@ function courseplay.courses:loadCourseFromFile(course)
 
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 
+	-- Version 2 course files use the new format
+	local version = Utils.getNoNil(getXMLInt(courseXml, courseKey .. "#version"), 0)
+
 	--course waypoints
 	local waypoints = {};
 	local wpNum = 1;
-	while true do
-		local key = courseKey .. '.waypoint' .. wpNum;
-		if not hasXMLProperty(courseXml, key .. '#pos') then
-			break;
-		end;
+	if version > 1 then
+		local serializedWaypoints = getXMLString(courseXml, courseKey .. '.waypoints')
+		waypoints = Course.deserializeWaypoints(serializedWaypoints)
+	else
+		while true do
+			local key = courseKey .. '.waypoint' .. wpNum;
+			if not hasXMLProperty(courseXml, key .. '#pos') then
+				break;
+			end;
 
-		local x, y, z = StringUtil.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
-		-- if there are three values then we have x, y and z all saved in the course
-		if z == nil then
-			-- if there are two values only then those are x and z (for backward compatibility) and there's no y
-			z, y = y, nil
+			local x, y, z = StringUtil.getVectorFromString(getXMLString(courseXml, key .. '#pos'));
+			-- if there are three values then we have x, y and z all saved in the course
+			if z == nil then
+				-- if there are two values only then those are x and z (for backward compatibility) and there's no y
+				z, y = y, nil
+			end
+			if x == nil or z == nil then
+				break;
+			end;
+			local angle 	  =  getXMLFloat(courseXml, key .. '#angle') or 0;
+			local speed 	  = getXMLString(courseXml, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
+			speed = tonumber(speed);
+			if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
+				speed = ceil(speed * 3600);
+			end;
+			-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
+			local wait 		  =    getXMLInt(courseXml, key .. '#wait');
+			local unload	  =    getXMLInt(courseXml, key .. '#unload');
+			local rev 		  =    getXMLInt(courseXml, key .. '#rev');
+			local crossing 	  =    getXMLInt(courseXml, key .. '#crossing');
+			local generated   =   getXMLBool(courseXml, key .. '#generated');
+			local lane		  =    getXMLInt(courseXml, key .. '#lane');
+			local laneDir	  = getXMLString(courseXml, key .. '#dir');
+			local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
+			local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
+			local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
+			local headlandHeightForTurn = getXMLInt(courseXml, key .. '#headlandheightforturn');
+			local isConnectingTrack   =   getXMLBool(courseXml, key .. '#isconnectingtrack');
+			local radius 	  =  getXMLFloat(courseXml, key .. '#radius');
+			local mustReach   =   getXMLBool(courseXml, key .. '#mustreach');
+			local align		  =   getXMLBool(courseXml, key .. '#align');
+			crossing = crossing == 1 or wpNum == 1;
+			wait = wait == 1;
+			unload = unload == 1;
+			rev = rev == 1;
+			turnStart = turnStart == 1;
+			turnEnd = turnEnd == 1;
+			waypoints[wpNum] = {
+				cx = x,
+				cy = y,
+				cz = z,
+				angle = angle,
+				speed = speed,
+				rev = rev,
+				wait = wait,
+				unload = unload,
+				crossing = crossing,
+				generated = generated,
+				lane = lane,
+				turnStart = turnStart,
+				turnEnd = turnEnd,
+				ridgeMarker = ridgeMarker,
+				headlandHeightForTurn = headlandHeightForTurn,
+				isConnectingTrack = isConnectingTrack,
+				radius = radius,
+				mustReach = mustReach,
+				align = align
+			};
+			wpNum = wpNum + 1;
+			if wpNum % 1000 == 0 then
+				courseplay.debugFormat(courseplay.DBG_COURSES, '%d waypoints loaded ...', wpNum)
+			end
 		end
-		if x == nil or z == nil then
-			break;
-		end;
-		local angle 	  =  getXMLFloat(courseXml, key .. '#angle') or 0;
-		local speed 	  = getXMLString(courseXml, key .. '#speed') or '0'; -- use string so we can get both ints and proper floats without LUA's rounding errors
-		speed = tonumber(speed);
-		if ceil(speed) ~= speed then -- is it an old savegame with old speeds ?
-			speed = ceil(speed * 3600);
-		end;
-		-- NOTE: only pos, angle and speed can't be nil. All others can and should be nil if not "active", so that they're not saved to the xml
-		local wait 		  =    getXMLInt(courseXml, key .. '#wait');
-		local unload	  =    getXMLInt(courseXml, key .. '#unload');
-		local rev 		  =    getXMLInt(courseXml, key .. '#rev');
-		local crossing 	  =    getXMLInt(courseXml, key .. '#crossing');
-		local generated   =   getXMLBool(courseXml, key .. '#generated');
-		local lane		  =    getXMLInt(courseXml, key .. '#lane');
-		local laneDir	  = getXMLString(courseXml, key .. '#dir');
-		local turnStart	  =    getXMLInt(courseXml, key .. '#turnstart');
-		local turnEnd 	  =    getXMLInt(courseXml, key .. '#turnend');
-		local ridgeMarker =    getXMLInt(courseXml, key .. '#ridgemarker') or 0;
-		local headlandHeightForTurn = getXMLInt(courseXml, key .. '#headlandheightforturn');
-		local isConnectingTrack   =   getXMLBool(courseXml, key .. '#isconnectingtrack');
-		local radius 	  =  getXMLFloat(courseXml, key .. '#radius');
-		local mustReach   =   getXMLBool(courseXml, key .. '#mustreach');
-		local align		  =   getXMLBool(courseXml, key .. '#align');
-		crossing = crossing == 1 or wpNum == 1;
-		wait = wait == 1;
-		unload = unload == 1;
-		rev = rev == 1;
-		turnStart = turnStart == 1;
-		turnEnd = turnEnd == 1;
-		waypoints[wpNum] = {
-			cx = x,
-			cy = y,
-			cz = z,
-			angle = angle,
-			speed = speed,
-			rev = rev,
-			wait = wait,
-			unload = unload,
-			crossing = crossing,
-			generated = generated,
-			lane = lane,
-			turnStart = turnStart,
-			turnEnd = turnEnd,
-			ridgeMarker = ridgeMarker,
-			headlandHeightForTurn = headlandHeightForTurn,
-			isConnectingTrack = isConnectingTrack,
-			radius = radius,
-			mustReach = mustReach,
-			align = align
-		};
-		wpNum = wpNum + 1;
 	end; -- END while true (waypoints)
 	course.waypoints =			  waypoints
 	course.workWidth =			  workWidth
@@ -1726,6 +1694,8 @@ function courseplay.courses:loadCourseFromFile(course)
 	course.headlandDirectionCW =  headlandDirectionCW
 	course.multiTools = 		  multiTools
 	delete(courseXml);
+
+	courseplay.debugFormat(courseplay.DBG_COURSES, 'Course with %d waypoints loaded.', #course.waypoints)
 end
 
 
@@ -1875,4 +1845,19 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 	c:addReverseForAutoDriveCourse()
 	course.waypoints = c:createLegacyCourse()
 	return course
+end
+
+--- Upgrde all courses to version 2, the new, faster format
+function courseplay.courses:upgradeAllCourses()
+	for i, course in pairs(g_currentMission.cp_courses) do
+		if course.type == 'course' and not course.virtual and course.nameClean then
+			if not course.waypoints then
+				courseplay.debugFormat(courseplay.DBG_COURSES, 'Loading waypoints for course %s', course.nameClean)
+				courseplay.courses:loadCourseFromFile(course)
+			else
+				courseplay.debugFormat(courseplay.DBG_COURSES, 'Waypoints already loaded for course %s', course.nameClean)
+			end
+			self:writeCourseFile(course.xmlFilePath, course)
+		end
+	end
 end

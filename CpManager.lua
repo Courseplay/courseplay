@@ -130,6 +130,7 @@ function CpManager:loadMap(name)
 	addConsoleCommand( 'cpReadVehicleConfigurations', 'Read custom vehicle configurations', 'loadFromXml', g_vehicleConfigurations)
 	
 	addConsoleCommand( 'cpCreateVehicleDebugSparseHook', 'Create a debug Sparse Hook', 'createVehicleVariableDebugSparseHook', self)
+	addConsoleCommand( 'cpUpgradeAllCourses', 'Upgrade all courses to the new (faster) format', 'upgradeAllCourses', courseplay.courses)
 
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

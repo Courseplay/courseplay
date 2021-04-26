@@ -74,17 +74,6 @@ function courseplay:start(self)
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setDriveUnloadNow(self, false);
 		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
-		if  self.Waypoints[self.cp.stopWork].cx == self.Waypoints[self.cp.startWork].cx
-		and self.Waypoints[self.cp.stopWork].cz == self.Waypoints[self.cp.startWork].cz then -- TODO: VERY unsafe, there could be LUA float problems (e.g. 7 + 8 = 15.000000001)
-			self.cp.finishWork = self.cp.stopWork-5
-		else
-			self.cp.finishWork = self.cp.stopWork
-		end
-
-		-- NOTE: if we want to start the course but catch one of the last 5 points ("returnToStartPoint"), make sure we get wp 2
-		if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) and self.cp.finishWork ~= self.cp.stopWork and self.cp.waypointIndex > self.cp.finishWork and self.cp.waypointIndex <= self.cp.stopWork then
-			courseplay:setWaypointIndex(self, 2);
-		end
 	elseif self.cp.mode == 8 then
 		courseplay:setDriveUnloadNow(self, false);
 	end

@@ -809,6 +809,9 @@ function FieldworkAIDriver:setUpCourses()
 		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
 		self.unloadRefillCourse = nil
 	end
+	self.fieldworkCourse:addWaypointsForRows()
+	self:createLegacyWaypoints()
+	courseplay.signs:updateWaypointSigns(self.vehicle)
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()
 	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
@@ -821,6 +824,21 @@ function FieldworkAIDriver:setUpCourses()
 				self.vehicle.cp.multiTools, self.vehicle.cp.laneNumber,  self.fieldworkCourse.workWidth/self.vehicle.cp.multiTools,
 				self.vehicle.cp.settings.symmetricLaneChange:is(true))
 	end
+end
+
+function FieldworkAIDriver:createLegacyWaypoints()
+	self.legacyWaypoints = {}
+	if self.unloadRefillCourse then
+		self.legacyWaypoints = self.unloadRefillCourse:createLegacyCourse()
+	end
+	local legacyFieldworkCourse = self.fieldworkCourse:createLegacyCourse()
+	for _, p in ipairs(legacyFieldworkCourse) do
+		table.insert(self.legacyWaypoints, p)
+	end
+end
+
+function FieldworkAIDriver:getWaypoints()
+	return self.legacyWaypoints
 end
 
 function FieldworkAIDriver:setRidgeMarkers()
