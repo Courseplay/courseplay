@@ -128,7 +128,7 @@ function courseplay.signs:setWaypointSignLine(sign, distance, vis)
 end;
 
 function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
-	local waypoints = (vehicle.cp.driver and vehicle.cp.driver:getWaypoints()) or vehicle.Waypoints
+	local waypoints = vehicle.Waypoints
 	section = section or 'all'; --section: 'all', 'crossing', 'current'
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Updating waypoint display for %s', section)
 	vehicle.cp.numWaitPoints = 0;

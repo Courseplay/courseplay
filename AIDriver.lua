@@ -2226,7 +2226,3 @@ function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
 	return superFunc(self,preSuperFunc)
 end
 AttacherJoints.isDetachAllowed = Utils.overwrittenFunction(AttacherJoints.isDetachAllowed, AIDriver.isDetachAllowed)
-
-function AIDriver:getWaypoints()
-	return nil
-end
