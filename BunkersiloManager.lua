@@ -378,6 +378,12 @@ function BunkerSiloManager:createBunkerSiloMap(width)
 		widthCount = widthCount+1
 	end
 
+	---Temporary band aid, as unloading with a trailer into a bunker silo
+	---requires 3 lines to correctly set the unloading offsets.
+	if self:getDriverMode() == self.MODE.UNLOADING and widthCount<3 then 
+		widthCount = 3
+	end
+
 	local heightCount = math.ceil(bunkerLength/ width)
 	local unitWidth = bunkerWidth/widthCount
 	local unitHeigth = bunkerLength/heightCount

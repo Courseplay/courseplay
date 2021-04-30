@@ -692,17 +692,17 @@ function courseplay:postUpdateTick(dt)
 end;
 ]]
 
-function courseplay:preDelete()
-	if self.cp ~= nil and self.cp.numActiveGlobalInfoTexts ~= 0 then
+function courseplay:onPreDelete()
+	---Delete map hotspot and all global info texts leftovers.
+	CpMapHotSpot.deleteMapHotSpot(self)
+	if g_server ~= nil then
 		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
 			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				CpManager:setGlobalInfoText(self, refIdx, true);
-				-- print(('%s: preDelete(): self.cp.activeGlobalInfoTexts[%s]=%s'):format(nameNum(self), tostring(refIdx), tostring(self.cp.activeGlobalInfoTexts[refIdx])));
-			end;
-			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
-		end;
-	end;
-end;
+				CpManager:setGlobalInfoText(self, refIdx, true)
+			end
+		end
+	end
+end
 
 function courseplay:onDelete()
 	if self.cp.driver and self.cp.driver.collisionDetector then
