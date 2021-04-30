@@ -2170,7 +2170,9 @@ function CombineUnloadAIDriver:moveOutOfWay()
 
 	self:setSpeed(speed)
 
-	if not self:isMyCombineReversing() then
+	-- combine stopped reversing or stopped and waiting for unload, resume what we were doing before
+	if not self:isMyCombineReversing() or
+		(self.blockedVehicle.cp.driver.willWaitForUnloadToFinish and self.blockedVehicle.cp.driver:willWaitForUnloadToFinish()) then
 		-- end reversing course prematurely, it'll resume previous course
 		self:onLastWaypoint()
 	end
