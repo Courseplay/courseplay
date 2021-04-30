@@ -338,6 +338,8 @@ function BunkerSiloManager:isHeapSiloMap()
 	return self.isHeap
 end
 
+---TODO: Improve the silo map to be more precise,
+---      as the giants map is not correctly at the walls.
 ---creating the relevant siloMap
 ---@param float work width of the relevant tool
 function BunkerSiloManager:createBunkerSiloMap(width)
@@ -355,17 +357,6 @@ function BunkerSiloManager:createBunkerSiloMap(width)
 	-- check the distance from our vehicle either we are comming from the front or back of the silo
 	local startDistance = courseplay:distanceToPoint(self.vehicle, sx, sy, sz)
 	local endDistance = courseplay:distanceToPoint(self.vehicle, hx, sy, hz)
-	
-	--correct data for bunkerSilos
-	--shorten the BunkerArea by 1.0 , as the silo size from Giants tends to be bigger the the actual fillArea 
-	if bunkerSiloArea.start then
-		sx, _, sz = localToWorld(bunkerSiloArea.start,-0.5,0,0) --start BunkerNode
-		wx, _, wz = localToWorld(bunkerSiloArea.width,0.5,0,0) --width BunkerNode "x cordinate"
-		hx, _, hz = localToWorld(bunkerSiloArea.height,-0.5,0,1) --height/"depth" BunkerNode "z cordinate"
-		bunkerWidth = calcDistanceFrom(bunkerSiloArea.start,bunkerSiloArea.width)-1
-		bunkerLength = calcDistanceFrom(bunkerSiloArea.start,bunkerSiloArea.height)-1
-	end
-
 		
 	local widthDirX,widthDirY,widthDirZ,widthDistance = courseplay:getWorldDirection(sx,sy,sz, wx,sy,wz);
 	local heightDirX,heightDirY,heightDirZ,heightDistance = courseplay:getWorldDirection(sx,sy,sz, hx,sy,hz);

@@ -465,7 +465,7 @@
 		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
 
-		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="Warte auf Ablader" />
+		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="Warte auf Abfahrer" />
 		<text name="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"			text="Warte auf Siloarbeiter" />
 
 		<text name="COURSEPLAY_AUTOREPAIR"									text="Automatisch reparieren" />

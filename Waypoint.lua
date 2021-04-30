@@ -1084,6 +1084,46 @@ function Course.createFromNode(vehicle, referenceNode, xOffset, from, to, step, 
 	return course
 end
 
+--- Create a new (straight) temporary course based on a world coordinates
+---@param vehicle table
+---@param referenceNode number
+---@param xOffset number side offset of the new course (relative to node), left positive
+---@param zStartOffset number start at this many meters z offset from node
+---@param zEndOffset number end at this many meters z offset from node
+---@param step number step (waypoint distance), must be negative if to < from
+---@param reverse boolean is this a reverse course?
+function Course.createFromTwoWorldPositions(vehicle, x, z, dx, dz, xOffset, zStartOffset, zEndOffset, step, reverse)
+	local waypoints = {}
+	
+	local yRot
+	local nx,nz = MathUtil.vector2Normalize(dx-x,dz-z)
+	if nx ~= nx or nz ~= nz then
+		yRot=0
+	else
+		yRot = MathUtil.getYRotationFromDirection(nx,nz)
+	end
+
+	local node = createTransformGroup("temp")
+
+	setTranslation(node,x,0,z)
+	setRotation(node,0,yRot,0)
+
+	local dist = courseplay:distance(x,z,dx,dz)
+	
+	for d=zStartOffset,dist+zEndOffset,step do 
+		local ax, _, az = localToWorld(node, xOffset, 0, d)
+		table.insert(waypoints, {x = ax, z = az, rev = reverse})
+	end
+	---Make sure that at the end is a waypoint.
+	local ax, _, az = localToWorld(node, xOffset, 0, dist+zEndOffset)
+	table.insert(waypoints, {x = ax, z = az, rev = reverse})
+
+	courseplay.destroyNode(node)
+	local course = Course(vehicle, waypoints, true)
+	course:enrichWaypointData()
+	return course
+end
+
 function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	local lx, lz = 0, 1
 	for i = ix, #self.waypoints do
