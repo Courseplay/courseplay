@@ -1622,7 +1622,7 @@ function Course.serializeWaypoints(waypoints)
 	local serializedWaypoints = '\n' -- (pure cosmetic)
 	for _, p in ipairs(waypoints) do
 		-- we are going to celebrate once we get rid of the cx, cz variables!
-		local x, z = p.x or p.cx, p.z or p.cz
+		local x, z = p.cx or p.x, p.cz or p.z
 		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
 		local turn = p.turnStart and 'S' or (p.turnEnd and 'E' or '')
 		local serializedWaypoint = string.format('%.2f %.2f %.2f;%.2f;%s;%s;',
