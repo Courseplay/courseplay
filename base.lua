@@ -284,15 +284,11 @@ function courseplay:onLoad(savegame)
 	self.cp.laneNumber = 0;
 
 	--Course generation	
-	self.cp.startingCorner = 4;
-	self.cp.hasStartingCorner = false;
 	self.cp.startingDirection = 0;
 	self.cp.rowDirectionDeg = 0
 	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
-	self.cp.isNewCourseGenSelected = function()
-		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SE_LEGACY
-	end
+
 	self.cp.hasGeneratedCourse = false;
 	self.cp.hasValidCourseGenerationData = false;
 	-- TODO: add all old course gen settings to a SettingsContainer
@@ -332,10 +328,10 @@ function courseplay:onLoad(savegame)
 			return self.cp.headland.getNumLanes() > 0
 		end;
 		getMinNumLanes = function()
-			return self.cp.isNewCourseGenSelected() and self.cp.headland.minNumLanes or 0
+			return self.cp.headland.minNumLanes
 		end,
 		getMaxNumLanes = function()
-			return self.cp.isNewCourseGenSelected() and self.cp.headland.autoDirMaxNumLanes or self.cp.headland.manuDirMaxNumLanes
+			return self.cp.headland.autoDirMaxNumLanes
 		end,
 		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
 		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
@@ -1108,6 +1104,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 
 		
 		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
+		self.cp.courseGeneratorSettings:loadFromXML(xmlFile, key .. '.courseplay')
 
 		courseplay:validateCanSwitchMode(self);
 	end;
@@ -1170,6 +1167,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)
+	self.cp.courseGeneratorSettings:saveToXML(xmlFile, newKey)
 
 end
 

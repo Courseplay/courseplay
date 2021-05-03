@@ -34,7 +34,7 @@ function CourseGeneratorScreen:new(vehicle)
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
 	self.vehicle = vehicle
-
+	self.settings = vehicle.cp.courseGeneratorSettings
 	self.directions = {}
 	-- map to look up gui element state from angle
 	self.directionToState = {}
@@ -54,12 +54,6 @@ function CourseGeneratorScreen:setVehicle( vehicle )
 	self.vehicle = vehicle
 end
 
-function CourseGeneratorScreen:setFromGui(setting)
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
-end
-
 --- function to override the standard icon sizes so map symbols like field numbers don't look too big
 -- when the maximum zoom level is higher than the standard one.
 function CourseGeneratorScreen:updateMap()
@@ -75,7 +69,6 @@ function CourseGeneratorScreen:showCourse()
 end
 
 function CourseGeneratorScreen:onCreate()
-	print('CourseGeneratorScreen:onCreate()')
 	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
 	-- fix icon sizes at higher zoom level
 	self.ingameMap.updateMap = Utils.appendedFunction(self.ingameMap.updateMap, self.updateMap)
@@ -86,6 +79,11 @@ function CourseGeneratorScreen:onCreate()
 	self.ingameMap.zoomMax = 4
 	self.ingameMap.mapZoom = 0.6
 	self.ingameMap:zoom(0)
+end
+
+-- bind GUI elements to settings
+function CourseGeneratorScreen:onCreateElement(element)
+	CpGuiUtil.bindSetting(self.settings, element, 'CourseGeneratorScreen')
 end
 
 function CourseGeneratorScreen:onOpen()
@@ -221,7 +219,7 @@ end
 function CourseGeneratorScreen:onOpenAutoWidth(element)
 	local autoWidth = courseplay:getWorkWidth(self.vehicle)
 	if autoWidth > 0 then
-		element:setVisible(true)
+		element:setVisible(rue)
 		element:setText(string.format(CourseGeneratorScreen.WidthFormatString, courseplay:getWorkWidth(self.vehicle)))
 	else
 		element:setVisible(false)
@@ -251,30 +249,13 @@ function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
 	return eventUsed
 end
 
------------------------------------------------------------------------------------------------------
--- Starting location
-function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
-	self.startingLocationSetting = StartingLocationSetting(self.vehicle)
-	element:setTexts(self.startingLocationSetting:getGuiElementTexts())
-
-	-- force new course gen settings.
-	if not self.vehicle.cp.isNewCourseGenSelected() or not self.vehicle.cp.hasStartingCorner then
-		courseplay:setStartingCorner( self.vehicle, courseGenerator.STARTING_LOCATION_VEHICLE_POSITION )
-		self.startingLocationSetting:set(courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION)
-	end
-	element:setState(self.startingLocationSetting:getGuiElementStateFromValue(self.vehicle.cp.startingCorner))
-end
-
 function CourseGeneratorScreen:onClickStartingLocation( state )
-	courseplay:setStartingCorner(self.vehicle, self.startingLocationSetting:getValueFromGuiElementState(state))
-	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
-		not self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos then
-		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
-			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = self.vehicle.Waypoints[1].cx, z = self.vehicle.Waypoints[1].cz})
-		else
-			local x, _, z = getWorldTranslation(self.vehicle.rootNode)
-			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = x, z = z })
-		end
+	self.settings.startingLocation:setFromGuiElement()
+	if self.settings.startingLocation:is(courseGenerator.STARTING_LOCATION_SELECT_ON_MAP) and
+		self.settings.startingLocation:getSelectedPosition() == nil then
+		-- make sure there's a position, just use the vehicle pos
+		local x, _, z = getWorldTranslation(self.vehicle.rootNode)
+		self.settings.startingLocation:setSelectedPosition(x, z)
 	end
 end
 
@@ -487,11 +468,8 @@ function CourseGeneratorScreen:onClickHeadlandFirst( state )
 	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
 end
 
-function CourseGeneratorScreen:setStartingLocationLabel(headlandFirst)
-	local label = headlandFirst and
-			courseplay:loc('COURSEPLAY_STARTING_LOCATION') or
-			courseplay:loc('COURSEPLAY_ENDING_LOCATION')
-	self.startingLocation.labelElement.text = label
+function CourseGeneratorScreen:setStartingLocationLabel(startOnHeadland)
+	self.startingLocation:setLabel(self.settings.startingLocation:getLabel(startOnHeadland))
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -510,13 +488,13 @@ function CourseGeneratorScreen:onClickHeadlandCorners( state )
 end
 
 function CourseGeneratorScreen:onOpenHeadlandOverlapPercent( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementState())
+	self.settings.headlandOverlapPercent:setGuiElement(element)
+	element:setTexts(self.settings.headlandOverlapPercent:getGuiElementTexts())
+	element:setState(self.settings.headlandOverlapPercent:getGuiElementState())
 end
 
 function CourseGeneratorScreen:onClickHeadlandOverlapPercent(state)
-	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent)
+	self.settings.headlandOverlapPercent:setFromGuiElement()
 end
 
 
@@ -529,46 +507,45 @@ function CourseGeneratorScreen:draw()
 		self.coursePlot:setSize(self.ingameMap.size[1], self.ingameMap.size[2])
 		self.coursePlot:draw()
 	end
-	if self.vehicle.cp.courseGeneratorSettings.showSeedCalculator:is(true) then
+	if self.settings.showSeedCalculator:is(true) then
 		self:drawSeedCalculator(self.ingameMap.absPosition[ 1 ],self.ingameMap.absPosition[2]+0.025)
 	end
 end
 
 function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.centerMode:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementState())
+	self.settings.centerMode:setGuiElement(element)
+	element:setTexts(self.settings.centerMode:getGuiElementTexts())
+	element:setState(self.settings.centerMode:getGuiElementState())
 end
 
 function CourseGeneratorScreen:onClickCenterMode(state)
-	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.centerMode)
-	print(self.vehicle.cp.courseGeneratorSettings.centerMode:get())
-	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElement():setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+	self.settings.centerMode:setFromGuiElement()
+	self.settings.numberOfRowsPerLand:getGuiElement():setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
 end
 
 function CourseGeneratorScreen:onOpenNumberOfRowsPerLand( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementState())
-	element:setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+	self.settings.numberOfRowsPerLand:setGuiElement(element)
+	element:setTexts(self.settings.numberOfRowsPerLand:getGuiElementTexts())
+	element:setState(self.settings.numberOfRowsPerLand:getGuiElementState())
+	element:setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
 end
 
 function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
-	local setting = self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand
+	local setting = self.settings.numberOfRowsPerLand
 	if setting:getGuiElement() then
 		setting:setToIx(setting:getGuiElement():getState())
 	end
 end
 
 function CourseGeneratorScreen:onOpenShowSeedCalculator( element, parameter )
-	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
+	local setting = self.settings.showSeedCalculator
 	setting:setGuiElement(element)
 	element:setTexts(setting:getGuiElementTexts())
 	element:setState(setting:getGuiElementState())
 end
 
 function CourseGeneratorScreen:onClickShowSeedCalculator(state)
-	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
+	local setting = self.settings.showSeedCalculator
 	if setting:getGuiElement() then
 		setting:setToIx(setting:getGuiElement():getState())
 	end
@@ -637,8 +614,8 @@ end
 
 function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 
-	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == self.startingLocationSetting:getValueFromGuiElementState(self.startingLocation:getState()) then
-		self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
+	if self.settings.startingLocation:is(courseGenerator.STARTING_LOCATION_SELECT_ON_MAP) then
+		self.settings.startingLocation:setSelectedPosition(posX, posZ)
 		self.coursePlot:setStartPosition(posX, posZ)
 	end
 

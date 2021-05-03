@@ -22,11 +22,12 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startingLocation" toolTip="$l10n_COURSEPLAY_STARTING_LOCATION" onOpen="onOpenStartingLocation" onClick="onClickStartingLocation">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startingLocation"
+									onCreate="onCreateElement" onOpen="onOpenStartingLocation" onClick="onClickStartingLocation">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText"/>
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_LOCATION"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle"/>
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 

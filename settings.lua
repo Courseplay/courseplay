@@ -724,23 +724,6 @@ function courseplay:toggleDebugChannel(self, channel, force)
 end;
 
 
---still used in CourseGeneratorScreen.lua ??
-function courseplay:setStartingCorner( vehicle, newStartingCorner )
-	vehicle.cp.startingCorner = newStartingCorner
-	vehicle.cp.hasStartingCorner = true;
-	if vehicle.cp.isNewCourseGenSelected() then
-		-- starting direction is always auto when starting corner is vehicle location
-		vehicle.cp.hasStartingDirection = true;
-		vehicle.cp.startingDirection = vehicle.cp.rowDirectionMode
-		courseplay:changeHeadlandNumLanes(vehicle, 0)
-	else
-		vehicle:setCpVar('hasStartingDirection',false,courseplay.isClient);
-		vehicle:setCpVar('startingDirection',0,courseplay.isClient);
-		courseplay:changeHeadlandNumLanes(vehicle, 0)
-	end
-	courseplay:validateCourseGenerationData(vehicle);
-end;
-
 function courseplay:setRowDirectionMode( vehicle, newRowDirectionMode )
 	vehicle:setCpVar('rowDirectionMode', newRowDirectionMode, courseplay.isClient);
 	vehicle:setCpVar('startingDirection', newRowDirectionMode, courseplay.isClient);
@@ -827,8 +810,7 @@ function courseplay:validateCourseGenerationData(vehicle)
 
 	if (vehicle.cp.fieldEdge.selectedField.fieldNum > 0 or not vehicle.cp.hasGeneratedCourse)
 	and hasEnoughWaypoints
-	and vehicle.cp.hasStartingCorner == true 
-	and vehicle.cp.hasStartingDirection == true 
+	and vehicle.cp.hasStartingDirection == true
 	and (vehicle.cp.numCourses == nil or (vehicle.cp.numCourses ~= nil and vehicle.cp.numCourses == 1) or vehicle.cp.fieldEdge.selectedField.fieldNum > 0) 
 	then
 		vehicle.cp.hasValidCourseGenerationData = true;
@@ -837,8 +819,8 @@ function courseplay:validateCourseGenerationData(vehicle)
 	end;
 	--courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
 
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s",
-		nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSES);
+	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s",
+		nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSES);
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
@@ -1431,7 +1413,7 @@ function SettingList:next()
 end
 
 -- private function to set to the value at ix
-function SettingList:setToIx(ix,noEventSend)
+function SettingList:setToIx(ix, noEventSend)
 	if ix ~= self.current then
 		self.previous = self.current
 		self.current = ix
@@ -1515,8 +1497,18 @@ function SettingList:getGuiElementStateFromValue(value)
 	return nil
 end
 
+function SettingList:setFromGuiElement()
+	if self.guiElement then
+		self:setToIx(self.guiElement:getState())
+	end
+end
+
 function SettingList:getKey(parentKey)
-	return parentKey .. '.' .. self.xmlKey .. self.xmlAttribute
+	return  self:getElementKey(parentKey) .. self.xmlAttribute
+end
+
+function SettingList:getElementKey(parentKey)
+	return parentKey .. '.' .. self.xmlKey
 end
 
 function SettingList:loadFromXml(xml, parentKey)
@@ -1904,6 +1896,9 @@ function StartingPointSetting:isDisabled()
 	return self.vehicle:getIsCourseplayDriving() or not self.vehicle.cp.canDrive
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Course Generator Settings
+------------------------------------------------------------------------------------------------------------------------
 ---@class StartingLocationSetting : SettingList
 StartingLocationSetting = CpObject(SettingList)
 
@@ -1911,7 +1906,6 @@ function StartingLocationSetting:init(vehicle)
 	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '', vehicle,
 		{
 			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
-			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
 			courseGenerator.STARTING_LOCATION_SW,
 			courseGenerator.STARTING_LOCATION_NW,
 			courseGenerator.STARTING_LOCATION_NE,
@@ -1920,17 +1914,95 @@ function StartingLocationSetting:init(vehicle)
 		},
 		{
 			'COURSEPLAY_CORNER_5',
-			'COURSEPLAY_CORNER_6',
 			'COURSEPLAY_CORNER_7',
 			'COURSEPLAY_CORNER_8',
 			'COURSEPLAY_CORNER_9',
 			'COURSEPLAY_CORNER_10',
 			'COURSEPLAY_CORNER_11'
 		})
-	if not self.vehicle.cp.generationPosition.hasSavedPosition then
+	self:update()
+end
+
+function StartingLocationSetting:update()
+	-- only enable to select last location if we have one
+	if self.lastVehiclePosition then
+		if self.values[2] ~= courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION then
+			table.insert(self.values, 2, courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION)
+			table.insert(self.texts, 2, 'COURSEPLAY_CORNER_6')
+		end
+	elseif self.values[2] == courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION then
 		table.remove(self.values, 2)
 		table.remove(self.texts, 2)
 	end
+	-- if there's a GUI element assigned, make sure the selection list is up to date
+	if self.guiElement then
+		self.guiElement:setTexts(self:getGuiElementTexts())
+		self.guiElement:setState(self:getGuiElementState())
+	end
+end
+
+-- the 'starting' location is really a starting location only when the course is started on the headland.
+-- We always generate courses starting at the headland and only reverse it if the user wants to start it in
+-- the middle of the field. Then this setting really means where the course will _end_, so adjust the label
+-- accordingly.
+function StartingLocationSetting:getLabel(startOnHeadland)
+	local label = startOnHeadland and
+		courseplay:loc('COURSEPLAY_STARTING_LOCATION') or
+		courseplay:loc('COURSEPLAY_ENDING_LOCATION')
+	return label
+end
+
+-- position selected on the map
+function StartingLocationSetting:setSelectedPosition(x, z)
+	self.worldPosition = {x = x, z = z}
+end
+
+function StartingLocationSetting:getSelectedPosition()
+	return self.worldPosition
+end
+
+function StartingLocationSetting:getVehiclePosition()
+	local x, z
+	x, _, z = getWorldTranslation(self.vehicle.rootNode)
+	return {x = x, z = z}
+end
+
+function StartingLocationSetting:getLastVehiclePosition()
+	return self.lastVehiclePosition or self:getVehiclePosition()
+end
+
+-- return a world position if last/current vehicle position or map position is selected
+function StartingLocationSetting:getWorldPosition()
+	if self:is(courseGenerator.STARTING_LOCATION_SELECT_ON_MAP) then
+		courseplay.debugVehicle(courseplay.DBG_COURSES, self.vehicle, 'Starting location selected on map')
+		return self:getSelectedPosition()
+	elseif self:is(courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION) then
+		courseplay.debugVehicle(courseplay.DBG_COURSES, self.vehicle, 'Starting location last vehicle position')
+		return self:getLastVehiclePosition()
+	elseif self:is(courseGenerator.STARTING_LOCATION_VEHICLE_POSITION) then
+		courseplay.debugVehicle(courseplay.DBG_COURSES, self.vehicle, 'Starting location current vehicle position')
+		self.lastVehiclePosition = self:getVehiclePosition()
+		self:update()
+		return self.lastVehiclePosition
+	end
+end
+
+function StartingLocationSetting:saveToXml(xml, parentKey)
+	SettingList.saveToXml(self, xml, parentKey)
+	if self.lastVehiclePosition then
+		setXMLFloat(xml, self:getElementKey(parentKey) .. '#x', Utils.getNoNil(self.lastVehiclePosition.x, 0))
+		setXMLFloat(xml, self:getElementKey(parentKey) .. '#z', Utils.getNoNil(self.lastVehiclePosition.z, 0))
+	end
+end
+
+function StartingLocationSetting:loadFromXml(xml, parentKey)
+	SettingList.loadFromXml(self, xml, parentKey)
+	local x = getXMLFloat(xml, self:getElementKey(parentKey) .. '#x')
+	local z = getXMLFloat(xml, self:getElementKey(parentKey) .. '#z')
+	if x and z then
+		self.lastVehiclePosition = {x = x, z = z}
+	end
+	self:update()
 end
 
 --- Course gen center mode setting
@@ -4191,6 +4263,7 @@ end
 
 function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	local container = SettingsContainer("courseGeneratorSettings")
+	container:addSetting(StartingLocationSetting, vehicle)
 	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)
