@@ -830,6 +830,9 @@ function courseEditor:doDragToAction(vehicle, guiWpSelected, wpInfo, noEventSend
 	vehicle.Waypoints[guiWpSelected].cx = wpInfo.cx
 	vehicle.Waypoints[guiWpSelected].cy = wpInfo.cy
 	vehicle.Waypoints[guiWpSelected].cz = wpInfo.cz
+	vehicle.Waypoints[guiWpSelected].x = wpInfo.cx
+	vehicle.Waypoints[guiWpSelected].y = wpInfo.cy
+	vehicle.Waypoints[guiWpSelected].z = wpInfo.cz
 	-- move the signs
 
 	--- Update signs
@@ -846,6 +849,9 @@ function courseEditor:doUndoDragToAction(vehicle, guiWpSelected, wpInfo, noEvent
 	vehicle.Waypoints[guiWpSelected].cx = wpInfo.cx
 	vehicle.Waypoints[guiWpSelected].cy = wpInfo.cy
 	vehicle.Waypoints[guiWpSelected].cz = wpInfo.cz
+	vehicle.Waypoints[guiWpSelected].x = wpInfo.cx
+	vehicle.Waypoints[guiWpSelected].y = wpInfo.cy
+	vehicle.Waypoints[guiWpSelected].z = wpInfo.cz
 
 	--- Update signs
 	courseplay.signs:updateWaypointSigns(vehicle, 'all', guiWpSelected - 1)
