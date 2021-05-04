@@ -293,8 +293,6 @@ function courseplay:onLoad(savegame)
 	self.cp.hasValidCourseGenerationData = false;
 	-- TODO: add all old course gen settings to a SettingsContainer
 	self.cp.oldCourseGeneratorSettings = {
-		startingLocation = self.cp.startingCorner,
-		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
 		nRowsToSkip = 0,
 		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
