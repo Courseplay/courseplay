@@ -883,6 +883,22 @@ function CombineAIDriver:createPullBackCourse()
 	end
 end
 
+--- Get the area the unloader should avoid when approaching the combine.
+--- Main (and for now, only) use case is to prevent the unloader to cross in front of the combine after the
+--- combine pulled back full with pipe in the fruit, making room for the unloader on its left side.
+--- @return table, number, number, number, number node, xOffset, zOffset, width, length : the area to avoid is
+--- a length x width m rectangle, the rectangle's bottom right corner (when looking from node) is at xOffset/zOffset
+--- from node.
+function CombineAIDriver:getAreaToAvoid()
+	if self:isWaitingForUnloadAfterPulledBack() then
+		local xOffset = 0
+		local zOffset = 0
+		local length = self.pullBackDistanceEnd
+		local width = self.pullBackRightSideOffset
+		return PathfinderUtil.Area(AIDriverUtil.getDirectionNode(self.vehicle), xOffset, zOffset, width, length)
+	end
+end
+
 function CombineAIDriver:createPullBackReturnCourse()
 	-- nothing fancy here either, just move forward a few meters before returning to the fieldwork course
 	local referenceNode = AIDriverUtil.getDirectionNode(self.vehicle)
@@ -1334,7 +1350,7 @@ function CombineAIDriver:startSelfUnload()
 		self.pathfinder, done, path = PathfinderUtil.startPathfindingFromVehicleToNode(
 				self.vehicle, targetNode, offsetX, offsetZ,
 				self:getAllowReversePathfinding(),
-				fieldNum, {}, nil, nil, true)
+				fieldNum, {}, nil, nil, nil, true)
 		if done then
 			return self:onPathfindingDone(path)
 		else
@@ -1670,6 +1686,13 @@ function CombineAIDriver:onDraw()
 
 	if self.aiDriverData.backMarkerNode then
 		DebugUtil.drawDebugNode(self.aiDriverData.backMarkerNode, 'back marker')
+	end
+
+	local areaToAvoid = self:getAreaToAvoid()
+	if areaToAvoid then
+		local x, y, z = localToWorld(areaToAvoid.node, areaToAvoid.xOffset, 0, areaToAvoid.zOffset)
+		cpDebug:drawLine(x, y + 1.2, z, 10, 10, 10, x, y + 1.2, z + areaToAvoid.length)
+		cpDebug:drawLine(x + areaToAvoid.width, y + 1.2, z, 10, 10, 10, x + areaToAvoid.width, y + 1.2, z + areaToAvoid.length)
 	end
 
 	UnloadableFieldworkAIDriver.onDraw(self)

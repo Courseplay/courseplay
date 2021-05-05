@@ -22,9 +22,12 @@ PathfinderUtil.dubinsSolver = DubinsSolver()
 PathfinderUtil.reedSheppSolver = ReedsSheppSolver()
 
 PathfinderUtil.defaultOffFieldPenalty = 7.5
+PathfinderUtil.defaultAreaToAvoidPenalty = 20
 PathfinderUtil.visualDebugLevel = 0
 
+------------------------------------------------------------------------------------------------------------------------
 ---Size/turn radius all other information on the vehicle and its implements
+------------------------------------------------------------------------------------------------------------------------
 ---@class PathfinderUtil.VehicleData
 PathfinderUtil.VehicleData = CpObject()
 
@@ -149,6 +152,9 @@ function PathfinderUtil.VehicleData:calculateSizeOfObjectList(vehicle, implement
     --        self.dFront, self.dRear, self.dLeft, self.dRight)
 end
 
+------------------------------------------------------------------------------------------------------------------------
+-- Helpers
+------------------------------------------------------------------------------------------------------------------------
 --- Is this position on a field (any field)?
 function PathfinderUtil.isPosOnField(x, y, z)
     if not y then
@@ -200,7 +206,9 @@ function PathfinderUtil.isWorldPositionOwned(posX, posZ)
 	return (farmland and farmland.isOwned) or missionAllowed
 end
 
+------------------------------------------------------------------------------------------------------------------------
 --- Pathfinder context
+------------------------------------------------------------------------------------------------------------------------
 ---@class PathfinderUtil.Context
 PathfinderUtil.Context = CpObject()
 function PathfinderUtil.Context:init(vehicle, vehiclesToIgnore, objectsToIgnore)
@@ -266,7 +274,9 @@ function PathfinderUtil.getNormalWorldRotation(x, z)
 		return xRot, yRot, zRot
 end
 
-
+------------------------------------------------------------------------------------------------------------------------
+-- PathfinderUtil.CollisionDetector
+---------------------------------------------------------------------------------------------------------------------------
 ---@class PathfinderUtil.CollisionDetector
 PathfinderUtil.CollisionDetector = CpObject()
 
@@ -358,7 +368,30 @@ function PathfinderUtil.hasFruit(x, z, length, width)
     end
     return false
 end
+---------------------------------------------------------------------------------------------------------------------------
+-- A generic rectangular area oriented by a node
+---------------------------------------------------------------------------------------------------------------------------
+--- @class PathfinderUtil.Area
+PathfinderUtil.Area = CpObject()
 
+function PathfinderUtil.Area:init(node, xOffset, zOffset, width, length)
+	self.node = node
+	self.xOffset, self.zOffset = xOffset, zOffset
+	self.width, self.length = width, length
+end
+
+--- Is (x, z) world coordinate in the area?
+function PathfinderUtil.Area:contains(x, z)
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
+	local dx, _, dz = worldToLocal(self.node, x, y, z)
+	if self.xOffset < dx and dx < self.xOffset + self.width and
+		self.zOffset < dz and dz < self.zOffset + self.length then
+		--print(x, z, dx, dz, self.xOffset, self.width, 'contains')
+		return true
+	else
+		return false
+	end
+end
 
 --[[
 Pathfinding is controlled by the constraints (validity and penalty) below. The pathfinder will call these functions
@@ -396,16 +429,21 @@ field or driving to/from the field edge on an unload/refill course.
 ---@class PathfinderConstraints : PathfinderConstraintInterface
 PathfinderConstraints = CpObject(PathfinderConstraintInterface)
 
-function PathfinderConstraints:init(context, maxFruitPercent, offFieldPenalty, fieldNum)
+function PathfinderConstraints:init(context, maxFruitPercent, offFieldPenalty, fieldNum, areaToAvoid)
     self.context = context
     self.maxFruitPercent = maxFruitPercent or 50
     self.offFieldPenalty = offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty
     self.fieldNum = fieldNum or 0
+	self.areaToAvoid = areaToAvoid
+	self.areaToAvoidPenaltyCount = 0
     self.initialMaxFruitPercent = self.maxFruitPercent
     self.initialOffFieldPenalty = self.offFieldPenalty
     self:resetCounts()
-    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'Pathfinder constraints: off field penalty %.1f, max fruit percent: %d, field number %d',
-        self.offFieldPenalty, self.maxFruitPercent, self.fieldNum)
+	local areaText = self.areaToAvoid and
+		string.format('%.1f x %.1f m', self.areaToAvoid.length, self.areaToAvoid.width) or 'none'
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER,
+		'Pathfinder constraints: off field penalty %.1f, max fruit percent: %d, field number %d, area to avoid %s',
+        self.offFieldPenalty, self.maxFruitPercent, self.fieldNum, areaText)
 end
 
 function PathfinderConstraints:resetCounts()
@@ -450,7 +488,11 @@ function PathfinderConstraints:getNodePenalty(node)
             self.fruitPenaltyNodeCount = self.fruitPenaltyNodeCount + 1
         end
     end
-    self.totalNodeCount = self.totalNodeCount + 1
+	if self.areaToAvoid and self.areaToAvoid:contains(node.x, -node.y) then
+		penalty = penalty + PathfinderUtil.defaultAreaToAvoidPenalty
+		self.areaToAvoidPenaltyCount = self.areaToAvoidPenaltyCount + 1
+	end
+	self.totalNodeCount = self.totalNodeCount + 1
     return penalty
 end
 
@@ -522,8 +564,10 @@ function PathfinderConstraints:relaxConstraints()
 end
 
 function PathfinderConstraints:showStatistics()
-    courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'Nodes: %d, Penalties: fruit: %d, off-field: %d, collisions: %d',
-            self.totalNodeCount, self.fruitPenaltyNodeCount, self.offFieldPenaltyNodeCount, self.collisionNodeCount)
+    courseplay.debugFormat(courseplay.DBG_PATHFINDER,
+		'Nodes: %d, Penalties: fruit: %d, off-field: %d, collisions: %d, area to avoid: %d',
+		self.totalNodeCount, self.fruitPenaltyNodeCount, self.offFieldPenaltyNodeCount, self.collisionNodeCount,
+		self.areaToAvoidPenaltyCount)
     courseplay.debugFormat(courseplay.DBG_PATHFINDER, '  max fruit %.1f %%, off-field penalty: %.1f',
             self.maxFruitPercent, self.offFieldPenalty)
 end
@@ -550,7 +594,7 @@ end
 function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
                                                           allowReverse, fieldNum,
                                                           vehiclesToIgnore, objectsToIgnore,
-														  maxFruitPercent, offFieldPenalty, mustBeAccurate)
+														  maxFruitPercent, offFieldPenalty, areaToAvoid, mustBeAccurate)
 
 	local start = PathfinderUtil.getVehiclePositionAsState3D(vehicle)
 
@@ -563,7 +607,7 @@ function PathfinderUtil.startPathfindingFromVehicleToGoal(vehicle, goal,
 	local constraints = PathfinderConstraints(context,
             maxFruitPercent or (vehicle.cp.settings.useRealisticDriving:is(true) and 50 or math.huge),
             offFieldPenalty or PathfinderUtil.defaultOffFieldPenalty,
-            fieldNum)
+            fieldNum, areaToAvoid)
 
     return PathfinderUtil.startPathfinding(start, goal, context, constraints, allowReverse, mustBeAccurate)
 end
@@ -709,15 +753,17 @@ end
 ---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
 ---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
 ---@param offFieldPenalty number penalty to apply to nodes off the field
+---@param areaToAvoid PathfinderUtil.Area nodes in this area will be penalized so the path will most likely avoid it
 function PathfinderUtil.startPathfindingFromVehicleToWaypoint(vehicle, goalWaypoint,
                                                               xOffset, zOffset, allowReverse,
-                                                              fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty)
+                                                              fieldNum, vehiclesToIgnore, maxFruitPercent,
+															  offFieldPenalty, areaToAvoid)
 
     local goal = State3D(goalWaypoint.x, -goalWaypoint.z, courseGenerator.fromCpAngleDeg(goalWaypoint.angle))
     local offset = Vector(zOffset, -xOffset)
     goal:add(offset:rotate(goal.t))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
-            vehicle, goal, allowReverse, fieldNum, vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty)
+            vehicle, goal, allowReverse, fieldNum, vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty, areaToAvoid)
 end
 ------------------------------------------------------------------------------------------------------------------------
 --- Interface function to start the pathfinder in the game. The goal is a point at sideOffset meters from the goal node
@@ -732,16 +778,17 @@ end
 ---@param vehiclesToIgnore table[] list of vehicles to ignore for the collision detection (optional)
 ---@param maxFruitPercent number maximum percentage of fruit present before a node is marked as invalid (optional)
 ---@param offFieldPenalty number penalty to apply to nodes off the field
+---@param areaToAvoid PathfinderUtil.Area nodes in this area will be penalized so the path will most likely avoid it
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfindingFromVehicleToNode(vehicle, goalNode,
                                                           xOffset, zOffset, allowReverse,
-                                                          fieldNum, vehiclesToIgnore, maxFruitPercent, offFieldPenalty,
-                                                          mustBeAccurate)
+                                                          fieldNum, vehiclesToIgnore, maxFruitPercent,
+														  offFieldPenalty, areaToAvoid, mustBeAccurate)
     x, z, yRot = PathfinderUtil.getNodePositionAndDirection(goalNode, xOffset, zOffset)
     local goal = State3D(x, -z, courseGenerator.fromCpAngle(yRot))
     return PathfinderUtil.startPathfindingFromVehicleToGoal(
             vehicle, goal, allowReverse, fieldNum,
-            vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty, mustBeAccurate)
+            vehiclesToIgnore, {}, maxFruitPercent, offFieldPenalty, areaToAvoid, mustBeAccurate)
 end
 
 ------------------------------------------------------------------------------------------------------------------------

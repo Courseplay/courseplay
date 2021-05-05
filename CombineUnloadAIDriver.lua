@@ -1589,13 +1589,13 @@ function CombineUnloadAIDriver:startPathfinding(
 					self.vehicle, target, -xOffset or 0, zOffset or 0, self.allowReversePathfinding,
 					fieldNum, vehiclesToIgnore,
 					self.vehicle.cp.settings.useRealisticDriving:is(true) and self.maxFruitPercent or math.huge,
-					self.offFieldPenalty)
+					self.offFieldPenalty, self.combineToUnload.cp.driver:getAreaToAvoid())
 		else
 			self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToNode(
 					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
 					fieldNum, vehiclesToIgnore,
 					self.vehicle.cp.settings.useRealisticDriving:is(true) and self.maxFruitPercent or math.huge,
-					self.offFieldPenalty)
+					self.offFieldPenalty, self.combineToUnload.cp.driver:getAreaToAvoid())
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path, goalNodeInvalid)
