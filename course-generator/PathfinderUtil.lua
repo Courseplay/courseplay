@@ -62,8 +62,8 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
             rootVehicle = self.trailer:getRootVehicle(),
             dFront = buffer or 0,
             dRear = - self.trailer.sizeLength - (buffer or 0),
-            dLeft = self.trailer.sizeWidth / 2,
-            dRight = -self.trailer.sizeWidth / 2
+            dLeft = self.trailer.sizeWidth / 2 + (buffer or 0),
+            dRight = -self.trailer.sizeWidth / 2 - (buffer or 0)
         }
 				local inputAttacherJoint = self.trailer:getActiveInputAttacherJoint()
 				if inputAttacherJoint then
