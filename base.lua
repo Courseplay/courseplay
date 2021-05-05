@@ -181,7 +181,6 @@ function courseplay:onLoad(savegame)
 
 	local directionNodeOffset, isTruck = courseplay:getVehicleDirectionNodeOffset(self, DirectionNode);
 	if directionNodeOffset ~= 0 then
-		self.cp.oldDirectionNode = DirectionNode;  -- Only used for debugging.
 		DirectionNode = courseplay:createNewLinkedNode(self, "realDirectionNode", DirectionNode);
 		setTranslation(DirectionNode, 0, 0, directionNodeOffset);
 	end;
@@ -457,17 +456,14 @@ function courseplay:onDraw()
 	--DEBUG SHOW DIRECTIONNODE
 	if courseplay.debugChannels[courseplay.DBG_PPC] then
 		-- For debugging when setting the directionNodeZOffset. (Visual points shown for old node)
-		if self.cp.oldDirectionNode then
-			local ox,oy,oz = getWorldTranslation(self.cp.oldDirectionNode);
-			cpDebug:drawPoint(ox, oy+4, oz, 0.9098, 0.6902 , 0.2706);
-		end;
-		if self.cp.driver then
-			self.cp.driver:onDraw()
-		end
 		local nx,ny,nz = getWorldTranslation(self.cp.directionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
-	end;		
-		
+	end;
+
+	if self.cp.driver then
+		self.cp.driver:onDraw()
+	end
+
 	if self:getIsActive() then
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);

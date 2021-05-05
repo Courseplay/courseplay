@@ -22,7 +22,7 @@ PathfinderUtil.dubinsSolver = DubinsSolver()
 PathfinderUtil.reedSheppSolver = ReedsSheppSolver()
 
 PathfinderUtil.defaultOffFieldPenalty = 7.5
-PathfinderUtil.defaultAreaToAvoidPenalty = 20
+PathfinderUtil.defaultAreaToAvoidPenalty = 2000
 PathfinderUtil.visualDebugLevel = 0
 
 ------------------------------------------------------------------------------------------------------------------------

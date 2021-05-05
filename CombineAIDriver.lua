@@ -891,7 +891,7 @@ end
 --- from node.
 function CombineAIDriver:getAreaToAvoid()
 	if self:isWaitingForUnloadAfterPulledBack() then
-		local xOffset = 0
+		local xOffset = self.vehicle.cp.workWidth / 2
 		local zOffset = 0
 		local length = self.pullBackDistanceEnd
 		local width = self.pullBackRightSideOffset
@@ -1677,22 +1677,25 @@ end
 
 function CombineAIDriver:onDraw()
 
-	if not courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then return end
+	if courseplay.debugChannels[courseplay.DBG_IMPLEMENTS] then
 
-	local dischargeNode = self:getCurrentDischargeNode()
-	if dischargeNode then
-		DebugUtil.drawDebugNode(dischargeNode.node, 'discharge')
+		local dischargeNode = self:getCurrentDischargeNode()
+		if dischargeNode then
+			DebugUtil.drawDebugNode(dischargeNode.node, 'discharge')
+		end
+
+		if self.aiDriverData.backMarkerNode then
+			DebugUtil.drawDebugNode(self.aiDriverData.backMarkerNode, 'back marker')
+		end
 	end
 
-	if self.aiDriverData.backMarkerNode then
-		DebugUtil.drawDebugNode(self.aiDriverData.backMarkerNode, 'back marker')
-	end
-
-	local areaToAvoid = self:getAreaToAvoid()
-	if areaToAvoid then
-		local x, y, z = localToWorld(areaToAvoid.node, areaToAvoid.xOffset, 0, areaToAvoid.zOffset)
-		cpDebug:drawLine(x, y + 1.2, z, 10, 10, 10, x, y + 1.2, z + areaToAvoid.length)
-		cpDebug:drawLine(x + areaToAvoid.width, y + 1.2, z, 10, 10, 10, x + areaToAvoid.width, y + 1.2, z + areaToAvoid.length)
+	if courseplay.debugChannels[courseplay.DBG_PATHFINDER] then
+		local areaToAvoid = self:getAreaToAvoid()
+		if areaToAvoid then
+			local x, y, z = localToWorld(areaToAvoid.node, areaToAvoid.xOffset, 0, areaToAvoid.zOffset)
+			cpDebug:drawLine(x, y + 1.2, z, 10, 10, 10, x, y + 1.2, z + areaToAvoid.length)
+			cpDebug:drawLine(x + areaToAvoid.width, y + 1.2, z, 10, 10, 10, x + areaToAvoid.width, y + 1.2, z + areaToAvoid.length)
+		end
 	end
 
 	UnloadableFieldworkAIDriver.onDraw(self)
