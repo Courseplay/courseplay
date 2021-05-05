@@ -302,6 +302,10 @@ function AIDriver:beforeStart()
 	self:addForwardProximitySensor()
 	self:enableProximitySpeedControl()
 	self:enableProximitySwerve()
+	---Reset Moved distance on start.
+	self.movedDistance = 0
+	---Initialize trigger sensor.
+	self.triggerSensor = TriggerSensor(self,self.vehicle)
 end
 
 --- Start driving
@@ -417,6 +421,19 @@ function AIDriver:update(dt)
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
 	self:shouldDriverBeReleased()
+
+	self:updateDistanceMovedSinceStart(dt)
+	self.triggerSensor:onUpdate(dt)
+end
+
+---Update moved distance since start.
+function AIDriver:updateDistanceMovedSinceStart(dt)
+	self.movedDistance = self.movedDistance + self.vehicle.lastMovedDistance
+end
+
+---Gets the moved distance since start.
+function AIDriver:getDistanceMovedSinceStart()
+	return self.movedDistance
 end
 
 --- UpdateTick AI driver
@@ -454,6 +471,9 @@ end
 function AIDriver:driveCourse(dt)
 	self:updateLights()
 
+	if not AIDriverUtil.isStopped(self.vehicle) then
+		self:searchForTriggers()
+	end
 	-- stop for fuel if needed
 	if not self:isFuelLevelOk() then
 		self:hold()
@@ -472,13 +492,14 @@ function AIDriver:driveCourse(dt)
 		self:setSpeed(self:getRecordedSpeed())
 	end
 
-	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
+--	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
 --	if self:getIsInFilltrigger() or self:hasTipTrigger() then-- or isInTrigger then
-	if isInTrigger then
+	if self.triggerSensor:hasTriggers() then	
+--	if isInTrigger then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
-		if isAugerWagonTrigger then
-			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
-		end
+	--	if isAugerWagonTrigger then
+	--		self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
+	--	end
 	end
 
 	self:slowDownForWaitPoints()
@@ -1305,6 +1326,96 @@ function AIDriver:searchForTipTriggers()
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
 	end
 end
+
+---Search for triggers.
+function AIDriver:searchForTriggers()
+	---Check if the driver is allowed to search for triggers.
+	local triggerSensorAllowed = self:getTriggerSensorBitMask() ~=nil
+	if self:isReversing() or not triggerSensorAllowed then 
+		return
+	end
+	
+	---Get the start point of the trigger raycast.
+	local relevantNode = self:getFrontMarkerNode(self.vehicle) 
+
+	local raycastDistance = TriggerSensor.lookAheadDistance
+
+	---Get the last waypoint waypoint within raycast distance, as end point.
+	local nextIx,dist = self.course:getNextWaypointIxWithinDistance(self.ppc:getCurrentWaypointIx(),raycastDistance)
+
+---If searching between start waypoint and end waypoint is allowed add possible missing distance.
+	if self:isTriggerSensorSearchingRoundCourseAllowed() and dist < raycastDistance then 
+		nextIx,dist = self.course:getNextWaypointIxWithinDistance(1,raycastDistance-dist)
+	end
+
+	if dist and dist > raycastDistance/2 then
+		
+		local driverBitMask = self:getTriggerSensorBitMask()
+
+		local x,y,z = localToWorld(relevantNode,0,0,0)
+
+		local dx,dy,dz = self.course:getWaypointPosition(nextIx)
+
+		local nx, nz = MathUtil.vector2Normalize(dx - x, dz - z)
+		-- check for NaN
+		if nx ~= nx then 
+			nx = 0
+		end
+		if nz ~= nz then
+			nz = 1
+		end
+
+
+		---Unloading raycast
+		if TriggerSensor.isUnloadingAllowed(driverBitMask) then 
+			local ny = -2/raycastDistance
+
+			local rayDist = MathUtil.vector2Length(raycastDistance,y-dy+2)
+
+			self.triggerSensor:raycastTriggers(x, y+1, z, nx, ny, nz, rayDist)
+
+			x,_,z = localToWorld(relevantNode,2,0,0)
+			self.triggerSensor:raycastTriggers(x, y+1, z, nx, ny, nz, rayDist)
+
+			x,_,z = localToWorld(relevantNode,-2,0,0)
+			self.triggerSensor:raycastTriggers(x, y+1, z, nx, ny, nz, rayDist)
+		end
+
+		---Loading raycast
+		if TriggerSensor.isLoadingAllowed(driverBitMask) or TriggerSensor.isFillingAllowed(driverBitMask) then 
+			
+			local ny = 0
+
+			-- raycast start point in front of vehicle
+			local x1,_,z1 = localToWorld(relevantNode,2,0,0)
+			local x2,_,z2 = localToWorld(relevantNode,-2,0,0)
+
+			local dx1,dz1 = x1+nx*raycastDistance,z1+nz*raycastDistance
+			local dx2,dz2 = x2+nx*raycastDistance,z2+nz*raycastDistance
+
+			local nx1,nz1 = MathUtil.vector2Normalize(dx2 - x1, dz2 - z1)
+			local nx2,nz2 = MathUtil.vector2Normalize(dx1 - x2, dz1 - z2)
+
+		
+			self.triggerSensor:raycastTriggers(x1, y+2, z1, nx1 or 0, ny, nz1 or 1, raycastDistance)
+
+			self.triggerSensor:raycastTriggers(x2, y+2, z2, nx2 or 0, ny, nz2 or 1, raycastDistance)
+			
+			--create a hammerhead raycast to get small triggerStartId
+			nx, ny, nz = localDirectionToWorld(relevantNode, 1, 0, 0)
+			self.triggerSensor:raycastTriggers(dx2, y+2, dz2, nx, ny, nz, 4)
+		end
+	end
+end
+
+function AIDriver:getTriggerSensorBitMask()
+	--return TriggerSensor.AIDriverBitMask
+end
+
+function AIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return not self:shouldStopAtEndOfCourse()
+end
+
 
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	-- Unloading
@@ -2226,3 +2337,5 @@ function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
 	return superFunc(self,preSuperFunc)
 end
 AttacherJoints.isDetachAllowed = Utils.overwrittenFunction(AttacherJoints.isDetachAllowed, AIDriver.isDetachAllowed)
+
+

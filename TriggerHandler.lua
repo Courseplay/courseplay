@@ -130,22 +130,25 @@ TriggerHandler.debugLoadingCallbackData[6] = "DONE_LOADING"
 function TriggerHandler:debugLoadingCallback(loadingCallback)
 	local y = 0.5
 	local lastCallbackData = nil
-	y = self:renderText(y,"debugLoadingCallback:",0.2)
-	y = self:renderText(y,string.format("fillUnitIndex: %s",tostring(loadingCallback[1].fillUnitIndex)),0.2)
-	for indexCallback,callbackData in ipairs(loadingCallback) do 
-		local data = callbackData.data
-		local fillType = data.fillType
-		lastCallbackData = callbackData
-		local text = string.format("index: %s, fillType: %s, callback: %s",indexCallback,tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title),self.debugLoadingCallbackData[callbackData.callback])
-		y = self:renderText(y,text,0.2)
+	if loadingCallback and loadingCallback[1] then
+		y = self:renderText(y,"debugLoadingCallback:",0.2)
+		y = self:renderText(y,string.format("fillUnitIndex: %s",tostring(loadingCallback[1].fillUnitIndex)),0.2)
+		for indexCallback,callbackData in ipairs(loadingCallback) do 
+			local data = callbackData.data
+			local fillType = data.fillType
+			lastCallbackData = callbackData
+			local text = string.format("index: %s, fillType: %s, callback: %s",indexCallback,tostring(g_fillTypeManager:getFillTypeByIndex(fillType).title),self.debugLoadingCallbackData[callbackData.callback])
+			y = self:renderText(y,text,0.2)
+		end
+		if lastCallbackData then
+			local text = string.format("lastCallback:  fillType: %s, callback: %s",tostring(g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title),self.debugLoadingCallbackData[lastCallbackData.callback])
+			y = self:renderText(y,text,0.2)
+		end
 	end
-	local text = string.format("lastCallback:  fillType: %s, callback: %s",tostring(g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title),self.debugLoadingCallbackData[lastCallbackData.callback])
-	y = self:renderText(y,text,0.2)
 end
 
 function TriggerHandler:debugFillableObject(fillableObject)
 	local y = 0.5
-	local lastCallbackData = nil
 	y = self:renderText(y,"debugDillableObject:",0.4)
 	y = self:renderText(y,string.format("object: %s",nameNum(fillableObject.object)),0.4)
 	y = self:renderText(y,string.format("fillUnitIndex: %s",tostring(fillableObject.fillUnitIndex)),0.4)
@@ -1282,7 +1285,6 @@ function TriggerHandler:onActivateObjectGlobalCompany(superFunc,vehicle)
 end
 
 function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
-	local isOk = superFunc(self,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
 	if self.dischargeInfo == nil or self.dischargeInfo.nodes == nil or self.dischargeInfo.nodes[1] == nil or self.dischargeInfo.nodes[1].node == nil then
 		local dischargeNode = I3DUtil.indexToObject(nodeId, getXMLString(xmlFile, xmlKey .. ".dischargeInfo#dischargeNode"), source.i3dMappings)
 		if dischargeNode ~= nil then
@@ -1294,5 +1296,4 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 			table.insert(self.dischargeInfo.nodes, {node=dischargeNode, width=width, length=length, priority=1})
 		end
 	end
-	return isOk
 end

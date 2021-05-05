@@ -189,3 +189,11 @@ end
 function FieldSupplyAIDriver:shouldPayWages()
 	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
 end 
+
+function FieldSupplyAIDriver:getTriggerSensorBitMask()
+	return TriggerSensor.FieldSupplyAIDriverBitMask
+end
+
+function FieldSupplyAIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return true
+end

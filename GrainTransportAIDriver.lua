@@ -283,3 +283,11 @@ function GrainTransportAIDriver:isProximitySwerveEnabled(vehicle)
 		return true
 	end
 end
+
+function GrainTransportAIDriver:getTriggerSensorBitMask()
+	return TriggerSensor.GrainTransportAIDriverBitMask
+end
+
+function GrainTransportAIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return true
+end

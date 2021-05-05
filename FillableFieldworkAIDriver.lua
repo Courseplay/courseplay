@@ -295,4 +295,10 @@ function FillableFieldworkAIDriver:getTurnEndForwardOffset()
 	end
 end
 
+function FillableFieldworkAIDriver:getTriggerSensorBitMask()
+	return TriggerSensor.FillableFieldworkAIDriverBitMask
+end
 
+function FillableFieldworkAIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return false
+end

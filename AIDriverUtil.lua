@@ -385,3 +385,13 @@ function AIDriverUtil.getFillTypeFromFillUnit(fillUnit)
 	end
 end
 
+---Gets the total length of the vehicle and all it's implements.
+function AIDriverUtil.getVehicleAndImplementsTotalLength(vehicle)
+	local totalLength = vehicle.sizeLength
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
+		if implement.object ~= nil then
+			totalLength = implement.object.sizeLength
+		end
+	end
+	return totalLength
+end

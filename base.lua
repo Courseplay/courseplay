@@ -466,7 +466,11 @@ function courseplay:onDraw()
 		end
 		local nx,ny,nz = getWorldTranslation(self.cp.directionNode);
 		cpDebug:drawPoint(nx, ny+4, nz, 0.6196, 0.3490 , 0);
-	end;		
+	end;	
+	if self.cp.driver.triggerSensor then 
+		self.cp.driver.triggerSensor:onDraw()
+	end
+	
 		
 	if self:getIsActive() then
 		if self.cp.hud.show then

@@ -129,6 +129,14 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.justFinishedPathfindingForDistance = CpTemporaryObject()
 end
 
+function CombineUnloadAIDriver:getTriggerSensorBitMask()
+	return TriggerSensor.CombineUnloadAIDriverBitMask
+end
+
+function CombineUnloadAIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return false
+end
+
 function CombineUnloadAIDriver:getAssignedCombines()
 	return self.assignedCombinesSetting:getData()
 end

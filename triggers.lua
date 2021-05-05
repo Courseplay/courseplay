@@ -12,15 +12,15 @@ function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x,
 	if triggerType == 'tipTrigger' then
 		callBack = 'findTipTriggerCallback';
 		debugChannel = 1;
-		r, g, b = 1, 0, 1;
+		r, g, b = 1, 1, 1;
 	elseif triggerType == 'specialTrigger' then
 		callBack = 'findSpecialTriggerCallback';
 		debugChannel = 19;
-		r, g, b = 0, 1, 0.6;
+		r, g, b = 1, 1, 0.6;
 	elseif triggerType == 'fuelTrigger' then
 		callBack = 'findFuelTriggerCallback';
 		debugChannel = 19;
-		r, g, b = 0, 1, 0.6;
+		r, g, b = 1, 1, 0.6;
 	else
 		return;
 	end;
@@ -58,12 +58,12 @@ function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x
 		courseplay:debug(('%s: call %s raycast (%s) #%d'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 	end;
 	local num = raycastAll(x,y,z, nx,ny,nz, callBack, distance, vehicle);
-	if courseplay.debugChannels[debugChannel] then
+--	if courseplay.debugChannels[debugChannel] then
 		if num > 0 then
 			--courseplay:debug(('%s: %s raycast (%s) #%d: object found'):format(nameNum(vehicle), triggerType, direction, raycastNumber), debugChannel);
 		end;
 		cpDebug:drawLine(x,y,z, r,g,b, x+(nx*distance),y+(ny*distance),z+(nz*distance));
-	end;
+--	end;
 end;
 
 -- FIND TIP TRIGGER CALLBACK
@@ -670,5 +670,252 @@ local deleteBunkerSilo = function(silo)
 	end
 end
 BunkerSilo.delete = Utils.prependedFunction(BunkerSilo.delete,deleteBunkerSilo)
+
+---@class TriggerSensor
+TriggerSensor = CpObject()
+
+TriggerSensor.lookAheadDistance = 10
+TriggerSensor.releaseOffset = 10
+
+TriggerSensor.loadingTriggerBitMask = 1
+TriggerSensor.fillingTriggerBitMask = 2
+TriggerSensor.fuelTriggerBitMask = 4
+TriggerSensor.unloadingTriggerBitMask = 8
+TriggerSensor.bunkerSiloUnloadingTriggerBitMask = 16
+
+TriggerSensor.AIDriverBitMask = TriggerSensor.fuelTriggerBitMask
+TriggerSensor.GrainTransportAIDriverBitMask = TriggerSensor.loadingTriggerBitMask 
+											+ TriggerSensor.fillingTriggerBitMask 
+											+ TriggerSensor.unloadingTriggerBitMask
+											+ TriggerSensor.bunkerSiloUnloadingTriggerBitMask
+
+TriggerSensor.CombineUnloadAIDriverBitMask 	= TriggerSensor.fuelTriggerBitMask
+											+ TriggerSensor.unloadingTriggerBitMask
+											+ TriggerSensor.bunkerSiloUnloadingTriggerBitMask
+
+TriggerSensor.FillableFieldworkAIDriverBitMask 	= TriggerSensor.loadingTriggerBitMask
+												+ TriggerSensor.fillingTriggerBitMask 
+
+TriggerSensor.FieldSupplyAIDriverBitMask 	= TriggerSensor.loadingTriggerBitMask
+											+ TriggerSensor.fillingTriggerBitMask 
+											+ TriggerSensor.unloadingTriggerBitMask
+
+TriggerSensor.UnloadableFieldworkAIDriverBitMask 	= TriggerSensor.fuelTriggerBitMask
+													+ TriggerSensor.unloadingTriggerBitMask
+												 	+ TriggerSensor.bunkerSiloUnloadingTriggerBitMask
+
+function TriggerSensor:init(driver,vehicle)
+	self.vehicle = vehicle
+	self.driver = driver
+	self.foundTriggers = {}
+	self.vehicleConvoyLength = AIDriverUtil.getVehicleAndImplementsTotalLength(vehicle)
+	self.debugChannel = courseplay.DBG_TRIGGERS
+end
+
+function TriggerSensor:isDebugActive()
+	return courseplay.debugChannels[self.debugChannel]
+end
+
+function TriggerSensor:onUpdate(dt)
+	for triggerId,trigger in pairs(self.foundTriggers) do 
+		local distance = trigger.distanceUntilFound
+		if self:hasTriggerPassed(distance) then
+			self.foundTriggers[triggerId] = nil
+		end
+	end
+end
+
+function TriggerSensor:hasTriggerPassed(distanceUntilFound)
+	return (distanceUntilFound + self.lookAheadDistance + self.releaseOffset + self.vehicleConvoyLength) < 
+			self.driver:getDistanceMovedSinceStart() 
+end
+
+function TriggerSensor:onDraw()
+--	if not self:isDebugActive() then 
+--		return
+--	end
+	local i = 0
+	local y = 0.5
+	for _,trigger in pairs(self.foundTriggers) do 
+		y = self:renderText(y,0.5,"Trigger (%d): ",i)
+		y = self:renderText(y,0.51,"TriggerId: : %d",trigger.triggerId)
+		y = self:renderText(y,0.51,"distanceUntilFound: %.2f",trigger.distanceUntilFound)
+		i = i+1
+	end
+	y = self:renderText(y,0.5,"Vehicle Convoy Length: %.2f",self.vehicleConvoyLength)
+	y = self:renderText(y,0.5,"Distance Traveled: %.2f",self.driver:getDistanceMovedSinceStart())
+end
+
+function TriggerSensor:renderText(y,xOffset,text,...)
+	renderText(xOffset and 0.3+xOffset or 0.3,y,0.02,text:format(...))
+	return y-0.02
+end
+
+function TriggerSensor:hasTriggers()
+	return next(self.foundTriggers) ~=nil
+end
+
+function TriggerSensor.isUnloadingAllowed(driverBitMask)
+	return bitAND(driverBitMask,TriggerSensor.unloadingTriggerBitMask) ~= 0
+end
+
+function TriggerSensor.isLoadingAllowed(driverBitMask)
+	return bitAND(driverBitMask,TriggerSensor.loadingTriggerBitMask) ~= 0
+end
+
+function TriggerSensor.isFillingAllowed(driverBitMask)
+	return bitAND(driverBitMask,TriggerSensor.fillingTriggerBitMask) ~= 0
+end
+
+function TriggerSensor.isBunkerSiloUnloadingAllowed(driverBitMask)
+	return bitAND(driverBitMask,TriggerSensor.fillingTriggerBitMask) ~= 0
+end
+
+
+function TriggerSensor:raycastTriggers(x, y, z, nx, ny, nz, raycastDistance)
+	raycastAll(x,y,z, nx,ny,nz, "raycastCallbackLoadingAndFillTrigger", raycastDistance, self, nil, false)
+--	if self:isDebugActive() then
+		cpDebug:drawLine(x,y,z, 1,0,1, x+(nx*raycastDistance),y+(ny*raycastDistance),z+(nz*raycastDistance));
+--	end
+end
+
+function TriggerSensor:raycastCallbackLoadingAndFillTrigger(hitActorId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
+	if hitActorId then 
+		local driverBitMask = self.driver:getTriggerSensorBitMask()
+		if driverBitMask == nil then 
+			return
+		end
+		local trigger
+
+		if TriggerSensor.isLoadingAllowed(driverBitMask) then
+			trigger = Triggers.loadingTriggers[hitActorId]
+		end
+		if TriggerSensor.isFillingAllowed(driverBitMask) then
+			trigger = trigger or Triggers.fillTriggers[hitActorId]
+		end
+		if bitAND(driverBitMask,TriggerSensor.fuelTriggerBitMask) ~= 0 then
+	
+		end
+		if TriggerSensor.isUnloadingAllowed(driverBitMask) then
+			trigger = trigger or Triggers.unloadingTriggers[hitActorId]
+		end
+		if TriggerSensor.isBunkerSiloUnloadingAllowed(driverBitMask) then
+			trigger = trigger or Triggers.bunkerSilos[hitActorId]
+		end
+
+		if trigger and self.foundTriggers[hitActorId] == nil then 
+
+			local object = g_currentMission:getNodeObject(hitActorId)
+
+			if object and object.getRootVehicle then 
+				local rootVehicle = object:getRootVehicle()
+				if rootVehicle == self.vehicle then 
+					return true
+				end
+			end
+
+			local t = {
+				trigger = trigger,
+				triggerId = hitActorId,
+				distanceUntilFound = self.driver:getDistanceMovedSinceStart()
+			}
+			self.foundTriggers[hitActorId] = t
+			return false
+		end
+	end
+	return true
+end
+
+---Global table to store all triggers types.
+---
+---LoadTriggers are basically all placeable triggers to fill upon.
+---UnloadTriggers are basically all placeable triggers to unload at, except bunker silos.
+---FillTriggers are all vehicles with fill triggers spec.
+Triggers = {}
+
+Triggers.loadingTriggers = {}
+Triggers.unloadingTriggers = {}
+Triggers.fillTriggers = {}
+Triggers.bunkerSilos = {}
+
+
+---Add all relevant triggers on create and remove them on delete.
+
+function Triggers.addLoadingTrigger(trigger,superFunc,...)
+	local returnValue = superFunc(trigger,...)
+
+	if trigger.triggerNode then
+		Triggers.loadingTriggers[trigger.triggerNode] = trigger
+	end
+	return returnValue
+end
+LoadTrigger.load = Utils.overwrittenFunction(LoadTrigger.load,Triggers.addLoadingTrigger)
+
+function Triggers.addUnloadingTrigger(trigger,superFunc,...)
+	local returnValue = superFunc(trigger,...)
+
+	if trigger.exactFillRootNode then
+		Triggers.unloadingTriggers[trigger.exactFillRootNode] = trigger
+	end
+
+	if trigger.baleTriggerNode then 
+		Triggers.unloadingTriggers[trigger.baleTriggerNode] = trigger
+	end
+
+	return returnValue
+end
+UnloadTrigger.load = Utils.overwrittenFunction(UnloadTrigger.load,Triggers.addUnloadingTrigger)
+
+function Triggers.addFillTrigger(_,superFunc,triggerId, ...)
+	local trigger = superFunc(_,triggerId, ...)
+	if trigger.triggerId then
+		Triggers.fillTriggers[triggerId] = trigger
+	end 
+	return trigger
+end
+FillTrigger.new = Utils.overwrittenFunction(FillTrigger.new,Triggers.addFillTrigger)
+
+function Triggers.removeLoadingTrigger(trigger)
+	if trigger.triggerNode then
+		Triggers.loadingTriggers[trigger.triggerNode] = trigger
+	end
+end
+LoadTrigger.delete = Utils.appendedFunction(LoadTrigger.delete,Triggers.removeLoadingTrigger)
+
+function Triggers.removeUnloadingTrigger(trigger)
+	if trigger.exactFillRootNode then 
+		Triggers.unloadingTriggers[trigger.exactFillRootNode] = nil
+	end
+
+	if trigger.baleTriggerNode then 
+		Triggers.unloadingTriggers[trigger.baleTriggerNode] = nil
+	end
+
+end
+UnloadTrigger.delete = Utils.prependedFunction(UnloadTrigger.delete,Triggers.removeUnloadingTrigger)
+
+function Triggers.removeFillTrigger(trigger)
+	if trigger.triggerId then
+		Triggers.fillTriggers[trigger.triggerId] = nil
+	end
+end
+FillTrigger.delete = Utils.prependedFunction(FillTrigger.delete,Triggers.removeFillTrigger)
+
+---Global Company
+
+function Triggers.addLoadingTriggerGC(trigger,superFunc,...)
+	local returnValue = Triggers.addLoadingTrigger(trigger,superFunc,...)
+
+	TriggerHandler.onLoad_GC_LoadingTriggerFix(trigger,superFunc,...)
+
+	return returnValue
+end
+
+
+--BunkerSilo.load = Utils.appendedFunction(LoadTrigger.load,Triggers.addLoadingTrigger)
+
+
+
+
 -- do not remove this comment
 -- vim: set noexpandtab:

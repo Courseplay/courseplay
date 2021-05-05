@@ -183,3 +183,11 @@ function UnloadableFieldworkAIDriver:setDriveNow()
 		AIDriver.setDriveNow(self)
 	end
 end
+
+function UnloadableFieldworkAIDriver:getTriggerSensorBitMask()
+	return TriggerSensor.UnloadableFieldworkAIDriverBitMask
+end
+
+function UnloadableFieldworkAIDriver:isTriggerSensorSearchingRoundCourseAllowed()
+	return false
+end
