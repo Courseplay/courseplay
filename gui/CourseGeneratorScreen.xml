@@ -14,16 +14,17 @@
 
 					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 500px" id="boxLayoutTop">
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="fieldSelector" toolTip="$l10n_COURSEPLAY_FIELD_EDGE_PATH" onOpen="onOpenFieldSelector" onClick="onClickFieldSelector">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="selectedField"
+									onCreate="onCreateElement" onClick="onClickSelectedField">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_FIELD_EDGE_PATH"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
 						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startingLocation"
-									onCreate="onCreateElement" onOpen="onOpenStartingLocation" onClick="onClickStartingLocation">
+									onCreate="onCreateElement" onClick="onClickStartingLocation">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText"/>
@@ -31,11 +32,12 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="rowDirectionMode" toolTip="$l10n_COURSEPLAY_STARTING_DIRECTION" onOpen="onOpenRowDirectionMode" onClick="onClickRowDirectionMode">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="rowDirection"
+									onCreate="onCreateElement" onClick="onClickRowDirection">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_STARTING_DIRECTION"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 

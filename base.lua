@@ -286,11 +286,9 @@ function courseplay:onLoad(savegame)
 	--Course generation	
 	self.cp.startingDirection = 0;
 	self.cp.rowDirectionDeg = 0
-	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
 
 	self.cp.hasGeneratedCourse = false;
-	self.cp.hasValidCourseGenerationData = false;
 	-- TODO: add all old course gen settings to a SettingsContainer
 	self.cp.oldCourseGeneratorSettings = {
 		islandBypassMode = Island.BYPASS_MODE_NONE,

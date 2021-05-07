@@ -13,7 +13,7 @@ CourseGeneratorScreen.WidthFormatString = '%.1f m'
 CourseGeneratorScreen.CONTROLS = {
 	fieldSelector = 'fieldSelector',
 	startingLocation = 'startingLocation',
-	rowDirectionMode = 'rowDirectionMode',
+	rowDirection = 'rowDirection',
 	manualDirectionAngle = 'manualDirectionAngle',
 	width = 'width',
 	autoWidth = 'autoWidth',
@@ -87,26 +87,10 @@ function CourseGeneratorScreen:onCreateElement(element)
 end
 
 function CourseGeneratorScreen:onOpen()
-	-- Make sure we always load the most up to date field data
-	-- List of fields
-	self.fields = {}
-	for key, field in pairs( courseplay.fields.fieldData ) do
-		table.insert( self.fields, { name = field.name, number = key })
-	end
-	table.sort( self.fields, function( a, b ) return a.number < b.number end )
-
-	-- set up a reverse lookup table
-	self.fieldToState = {}
-	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f.number ] = i
-		i = i + 1
-	end
-
-	-- add the 'currently loaded course' option
-	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
-	self.fieldToState[ 0 ] = #self.fields
 
 	g_currentMission.isPlayerFrozen = true
+
+	self.settings.selectedField:refresh()
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
@@ -128,10 +112,6 @@ end
 
 
 function CourseGeneratorScreen:generate()
-	-- save the selected field as generateCourse will reset it.
-	-- this way we can regenerate the course with different settings without
-	-- having to reselect the field or closing the GUI
-	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
 	local status, ok = courseGenerator.generate(self.vehicle)
 
 	if not status then
@@ -144,9 +124,7 @@ function CourseGeneratorScreen:generate()
 		-- show message if the generated course may have issues due to the selected track direction
 		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL')})
 	end
-	
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
-	-- update number of headland passes in case we ended up generating less 
+	-- update number of headland passes in case we ended up generating less
 	self:setHeadlandProperties()
 	self:showCourse()
 end
@@ -169,26 +147,10 @@ function CourseGeneratorScreen:onClose()
 	CourseGeneratorScreen:superClass().onClose(self)
 end
 
------------------------------------------------------------------------------------------------------
--- Field selector
-function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
-	local texts = {}
-	if self.fields then
-		for _, field in ipairs( self.fields ) do
-			table.insert( texts, field.name )
-		end
-	end
-	element:setTexts( texts )
-	element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
-	end
-
-function CourseGeneratorScreen:onClickFieldSelector( state )
-	self:selectField( self.fields[ state ].number )
+function CourseGeneratorScreen:onClickSelectedField( state )
+	self.settings.selectedField:setFromGuiElement()
 end
 
-function CourseGeneratorScreen:selectField( fieldNum )
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
-end
 -----------------------------------------------------------------------------------------------------
 -- Working width
 function CourseGeneratorScreen:onOpenWidth( element )
@@ -260,27 +222,10 @@ function CourseGeneratorScreen:onClickStartingLocation( state )
 end
 
 -----------------------------------------------------------------------------------------------------
--- Row direction mode
-local function getRowDirectionModeState( rowDirectionMode )
-	return rowDirectionMode - courseGenerator.ROW_DIRECTION_MIN + 1
-end
-
-local function getRowDirectionMode( rowDirectionModeState )
-	return rowDirectionModeState + courseGenerator.ROW_DIRECTION_MIN - 1
-end
-
-function CourseGeneratorScreen:onOpenRowDirectionMode( element, parameter )
-	local texts = {}
-	for i = courseGenerator.ROW_DIRECTION_MIN, courseGenerator.ROW_DIRECTION_MAX do
-		table.insert( texts, courseplay:loc(string.format('COURSEPLAY_DIRECTION_%d', i )))
-	end
-	element:setTexts( texts )
-	element:setState( getRowDirectionModeState( self.vehicle.cp.rowDirectionMode ))
-end
-
-function CourseGeneratorScreen:onClickRowDirectionMode( state )
-	courseplay:setRowDirectionMode( self.vehicle, getRowDirectionMode( state ))
-	self.manualDirectionAngle:setVisible( self.vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_MANUAL )
+-- Row direction
+function CourseGeneratorScreen:onClickRowDirection( state )
+	self.settings.rowDirection:setFromGuiElement()
+	self.manualDirectionAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -293,7 +238,7 @@ function CourseGeneratorScreen:onOpenManualDirectionAngle( element, parameter )
 	element:setTexts( texts )
 	element:setState( self.directionToState[ self.vehicle.cp.rowDirectionDeg ])
 	-- enable only when manual row direction is selected.
-	element:setVisible( self.vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_MANUAL )
+	element:setVisible(self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
 end
 
 function CourseGeneratorScreen:onClickManualDirectionAngle( state )
@@ -554,7 +499,7 @@ end
 ---a very basic and simple seed calculator in the course generator
 function CourseGeneratorScreen:drawSeedCalculator(xPos,yPos)
 	-- do have a valid field selected ?
-	local currentFieldNumber = self.vehicle.cp.fieldEdge.selectedField.fieldNum
+	local currentFieldNumber = self.vehicle.cp.courseGeneratorSettings.selectedField:get()
 	if currentFieldNumber ~= 0 then 
 		local fieldAreaHa = courseplay.fields.fieldData[currentFieldNumber].areaHa
 		local fieldAreaSqm = courseplay.fields.fieldData[currentFieldNumber].areaSqm
@@ -620,15 +565,10 @@ function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 	end
 
 	local fieldNum = courseplay.fields:getFieldNumForPosition(posX, posZ)
-	if fieldNum > 0 and self.fields then
+	if fieldNum > 0 then
 		-- clicked on a field, set it as selected
-		for i, field in ipairs(self.fields) do
-			if field.number == fieldNum then
-				-- field found
-				self.fieldSelector:setState(i)
-				self:selectField( fieldNum )
-			end
-		end
+		self.settings.selectedField:set(fieldNum)
+		self.settings.selectedField:updateGuiElement()
 	end
 end
 

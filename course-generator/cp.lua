@@ -51,23 +51,23 @@ local function writeCourseToVehicleWaypoints(vehicle, course)
 end
 
 function courseGenerator.generate(vehicle)
-
+	local selectedField = vehicle.cp.courseGeneratorSettings.selectedField:get()
 	local fieldCourseName = tostring(vehicle.cp.currentCourseName);
-	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
-		fieldCourseName = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].name;
+	if selectedField > 0 then
+		fieldCourseName = courseplay.fields.fieldData[selectedField].name;
 	end ;
 	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), courseplay.DBG_COURSES);
 
 	local poly = {}
 	local islandNodes = {}
-	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
-		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points, true);
-		poly.numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
+	if selectedField > 0 then
+		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[selectedField].points, true);
+		poly.numPoints = courseplay.fields.fieldData[selectedField].numPoints;
 		if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
-			if not courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes then
-				courseGenerator.findIslands(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum])
+			if not courseplay.fields.fieldData[selectedField].islandNodes then
+				courseGenerator.findIslands(courseplay.fields.fieldData[selectedField])
 			end
-			islandNodes = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].islandNodes
+			islandNodes = courseplay.fields.fieldData[selectedField].islandNodes
 		end
 	else
 		poly.points = courseplay.utils.table.copy(vehicle.Waypoints, true);
@@ -84,7 +84,7 @@ function courseGenerator.generate(vehicle)
 	if vehicle.cp.courseGeneratorSettings.startingLocation:is(courseGenerator.STARTING_LOCATION_VEHICLE_POSITION) then
 		vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
 		vehicle.cp.generationPosition.hasSavedPosition = true
-		vehicle:setCpVar('generationPosition.fieldNum', vehicle.cp.fieldEdge.selectedField.fieldNum, courseplay.isClient)
+		vehicle:setCpVar('generationPosition.fieldNum', selectedField, courseplay.isClient)
 	end
 
 	local field = {}
@@ -112,8 +112,8 @@ function courseGenerator.generate(vehicle)
 		pipeOnLeftSide = vehicle.cp.driver:isPipeOnLeft()
 	end
 	local centerSettings = {
-		useBestAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_AUTOMATIC,
-		useLongestEdgeAngle = vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_LONGEST_EDGE,
+		useBestAngle = vehicle.cp.courseGeneratorSettings.rowDirection:is(courseGenerator.ROW_DIRECTION_AUTOMATIC),
+		useLongestEdgeAngle = vehicle.cp.courseGeneratorSettings.rowDirection:is(courseGenerator.ROW_DIRECTION_LONGEST_EDGE),
 		rowAngle = vehicle.cp.rowDirectionDeg and math.rad(vehicle.cp.rowDirectionDeg) or 0,
 		nRowsToSkip = vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip,
 		mode = vehicle.cp.courseGeneratorSettings.centerMode:get(),
@@ -211,8 +211,6 @@ function courseGenerator.generate(vehicle)
 	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
 
 	vehicle.cp.hasGeneratedCourse = true;
-	courseplay:setFieldEdgePath(vehicle, nil, 0);
-	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 
 	-- SETUP 2D COURSE DRAW DATA
