@@ -2391,7 +2391,7 @@ end
 KeepCurrentSteering = CpObject(BooleanSetting)
 function KeepCurrentSteering:init(vehicle)
 	BooleanSetting.init(self, 'keepCurrentSteering', 'COURSEPLAY_KEEP_CURRENT_STEERING',
-			'COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP ', vehicle)
+			'COURSEPLAY_KEEP_CURRENT_STEERING_TOOLTIP', vehicle)
 	self:set(false)
 end
 
