@@ -459,7 +459,7 @@ end
 function PathfinderConstraints:getNodePenalty(node)
     -- tweak these two parameters to set up how far the path will be from the field or fruit boundary
     -- size of the area to check for field/fruit
-    local areaSize = 3
+    local areaSize = 4
     -- minimum ratio of the area checked must be on field/clear of fruit
     local minRequiredAreaRatio = 0.8
     local penalty = 0
