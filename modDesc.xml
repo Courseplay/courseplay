@@ -70,7 +70,7 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 	</description>
 
 	<multiplayer supported="true" />
-	<iconFilename>img/store.dds</iconFilename>
+	<iconFilename>img/icon_courseplay.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 
 	<extraSourceFiles>
