@@ -7,7 +7,6 @@ local CourseGeneratorScreen_mt = Class(CourseGeneratorScreen, ScreenElement)
 CourseGeneratorScreen.SHOW_NOTHING = 0
 CourseGeneratorScreen.SHOW_FULL_MAP = 1
 CourseGeneratorScreen.SHOW_SELECTED_FIELD = 2
-CourseGeneratorScreen.WidthFormatString = '%.1f m'
 
 -- these are needed to be able to access those screen elements with self.<id>
 CourseGeneratorScreen.CONTROLS = {
@@ -15,7 +14,7 @@ CourseGeneratorScreen.CONTROLS = {
 	startingLocation = 'startingLocation',
 	rowDirection = 'rowDirection',
 	manualDirectionAngle = 'manualDirectionAngle',
-	width = 'width',
+	workWidth = 'workWidth',
 	autoWidth = 'autoWidth',
 	islandBypassMode = 'islandBypassMode',
 	headlandDirection = 'headlandDirection',
@@ -91,6 +90,10 @@ function CourseGeneratorScreen:onOpen()
 	g_currentMission.isPlayerFrozen = true
 
 	self.settings.selectedField:refresh()
+	-- work width not set
+	if self.settings.workWidth:is(0) then
+		self.settings.workWidth:setToDefault()
+	end
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
@@ -151,62 +154,32 @@ function CourseGeneratorScreen:onClickSelectedField( state )
 	self.settings.selectedField:setFromGuiElement()
 end
 
------------------------------------------------------------------------------------------------------
--- Working width
-function CourseGeneratorScreen:onOpenWidth( element )
-	local texts = {}
-	self.minWidth, self.maxWidth = 1, 50
-	local w = self.vehicle.cp.workWidth
-	-- have at most 3 values in the text box around the selected
-	if w > self.minWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w - 0.1)) end
-	table.insert(texts, string.format(CourseGeneratorScreen.WidthFormatString, w))
-	if w < self.maxWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w + 0.1)) end
-	element:setTexts(texts)
-	if w == self.minWidth then
-		element:setState(1)
-	else
-		element:setState(2)
-	end
-end
-
 function CourseGeneratorScreen:onClickWidth( state )
-	if state == 1 then
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
-	else
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
-	end
-	self:onOpenWidth(self.width)
+	self.settings.workWidth:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onOpenAutoWidth(element)
 	local autoWidth = courseplay:getWorkWidth(self.vehicle)
 	if autoWidth > 0 then
-		element:setVisible(rue)
-		element:setText(string.format(CourseGeneratorScreen.WidthFormatString, courseplay:getWorkWidth(self.vehicle)))
+		element:setVisible(true)
 	else
 		element:setVisible(false)
 	end
 end
 
 function CourseGeneratorScreen:onClickAutoWidth(state)
-	local autoWidth = courseplay:getWorkWidth(self.vehicle)
-	if autoWidth > 0 then
-		self.vehicle.cp.workWidth = autoWidth
-		self:onOpenWidth(self.width)
-	end
+	self.settings.workWidth:setToDefault()
 end
 
 function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
 	local eventUsed = false
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
 		eventUsed = true
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
-		self:onOpenWidth(self.width)
+		self.settings.workWidth:next()
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
 		eventUsed = true
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
-		self:onOpenWidth(self.width)
+		self.settings.workWidth:prev()
 	end
 	return eventUsed
 end
@@ -593,7 +566,7 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 		eventUsed = true
 	end
 
-	if self:isOverElement(posX, posY, self.width) then
+	if self:isOverElement(posX, posY, self.workWidth) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
 	if self:isOverElement(posX, posY, self.manualDirectionAngle) then

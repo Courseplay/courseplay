@@ -76,7 +76,7 @@ function courseGenerator.generate(vehicle)
 
 	courseplay:clearCurrentLoadedCourse(vehicle);
 
-	local workWidth = vehicle.cp.workWidth;
+	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get();
 	if vehicle.cp.multiTools > 1 then
 		workWidth = workWidth * vehicle.cp.multiTools
 	end
@@ -154,12 +154,14 @@ function courseGenerator.generate(vehicle)
 		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
 	end
 	headlandSettings.mode = vehicle.cp.headland.mode
-	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one tool causing the innermost tool on the headland
+	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one
+	-- tool causing the innermost tool on the headland
 	-- turn tighter than possible
 	-- Using vehicle.cp.turnDiameter has this is updated when the user changes the vaule
 	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter / 2
 	if vehicle.cp.multiTools then
-		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool + vehicle.cp.workWidth * ((vehicle.cp.multiTools - 1) / 2)
+		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool +
+			vehicle.cp.courseGeneratorSettings.workWidth:get() * ((vehicle.cp.multiTools - 1) / 2)
 	end
 	local status, ok = xpcall(generateCourseForField, function(err)
 		printCallstack();

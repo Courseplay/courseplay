@@ -142,11 +142,12 @@
 					     tried to use nested box layouts but that did not work out well -->
 					<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 130px" position="0px -510px" id="boxLayoutBottomMain">
 						<GuiElement type="boxLayout" profile="cpSettingsLayout" size="600px 50px" flowDirection="horizontal" id="boxLayoutBottom">
-							<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="width" toolTip="$l10n_COURSEPLAY_WORK_WIDTH" onOpen="onOpenWidth" onClick="onClickWidth" wrap="false">
+							<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="workWidth"
+										onCreate="onCreateElement" onClick="onClickWidth" wrap="false">
 								<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
 								<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 								<GuiElement type="text" profile="cpMultiTextOptionText" />
-								<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_WORK_WIDTH"/>
+								<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 								<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 							</GuiElement>
 							<GuiElement type="button" profile="cpWidthButton2" text="auto" onOpen="onOpenAutoWidth" onClick="onClickAutoWidth" id="autoWidth"/>

@@ -1185,6 +1185,15 @@ function Setting:setParent(name)
 	self.parentName = name
 end
 
+-- remember the associated GUI element
+function Setting:setGuiElement(element)
+	self.guiElement = element
+end
+
+function Setting:getGuiElement()
+	return self.guiElement
+end
+
 --- Should this setting be disabled on the GUI?
 function Setting:isDisabled()
 	return false
@@ -1424,14 +1433,6 @@ end
 
 function SettingList:getValueFromGuiElementState(state)
 	return self.values[state]
-end
-
-function SettingList:setGuiElement(element)
-	self.guiElement = element
-end
-
-function SettingList:getGuiElement()
-	return self.guiElement
 end
 
 function SettingList:getGuiElementState()
@@ -1932,7 +1933,7 @@ end
 --- Return to first point after finishing fieldwork
 ---@class ReturnToFirstPointSetting : SettingList
 ReturnToFirstPointSetting = CpObject(SettingList)
-ReturnToFirstPointSetting.DEACTIVED = 0
+ReturnToFirstPointSetting.DEACTIVATED = 0
 ReturnToFirstPointSetting.RETURN_TO_START = 1
 ReturnToFirstPointSetting.RELEASE_DRIVER = 2
 ReturnToFirstPointSetting.RETURN_TO_START_AND_RELEASE_DRIVER = 3
@@ -1940,7 +1941,7 @@ function ReturnToFirstPointSetting:init(vehicle)
 	SettingList.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
 		'COURSEPLAY_RETURN_TO_FIRST_POINT', vehicle,
 		{
-			self.DEACTIVED,
+			self.DEACTIVATED,
 			self.RETURN_TO_START,
 			self.RELEASE_DRIVER,
 			self.RETURN_TO_START_AND_RELEASE_DRIVER	
@@ -2907,11 +2908,11 @@ end
 
 ---@class SeparateFillTypeLoadingSetting : SettingList
 SeparateFillTypeLoadingSetting = CpObject(SettingList)
-SeparateFillTypeLoadingSetting.DEACTIVED = 0
+SeparateFillTypeLoadingSetting.DEACTIVATED = 0
 function SeparateFillTypeLoadingSetting:init(vehicle)
 	SettingList.init(self, 'separateFillTypeLoading', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', vehicle,
 		{ 
-			SeparateFillTypeLoadingSetting.DEACTIVED,
+			SeparateFillTypeLoadingSetting.DEACTIVATED,
 			2,
 			3
 		},
@@ -3258,13 +3259,13 @@ end
 
 ---@class ShowVisualWaypointsSetting : SettingList
 ShowVisualWaypointsSetting = CpObject(SettingList)
-ShowVisualWaypointsSetting.DEACTIVED = 0
+ShowVisualWaypointsSetting.DEACTIVATED = 0
 ShowVisualWaypointsSetting.START_STOP = 1
 ShowVisualWaypointsSetting.ALL = 3
 function ShowVisualWaypointsSetting:init(vehicle)
 	SettingList.init(self, 'showVisualWaypoints', 'COURSEPLAY_WAYPOINT_MODE', 'COURSEPLAY_WAYPOINT_MODE', vehicle,
 		{ 
-			ShowVisualWaypointsSetting.DEACTIVED,
+			ShowVisualWaypointsSetting.DEACTIVATED,
 			ShowVisualWaypointsSetting.START_STOP,
 			ShowVisualWaypointsSetting.ALL 
 		}
