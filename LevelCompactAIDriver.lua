@@ -23,10 +23,12 @@ handles "mode10": level and compact
 	a) Start in the silo
 	b) drive forward, set waiting point on parking postion out fot the way
 	c) drive to the last point which should be alligned with the silo center line and be outside the silo
-
-
-
 ]]
+
+
+---TODO: - separate the different drivers
+-----	 - create a common BunkerSiloAIDriver together with mode 9
+-----	 - more code clean up
 
 ---@class LevelCompactAIDriver : AIDriver
 
@@ -37,7 +39,6 @@ LevelCompactAIDriver.myStates = {
 	WAITING_FOR_FREE_WAY = {},
 	CHECK_SILO = {},
 	CHECK_SHIELD = {},
-	DRIVE_TO_PRE_START_POSITION = {},
 	DRIVE_IN_SILO = {},
 	DRIVE_SILOFILLUP ={},
 	DRIVE_SILOLEVEL ={},
@@ -46,6 +47,8 @@ LevelCompactAIDriver.myStates = {
 	PULLBACK = {}
 }
 
+LevelCompactAIDriver.DRIVE_OUT_OF_SILO_SPEED = 20
+
 --- Constructor
 function LevelCompactAIDriver:init(vehicle)
 	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'LevelCompactAIDriver:init')
@@ -53,7 +56,6 @@ function LevelCompactAIDriver:init(vehicle)
 	self:initStates(LevelCompactAIDriver.myStates)
 	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
 	self.debugChannel = courseplay.DBG_MODE_10
-	self.refSpeed = 10
 	self.fillUpState = self.states.PUSH
 	self:setLevelerWorkWidth()
 end
@@ -67,7 +69,6 @@ function LevelCompactAIDriver:start(startingPoint)
 	AIDriver.start(self,startingPoint)
 	self:changeLevelState(self.states.DRIVE_TO_PARKING)
 	self.fillUpState = self.states.PUSH
-	self.alphaList = nil
 	self.lastDrivenColumn = nil
 	self.bestTarget = nil
 	self.bunkerSiloManager = nil
@@ -76,9 +77,7 @@ function LevelCompactAIDriver:start(startingPoint)
 end
 
 function LevelCompactAIDriver:drive(dt)
-	-- update current waypoint/goal point
 	self:drawMap()
-	self.allowedToDrive = true
 	--are there any unloaders nearby ?
 	local normalRadius = self.vehicle.cp.settings.levelCompactSearchRadius:get()
 	--enlarge the searchRadius for waiting at waitpoint to avoid traffic problems
@@ -89,13 +88,9 @@ function LevelCompactAIDriver:drive(dt)
 		self.hasFoundUnloaders = false
 	end
 	
-	if self.levelState == self.states.DRIVE_TO_PARKING then
-		self.ppc:update()
-		AIDriver.driveCourse(self, dt)
-	elseif self.levelState == self.states.WAITING_FOR_FREE_WAY then
+	if self.levelState == self.states.WAITING_FOR_FREE_WAY then
 		-- waiting until the unloaders are gone
-		self:stopAndWait(dt)
-		self:clearAllInfoTexts()
+		self:hold()
 		if not self.hasFoundUnloaders then
 			self:changeLevelState(self.states.DRIVE_TO_PARKING)
 			self:clearInfoText('WAITING_FOR_UNLOADERS')
@@ -104,28 +99,26 @@ function LevelCompactAIDriver:drive(dt)
 		end
 	elseif self.levelState == self.states.CHECK_SILO then
 		--create the relevant BunkerSilo map
-		self:stopAndWait(dt)
+		self:hold()
 		if self:checkSilo() then
 			self:changeLevelState(self.states.CHECK_SHIELD)
 		end
 	elseif self.levelState == self.states.CHECK_SHIELD then
 		--initialized relevant shield data if needed and select the correct working mode
-		self:stopAndWait(dt)
+		self:hold()
 		if self:checkShield() then
-			self:changeLevelState(self.states.DRIVE_TO_PRE_START_POSITION)
-			self.tempTarget = nil
+			self:selectMode()
 		end
-	elseif self.levelState == self.states.DRIVE_TO_PRE_START_POSITION then
-		self:driveToPreStartPosition(dt)
 	elseif self.levelState == self.states.DRIVE_SILOFILLUP then
-		self:driveSiloFillUp(dt)
+		self:driveSiloCourse(dt)
 	elseif self.levelState == self.states.DRIVE_SILOLEVEL then
-		self:driveSiloLevel(dt)
+		self:driveSiloCourse(dt)
 	elseif self.levelState == self.states.DRIVE_SILOCOMPACT then
-		self:driveSiloCompact(dt)
+		self:driveSiloCourse(dt)
 	end
-	self:updateInfoText()
 	self:updateShieldHeight(dt)
+
+	AIDriver.drive(self, dt)
 end
 
 ---search for unloaders nearby
@@ -237,176 +230,22 @@ function LevelCompactAIDriver:selectMode()
 	elseif self:getIsModeCompact()then
 		self:debug("self:isModeCompact()")
 		self:changeLevelState(self.states.DRIVE_SILOCOMPACT)
-		self:lowerImplements()
 	end
-	self.fillUpState = self.states.PUSH
+	self:setupDriveIntoSiloCourse(1)
 end
 
 --drives form the start to the end and back for each line repeatedly
-function LevelCompactAIDriver:driveSiloCompact(dt)
-	if self.fillUpState == self.states.PUSH then
-		--initialize first target point
-		if self.bestTarget == nil then
-			self.bestTarget, self.firstLine = self:getBestTargetFillUnitCompacting(self.lastDrivenColumn)
-		end
-
-		self:drivePush(dt)
-		if self:isAtEnd() then
-			self.fillUpState = self.states.PULLBACK
-			self:raiseImplements()
-		end
-	
-	elseif self.fillUpState == self.states.PULLBACK then
-		if self:drivePull(dt) then
-			self.fillUpState = self.states.PUSH
-			self:lowerImplements()
-			self:deleteBestTargetLeveling()
-		end
-	end
-end
-
-function LevelCompactAIDriver:driveSiloLevel(dt)
-	if self.fillUpState == self.states.PUSH then
-		--initialize first target point
-		if self.bestTarget == nil then
-			self.bestTarget, self.firstLine, self.targetHeight = self:getBestTargetFillUnitLeveling(self.lastDrivenColumn)
-		end
-		self:drivePush(dt)	
-		if self:isAtEnd()
-		--or self:hasShieldEmpty()
-		or self:isStuck()
-		then
-			if self.hasFoundUnloaders then
-				self:changeLevelState(self.states.DRIVE_TO_PARKING)
-				self:deleteBestTarget()
-				return
-			else
-				self.fillUpState = self.states.PULLBACK
-			end
-		end
-	
-	
-	elseif self.fillUpState == self.states.PULLBACK then
-		if self:isStuck() then
-			self.fillUpState = self.states.PUSH
-		end
-		if self:drivePull(dt) then
-			self.fillUpState = self.states.PUSH
-			self:deleteBestTargetLeveling()
-		end
-	end
-end
-
-function LevelCompactAIDriver:driveSiloFillUp(dt)
---	self:drawMap()
-	self.targetHeight = 0	
-	if self.fillUpState == self.states.PUSH then
-		--initialize first target point
-		if self.bestTarget == nil then
-			self.bestTarget, self.firstLine = self:getBestTargetFillUnitFillUp(self.lastDrivenColumn)
-		end	
-		self:drivePush(dt)
-		if self:lastLineFillLevelChanged()
-		or self:isStuck()
-		--or self:hasShieldEmpty()
-		then
-			if self.hasFoundUnloaders then
-				self:changeLevelState(self.states.DRIVE_TO_PARKING)
-				self:deleteBestTarget()
-				return
-			else
-				self.fillUpState = self.states.PULLBACK
-			end
-		end	
-	elseif self.fillUpState == self.states.PULLBACK then
-		if self:drivePull(dt) then
-			self.fillUpState = self.states.PUSH
-			self:deleteBestTargetLeveling()
-		end
-	end
-end	
-	
-function LevelCompactAIDriver:drivePush(dt)
-	local vehicle = self.vehicle
-	local fwd = false
-	local allowedToDrive = true
-	local refSpeed = 15
-	local cx, cy, cz = 0,0,0
-	--get coords of the target point
-	local targetUnit = self.bunkerSiloManager.siloMap[self.bestTarget.line][self.bestTarget.column]
-	cx ,cz = targetUnit.cx, targetUnit.cz
-	cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cx, 1, cz);
-	
-	--check whether its time to change the target point	
+function LevelCompactAIDriver:driveSiloCourse(dt)
 	self:updateTarget()
-	--speed
-	if self:isNearEnd() then
-		refSpeed = math.min(10,vehicle.cp.settings.bunkerSpeed:get())
-	else
-		refSpeed = math.min(20,vehicle.cp.settings.bunkerSpeed:get())
-	end		
-	--drive
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, cx,cy,cz);
-	if not fwd then
-		lx, lz = -lx,-lz
-	end
-	self:debugRouting()
---	self:drawMap()
-	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
-end	
-
-function LevelCompactAIDriver:drivePull(dt)
-	local pullDone = false
-	local fwd = true
-	local refSpeed = math.min(20,self.vehicle.cp.settings.bunkerSpeed:get())
-	local allowedToDrive = true 
-	local gx,gy,gz = self.course:waypointLocalToWorld(1,0,0,15)
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, gx,gy,gz);
-	self:driveInDirection(dt,lx,lz,fwd,refSpeed,allowedToDrive)
-	--end if I moved over the last way point
-	self:debugRouting(gx,gz)
-	if lz < 0 then
-		pullDone = true
-	end
-	if self.hasFoundUnloaders then
-		self:changeLevelState(self.states.DRIVE_TO_PARKING)
-		self:deleteBestTarget()
-		self:raiseImplements()
-		return false
-	end
---	self:drawMap()
-	return pullDone
-end
-
----make sure we start with enough distance to the first bunkersilo target, so we don't drive into the silo wall 
----currently we just drive 10 m ahead and then start normaly drive the buker course
-function LevelCompactAIDriver:driveToPreStartPosition(dt)
-	local refSpeed = math.min(20,self.vehicle.cp.settings.bunkerSpeed:get())
-	local gx,gy,gz = self.course:waypointLocalToWorld(1,0,0,15)
-	local lx, lz = AIVehicleUtil.getDriveDirection(self.vehicle.cp.directionNode, gx,gy,gz);
-	self:debugRouting(gx,gz)
-	if lz > 0 then
-		self:driveInDirection(dt,lx,lz,true,refSpeed,true)
-	else 
-		self:selectMode()
+	if self:isDrivingIntoSilo() then
+		if self:isStuck() or self:isNearEnd() then 
+			self:setupDriveOutOfSiloCourse()
+		elseif self.levelState == self.states.DRIVE_SILOFILLUP and self:lastLineFillLevelChanged() then 
+			self:setupDriveOutOfSiloCourse()
+		end
 	end
 end
-
-function LevelCompactAIDriver:getHasMovedToFrontLine(dt)
-	local startUnit = self.bunkerSiloManager.siloMap[self.firstLine][1]
-	local _,ty,_ = getWorldTranslation(self:getLevelerNode(self.leveler));
-	local _,_,z = worldToLocal(self:getLevelerNode(self.leveler), startUnit.cx , ty , startUnit.cz);
-	if math.abs(z) < 1 then
-		return true;			
-	end
-	return false;
-end
-
-function LevelCompactAIDriver:isNearEnd()
-	return self.bunkerSiloManager:isNearEnd(self.bestTarget)
-end
-
-
+	
 function LevelCompactAIDriver:lastLineFillLevelChanged()
 	local numLines = self.bunkerSiloManager:getNumberOfLines()
 	local newFillLevel = self.bunkerSiloManager:getSiloPartLineFillLevel(numLines)
@@ -419,7 +258,6 @@ function LevelCompactAIDriver:lastLineFillLevelChanged()
 		self.savedLastLineFillLevel = nil
 		self:debug("dropout fillLevel")
 		return true
-		
 	end	
 end
 
@@ -446,22 +284,6 @@ function LevelCompactAIDriver:doesNotMove()
 	return math.abs(self.vehicle.lastSpeedReal) < 1/3600 and self.bestTarget.line > self.firstLine+1
 end
 
-function LevelCompactAIDriver:hasShieldEmpty()
-	--return self.vehicle.cp.workTools[1]:getFillUnitFillLevel(1) < 100 and self.bestTarget.line > self.firstLine
-	local tool = self.leveler
-	if tool:getFillUnitFillLevel(1) < 100 then
-		if self.vehicle.cp.timers.bladeEmpty == nil or self.vehicle.cp.timers.bladeEmpty == 0 then
-			courseplay:setCustomTimer(self.vehicle, 'bladeEmpty', 3);
-		elseif courseplay:timerIsThrough(self.vehicle, 'bladeEmpty') and self.bestTarget.line > self.firstLine + 1 then
-			courseplay:resetCustomTimer(self.vehicle, 'bladeEmpty');
-			self:debug("dropout bladeEmpty")
-			return true
-		end;
-	else
-		courseplay:resetCustomTimer(self.vehicle, 'bladeEmpty');
-	end
-end
-
 ---Is the shield full ?
 ---@return boolean shield is full
 function LevelCompactAIDriver:isShieldFull()
@@ -473,17 +295,13 @@ function LevelCompactAIDriver:updateTarget()
 	return self.bunkerSiloManager:updateTarget(self.bestTarget)
 end
 
-function LevelCompactAIDriver:isAtEnd()
-	return self.bunkerSiloManager and self.bunkerSiloManager:isAtEnd(self.bestTarget) or false
-end
-
 function LevelCompactAIDriver:deleteBestTarget()
 	self.lastDrivenColumn = nil
 	self.bestTarget = nil
 end
 
 function LevelCompactAIDriver:deleteBestTargetLeveling()
-	self.lastDrivenColumn = self.bestTarget.column
+	self.lastDrivenColumn = self.bestTarget and self.bestTarget.column
 	self.bestTarget = nil
 end
 
@@ -503,52 +321,61 @@ end
 function LevelCompactAIDriver:onWaypointPassed(ix)
 	if self.course:isWaitAt(ix) then
 		self:changeLevelState(self.states.WAITING_FOR_FREE_WAY)
+		self:refreshHUD()
 	end
 	AIDriver.onWaypointPassed(self, ix)
 end
 
-function LevelCompactAIDriver:continue()
-	self:changeLevelState(self.states.DRIVE_TO_PARKING)
+---Override this function as the stopping gets handled separately.
+function LevelCompactAIDriver:isStoppingAtWaitPointAllowed()
+	return false
 end
 
-function LevelCompactAIDriver:stopAndWait(dt)
-	self:driveInDirection(dt,0,1,true,0,false)
+function LevelCompactAIDriver:continue()
+	if self:isWaitingForUnloaders() then
+		self:changeLevelState(self.states.DRIVE_TO_PARKING)
+	end
+end
+
+function LevelCompactAIDriver:getCanShowDriveOnButton()
+	return self:isWaitingForUnloaders()
 end
 
 function LevelCompactAIDriver:stop(stopMsg)
+	---On stop make sure all waiting cp/autodrive driver get reset and can drive on.
 	self:foundUnloaderInRadius(self.vehicle.cp.settings.levelCompactSearchRadius:get())
 	self.relevantWaypointNode = nil	
 	AIDriver.stop(self,stopMsg)
 end
 
-function LevelCompactAIDriver:driveInDirection(dt,lx,lz,fwd,speed,allowedToDrive)
-	-- TODO: we should not call AIVehicleUtil.driveInDirection, this should be refactored that AIDriver does all the
-	-- driving
-	local node = fwd and self:getFrontMarkerNode(self.vehicle) or self:getBackMarkerNode(self.vehicle)
-	self:updateTrafficConflictDetector(nil, nil, speed, fwd, node)
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, allowedToDrive, fwd, lx, lz, speed, 1)
-end
-
 function LevelCompactAIDriver:onEndCourse()
-	self.ppc:initialize(1)
-	self:changeLevelState(self.states.CHECK_SILO)
-end
-
-function LevelCompactAIDriver:updateLastMoveCommandTime()
-	self:resetLastMoveCommandTime()
-end
-
-function LevelCompactAIDriver:changeLevelState(newState)
-	self.levelState = newState
+	if self.levelState~= self.states.DRIVE_TO_PARKING then 
+		if self.hasFoundUnloaders then 
+			self:setupMainCourse()
+		else
+			if self:isDrivingIntoSilo() then
+				---Driver is at the end of the silo.
+				self:setupDriveOutOfSiloCourse()
+			else 
+				---Driver has returned out of the silo.
+				self:setupDriveIntoSiloCourse()
+			end
+		end
+	else 
+		---Driver has reached the silo after driving the normal course.
+		self:changeLevelState(self.states.CHECK_SILO)
+	end
 end
 
 function LevelCompactAIDriver:getSpeed()
 	local speed = 0
 	if self.levelState == self.states.DRIVE_TO_PARKING then
 		speed = AIDriver.getRecordedSpeed(self)
+	elseif self:isDrivingIntoSilo() then
+		speed = self.vehicle.cp.settings.bunkerSpeed:get()
 	else
-		speed = self.refSpeed
-	end	
+		speed = self.DRIVE_OUT_OF_SILO_SPEED
+	end
 	return speed
 end
 
@@ -604,26 +431,6 @@ function LevelCompactAIDriver:getLevelerNode(blade)
 	for _, levelerNode in pairs (blade.spec_leveler.nodes) do
 		if levelerNode.node ~= nil then
 			return levelerNode.node
-		end
-	end
-end
-
-function LevelCompactAIDriver:printMap()
-	if courseplay.debugChannels[courseplay.DBG_MODE_10] and self.bunkerSiloManager.siloMap then
-		for _, line in pairs(self.bunkerSiloManager.siloMap) do
-			local printString = ""
-			for _, fillUnit in pairs(line) do
-				if fillUnit.fillLevel > 10000 then
-					printString = printString.."[XXX]"
-				elseif fillUnit.fillLevel > 1000 then
-					printString = printString.."[ XX]"
-				elseif fillUnit.fillLevel > 0 then
-					printString = printString.."[ X ]"
-				else
-					printString = printString.."[   ]"
-				end
-			end
-			self:debug(printString)
 		end
 	end
 end
@@ -703,27 +510,11 @@ function LevelCompactAIDriver:getColumnsTargetHeight(newColumn)
 	return newHeight
 end
 
----Debug of AIVehicleUtil.driveInDirection() pathFinding
----and also target silo unit and targetHeight of the shield
----@param float (optional) gx/gz temporary goal node
-function LevelCompactAIDriver:debugRouting(gx,gz)
-	if self:isDebugActive() then
-		if self.bunkerSiloManager then	
-			self.bunkerSiloManager:debugRouting(self.bestTarget,nil,self.targetHeight)
-		end
-		if gx and gz then
-			local x,y,z = getWorldTranslation(self.vehicle.cp.directionNode)
-			cpDebug:drawLine(x,y+3,z,0,0,0,gx,y+3,gz)
-		end
-	end
-end
-
 function LevelCompactAIDriver:drawMap()
 	if self:isDebugActive() and self.bunkerSiloManager then
 		self.bunkerSiloManager:drawMap()
 	end
 end
-
 
 function LevelCompactAIDriver:setLightsMask(vehicle)
 	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
@@ -764,7 +555,6 @@ function LevelCompactAIDriver:isDebugActive()
 	return courseplay.debugChannels[courseplay.DBG_MODE_10]
 end
 
-
 --debug info
 function LevelCompactAIDriver:onDraw()
 	if self:isDebugActive() then 
@@ -775,7 +565,6 @@ function LevelCompactAIDriver:onDraw()
 		y = self:renderText(y,"hasBestTarget: "..tostring(self.bestTarget ~= nil))
 		y = self:renderText(y,"lastDrivenColumn: "..tostring(self.lastDrivenColumn))
 		y = self:renderText(y,"hasFoundUnloaders: "..tostring(self.hasFoundUnloaders))
-		y = self:renderText(y,"isAtEnd: "..tostring(self:isAtEnd()))
 	end
 	AIDriver.onDraw(self)
 end
@@ -793,7 +582,7 @@ end
 ---Is the driver actively pushing into the silo in mode: leveling,fillUp ?
 ---@return boolean is pushing into silo, so allow lowering of shield
 function LevelCompactAIDriver:isShieldLoweringAllowed()
-	return self.fillUpState == self.states.PUSH and (self.levelState == self.states.DRIVE_SILOFILLUP or self.levelState == self.states.DRIVE_SILOLEVEL)
+	return self:isDrivingIntoSilo() and (self.levelState == self.states.DRIVE_SILOFILLUP or self.levelState == self.states.DRIVE_SILOLEVEL)
 end
 
 ---Update shield height and rotation
@@ -839,7 +628,7 @@ function LevelCompactAIDriver:updateShieldHeight(dt)
 			self:debug("terrainHeight: %.2f,shieldHeight: %.2f, shieldHeightOffset: %.2f, targetHeight: %.2f",terrainHeight,y,self.shieldHeightOffset,targetHeight)
 
 			]]--
-			self:debug("heightDiff: %.2f, shieldHeightOffset: %.2f, targetHeight: %.2f",heightDiff,self.shieldHeightOffset,targetHeight)		
+		--	self:debug("heightDiff: %.2f, shieldHeightOffset: %.2f, targetHeight: %.2f",heightDiff,self.shieldHeightOffset,targetHeight)		
 			local curAlpha = spec.heightController.moveAlpha 
 			--For now we are only adjusting the shield height by a constant
 			--heightDiff > -0.04 means we are under the target height, for example in fillUp modi below the ground offset by 0.04			
@@ -869,10 +658,10 @@ function LevelCompactAIDriver:updateShieldHeight(dt)
 end
 
 ---Controls the tilt of the shield, as giants doesn't have implement a function for tilting the shield smoothly
----@param float dt
----@param table jointDesc of the vehicle
----@param float max tilt angle
----@param float target tilt angle
+---@param dt number
+---@param jointDesc table of the vehicle
+---@param maxTiltAngle number max tilt angle
+---@param targetAngle number target tilt angle
 function LevelCompactAIDriver:controlShieldTilt(dt,jointDesc,maxTiltAngle,targetAngle)
 	local curAngle = jointDesc.upperRotationOffset-jointDesc.upperRotationOffsetBackup
 	local diff = curAngle - targetAngle + 0.0001
@@ -901,7 +690,7 @@ function LevelCompactAIDriver:updateShieldHeightOffset()
 end
 
 ---Get the target height for the shield
----@return float targetHeight
+---@return targetHeight
 function LevelCompactAIDriver:getTargetShieldHeight()
 	return self.targetHeight or 0
 end
@@ -921,4 +710,128 @@ AttacherJointControl.actionEventAttacherJointControl = Utils.overwrittenFunction
 ---Is a shield attached ?
 function LevelCompactAIDriver:hasShield()
 	return self.leveler ~= nil
+end
+
+function LevelCompactAIDriver:isDrivingIntoSilo()
+	return self.fillUpState == self.states.PUSH
+end
+
+function LevelCompactAIDriver:isDrivingOutOfSilo()
+	return self.fillUpState == self.states.PULLBACK
+end
+
+function LevelCompactAIDriver:changeFillUpState(newState)
+	if self.fillUpState ~= newState then
+		self.fillUpState = newState
+		self:debug("New fillUpState => ",newState.name)
+	end
+end
+
+function LevelCompactAIDriver:changeLevelState(newState)
+	if self.levelState ~= newState then
+		self.levelState = newState
+		self:debug("New levelState => ",newState.name)
+	end
+end
+
+---Create a straight reverse course into the silo.
+---@param targetColumn number silo map column to create the straight course.
+---@return course generated course 
+---@return firstWpIx first waypoint of the course relative to the vehicle position.
+function LevelCompactAIDriver:getDriveIntoSiloCourse(targetColumn)
+	local numLines = self.bunkerSiloManager:getNumberOfLines()
+	local x,z = self.bunkerSiloManager:getSiloPartPosition(1,targetColumn)
+	local dx,dz = self.bunkerSiloManager:getSiloPartPosition(numLines,targetColumn)
+	local startOffset = -5
+	local _,_,endOffset = localToLocal(self:getBackMarkerNode(self.vehicle),self:getValidBackImplement(),0,0,0)
+	local course = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 0, startOffset, endOffset, 5, true)
+	local firstWpIx = course:getNextRevWaypointIxFromVehiclePosition(1, self.vehicle.rootNode, 5)
+	
+	return course, firstWpIx
+end
+
+---Create a straight forward course out of the silo.
+---@param targetColumn number silo map column to create the straight course.
+---@return course generated course 
+---@return firstWpIx first waypoint of the course relative to the vehicle position.
+function LevelCompactAIDriver:getDriveOutOfSiloCourse(targetColumn)
+	local numLines = self.bunkerSiloManager:getNumberOfLines()
+	local x,z = self.bunkerSiloManager:getSiloPartPosition(numLines,targetColumn)
+	local dx,dz = self.bunkerSiloManager:getSiloPartPosition(1,targetColumn)
+
+	local course = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 0, 5, 10, 5, false)
+	local firstWpIx = course:getNextFwdWaypointIxFromVehiclePosition(1, self.vehicle.rootNode, 5)
+
+	return course, firstWpIx
+end
+
+---Setup all necessary conditions at the start of the course,
+---for example lowering the attached implement in compacting mode.
+function LevelCompactAIDriver:beforeDriveIntoSilo()
+	self:deleteBestTargetLeveling()
+	if self.levelState == self.states.DRIVE_SILOCOMPACT then
+		self.bestTarget,self.firstLine = self:getBestTargetFillUnitCompacting(self.lastDrivenColumn)
+		self:lowerImplements()
+	elseif self.levelState == self.states.DRIVE_SILOFILLUP  then
+		self.targetHeight = 0
+		self.bestTarget,self.firstLine = self:getBestTargetFillUnitFillUp(self.lastDrivenColumn)
+	else 
+		self.bestTarget,self.firstLine = self:getBestTargetFillUnitLeveling(self.lastDrivenColumn)
+	end
+end
+
+---Setup all necessary conditions at the start of the course,
+---for example raising the attached implement in compacting mode.
+function LevelCompactAIDriver:beforeDriveOutOfSilo()
+	if self.levelState == self.states.DRIVE_SILOCOMPACT then
+		self:raiseImplements()
+	end
+end
+
+---Delete the best target, so after the unloader has unloaded,
+---a new approach for the silo is created.
+function LevelCompactAIDriver:beforeMainCourse()
+	self:deleteBestTarget()
+end
+
+---Sets up the drive into silo course.
+---@param forcedStartIx number forces the driver to start at this waypoint
+function LevelCompactAIDriver:setupDriveIntoSiloCourse(forcedStartIx)
+	self:beforeDriveIntoSilo()
+	local course,ix = self:getDriveIntoSiloCourse(self.bestTarget.column)
+	self:startCourse(course,forcedStartIx or ix)
+	self:changeFillUpState(self.states.PUSH)
+end
+
+---Sets up the drive out of silo course.
+function LevelCompactAIDriver:setupDriveOutOfSiloCourse()
+	self:beforeDriveOutOfSilo()
+	local course,ix = self:getDriveOutOfSiloCourse(self.bestTarget.column)
+	self:startCourse(course,ix)
+	self:changeFillUpState(self.states.PULLBACK)
+end
+
+---Sets up the main course, when an unloader approaches.
+function LevelCompactAIDriver:setupMainCourse()
+	self:beforeMainCourse()
+	local nextIx = self.course:getNextFwdWaypointIxFromVehiclePosition(1, self.vehicle.rootNode, 5)
+	self:startCourse(self.mainCourse,nextIx)
+	self:changeLevelState(self.states.DRIVE_TO_PARKING)	
+end
+
+---Never use alignment course.
+function LevelCompactAIDriver:isAlignmentCourseNeeded(ix)
+	return false
+end
+
+---Is the Driver at the end of the silo?
+function LevelCompactAIDriver:isNearEnd()
+	local referenceNode = self:getValidBackImplement()
+	---We us the last line of the silo map as reference.
+	---TODO: This should be improved once the silo map is adjusted to be more precise.
+	local line,column = self.bunkerSiloManager:getNumberOfLines(),self.bestTarget.column
+	local x,z = self.bunkerSiloManager:getSiloPartStartWidthHeightPositions(line,column)
+	local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 1, z);
+	local _,_,dz = worldToLocal(referenceNode,x,y,z)
+	return math.abs(dz)<0.1
 end

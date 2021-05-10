@@ -738,7 +738,7 @@ function AIDriver:onWaypointPassed(ix)
 	-- or stop.
 	if ix == self.course:getNumberOfWaypoints() then
 		self:onLastWaypoint()
-	elseif self.course:isWaitAt(ix) then
+	elseif self:isStoppingAtWaitPointAllowed() and self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button or the timer elapses
 		self:debug('Waiting point reached, wait time %d s', self.vehicle.cp.waitTime)
@@ -746,6 +746,10 @@ function AIDriver:onWaypointPassed(ix)
 		-- show continue button
 		self:refreshHUD()
 	end
+end
+
+function AIDriver:isStoppingAtWaitPointAllowed()
+	return true
 end
 
 function AIDriver:onLastWaypoint()
