@@ -35,7 +35,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons.global) do
-				if button.show and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
+				if button:getIsVisible() and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 					buttonToHandle = button;
 					break;
 				end;
@@ -44,7 +44,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
-				if button.canBeClicked and button.show and not button.isDisabled and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
+				if button:getCanBeClicked() and button:getIsVisible() and not button:getIsDisabled() and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 					buttonToHandle = button;
 					break;
 				end;
@@ -54,7 +54,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if buttonToHandle == nil then
 			if vehicle.cp.hud.currentPage == 2 then
 				for _,button in pairs(vehicle.cp.buttons[-2]) do
-					if button.show and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
+					if button:getIsVisible()() and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 						buttonToHandle = button;
 						break;
 					end;
@@ -82,10 +82,10 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		
 		for _,button in pairs(vehicle.cp.buttons.global) do
 			button:setClicked(false);
-			if button.show and not button.isHidden then
+			if button:getIsVisible() then
 				button:setClicked(false);
 				button:setHovered(button:getHasMouse(posX, posY));
-				if button.isHovered then
+				if button:getIsHovered() then
 					button:handleHoverAction(vehicle, posX, posY)
 				end;
 			end;
@@ -93,14 +93,14 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		
 		for _,button in pairs(vehicle.cp.buttons[vehicle.cp.hud.currentPage]) do
 			button:setClicked(false);
-			if button.show and not button.isHidden then
+			if button:getIsVisible() then
 				button:setHovered(button:getHasMouse(posX, posY));
-				if button.isHovered then
+				if button:getIsHovered() then
 					button:handleHoverAction(vehicle, posX, posY)
 				end;
 
-				if button.hoverText and not button.isDisabled then
-					vehicle.cp.hud.content.pages[button.page][button.row][1].isHovered = button.isHovered;
+				if button:getHoverText() and not button:getIsDisabled() then
+					vehicle.cp.hud.content.pages[button.page][button.row][1].isHovered = button:getIsHovered();
 				end;
 			end;
 		end;
@@ -108,10 +108,10 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		if vehicle.cp.hud.currentPage == 2 then
 			for _,button in pairs(vehicle.cp.buttons[-2]) do
 				button:setClicked(false);
-				if button.show and not button.isHidden then
+				if button:getIsVisible() then
 					button:setHovered(button:getHasMouse(posX, posY));
-					if button.hoverText then
-						vehicle.cp.hud.content.pages[2][button.row][1].isHovered = button.isHovered;
+					if button:getHoverText() then
+						vehicle.cp.hud.content.pages[2][button.row][1].isHovered = button:getIsHovered();
 					end;
 				end;
 			end;

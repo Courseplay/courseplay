@@ -740,56 +740,6 @@ function courseplay:getWorldDirection(fromX, fromY, fromZ, toX, toY, toZ)
 	return 0, 0, 0, 0;
 end;
 
-function courseplay.utils:setOverlayUVsSymmetric(overlay, col, line, numCols, numLines)
-	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= { col, line, numCols, numLines } then
-		local bottomY = 1 - line / numLines;
-		local topY = bottomY + 1 / numLines;
-		local leftX = (col - 1) / numCols;
-		local rightX = leftX + 1 / numCols;
-		setOverlayUVs(overlay.overlayId, leftX,bottomY, leftX,topY, rightX,bottomY, rightX,topY);
-		overlay.currentUVs = { col, line, numCols, numLines };
-	end;
-end;
-
-function courseplay.utils:setOverlayUVsPx(overlay, UVs, textureSizeX, textureSizeY)
-	if overlay.overlayId and overlay.currentUVs == nil or overlay.currentUVs ~= UVs then
-		local leftX, bottomY, rightX, topY = unpack(UVs);
-
-		local fromTop = false;
-		if topY < bottomY then
-			fromTop = true;
-		end;
-		local leftXNormal = leftX / textureSizeX;
-		local rightXNormal = rightX / textureSizeX;
-		local bottomYNormal = bottomY / textureSizeY;
-		local topYNormal = topY / textureSizeY;
-		if fromTop then
-			bottomYNormal = 1 - bottomYNormal;
-			topYNormal = 1 - topYNormal;
-		end;
-		setOverlayUVs(overlay.overlayId, leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal);
-		overlay.currentUVs = UVs;
-	end;
-end;
-
-function courseplay.utils:getUvs(UVs, textureSizeX, textureSizeY)
-	local leftX, bottomY, rightX, topY = unpack(UVs);
-
-	local fromTop = false;
-	if topY < bottomY then
-		fromTop = true;
-	end;
-	local leftXNormal = leftX / textureSizeX;
-	local rightXNormal = rightX / textureSizeX;
-	local bottomYNormal = bottomY / textureSizeY;
-	local topYNormal = topY / textureSizeY;
-	if fromTop then
-		bottomYNormal = 1 - bottomYNormal;
-		topYNormal = 1 - topYNormal;
-	end
-	return {leftXNormal,bottomYNormal, leftXNormal,topYNormal, rightXNormal,bottomYNormal, rightXNormal,topYNormal}
-end
-
 function courseplay.utils:roundToLowerInterval(num, idp)
 	return floor(num / idp) * idp;
 end;
@@ -940,7 +890,7 @@ function courseplay:setupCourse2dData(vehicle)
 		local bottomY = bBox.yMax + bgPadding + g_currentMission.hud.ingameMap.worldCenterOffsetZ;
 		local rightX  = bBox.xMax + bgPadding + g_currentMission.hud.ingameMap.worldCenterOffsetX;
 		local topY	  = bBox.yMin - bgPadding + g_currentMission.hud.ingameMap.worldCenterOffsetZ;
-		courseplay.utils:setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_currentMission.hud.ingameMap.worldSizeX, g_currentMission.hud.ingameMap.worldSizeZ);
+		HudUtil.setOverlayUVsPx(vehicle.cp.course2dPdaMapOverlay, { leftX, bottomY, rightX, topY }, g_currentMission.hud.ingameMap.worldSizeX, g_currentMission.hud.ingameMap.worldSizeZ);
 
 		vehicle.cp.course2dPdaMapOverlay:setPosition(vehicle.cp.course2dBackground.x, vehicle.cp.course2dBackground.y);
 		vehicle.cp.course2dPdaMapOverlay:setDimension(vehicle.cp.course2dBackground.width, vehicle.cp.course2dBackground.height);
@@ -1050,14 +1000,6 @@ function courseplay:drawCourse2D(vehicle, doLoop)
 	end;
 
 	ovl:render();
-end;
-
-function courseplay.utils:rgbToNormal(r, g, b, a)
-	if a then
-		return { r/255, g/255, b/255, a };
-	end;
-
-	return { r/255, g/255, b/255 };
 end;
 
 function courseplay:sekToTimeFormat(numSec)
@@ -1230,12 +1172,14 @@ end
 function HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXmlFiles)
 	local baseKey = 'CpDebugPrint'
 	local xmlFile
+	local fileName
 	if printToSeparateXmlFiles and tonumber(printToSeparateXmlFiles)>0 then 
-		local fileName = string.gsub(variableName,":","_")..".xml"
+		fileName = string.gsub(variableName,":","_")..".xml"
 	--	fileName = string.gsub(fileName,":","_")
 		local filePath = string.format("%s/%s",CpManager.cpDebugPrintXmlFolderPath,fileName)
 		xmlFile = createXMLFile("xmlFile",filePath, baseKey);
 	else 
+		fileName = CpManager.cpDebugPrintXmlFilePathDefault
 		xmlFile = createXMLFile("xmlFile", CpManager.cpDebugPrintXmlFilePathDefault, baseKey);
 	end
 	local xmlFileValid = xmlFile and xmlFile ~= 0 or false
@@ -1266,5 +1210,5 @@ function HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXml
 	end
 	saveXMLFile(xmlFile)
 	delete(xmlFile)
-	courseplay.info("Finished printing to courseplayDebugPrint.xml")
+	courseplay.info("%s",fileName)
 end

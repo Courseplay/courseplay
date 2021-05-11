@@ -31,6 +31,7 @@ courseplay.utils = {};
 courseplay.courses = {};
 courseplay.settings = {};
 courseplay.hud = {};
+---@field buttons table
 courseplay.buttons = {};
 courseplay.fields = {};
 courseplay.generation = {};
@@ -64,6 +65,7 @@ local function initialize()
 		'fields',
 		'fruit', 
 		'helpers',
+		'Hud/HudUtil',
 		'hud', 
 		'input', 
 		'recording',

@@ -1,0 +1,15 @@
+<helpLines>
+	<!--Every Cp mod image needs to start with "CP/",
+		as the mod path gets set once the game is started.
+		For reference look up: CPManger.lua =>
+		function helpLineManagerLoadMapData()
+	-->
+	<category title="CP">
+		<page title="CP page">
+			<item type="text" value="test"/>
+			
+			<item type="image" value="CP/img/CoursePlay_Icon.dds" heightScale="1" imageSize="1024 1024" imageUVs="0 0 1 1"/>
+			
+		</page>
+	</category>
+</helpLines>

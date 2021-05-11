@@ -12,7 +12,7 @@ function CpManager:loadMap(name)
 
 	-- MULTIPLAYER
 	CpManager.isMP = g_currentMission.missionDynamicInfo.isMultiplayer;
-	courseplay.isClient = not g_server; -- TODO JT: not needed, as every vehicle always has self.isServer and self.isClient
+	courseplay.isClient = not g_server;
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- XML PATHS
@@ -366,7 +366,7 @@ function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	elseif not isDown and not isUp and self:getHasGlobalInfoText() then
 		for _,button in pairs(self.globalInfoText.buttons) do
 			button:setClicked(false);
-			if button.show and not button.isHidden then
+			if button:getIsVisible() then
 				button:setHovered(button:getHasMouse(posX, posY));
 			end;
 		end;
@@ -407,10 +407,10 @@ end
 function CpManager:onPrimaryMouseClick(posX, posY, isDown, isUp, mouseKey)
 	if self:getHasGlobalInfoText() then
 		for i,button in pairs(self.globalInfoText.buttons) do
-			if button.show and button:getHasMouse(posX, posY) then
+			if button:getIsVisible() and button:getHasMouse(posX, posY) then
 				button:setClicked(isDown)
 				if isUp then
-					local sourceVehicle = g_currentMission.controlledVehicle or button.parameter
+					local sourceVehicle = g_currentMission.controlledVehicle or button:getCallbackParameter()
 					button:handleMouseClick(sourceVehicle)
 				end
 				break
@@ -466,14 +466,12 @@ function CpManager.saveXmlSettings(self)
 	local cpSettingsXml = createXMLFile("cpSettingsXml", CpManager.cpSettingsXmlFilePath, "CPSettings");
 	if cpSettingsXml and cpSettingsXml ~= 0 then
 		local key = '';
-		-- Save Hud Possition
-		key = 'CPSettings.courseplayHud';
-		setXMLFloat(cpSettingsXml, key .. '#posX',		courseplay.hud.basePosX);
-		setXMLFloat(cpSettingsXml, key .. '#posY',		courseplay.hud.basePosY);
-		setXMLFloat(cpSettingsXml, key .. '#hudScale',	courseplay.hud.sizeRatio);
-		setXMLFloat(cpSettingsXml, key .. '#uiScale',	courseplay.hud.uiScale);
-		local string = "\n\tNOTE 1: Do not change the uiScale Manually.\n\tNOTE 2: If you change the hudScale and you haven't changed the posX and posY manually,\n\t\t\tthen you need to delete the posX and posY section to center the hud again.\n\t";
-		setXMLString(cpSettingsXml, key, string);
+        -- Save Hud Possition
+        key = 'CPSettings.courseplayHud';
+        setXMLFloat(cpSettingsXml, key .. '#hudScale',    courseplay.hud.sizeRatio);
+        setXMLFloat(cpSettingsXml, key .. '#uiScale',    courseplay.hud.uiScale);
+        local string = "\n\tNOTE 1: Do not change the uiScale Manually.\n\t";
+        setXMLString(cpSettingsXml, key, string);
 
 		-- Save Fields Settings
 		key = 'CPSettings.courseplayFields';
@@ -844,33 +842,33 @@ function CpManager:setupFieldScanInfo()
 	self.fieldScanInfo.fileHeight = 256;
 
 	local bgUVs = { 41,210, 471,10 };
-	local bgW = courseplay.hud:pxToNormal(bgUVs[3] - bgUVs[1], 'x');
-	local bgH = courseplay.hud:pxToNormal(bgUVs[2] - bgUVs[4], 'y');
+	local bgW = HudUtil.pxToNormal(bgUVs[3] - bgUVs[1], 'x');
+	local bgH = HudUtil.pxToNormal(bgUVs[2] - bgUVs[4], 'y');
 	local bgX = 0.5 - bgW * 0.5;
 	local bgY = 0.5 - bgH * 0.5;
 	self.fieldScanInfo.bgOverlay = Overlay:new(gfxPath, bgX, bgY, bgW, bgH);
-	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.bgOverlay, bgUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
+	HudUtil.setOverlayUVsPx(self.fieldScanInfo.bgOverlay, bgUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
-	self.fieldScanInfo.textPosX  = bgX + courseplay.hud:pxToNormal(10, 'x');
-	self.fieldScanInfo.textPosY  = bgY + courseplay.hud:pxToNormal(55, 'y');
-	self.fieldScanInfo.titlePosY = bgY + courseplay.hud:pxToNormal(88, 'y');
-	self.fieldScanInfo.titleFontSize = courseplay.hud:pxToNormal(22, 'y');
-	self.fieldScanInfo.textFontSize  = courseplay.hud:pxToNormal(16, 'y');
+	self.fieldScanInfo.textPosX  = bgX + HudUtil.pxToNormal(10, 'x');
+	self.fieldScanInfo.textPosY  = bgY + HudUtil.pxToNormal(55, 'y');
+	self.fieldScanInfo.titlePosY = bgY + HudUtil.pxToNormal(88, 'y');
+	self.fieldScanInfo.titleFontSize = HudUtil.pxToNormal(22, 'y');
+	self.fieldScanInfo.textFontSize  = HudUtil.pxToNormal(16, 'y');
 
 
 	self.fieldScanInfo.progressBarMaxWidthPx = 406;
-	self.fieldScanInfo.progressBarMaxWidth = courseplay.hud:pxToNormal(406, 'x');
-	local pbH = courseplay.hud:pxToNormal(26, 'y');
+	self.fieldScanInfo.progressBarMaxWidth = HudUtil.pxToNormal(406, 'x');
+	local pbH = HudUtil.pxToNormal(26, 'y');
 	self.fieldScanInfo.progressBarUVs = { 53,246, 459,220 };
-	local pbX = bgX + courseplay.hud:pxToNormal(12, 'x');
-	local pbY = bgY + courseplay.hud:pxToNormal(12, 'y');
+	local pbX = bgX + HudUtil.pxToNormal(12, 'x');
+	local pbY = bgY + HudUtil.pxToNormal(12, 'y');
 	self.fieldScanInfo.progressBarOverlay = Overlay:new(gfxPath, pbX, pbY, self.fieldScanInfo.progressBarMaxWidth, pbH);
-	courseplay.utils:setOverlayUVsPx(self.fieldScanInfo.progressBarOverlay, self.fieldScanInfo.progressBarUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
+	HudUtil.setOverlayUVsPx(self.fieldScanInfo.progressBarOverlay, self.fieldScanInfo.progressBarUVs, self.fieldScanInfo.fileWidth, self.fieldScanInfo.fileHeight);
 
 	self.fieldScanInfo.percentColors = {
-		  [0] = courseplay.utils:rgbToNormal(225,  27, 0),
-		 [50] = courseplay.utils:rgbToNormal(255, 204, 0),
-		[100] = courseplay.utils:rgbToNormal(137, 243, 0)
+		  [0] = HudUtil.rgbToNormal(225,  27, 0),
+		 [50] = HudUtil.rgbToNormal(255, 204, 0),
+		[100] = HudUtil.rgbToNormal(137, 243, 0)
 	};
 	self.fieldScanInfo.colorMapStep = 50;
 end;
@@ -888,18 +886,18 @@ function CpManager:renderFieldScanInfo()
 	fsi.progressBarOverlay.width = fsi.progressBarMaxWidth * pct;
 	local widthPx = courseplay:round(fsi.progressBarMaxWidthPx * pct);
 	local newUVs = { fsi.progressBarUVs[1], fsi.progressBarUVs[2], fsi.progressBarUVs[1] + widthPx, fsi.progressBarUVs[4] };
-	courseplay.utils:setOverlayUVsPx(fsi.progressBarOverlay, newUVs, fsi.fileWidth, fsi.fileHeight);
+	HudUtil.setOverlayUVsPx(fsi.progressBarOverlay, newUVs, fsi.fileWidth, fsi.fileHeight);
 	fsi.progressBarOverlay:render();
 
-	courseplay:setFontSettings('white', false, 'left');
+	HudUtil.setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.titlePosY,         fsi.titleFontSize, courseplay:loc('COURSEPLAY_FIELD_SCAN_IN_PROGRESS'));
 
 	local text = courseplay:loc('COURSEPLAY_SCANNING_FIELD_NMB'):format(courseplay.fields.curFieldScanIndex, #courseplay.fields.fieldDefinitionBase);
-	courseplay:setFontSettings('white', false, 'left');
+	HudUtil.setFontSettings('white', false, 'left');
 	renderText(fsi.textPosX, fsi.textPosY,         fsi.textFontSize, text);
 
 	-- reset font settings
-	courseplay:setFontSettings('white', false, 'left');
+	HudUtil.setFontSettings('white', false, 'left');
 end;
 
 function CpManager.drawMouseButtonHelp(self, posY, txt)
@@ -954,7 +952,7 @@ function CpManager:setupGlobalInfoText()
 
 	self.globalInfoText.posY = 0.01238; -- = ingameMap posY
 	self.globalInfoText.posYAboveMap = self.globalInfoText.posY + 0.027777777777778 + 0.20833333333333;
-	self.globalInfoText.fontSize = courseplay.hud:pxToNormal(18, 'y');
+	self.globalInfoText.fontSize = HudUtil.pxToNormal(18, 'y');
 	self.globalInfoText.lineHeight = self.globalInfoText.fontSize * 1.2;
 	self.globalInfoText.lineMargin = self.globalInfoText.lineHeight * 0.2;
 	self.globalInfoText.buttonHeight = self.globalInfoText.lineHeight;
@@ -1094,7 +1092,7 @@ end;
 function CpManager:renderGlobalInfoTexts(basePosY)
 	local git = self.globalInfoText;
 	local line = 0;
-	courseplay:setFontSettings('white', false, 'left');
+	HudUtil.setFontSettings('white', false, 'left');
 	for _,refIndexes in pairs(git.content) do
 		if line >= self.globalInfoText.maxNum then
 			break;
@@ -1117,9 +1115,11 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 			-- button
 			local button = self.globalInfoText.buttons[line];
 			if button ~= nil then
-				button:setPosition(button.overlay.x, gfxPosY)
+				local overlay = button:getOverlay()
 
-				local currentColor = button.curColor;
+				button:setPosition(overlay.x, gfxPosY)
+
+				local currentColor = button:getColor();
 				local targetColor = currentColor;
 
 				button:setCanBeClicked(true);
@@ -1128,11 +1128,11 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 				if g_currentMission.controlledVehicle and g_currentMission.controlledVehicle == data.vehicle then
 					targetColor = 'activeGreen';
 					button:setCanBeClicked(false);
-				elseif button.isDisabled then
+				elseif button:getIsDisabled() then
 					targetColor = 'whiteDisabled';
-				elseif button.isClicked then
+				elseif button:getIsClicked() then
 					targetColor = 'activeRed';
-				elseif button.isHovered then
+				elseif button:getIsHovered() then
 					targetColor = 'hover';
 				else
 					targetColor = 'white';
@@ -1144,7 +1144,7 @@ function CpManager:renderGlobalInfoTexts(basePosY)
 				end;
 
 				-- NOTE: do not use button:render() here, as we neither need the button.show check, nor the hoveredButton var, nor the color setting. Simply rendering the overlay suffices
-				button.overlay:render();
+				overlay:render();
 			end;
 		end;
 	end;
@@ -1172,13 +1172,13 @@ function CpManager:setup2dCourseData(createOverlays)
 		self.course2dPdaMapOpacity = 0.7;
 
 		self.course2dColorTable = {
-			  [0] = courseplay.utils:rgbToNormal( 24, 225, 0),
-			 [50] = courseplay.utils:rgbToNormal(255, 230, 0),
-			[100] = courseplay.utils:rgbToNormal(210,   5, 0)
+			  [0] = HudUtil.rgbToNormal( 24, 225, 0),
+			 [50] = HudUtil.rgbToNormal(255, 230, 0),
+			[100] = HudUtil.rgbToNormal(210,   5, 0)
 		};
 		self.course2dColorPctStep = 50;
 
-		local height = courseplay.hud:getFullPx(0.3 * 1920 / 1080, 'y');
+		local height = HudUtil.getFullPx(0.3 * 1920 / 1080, 'y');
 		local width = height / g_screenAspectRatio;
 		self.course2dPlotField = { x = self.course2dPlotPosX, y = self.course2dPlotPosY, width = width, height = height }; -- definition of plot field for 2D
 		-- print(('course2dPlotField: x=%f (%.1f px), y=%f (%.1f px), width=%.1f (%.1f px), height=%.2f (%.1f px)'):format(self.course2dPlotPosX, self.course2dPlotPosX * g_screenWidth, self.course2dPlotPosY, self.course2dPlotPosY * g_screenHeight, width, width * g_screenWidth, height, height * g_screenHeight));
@@ -1187,9 +1187,9 @@ function CpManager:setup2dCourseData(createOverlays)
 
 	self.course2dPolyOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds');
 
-	local w, h = courseplay.hud:getPxToNormalConstant(14, 10);
+	local w, h = HudUtil.getPxToNormalConstant(14, 10);
 	self.course2dTractorOverlay = Overlay:new( courseplay.hud.iconSpritePath, 0.5, 0.5, w, h);
-	courseplay.utils:setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+	HudUtil.setOverlayUVsPx(self.course2dTractorOverlay, courseplay.hud.buttonUVsPx.recordingPlay, courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 	self.course2dTractorOverlay:setColor(0,0.8,1,1);
 end;
 
@@ -1217,18 +1217,11 @@ function CpManager:loadXmlSettings()
 			courseplay.hud.sizeRatio = sizeRatio;
 
 			-- Reposition hud based on size.
-			courseplay.hud.basePosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
-			courseplay.hud.basePosY = courseplay.hud:pxToNormal(32, 'y');
+			courseplay.hud.basePosX = 0.5 - HudUtil.pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
+			courseplay.hud.basePosY = HudUtil.pxToNormal(32, 'y');
 		end;
 
 		local newUiScale = courseplay.hud.uiScale;
-		local posX, posY = getXMLFloat(cpSettingsXml, key .. '#posX'), getXMLFloat(cpSettingsXml, key .. '#posY');
-		if uiScale and posX then
-			posX = courseplay.hud:getFullPx(posX, 'x');
-		end;
-		if uiScale and posY then
-			posY = courseplay.hud:getFullPx(posY, 'y');
-		end;
 
 	    -- Check if the UI Scale have been changed since last time and reset center position if needed.
 		if uiScale and uiScale ~= newUiScale then
@@ -1236,29 +1229,16 @@ function CpManager:loadXmlSettings()
 			-- Set the uiScale to the loaded one so we can get the original posX
 			courseplay.hud.uiScale = uiScale;
 			-- Get the original posX
-			local oldPosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x');
-			local oldPosY = courseplay.hud:pxToNormal(32, 'y');
+			local oldPosX = 0.5 - HudUtil.pxToNormal(630 / 2, 'x');
+			local oldPosY = HudUtil.pxToNormal(32, 'y');
 			-- Reset the uiScale back to the new one.
 			courseplay.hud.uiScale = newUiScale;
 
 			-- if the position is the same, then we need to update it to the new center position.
 			-- NOTE: If they are not the same, then the posX might have been changed by the user for there own position, and then we dont change it back to the center position.
-			if not posX or (posX and oldPosX == posX) then
-				courseplay.hud.basePosX = 0.5 - courseplay.hud:pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
-			end;
-			if not posY or (posY and oldPosY == posY) then
-				courseplay.hud.basePosY = courseplay.hud:pxToNormal(32, 'y');
-			end;
-
-		-- Get the saved position if UI Scale are the same.
-		else
-			if uiScale and posX then
-				courseplay.hud.basePosX = posX;
-			end;
-			if uiScale and posY then
-				courseplay.hud.basePosY = posY;
-			end;
-		end;
+			courseplay.hud.basePosX = 0.5 - HudUtil.pxToNormal(630 / 2, 'x'); -- Center Screen - half hud width
+			courseplay.hud.basePosY = HudUtil.pxToNormal(32, 'y');
+		end
 
 		-- fields settings
 		key = 'CPSettings.courseplayFields';
@@ -1284,3 +1264,20 @@ function CpManager:loadXmlSettings()
 	end;
 end;
 
+---Adds help info in the help menu.
+local helpLineManagerLoadMapData = function (manager,superFunc,filename, missionInfo)
+	local returnValue = superFunc(manager,filename, missionInfo)
+	local cpFileName = Utils.getFilename('gui/helpLines.xml', courseplay.path)
+	manager:loadFromXML(cpFileName, missionInfo)
+	for _,category in pairs(manager.categories) do 
+		for _,page in pairs(category.pages) do 
+			for _,item in pairs(page.items) do
+				if StringUtil.startsWith(item.value,"CP/") then 
+					item.value = Utils.getFilename(item.value:sub(4),courseplay.path)
+				end
+			end
+		end
+	end
+	return returnValue
+end
+HelpLineManager.loadMapData = Utils.overwrittenFunction(HelpLineManager.loadMapData,helpLineManagerLoadMapData)

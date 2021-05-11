@@ -14,7 +14,7 @@ end;
 function courseplay:setCpMode(vehicle, modeNum)
 	if vehicle.cp.mode ~= modeNum then
 		vehicle.cp.mode = modeNum;
-		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
+		HudUtil.setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
 		courseplay.infoVehicle(vehicle, 'Setting mode %d', modeNum)
 		courseplay:setAIDriver(vehicle, modeNum)
 	end;
@@ -1253,12 +1253,19 @@ function Setting:setParent(name)
 	self.parentName = name
 end
 
---- Should this setting be disabled on the GUI?
+---Hud/Gui functions:
+
+---Should this setting be disabled on the Hud/GUI?
 function Setting:isDisabled()
 	return false
 end
 
---- Action event for Keys?
+---Is the hud button active?
+function Setting:isActive()
+	return false
+end
+
+---Action event for Keys
 function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
 	---override
 end
@@ -2170,6 +2177,10 @@ function ToolOffsetXSetting:getText()
 	end
 end
 
+function ToolOffsetXSetting:getLabel()
+	return courseplay:loc('COURSEPLAY_TOOL_OFFSET_X')
+end
+
 ---@class ToolOffsetZSetting : OffsetSetting
 ToolOffsetZSetting = CpObject(OffsetSetting)
 function ToolOffsetZSetting:init(vehicle)
@@ -2185,6 +2196,10 @@ function ToolOffsetZSetting:getText()
 	else
 		return '---'
 	end
+end
+
+function ToolOffsetXSetting:getLabel()
+	return courseplay:loc('COURSEPLAY_TOOL_OFFSET_Z')
 end
 
 --- Setting to select a field
@@ -2434,6 +2449,10 @@ end
 SymmetricLaneChangeSetting = CpObject(BooleanSetting)
 function SymmetricLaneChangeSetting:init(vehicle)
 	BooleanSetting.init(self, 'symmetricLaneChange', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', 'COURSEPLAY_SYMMETRIC_LANE_CHANGE', vehicle)
+end
+
+function SymmetricLaneChangeSetting:getText()
+	return self.vehicle.cp.laneOffset == 0 and '---' or BooleanSetting.getText(self)
 end
 
 ---@class StopForUnloadSetting : BooleanSetting
@@ -2719,7 +2738,7 @@ function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillT
 end
 
 --check if at least one fillType in list and if runCounterActive then check sepreate counters
-function SiloSelectedFillTypeSetting:isActive()  
+function SiloSelectedFillTypeSetting:isSettingActive()  
 	if self:getSize() == 0 then 
 		return false
 	end
@@ -2989,9 +3008,14 @@ end
 
 ---@class DriveOnAtFillLevelSetting : PercentageSettingList
 DriveOnAtFillLevelSetting = CpObject(PercentageSettingList)
-function DriveOnAtFillLevelSetting:init(vehicle)
+function DriveOnAtFillLevelSetting:init(vehicle,separateFillTypeLoadingSetting)
 	PercentageSettingList.init(self, 'driveOnAtFillLevel', 'COURSEPLAY_DRIVE_ON_AT', 'COURSEPLAY_DRIVE_ON_AT', vehicle)
+	self.separateFillTypeLoadingSetting = separateFillTypeLoadingSetting
 	self:set(90)
+end
+
+function DriveOnAtFillLevelSetting:isDisabled()
+	return not self.separateFillTypeLoadingSetting:isDisabled()
 end
 
 ---@class FollowAtFillLevelSetting : PercentageSettingList
@@ -3003,9 +3027,14 @@ end
 
 ---@class MoveOnAtFillLevelSetting : PercentageSettingList
 MoveOnAtFillLevelSetting = CpObject(PercentageSettingList)
-function MoveOnAtFillLevelSetting:init(vehicle)
+function MoveOnAtFillLevelSetting:init(vehicle,separateFillTypeLoadingSetting)
 	PercentageSettingList.init(self, 'moveOnAtFillLevel', 'COURSEPLAY_MOVE_ON_AT', 'COURSEPLAY_MOVE_ON_AT', vehicle)
+	self.separateFillTypeLoadingSetting = separateFillTypeLoadingSetting
 	self:set(5)
+end
+
+function MoveOnAtFillLevelSetting:isDisabled()
+	return not self.separateFillTypeLoadingSetting:isDisabled()
 end
 
 --separate SiloSelectedFillTypeSettings to save their current state
@@ -3128,10 +3157,8 @@ function SeparateFillTypeLoadingSetting:getText()
 	return self.current>1 and courseplay:loc(self.texts[self.current])..self:get() or SettingList.getText(self)
 end
 
-function SeparateFillTypeLoadingSetting:isActive()
-	if self.vehicle.cp.driver:is_a(GrainTransportAIDriver) and not self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty() then 
-		return true
-	end
+function SeparateFillTypeLoadingSetting:isDisabled()
+	return not self.vehicle.cp.driver:is_a(GrainTransportAIDriver) or self.vehicle.cp.driver:getSiloSelectedFillTypeSetting():isEmpty()
 end
 
 ---@class ForcedToStopSetting : BooleanSetting
@@ -3700,6 +3727,10 @@ function WorkingToolPositionsSetting:getHasPosition(x)
 	return self.hasPosition[x]
 end
 
+function WorkingToolPositionsSetting:isActive(x)
+	return self.playTestPostion and self.playTestPostion == x 
+end
+
 function WorkingToolPositionsSetting:onWriteStream(streamId)
 	for i=1,self.totalPositions do 
 		streamWriteBool(streamId,self.hasPosition[i]==true)
@@ -3859,6 +3890,10 @@ function AugerPipeToolPositionsSetting:getText()
 	if self.hasPosition[1] then 
 		return "ok"
 	end
+end
+
+function AugerPipeToolPositionsSetting:getLabel()
+	return courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION')
 end
 
 ---@class ShovelStopAndGoSetting : BooleanSetting
@@ -4130,12 +4165,12 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, vehicle)
-	container:addSetting(DriveOnAtFillLevelSetting, vehicle)
-	container:addSetting(MoveOnAtFillLevelSetting, vehicle)
+	container:addSetting(SeparateFillTypeLoadingSetting,vehicle)
+	container:addSetting(DriveOnAtFillLevelSetting, vehicle,container.separateFillTypeLoading)
+	container:addSetting(MoveOnAtFillLevelSetting, vehicle,container.separateFillTypeLoading)
 	container:addSetting(RefillUntilPctSetting, vehicle)
 	container:addSetting(FollowAtFillLevelSetting,vehicle)
 	container:addSetting(ForcedToStopSetting,vehicle)
-	container:addSetting(SeparateFillTypeLoadingSetting,vehicle)
 	container:addSetting(ReverseSpeedSetting, vehicle)
 	container:addSetting(TurnSpeedSetting, vehicle)
 	container:addSetting(FieldSpeedSettting,vehicle)

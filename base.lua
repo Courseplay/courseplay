@@ -791,7 +791,7 @@ function courseplay:renderInfoText(vehicle)
 		end;
 
 		if text then
-			courseplay:setFontSettings('white', false, 'left');
+			HudUtil.setFontSettings('white', false, 'left');
 			renderText(courseplay.hud.infoTextPosX, courseplay.hud.infoTextPosY, courseplay.hud.fontSizes.infoText, text);
 		end;
 	end;
@@ -804,7 +804,7 @@ function courseplay:setToolTip(vehicle, text)
 end;
 
 function courseplay:renderToolTip(vehicle)
-	courseplay:setFontSettings('white', false, 'left');
+	HudUtil.setFontSettings('white', false, 'left');
 	renderText(courseplay.hud.toolTipTextPosX, courseplay.hud.toolTipTextPosY, courseplay.hud.fontSizes.infoText, vehicle.cp.toolTip);
 	vehicle.cp.hud.toolTipIcon:render();
 end;
@@ -1482,13 +1482,13 @@ function CpMapHotSpot.createMapHotSpot(vehicle,text)
 	local rawUvs = courseplay.hud:getModeUvs() 
 	local uvsSize = courseplay.hud:getIconSpriteSize()
 	local imagePath = courseplay.hud:getIconSpritePath()
-	local uvs = courseplay.utils:getUvs(rawUvs[vehicle.cp.mode], uvsSize.x,uvsSize.y)
+	local uvs = HudUtil.getUvs(rawUvs[vehicle.cp.mode], uvsSize.x,uvsSize.y)
 
 	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
 	local _, textSize = getNormalizedScreenValues(0, 9)
 	local _, textOffsetY = getNormalizedScreenValues(0, 5)
 	local width, height = getNormalizedScreenValues(18, 18)
-	local color = courseplay.utils:rgbToNormal(255, 113,  16, 1) --orange
+	local color = HudUtil.rgbToNormal(255, 113,  16, 1) --orange
 
 	local mapAIHotspot = MapHotspot:new("cpHelper", MapHotspot.CATEGORY_AI)
 	mapAIHotspot:setSize(width, height)
