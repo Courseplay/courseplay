@@ -24,7 +24,8 @@ function courseplay.registerEventListeners(vehicleType)
 end
 
 function courseplay.registerOverwrittenFunctions(vehicleType)
-    SpecializationUtil.registerOverwrittenFunction(vehicleType, "updateAILowFrequency", AIDriver.updateAILowFrequency)
+	SpecializationUtil.registerOverwrittenFunction(vehicleType, "updateAILowFrequency", AIDriver.updateAILowFrequency)
+	SpecializationUtil.registerOverwrittenFunction(vehicleType, "doCheckSpeedLimit", courseplay.doCheckSpeedLimit)
 end
 
 -- Register interface functions to start/stop the Courseplay driver
