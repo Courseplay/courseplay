@@ -90,19 +90,12 @@ function courseplay:start(self)
 
 	courseplay:updateAllTriggers();
 
-	self.cp.cruiseControlSpeedBackup = self:getCruiseControlSpeed();
-
-	-- ok i am near the waypoint, let's go
-	self.cp.savedCheckSpeedLimit = self.checkSpeedLimit;
-	self.checkSpeedLimit = false
 	---Do we need to set distanceCheck==true at the beginning of courseplay:start() and set now set it to false 50 lines later ??
 --	self.cp.distanceCheck = false
 
 	self.cp.totalLength, self.cp.totalLengthOffset = courseplay:getTotalLengthOnWheels(self);
 
 	courseplay:validateCanSwitchMode(self);
-
-
 
 	-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
 	-- attached and I don't have the motivation do dig through the legacy code to find out why
@@ -137,14 +130,7 @@ function courseplay:stop(self)
 		self.cp.directionNodeToTurnNodeLength = nil
 	end
 
-	---This is not working correctly on the server!
-	if self.cp.cruiseControlSpeedBackup then		
-		self.spec_drivable.cruiseControl.speed = self.cp.cruiseControlSpeedBackup; -- NOTE JT: no need to use setter or event function - Drivable's update() checks for changes in the var and calls the event itself
-		self.cp.cruiseControlSpeedBackup = nil;
-	end; 
-
 		
-	self.spec_drivable.cruiseControl.minSpeed = 1
 	self.cp.settings.forcedToStop:set(false)
 	self.cp.waitingForTrailerToUnload = false
 	
@@ -155,7 +141,6 @@ function courseplay:stop(self)
 	self.cp.hasMachineToFill = false;
 
 	-- resetting variables
-	self.checkSpeedLimit = self.cp.savedCheckSpeedLimit;
 	courseplay:resetTipTrigger(self);
 
 	if self.cp.checkReverseValdityPrinted then

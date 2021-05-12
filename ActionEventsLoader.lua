@@ -361,6 +361,7 @@ ActionEventCallbacks = {}
 ]]--
 function ActionEventCallbacks.actionEventOpenCloseHud(vehicle, actionName, inputValue, callbackState, isAnalog)
 	courseplay:openCloseHud(vehicle, not vehicle.cp.hud.show)
+	ActionEventsLoader.updateAllActionEvents(vehicle)
 end
 
 function ActionEventCallbacks.actionEventNextDriverMode(vehicle, actionName, inputValue, callbackState, isAnalog)

@@ -1720,9 +1720,15 @@ function SpeedSetting:init(name, label, toolTip, vehicle,startValue,stopValue)
 	for i=1,stopValue-startValue do 
 		local x = startValue+i-1
 		values[i] = x
-		texts[i] = ('%i %s'):format(x, courseplay:getSpeedMeasuringUnit());
+		texts[i] = x
 	end
 	SettingList.init(self, name, label, toolTip, vehicle,values, texts)
+end
+
+function SpeedSetting:getText()
+	local speed = self.texts[self.current] ---in km/h
+	
+	return string.format("%i %s",g_i18n:getSpeed(speed),g_i18n:getSpeedMeasuringUnit())
 end
 
 -- Generic IntSetting with power of x (for example 0.1) 

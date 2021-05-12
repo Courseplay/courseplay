@@ -36,7 +36,6 @@ end
 function GrainTransportAIDriver:start(startingPoint)
 	self.readyToLoadManualAtStart = false
 	self.nextClosestExactFillRootNode = nil
-	self.vehicle:setCruiseControlMaxSpeed(self.vehicle:getSpeedLimit() or math.huge)
 	AIDriver.start(self, startingPoint)
 	self.firstWaypointNode = WaypointNode('firstWaypoint')
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
@@ -171,10 +170,6 @@ end
 
 function GrainTransportAIDriver:getMaxFillLevel()
 	return self.vehicle.cp.settings.driveOnAtFillLevel:get() or 99
-end
-
-function GrainTransportAIDriver:updateLights()
-	self.vehicle:setBeaconLightsVisibility(false)
 end
 
 function GrainTransportAIDriver:getSiloSelectedFillTypeSetting()

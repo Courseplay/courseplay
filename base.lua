@@ -1258,6 +1258,16 @@ function courseplay.processSowingMachineArea(tool,originalFunction, superFunc, w
 end
 FertilizingSowingMachine.processSowingMachineArea = Utils.overwrittenFunction(FertilizingSowingMachine.processSowingMachineArea, courseplay.processSowingMachineArea)
 
+---Speed limit is disabled while cp is driving.
+function courseplay.doCheckSpeedLimit(object,superFunc,...)
+	local rootVehicle = object:getRootVehicle()
+	if not rootVehicle:getIsCourseplayDriving() then 
+		return superFunc(object,...)
+	else 
+		return false
+	end
+end
+
 
 -- Tour dialog messes up the CP yes no dialogs.
 function courseplay:showTourDialog()
@@ -1352,6 +1362,9 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
                 delete(collisionRoot)
             end
         end
+		---Reset the cruiseControl max speed and store it to set it back after the driver is finished.
+		vehicle.cpCruiseControlBackup = vehicle:getCruiseControlSpeed()
+		vehicle:setCruiseControlMaxSpeed(vehicle:getCruiseControlMaxSpeed())
 
 		--cp code
 
@@ -1406,7 +1419,13 @@ function courseplay.onStopCpAIDriver(vehicle, reason, noEventSend)
         CpMapHotSpot.deleteMapHotSpot(vehicle)
 
         vehicle:setCruiseControlState(Drivable.CRUISECONTROL_STATE_OFF, true)
-        if g_server ~= nil then
+
+		---Restoring the cruiseControl speed before cp was started.
+		if vehicle.cpCruiseControlBackup then
+			vehicle:setCruiseControlMaxSpeed(vehicle.cpCruiseControlBackup)
+			vehicle.cpCruiseControlBackup = nil
+        end
+		if g_server ~= nil then
             WheelsUtil.updateWheelsPhysics(vehicle, 0, spec.lastSpeedReal*spec.movingDirection, 0, true, true)
         end
         spec.isActive = false
