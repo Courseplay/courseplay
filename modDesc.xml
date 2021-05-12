@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="53">
-	<version>6.03.00058</version>
+	<version>6.03.00059</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
 		<en>CoursePlay SIX</en>
@@ -70,7 +70,7 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 	</description>
 
 	<multiplayer supported="true" />
-	<iconFilename>img/store.dds</iconFilename>
+	<iconFilename>img/icon_courseplay.dds</iconFilename>
 	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
 
 	<extraSourceFiles>

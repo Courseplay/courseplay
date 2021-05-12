@@ -1586,16 +1586,16 @@ function CombineUnloadAIDriver:startPathfinding(
 			-- the Giants coordinate system and the waypoint uses the course's conventions. This is confusing, should use
 			-- the same reference everywhere
 			self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToWaypoint(
-					self.vehicle, target, -xOffset or 0, zOffset or 0, self.allowReversePathfinding,
+					self.vehicle, target, -xOffset or 0, zOffset or 0, false,
 					fieldNum, vehiclesToIgnore,
 					self.vehicle.cp.settings.useRealisticDriving:is(true) and self.maxFruitPercent or math.huge,
-					self.offFieldPenalty)
+					self.offFieldPenalty, self.combineToUnload.cp.driver:getAreaToAvoid())
 		else
 			self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.startPathfindingFromVehicleToNode(
-					self.vehicle, target, xOffset or 0, zOffset or 0, self.allowReversePathfinding,
+					self.vehicle, target, xOffset or 0, zOffset or 0, false,
 					fieldNum, vehiclesToIgnore,
 					self.vehicle.cp.settings.useRealisticDriving:is(true) and self.maxFruitPercent or math.huge,
-					self.offFieldPenalty)
+					self.offFieldPenalty, self.combineToUnload.cp.driver:getAreaToAvoid())
 		end
 		if done then
 			return pathfindingCallbackFunc(self, path, goalNodeInvalid)
@@ -1687,7 +1687,9 @@ function CombineUnloadAIDriver:checkForCombineProximity()
 	-- do not swerve for our combine towards the end of the course,
 	-- otherwise we won't be able to align with it when coming from
 	-- the wrong angle
-	if self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) < 20 then
+	-- Increased distance from 20 to 75, so we don't swerve for our combine
+	-- when we are coming from the front and drive to close to our combine
+	if self.course:getDistanceToLastWaypoint(self.course:getCurrentWaypointIx()) < 75 then
 		if not self.doNotSwerveForVehicle:get() then
 			self:debug('Disable swerve for %s', nameNum(self.combineToUnload))
 		end
