@@ -13,7 +13,7 @@ CourseGeneratorScreen.CONTROLS = {
 	fieldSelector = 'fieldSelector',
 	startingLocation = 'startingLocation',
 	rowDirection = 'rowDirection',
-	manualDirectionAngle = 'manualDirectionAngle',
+	manualRowAngle = 'manualRowAngle',
 	workWidth = 'workWidth',
 	autoWidth = 'autoWidth',
 	islandBypassMode = 'islandBypassMode',
@@ -111,6 +111,8 @@ function CourseGeneratorScreen:onOpen()
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 
+	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
+
 end
 
 
@@ -175,11 +177,11 @@ function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
 	local eventUsed = false
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
 		eventUsed = true
-		self.settings.workWidth:next()
+		self.settings.workWidth:setNext()
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
 		eventUsed = true
-		self.settings.workWidth:prev()
+		self.settings.workWidth:setPrevious()
 	end
 	return eventUsed
 end
@@ -198,42 +200,23 @@ end
 -- Row direction
 function CourseGeneratorScreen:onClickRowDirection( state )
 	self.settings.rowDirection:setFromGuiElement()
-	self.manualDirectionAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
+	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Manual row angle
-function CourseGeneratorScreen:onOpenManualDirectionAngle( element, parameter )
-	local texts = {}
-	for i, direction in ipairs( self.directions ) do
-		table.insert( texts, tostring( direction.compassAngleDeg ) .. '°' .. ' (' .. courseplay:loc( courseGenerator.getCompassDirectionText( direction.gameAngleDeg )) .. ')')
-	end
-	element:setTexts( texts )
-	element:setState( self.directionToState[ self.vehicle.cp.rowDirectionDeg ])
-	-- enable only when manual row direction is selected.
-	element:setVisible(self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
+
+function CourseGeneratorScreen:onClickManualRowAngle( state )
+	self.settings.manualRowAngle:setFromGuiElement()
 end
 
-function CourseGeneratorScreen:onClickManualDirectionAngle( state )
-	self.vehicle.cp.rowDirectionDeg = self.directions[ state ].gameAngleDeg
-end
-
-function CourseGeneratorScreen:onScrollManualDirectionAngle(element, isDown, isUp, button)
+function CourseGeneratorScreen:onScrollManualRowAngle(element, isDown, isUp, button)
 	local eventUsed = false
-	local currentState = self.manualDirectionAngle:getState()
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
-		eventUsed = true
-		local newState = currentState + 1
-		newState = newState <= #self.directions and newState or 1
-		self.manualDirectionAngle:setState(newState)
-		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+		self.settings.manualRowAngle:setNext()
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
-		eventUsed = true
-		local newState = currentState - 1
-		newState = newState > 0 and newState or #self.directions
-		self.manualDirectionAngle:setState(newState)
-		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+		self.settings.manualRowAngle:setPrevious()
 	end
 	return eventUsed
 end
@@ -256,33 +239,15 @@ end
 
 -----------------------------------------------------------------------------------------------------
 -- Number of rows to skip
-function CourseGeneratorScreen:onOpenSkipRows( element, parameter )
-	local texts = {}
-	for i = 0, 3 do
-		table.insert( texts, tostring( i ))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip + 1 )
-end
-
-function CourseGeneratorScreen:onClickSkipRows( state )
-	self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip = state - 1
+function CourseGeneratorScreen:onClickRowsToSkip( state )
+	self.settings.rowsToSkip:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Multiple tools
-function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
-	local texts = {}
-	for i = 1,8 do
-		table.insert( texts, i )
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.multiTools )
-end
 
 function CourseGeneratorScreen:onClickMultiTools( state )
-	--Courseplay call here cause of courseplay:changeLaneNumber function is called when this number is changed
-	courseplay:setMultiTools(self.vehicle, state)
+	self.settings.multiTools:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
@@ -569,8 +534,8 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 	if self:isOverElement(posX, posY, self.workWidth) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
-	if self:isOverElement(posX, posY, self.manualDirectionAngle) then
-		return self:onScrollManualDirectionAngle(self.width, isDown, isUp, button)
+	if self:isOverElement(posX, posY, self.manualRowAngle) then
+		return self:onScrollManualRowAngle(self.width, isDown, isUp, button)
 	end
 
 	if button == Input.MOUSE_BUTTON_WHEEL_UP or button == Input.MOUSE_BUTTON_WHEEL_DOWN then

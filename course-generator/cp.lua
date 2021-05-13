@@ -114,8 +114,8 @@ function courseGenerator.generate(vehicle)
 	local centerSettings = {
 		useBestAngle = vehicle.cp.courseGeneratorSettings.rowDirection:is(courseGenerator.ROW_DIRECTION_AUTOMATIC),
 		useLongestEdgeAngle = vehicle.cp.courseGeneratorSettings.rowDirection:is(courseGenerator.ROW_DIRECTION_LONGEST_EDGE),
-		rowAngle = vehicle.cp.rowDirectionDeg and math.rad(vehicle.cp.rowDirectionDeg) or 0,
-		nRowsToSkip = vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip,
+		rowAngle = vehicle.cp.courseGeneratorSettings.manualRowAngle:get(),
+		nRowsToSkip = vehicle.cp.courseGeneratorSettings.rowsToSkip:get(),
 		mode = vehicle.cp.courseGeneratorSettings.centerMode:get(),
 		nRowsPerLand = vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:get(),
 		pipeOnLeftSide = pipeOnLeftSide

@@ -776,9 +776,6 @@ function courseplay:changeHeadlandReverseManeuverType( vehicle )
 		end
 end
 
-function courseplay:changeByMultiTools(vehicle, changeBy)
-	courseplay:setMultiTools(vehicle, MathUtil.clamp(vehicle.cp.multiTools + changeBy, 1, 8))
-end;
 function courseplay:setMultiTools(vehicle, set)
 	vehicle:setCpVar('multiTools',set,courseplay.isClient)
 	if vehicle.cp.multiTools%2 == 0 then

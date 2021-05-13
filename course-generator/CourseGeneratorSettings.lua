@@ -189,11 +189,11 @@ function WorkWidthSetting:setFromNetwork(value)
 	self.value:set(value, true)
 end
 
-function WorkWidthSetting:next()
+function WorkWidthSetting:setNext()
 	self:set(self.value:get() + WorkWidthSetting.Increment)
 end
 
-function WorkWidthSetting:prev()
+function WorkWidthSetting:setPrevious()
 	self:set(self.value:get() - WorkWidthSetting.Increment)
 end
 
@@ -276,6 +276,7 @@ function SelectedFieldSetting:refresh()
 	self:updateGuiElement()
 end
 
+---@class RowDirectionSetting : SettingList
 RowDirectionSetting = CpObject(SettingList)
 function RowDirectionSetting:init(vehicle)
 	SettingList.init(self, 'rowDirection',
@@ -299,6 +300,48 @@ function RowDirectionSetting:init(vehicle)
 			'COURSEPLAY_DIRECTION_7',
 		})
 	self:set(courseGenerator.ROW_DIRECTION_AUTOMATIC)
+end
+
+---@class ManualRowAngleSetting : SettingList
+ManualRowAngleSetting = CpObject(SettingList)
+
+function ManualRowAngleSetting:init(vehicle)
+	-- as values, we store the angle (in radians) as used in waypoints for instance. This is not the compass angle
+	-- on the map!
+	self.values = {}
+	self.texts = {}
+	for gameAngleDeg = 0, 180, 5 do
+		table.insert(self.values, math.rad(gameAngleDeg))
+		table.insert(self.texts, tostring(courseGenerator.getCompassAngleDeg(gameAngleDeg)) .. '°' ..
+			' (' .. courseplay:loc( courseGenerator.getCompassDirectionText(gameAngleDeg)) .. ')')
+	end
+
+	SettingList.init(self, 'manualRowAngle', 'COURSEPLAY_DIRECTION_7', 'COURSEPLAY_DIRECTION_7',
+		vehicle, self.values, self.texts)
+end
+
+---@class RowsToSkipSetting : SettingList
+RowsToSkipSetting = CpObject(SettingList)
+
+function RowsToSkipSetting:init(vehicle)
+	self.values = {0, 1, 2, 3}
+	self.texts = {'0', '1', '2', '3'}
+	SettingList.init(self, 'rowsToSkip', 'COURSEPLAY_SKIP_ROWS', 'COURSEPLAY_SKIP_ROWS',
+		vehicle, self.values, self.texts)
+end
+
+---@class MultiToolsSetting : SettingList
+MultiToolsSetting = CpObject(SettingList)
+
+function MultiToolsSetting:init(vehicle)
+	self.values = {}
+	self.texts = {}
+	for i = 1, 8 do
+		table.insert(self.values, i)
+		table.insert(self.texts, i)
+	end
+	SettingList.init(self, 'multiTools', 'COURSEPLAY_MULTI_TOOLS', 'COURSEPLAY_MULTI_TOOLS',
+		vehicle, self.values, self.texts)
 end
 
 --- Global course generator settings (read from the XML, may be added to the UI later when needed):
@@ -337,6 +380,8 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(SelectedFieldSetting, vehicle)
 	container:addSetting(StartingLocationSetting, vehicle)
 	container:addSetting(RowDirectionSetting, vehicle)
+	container:addSetting(ManualRowAngleSetting, vehicle)
+	container:addSetting(RowsToSkipSetting, vehicle)
 	container:addSetting(WorkWidthSetting, vehicle)
 	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)

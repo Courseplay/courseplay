@@ -41,11 +41,12 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="manualDirectionAngle" toolTip="$l10n_COURSEPLAY_DIRECTION_7" onOpen="onOpenManualDirectionAngle" onClick="onClickManualDirectionAngle">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="manualRowAngle"
+									onCreate="onCreateElement" onClick="onClickManualRowAngle">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_DIRECTION_7"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -57,19 +58,21 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="skipRows" toolTip="$l10n_COURSEPLAY_SKIP_ROWS" onOpen="onOpenSkipRows" onClick="onClickSkipRows">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="rowsToSkip"
+									onCreate="onCreateElement" onClick="onClickRowsToSkip">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SKIP_ROWS"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="multiTools" toolTip="$l10n_COURSEPLAY_MULTI_TOOLS" onOpen="onOpenMultiTools" onClick="onClickMultiTools" wrap="false">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="multiTools"
+									onCreate="onCreateElement" onClick="onClickMultiTools" wrap="false">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft"/>
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_MULTI_TOOLS"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
