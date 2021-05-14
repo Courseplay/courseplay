@@ -41,8 +41,8 @@ function courseplay.hud:setup()
 
 	self.basePosX = courseplay.hud.basePosX;
 	self.basePosY = courseplay.hud.basePosY;
-	self.baseWidth  = self:pxToNormal(630, 'x');
-	self.baseHeight = self:pxToNormal(347, 'y');
+	self.baseWidth  = HudUtil.pxToNormal(630, 'x');
+	self.baseHeight = HudUtil.pxToNormal(347, 'y');
 	self.baseCenterPosX = self.basePosX + self.baseWidth * 0.5;
 
 	self.baseUVsPx = { 10,357, 640,10 };
@@ -68,76 +68,76 @@ function courseplay.hud:setup()
 	};
 
 	self.visibleArea = {};
-	self.visibleArea.width = self:pxToNormal(600, 'x');
-	self.visibleArea.x1 = self.basePosX + self:pxToNormal(15, 'x');
+	self.visibleArea.width = HudUtil.pxToNormal(600, 'x');
+	self.visibleArea.x1 = self.basePosX + HudUtil.pxToNormal(15, 'x');
 	self.visibleArea.x2 = self.visibleArea.x1 + self.visibleArea.width;
-	self.visibleArea.height = self:pxToNormal(326, 'y');
-	self.visibleArea.y1 = self.basePosY + self:pxToNormal(8, 'y');
+	self.visibleArea.height = HudUtil.pxToNormal(326, 'y');
+	self.visibleArea.y1 = self.basePosY + HudUtil.pxToNormal(8, 'y');
 	self.visibleArea.y2 = self.visibleArea.y1 + self.visibleArea.height;
 
 	--print(string.format("\t\tposX=%f,posY=%f, visX1=%f,visX2=%f, visY1=%f,visY2=%f, visCenter=%f", self.basePosX, self.basePosY, self.visibleArea.x1, self.visibleArea.x2, self.visibleArea.y1, self.visibleArea.y2, self.baseCenterPosX));
 
 	-- LINES AND TEXT
 	self.fontSizes = {
-		seedUsageCalculator = self:pxToNormal(16, 'y');
-		pageTitle = self:pxToNormal(22, 'y');
-		contentTitle = self:pxToNormal(17, 'y');
-		contentValue = self:pxToNormal(15, 'y');
-		bottomInfo = self:pxToNormal(16, 'y');
-		bottomInfoSmall = self:pxToNormal(13, 'y');
-		version = self:pxToNormal(11, 'y');
-		infoText = self:pxToNormal(16, 'y');
+		seedUsageCalculator = HudUtil.pxToNormal(16, 'y');
+		pageTitle = HudUtil.pxToNormal(22, 'y');
+		contentTitle = HudUtil.pxToNormal(17, 'y');
+		contentValue = HudUtil.pxToNormal(15, 'y');
+		bottomInfo = HudUtil.pxToNormal(16, 'y');
+		bottomInfoSmall = HudUtil.pxToNormal(13, 'y');
+		version = HudUtil.pxToNormal(11, 'y');
+		infoText = HudUtil.pxToNormal(16, 'y');
 	};
 	self.numPages = 10;
 	self.numLines = 8;
-	self.lineHeight = self:pxToNormal(23, 'y');
+	self.lineHeight = HudUtil.pxToNormal(23, 'y');
 	self.linesPosY = {};
 	self.linesButtonPosY = {};
 	for l=1,self.numLines do
 		if l == 1 then
-			self.linesPosY[l] = self.basePosY + self:pxToNormal(229 + 23*0.5 - 17*0.5 + 2, 'y'); -- gfx line bottom y + lineHeight/2 - fontSize/2 plus some magic 2px for good measure
-			self.linesButtonPosY[l] = self.basePosY + self:pxToNormal(229 + 23*0.5 - 16*0.5, 'y'); -- gfx line bottom y + lineHeight/2 - buttonSize/2
+			self.linesPosY[l] = self.basePosY + HudUtil.pxToNormal(229 + 23*0.5 - 17*0.5 + 2, 'y'); -- gfx line bottom y + lineHeight/2 - fontSize/2 plus some magic 2px for good measure
+			self.linesButtonPosY[l] = self.basePosY + HudUtil.pxToNormal(229 + 23*0.5 - 16*0.5, 'y'); -- gfx line bottom y + lineHeight/2 - buttonSize/2
 		else
 			self.linesPosY[l] = self.linesPosY[1] - ((l-1) * self.lineHeight);
 			self.linesButtonPosY[l] = self.linesButtonPosY[1] - ((l-1) * self.lineHeight);
 		end;
 	end;
-	self.contentMinX = self.visibleArea.x1 + self:pxToNormal(10, 'x');
-	self.contentMaxX = self.visibleArea.x2 - self:pxToNormal(10, 'x');
+	self.contentMinX = self.visibleArea.x1 + HudUtil.pxToNormal(10, 'x');
+	self.contentMaxX = self.visibleArea.x2 - HudUtil.pxToNormal(10, 'x');
 	self.contentMaxWidth = self.contentMaxX - self.contentMinX;
 	self.col1posX = self.contentMinX;
 	self.col2posX = {
-		[self.PAGE_COMBINE_CONTROLS]  = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_CP_CONTROL] 		  = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_MANAGE_COURSES] 	  = self.basePosX + self:pxToNormal(234, 'x'),
-		[self.PAGE_COMBI_MODE] 		  = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_MANAGE_COMBINES]   = self.basePosX + self:pxToNormal(234, 'x'),
-		[self.PAGE_SPEEDS] 			  = self.basePosX + self:pxToNormal(234, 'x'),
-		[self.PAGE_GENERAL_SETTINGS]  = self.basePosX + self:pxToNormal(350, 'x'),
-		[self.PAGE_DRIVING_SETTINGS]  = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(368, 'x'),
-		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + self:pxToNormal(390, 'x'),
-		[self.PAGE_BUNKERSILO_SETTINGS]  = self.basePosX + self:pxToNormal(390, 'x'),
+		[self.PAGE_COMBINE_CONTROLS]  = self.basePosX + HudUtil.pxToNormal(368, 'x'),
+		[self.PAGE_CP_CONTROL] 		  = self.basePosX + HudUtil.pxToNormal(368, 'x'),
+		[self.PAGE_MANAGE_COURSES] 	  = self.basePosX + HudUtil.pxToNormal(234, 'x'),
+		[self.PAGE_COMBI_MODE] 		  = self.basePosX + HudUtil.pxToNormal(368, 'x'),
+		[self.PAGE_MANAGE_COMBINES]   = self.basePosX + HudUtil.pxToNormal(234, 'x'),
+		[self.PAGE_SPEEDS] 			  = self.basePosX + HudUtil.pxToNormal(234, 'x'),
+		[self.PAGE_GENERAL_SETTINGS]  = self.basePosX + HudUtil.pxToNormal(350, 'x'),
+		[self.PAGE_DRIVING_SETTINGS]  = self.basePosX + HudUtil.pxToNormal(368, 'x'),
+		[self.PAGE_COURSE_GENERATION] = self.basePosX + HudUtil.pxToNormal(368, 'x'),
+		[self.PAGE_SHOVEL_POSITIONS]  = self.basePosX + HudUtil.pxToNormal(390, 'x'),
+		[self.PAGE_BUNKERSILO_SETTINGS]  = self.basePosX + HudUtil.pxToNormal(390, 'x'),
 	};
 	self.col2posXforce = {
 		--[[[self.PAGE_COMBINE_CONTROLS] = {
-			[4] = self.basePosX + self:pxToNormal(407, 'x');
-			[5] = self.basePosX + self:pxToNormal(407, 'x');
-			[7] = self.basePosX + self:pxToNormal(407, 'x');
+			[4] = self.basePosX + HudUtil.pxToNormal(407, 'x');
+			[5] = self.basePosX + HudUtil.pxToNormal(407, 'x');
+			[7] = self.basePosX + HudUtil.pxToNormal(407, 'x');
 		};
 		[self.PAGE_GENERAL_SETTINGS] = {
-			[4] = self.basePosX + self:pxToNormal(240, 'x');
+			[4] = self.basePosX + HudUtil.pxToNormal(240, 'x');
 		};
 		[self.PAGE_DRIVING_SETTINGS] = {
-			[7] = self.basePosX + self:pxToNormal(202, 'x');
-			[8] = self.basePosX + self:pxToNormal(202, 'x');
+			[7] = self.basePosX + HudUtil.pxToNormal(202, 'x');
+			[8] = self.basePosX + HudUtil.pxToNormal(202, 'x');
 		};]]
 	};
 	self.col3posX = {
-		[self.PAGE_COURSE_GENERATION] = self.basePosX + self:pxToNormal(450, 'x'),
+		[self.PAGE_COURSE_GENERATION] = self.basePosX + HudUtil.pxToNormal(450, 'x'),
 	};
 
-	self.versionPosY = self.visibleArea.y1 + self:pxToNormal(16, 'y');
+	self.versionPosY = self.visibleArea.y1 + HudUtil.pxToNormal(16, 'y');
 
 	-- PAGE TITLES
 	self.pageTitles = {
@@ -154,31 +154,31 @@ function courseplay.hud:setup()
 		[self.PAGE_BUNKERSILO_SETTINGS]  = courseplay:loc("COURSEPLAY_MODE10_SETTINGS") -- compacter
 	};
 
-	self.pageTitlePosX = self.visibleArea.x1 + self:pxToNormal(55, 'x');
-	self.pageTitlePosY = self.visibleArea.y1 + self:pxToNormal(249 + 34*0.5 - 23*0.5 + 5, 'y'); -- title line bottom y + title line height/2 - fontSize/2 plus some magic 5px for good measure
+	self.pageTitlePosX = self.visibleArea.x1 + HudUtil.pxToNormal(55, 'x');
+	self.pageTitlePosY = self.visibleArea.y1 + HudUtil.pxToNormal(249 + 34*0.5 - 23*0.5 + 5, 'y'); -- title line bottom y + title line height/2 - fontSize/2 plus some magic 5px for good measure
 
 
 	-- BUTTON SIZES AND POSITIONS
 	self.buttonSize = {
 		big = {
-			w = self:pxToNormal(32, 'x');
-			h = self:pxToNormal(32, 'y');
-			margin = self:pxToNormal(10, 'x');
+			w = HudUtil.pxToNormal(32, 'x');
+			h = HudUtil.pxToNormal(32, 'y');
+			margin = HudUtil.pxToNormal(10, 'x');
 		};
 		middle = {
-			w = self:pxToNormal(24, 'x');
-			h = self:pxToNormal(24, 'y');
-			margin = self:pxToNormal(8, 'x');
+			w = HudUtil.pxToNormal(24, 'x');
+			h = HudUtil.pxToNormal(24, 'y');
+			margin = HudUtil.pxToNormal(8, 'x');
 		};
 		small = {
-			w = self:pxToNormal(16, 'x');
-			h = self:pxToNormal(16, 'y');
-			margin = self:pxToNormal(8, 'x');
+			w = HudUtil.pxToNormal(16, 'x');
+			h = HudUtil.pxToNormal(16, 'y');
+			margin = HudUtil.pxToNormal(8, 'x');
 		};
 	};
 
 	self.indent = self.buttonSize.small.w * 1.25;
-	self.topIconsY = self.basePosY + self:pxToNormal(263, 'y');
+	self.topIconsY = self.basePosY + HudUtil.pxToNormal(263, 'y');
 
 	self.buttonPosX = {};
 	for i=1,7 do
@@ -276,9 +276,9 @@ function courseplay.hud:setup()
 	self.bottomInfo = {};
 	self.bottomInfo.iconWidth  = self.buttonSize.middle.w;
 	self.bottomInfo.iconHeight = self.buttonSize.middle.h;
-	self.bottomInfo.textPosY = self.basePosY + self:pxToNormal(36 + 16*0.5 + 1, 'y');
-	self.bottomInfo.textSmallPosY = self.bottomInfo.textPosY; -- + self:pxToNormal(1, 'y');
-	self.bottomInfo.iconPosY = self.basePosY + self:pxToNormal(36 + 30*0.5 - 24*0.5, 'y');
+	self.bottomInfo.textPosY = self.basePosY + HudUtil.pxToNormal(36 + 16*0.5 + 1, 'y');
+	self.bottomInfo.textSmallPosY = self.bottomInfo.textPosY; -- + HudUtil.pxToNormal(1, 'y');
+	self.bottomInfo.iconPosY = self.basePosY + HudUtil.pxToNormal(36 + 30*0.5 - 24*0.5, 'y');
 
 	self.bottomInfo.modeIconX = self.col1posX;
 	self.bottomInfo.courseNameX = self.bottomInfo.modeIconX + self.bottomInfo.iconWidth * 1.25;
@@ -304,22 +304,22 @@ function courseplay.hud:setup()
 	};
 
 	-- TOOLTIP
-	self.toolTipIconWidth  = self:pxToNormal(20, 'x');
-	self.toolTipIconHeight = self:pxToNormal(20, 'y');
+	self.toolTipIconWidth  = HudUtil.pxToNormal(20, 'x');
+	self.toolTipIconHeight = HudUtil.pxToNormal(20, 'y');
 	self.toolTipIconPosX = self.col1posX;
-	self.toolTipIconPosY = self.basePosY + self:pxToNormal(11, 'y');
+	self.toolTipIconPosY = self.basePosY + HudUtil.pxToNormal(11, 'y');
 	self.toolTipTextPosX = self.toolTipIconPosX + self.toolTipIconWidth * 1.25;
-	self.toolTipTextPosY = self.basePosY + self:pxToNormal(16, 'y');
+	self.toolTipTextPosY = self.basePosY + HudUtil.pxToNormal(16, 'y');
 
 	-- INFO TEXT
 	self.infoTextPosX = self.col1posX;
 	self.infoTextPosY = self.toolTipTextPosY;
 
 	-- DIRECTION ARROW
-	self.directionArrowWidth = self:pxToNormal(128, 'x');
-	self.directionArrowHeight = self:pxToNormal(128, 'y');
+	self.directionArrowWidth = HudUtil.pxToNormal(128, 'x');
+	self.directionArrowHeight = HudUtil.pxToNormal(128, 'y');
 	self.directionArrowPosX = self.baseCenterPosX - self.directionArrowWidth * 0.5;
-	self.directionArrowPosY = self.linesPosY[8]; -- self.basePosY + self:pxToNormal(118, 'y');
+	self.directionArrowPosY = self.linesPosY[8]; -- self.basePosY + HudUtil.pxToNormal(118, 'y');
 
 	-- INGAME MAP ICONS
 	self.ingameMapIconsUVs = {
@@ -1257,7 +1257,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- ##################################################
 	-- Global
 	vehicle.cp.hud.hudPageButtons ={}
-	local posY = self.basePosY + self:pxToNormal(300, 'y');
+	local posY = self.basePosY + HudUtil.pxToNormal(300, 'y');
 	local totalWidth = ((self.numPages + 1) * wBig) + (self.numPages * marginBig); --numPages=9, real numPages=10
 	local baseX = self.baseCenterPosX - totalWidth/2;
 	for p=0, self.numPages do
@@ -1270,7 +1270,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	end;
 
 	local closeX = self.visibleArea.x2 - marginMiddle - wMiddle;
-	local closeY = self.basePosY + self:pxToNormal(280, 'y');
+	local closeY = self.basePosY + HudUtil.pxToNormal(280, 'y');
 	courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'close' }, 'openCloseHud', false, closeX, closeY, wMiddle, hMiddle):setOnlyCallLocal()
 
 	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
@@ -1315,7 +1315,7 @@ function courseplay.hud:setupCpModeButtons(vehicle)
 	-- setCpMode buttons
 	local totalWidth = (courseplay.NUM_MODES * self.buttonSize.big.w) + ((courseplay.NUM_MODES - 1) * self.buttonSize.big.margin);
 	local baseX = self.baseCenterPosX - totalWidth/2;
-	local y = self.linesButtonPosY[8] + self:pxToNormal(2, 'y');
+	local y = self.linesButtonPosY[8] + HudUtil.pxToNormal(2, 'y');
 	for i=1, courseplay.NUM_MODES do
 		local posX = baseX + ((i - 1) * (self.buttonSize.big.w + self.buttonSize.big.margin));
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
@@ -1495,8 +1495,8 @@ end
 function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 	local hSmall = self.buttonSize.small.h;
 	local wSmall = self.buttonSize.small.w;
-	local btnW = self:pxToNormal(22, 'x');
-	local btnH = self:pxToNormal(22, 'y');
+	local btnW = HudUtil.pxToNormal(22, 'x');
+	local btnH = HudUtil.pxToNormal(22, 'y');
 	local shovelX1 = self.col2posX[page] - btnW * 2;
 	local shovelX2 = self.col2posX[page] + btnW * 3;
 	local mouseWheelArea = {
