@@ -58,7 +58,7 @@ ___
 
 ## Supporter
 
-People or Teams that Supports us
+People and teams who support us
 
 * Ameyer1233 [ModHoster Profile](https://www.modhoster.de/community/user/meyer123) 
 
