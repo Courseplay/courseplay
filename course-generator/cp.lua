@@ -77,8 +77,8 @@ function courseGenerator.generate(vehicle)
 	courseplay:clearCurrentLoadedCourse(vehicle);
 
 	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get();
-	if vehicle.cp.multiTools > 1 then
-		workWidth = workWidth * vehicle.cp.multiTools
+	if vehicle.cp.courseGeneratorSettings.multiTools:get() > 1 then
+		workWidth = workWidth * vehicle.cp.courseGeneratorSettings.multiTools:get()
 	end
 
 	if vehicle.cp.courseGeneratorSettings.startingLocation:is(courseGenerator.STARTING_LOCATION_VEHICLE_POSITION) then
@@ -157,16 +157,11 @@ function courseGenerator.generate(vehicle)
 	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one
 	-- tool causing the innermost tool on the headland
 	-- turn tighter than possible
-	-- Using vehicle.cp.turnDiameter has this is updated when the user changes the vaule
-	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter / 2
-	if vehicle.cp.multiTools then
-		turnRadiusAdjustedForMultiTool = turnRadiusAdjustedForMultiTool +
-			vehicle.cp.courseGeneratorSettings.workWidth:get() * ((vehicle.cp.multiTools - 1) / 2)
-	end
-	local status, ok = xpcall(generateCourseForField, function(err)
-		printCallstack();
-		return err
-	end,
+	-- Using vehicle.cp.turnDiameter as this is updated when the user changes the value
+	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter / 2 +
+		vehicle.cp.courseGeneratorSettings.workWidth:get() *
+			(vehicle.cp.courseGeneratorSettings.multiTools:get() - 1) / 2
+	local status, ok = xpcall(generateCourseForField, function(err) printCallstack(); return err end,
 		field, workWidth, headlandSettings,
 		minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
@@ -220,7 +215,6 @@ function courseGenerator.generate(vehicle)
 
 	if CpManager.isMP then
 		CourseEvent.sendEvent(vehicle, vehicle.Waypoints)
-		CourseplayEvent.sendEvent(vehicle, "self.cp.multiTools", vehicle.cp.multiTools) -- need a setting for this one
 		CourseplayEvent.sendEvent(vehicle, "self.cp.courseWorkWidth", vehicle.cp.courseWorkWidth) -- need a setting for this one
 		CourseplayEvent.sendEvent(vehicle, "self.cp.workWidth", vehicle.cp.workWidth) -- need a setting for this one
 		CourseplayEvent.sendEvent(vehicle, "self.cp.laneNumber", vehicle.cp.laneNumber) -- need a setting for this one

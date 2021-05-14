@@ -279,8 +279,6 @@ function courseplay:onLoad(savegame)
 	self.cp.copyCourseFromDriver = nil;
 	self.cp.selectedDriverNumber = 0;
 
-	--MultiTools
-	self.cp.multiTools = 1;
 	self.cp.laneNumber = 0;
 
 	--Course generation	
