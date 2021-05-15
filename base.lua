@@ -293,39 +293,12 @@ function courseplay:onLoad(savegame)
 		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
 	self.cp.headland = {
-		-- with the old, manual direction selection course generator
-		manuDirMaxNumLanes = 6;
 		-- with the new, auto direction selection course generator
-		autoDirMaxNumLanes = 50;
 		maxNumLanes = 20;
 		numLanes = 0;
 		mode = courseGenerator.HEADLAND_MODE_NORMAL;
 		userDirClockwise = true;
 		orderBefore = true;
-		-- we abuse the numLanes to switch to narrow field mode,
-		-- negative headland lanes mean we are in narrow field mode
-		-- TODO: this is an ugly hack to make life easy for the UI but needs
-		-- to be refactored
-		minNumLanes = -1;
-		-- another ugly hack: the narrow mode is like the normal headland mode
-		-- for most uses (like the turn system). The next two functions are
-		-- to be used instead of the numLanes directly to hide the narrow mode
-		getNumLanes = function()
-			if self.cp.headland.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
-				return math.abs( self.cp.headland.numLanes )
-			else
-				return self.cp.headland.numLanes
-			end
-		end;
-		exists = function()
-			return self.cp.headland.getNumLanes() > 0
-		end;
-		getMinNumLanes = function()
-			return self.cp.headland.minNumLanes
-		end,
-		getMaxNumLanes = function()
-			return self.cp.headland.autoDirMaxNumLanes
-		end,
 		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
 		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
 
@@ -337,10 +310,6 @@ function courseplay:onLoad(savegame)
 		maxPointDistance = 7.25;
 		};
 	link(getRootNode(), self.cp.headland.tg);
-	if CpManager.isDeveloper then
-	self.cp.headland.manuDirMaxNumLanes = 30;
-	self.cp.headland.autoDirMaxNumLanes = 50;
-	end;
 
 	self.cp.fieldEdge = {
 	selectedField = {

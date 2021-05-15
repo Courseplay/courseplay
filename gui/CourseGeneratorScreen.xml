@@ -76,7 +76,8 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode" toolTip="$l10n_COURSEPLAY_HEADLAND" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandMode"
+									onCreate="onCreateElement" onOpen="onOpenHeadlandMode" onClick="onClickHeadlandMode">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
@@ -84,7 +85,8 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandPasses" toolTip="$l10n_COURSEPLAY_HEADLAND_PASSES" onOpen="onOpenHeadlandPasses" onClick="onClickHeadlandPasses">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandPasses"
+									onCreate="onCreateElement" onClick="onClickHeadlandPasses">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />

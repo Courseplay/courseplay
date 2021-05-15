@@ -112,7 +112,7 @@ function CourseGeneratorScreen:onOpen()
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 
 	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
-
+	self:setHeadlandFields()
 end
 
 
@@ -131,6 +131,7 @@ function CourseGeneratorScreen:generate()
 	end
 	-- update number of headland passes in case we ended up generating less
 	self:setHeadlandProperties()
+	self.settings.headlandPasses:updateGuiElement()
 	self:showCourse()
 end
 
@@ -254,67 +255,36 @@ end
 -- Headland mode
 function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
-	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL or
-		self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
-		if self.vehicle.cp.headland.getNumLanes() == 0 then
-			self.vehicle.cp.headland.numLanes = 1
-		end
-		self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
-		if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
-			-- force headland turn maneuver for two side mode
-			self.vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_SHARP
-		end
-	elseif self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NONE then
-		self.vehicle.cp.headland.numLanes = 0
+	if self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_TWO_SIDE) then
+		-- force headland turn maneuver for two side mode
+		self.vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_SHARP
 	end
 end
 
 function CourseGeneratorScreen:setHeadlandFields()
-	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
-  self.headlandDirection:setVisible( self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NARROW_FIELD )
-	self.headlandPasses:setVisible( headlandFieldsVisible )
-	self.headlandFirst:setVisible( headlandFieldsVisible )
+	local headlandFieldsVisible = self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL)
+		or self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_TWO_SIDE)
+  self.headlandDirection:setVisible(self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL)
+	  or self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NARROW_FIELD))
+	self.headlandPasses:setVisible(headlandFieldsVisible)
+	self.headlandFirst:setVisible(headlandFieldsVisible)
 	-- force headland turn maneuver for two side mode
-	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL)
-	self.headlandOverlapPercent:setVisible( headlandFieldsVisible )
-end
-
-function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NONE' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NORMAL' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NARROW_FIELD' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_TWO_SIDE' ))
-	element:setTexts( texts )
-	self:setHeadlandProperties()
-	element:setState( self.vehicle.cp.headland.mode )
-	self:setHeadlandFields()
+	self.headlandCorners:setVisible(headlandFieldsVisible and
+		self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL))
+	self.headlandOverlapPercent:setVisible(headlandFieldsVisible)
 end
 
 function CourseGeneratorScreen:onClickHeadlandMode( state )
-	self.vehicle.cp.headland.mode = state
+	self.settings.headlandMode:setFromGuiElement()
 	self:setHeadlandProperties()
 	self:setHeadlandFields()
 end
 -----------------------------------------------------------------------------------------------------
 -- Headland passes
-function CourseGeneratorScreen:onOpenHeadlandPasses( element, parameter )
-	local texts = {}
-	for i = 1, self.vehicle.cp.headland.autoDirMaxNumLanes do
-		table.insert( texts, tostring( i ))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.headland.getNumLanes())
-end
 
 function CourseGeneratorScreen:onClickHeadlandPasses( state )
-	self.vehicle.cp.headland.numLanes = state
+	self.settings.headlandPasses:setFromGuiElement()
 end
-
 
 -----------------------------------------------------------------------------------------------------
 -- Headland direction

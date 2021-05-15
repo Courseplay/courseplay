@@ -729,18 +729,6 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 	end 
 end
 	
-function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
-	vehicle.cp.headland.numLanes = MathUtil.clamp(vehicle.cp.headland.numLanes + changeBy,
-		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
-	if vehicle.cp.headland.numLanes < 0 then
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NARROW_FIELD
-	elseif vehicle.cp.headland.numLanes == 0 then
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NONE
-	else
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NORMAL
-	end
-end;
-
 function courseplay:toggleHeadlandDirection(vehicle)
 	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
 	vehicle.cp.headland.directionButton:setSpriteSectionUVs(vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
@@ -758,16 +746,6 @@ function courseplay:changeIslandBypassMode(vehicle)
 		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
 	end
 end;
-
-function courseplay:changeHeadlandTurnType( vehicle )
-  if vehicle.cp.headland.exists() then
-    local newTurnType = vehicle.cp.headland.turnType + 1
-    if newTurnType > courseplay.HEADLAND_CORNER_TYPE_MAX then
-      newTurnType = courseplay.HEADLAND_CORNER_TYPE_MIN
-    end
-	vehicle:setCpVar('headland.turnType',newTurnType,courseplay.isClient)
-	end
-end
 
 function courseplay:changeHeadlandReverseManeuverType( vehicle )
 		vehicle.cp.headland.reverseManeuverType = vehicle.cp.headland.reverseManeuverType + 1

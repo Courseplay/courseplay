@@ -144,16 +144,17 @@ function courseGenerator.generate(vehicle)
 	-- use some overlap between headland passes to get better results
 	-- (=less fruit missed) at smooth headland corners
 	headlandSettings.overlapPercent = vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:get()
-	headlandSettings.nPasses = vehicle.cp.headland.getNumLanes()
+	headlandSettings.nPasses = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
 	-- ignore headland order setting when there's no headland
-	headlandSettings.headlandFirst = vehicle.cp.headland.orderBefore or vehicle.cp.headland.getNumLanes() == 0
+	headlandSettings.headlandFirst = vehicle.cp.headland.orderBefore or
+		vehicle.cp.courseGeneratorSettings.headlandPasses:is(0)
 	-- flip clockwise when starting with the up/down rows
 	if vehicle.cp.headland.orderBefore then
 		headlandSettings.isClockwise = vehicle.cp.headland.userDirClockwise
 	else
 		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
 	end
-	headlandSettings.mode = vehicle.cp.headland.mode
+	headlandSettings.mode = vehicle.cp.courseGeneratorSettings.headlandMode:get()
 	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one
 	-- tool causing the innermost tool on the headland
 	-- turn tighter than possible
@@ -198,13 +199,13 @@ function courseGenerator.generate(vehicle)
 	-- extra data for turn maneuver
 	vehicle.cp.courseWorkWidth = workWidth;
 	-- use actually generated number of headlands
-	if vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL then
+	if vehicle.cp.courseGeneratorSettings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL) then
 		-- only in normal mode though, the narrow field mode will have
 		-- any number of headlands but for the turn maneuvers it is really just
 		-- one on the short edge
-		vehicle.cp.headland.numLanes = #field.headlandTracks
+		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
-	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.headland.getNumLanes();
+	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
 	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
 
 	vehicle.cp.hasGeneratedCourse = true;

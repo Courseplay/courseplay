@@ -344,6 +344,41 @@ function MultiToolsSetting:init(vehicle)
 		vehicle, self.values, self.texts)
 end
 
+---@class HeadlandModeSetting : SettingList
+HeadlandModeSetting = CpObject(SettingList)
+
+function HeadlandModeSetting:init(vehicle)
+	self.values = {
+		courseGenerator.HEADLAND_MODE_NONE,
+		courseGenerator.HEADLAND_MODE_NORMAL,
+		courseGenerator.HEADLAND_MODE_NARROW_FIELD,
+		courseGenerator.HEADLAND_MODE_TWO_SIDE
+	}
+	self.texts = {
+		'COURSEPLAY_HEADLAND_MODE_NONE',
+		'COURSEPLAY_HEADLAND_MODE_NORMAL',
+		'COURSEPLAY_HEADLAND_MODE_NARROW_FIELD',
+		'COURSEPLAY_HEADLAND_MODE_TWO_SIDE'
+	}
+	SettingList.init(self, 'headlandMode', 'COURSEPLAY_HEADLAND', 'COURSEPLAY_HEADLAND',
+		vehicle, self.values, self.texts)
+end
+
+--- Number of headland passes
+---@class HeadlandPassesSetting : SettingList
+HeadlandPassesSetting = CpObject(SettingList)
+
+function HeadlandPassesSetting:init(vehicle)
+	self.values = {}
+	self.texts = {}
+	for i = 1, 50 do
+		table.insert(self.values, i)
+		table.insert(self.texts, i)
+	end
+	SettingList.init(self, 'headlandPasses', 'COURSEPLAY_HEADLAND_PASSES', 'COURSEPLAY_HEADLAND_PASSES',
+		vehicle, self.values, self.texts)
+end
+
 --- Global course generator settings (read from the XML, may be added to the UI later when needed):
 ---
 --- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
@@ -385,6 +420,8 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(MultiToolsSetting, vehicle)
 	container:addSetting(WorkWidthSetting, vehicle)
 	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
+	container:addSetting(HeadlandModeSetting, vehicle)
+	container:addSetting(HeadlandPassesSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
