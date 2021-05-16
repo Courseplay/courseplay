@@ -728,17 +728,6 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 		vehicle.cp.rowDirectionDeg = ( vehicle.cp.rowDirectionDeg + changeBy ) % 360
 	end 
 end
-	
-function courseplay:toggleHeadlandDirection(vehicle)
-	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
-	vehicle.cp.headland.directionButton:setSpriteSectionUVs(vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
-end;
-
-function courseplay:toggleHeadlandOrder(vehicle)
-	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
-	--vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
-	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), courseplay.DBG_COURSES);
-end;
 
 function courseplay:changeIslandBypassMode(vehicle)
 	vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = vehicle.cp.oldCourseGeneratorSettings.islandBypassMode + 1
@@ -1855,9 +1844,6 @@ function MaxDeltaAngleAtGoal:init()
 			'Maximum angle difference allowed at goal')
 	self:set(math.pi / 4)
 end
-
---toggleHeadlandDirection
---toggleHeadlandOrder
 
 --- Implement raise/lower  setting
 ---@class ImplementRaiseLowerTimeSetting : SettingList

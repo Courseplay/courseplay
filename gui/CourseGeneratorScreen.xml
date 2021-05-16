@@ -94,7 +94,8 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandDirection" toolTip="$l10n_COURSEPLAY_HEADLAND_DIRECTION" onOpen="onOpenHeadlandDirection" onClick="onClickHeadlandDirection">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandDirection"
+									onCreate="onCreateElement" onClick="onClickHeadlandDirection">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
@@ -102,7 +103,8 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="headlandFirst" toolTip="$l10n_COURSEPLAY_START_WORKING_ON" onOpen="onOpenHeadlandFirst" onClick="onClickHeadlandFirst">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="startOnHeadland"
+									onCreate="onCreateElement" onClick="onClickStartOnHeadland">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />

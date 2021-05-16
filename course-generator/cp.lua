@@ -146,13 +146,14 @@ function courseGenerator.generate(vehicle)
 	headlandSettings.overlapPercent = vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:get()
 	headlandSettings.nPasses = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
 	-- ignore headland order setting when there's no headland
-	headlandSettings.headlandFirst = vehicle.cp.headland.orderBefore or
+	headlandSettings.headlandFirst =
+		vehicle.cp.courseGeneratorSettings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND) or
 		vehicle.cp.courseGeneratorSettings.headlandPasses:is(0)
 	-- flip clockwise when starting with the up/down rows
-	if vehicle.cp.headland.orderBefore then
-		headlandSettings.isClockwise = vehicle.cp.headland.userDirClockwise
+	if vehicle.cp.courseGeneratorSettings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND) then
+		headlandSettings.isClockwise = vehicle.cp.courseGeneratorSettings.headlandDirection:is(courseGenerator.HEADLAND_CLOCKWISE)
 	else
-		headlandSettings.isClockwise = not vehicle.cp.headland.userDirClockwise
+		headlandSettings.isClockwise = vehicle.cp.courseGeneratorSettings.headlandDirection:is(courseGenerator.HEADLAND_COUNTERCLOCKWISE)
 	end
 	headlandSettings.mode = vehicle.cp.courseGeneratorSettings.headlandMode:get()
 	-- This is to adjust the turn radius to account for multiTools having more tracks than you would have with just one
@@ -162,7 +163,10 @@ function courseGenerator.generate(vehicle)
 	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter / 2 +
 		vehicle.cp.courseGeneratorSettings.workWidth:get() *
 			(vehicle.cp.courseGeneratorSettings.multiTools:get() - 1) / 2
-	local status, ok = xpcall(generateCourseForField, function(err) printCallstack(); return err end,
+	local status, ok = xpcall(generateCourseForField, function(err)
+		printCallstack();
+		return err
+	end,
 		field, workWidth, headlandSettings,
 		minDistanceBetweenPoints,
 		minSmoothAngle, maxSmoothAngle, doSmooth,
@@ -176,7 +180,8 @@ function courseGenerator.generate(vehicle)
 		return status, ok
 	end
 
-	removeRidgeMarkersFromLastTrack(field.course, not vehicle.cp.headland.orderBefore)
+	removeRidgeMarkersFromLastTrack(field.course,
+		vehicle.cp.courseGeneratorSettings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_UP_DOWN_ROWS))
 
 	writeCourseToVehicleWaypoints(vehicle, field.course)
 
@@ -206,7 +211,7 @@ function courseGenerator.generate(vehicle)
 		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
 	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
-	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.headland.userDirClockwise;
+	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.courseGeneratorSettings.headlandDirection:is(courseGenerator.HEADLAND_CLOCKWISE)
 
 	vehicle.cp.hasGeneratedCourse = true;
 	courseplay:validateCanSwitchMode(vehicle);

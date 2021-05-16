@@ -294,11 +294,6 @@ function courseplay:onLoad(savegame)
 	}
 	self.cp.headland = {
 		-- with the new, auto direction selection course generator
-		maxNumLanes = 20;
-		numLanes = 0;
-		mode = courseGenerator.HEADLAND_MODE_NORMAL;
-		userDirClockwise = true;
-		orderBefore = true;
 		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
 		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
 

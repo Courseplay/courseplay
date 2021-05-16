@@ -21,7 +21,7 @@ CourseGeneratorScreen.CONTROLS = {
 	headlandCorners = 'headlandCorners',
 	headlandOverlapPercent = 'headlandOverlapPercent',
 	headlandPasses = 'headlandPasses',
-	headlandFirst = 'headlandFirst',
+	startOnHeadland = 'startOnHeadland',
 	numberOfRowsPerLand = 'numberOfRowsPerLand',
 	ingameMap = 'ingameMap',
 	mapCursor = 'mapCursor'
@@ -112,6 +112,7 @@ function CourseGeneratorScreen:onOpen()
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 
 	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
+	self:setStartingLocationLabel(self.settings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND))
 	self:setHeadlandFields()
 end
 
@@ -267,7 +268,7 @@ function CourseGeneratorScreen:setHeadlandFields()
   self.headlandDirection:setVisible(self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL)
 	  or self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NARROW_FIELD))
 	self.headlandPasses:setVisible(headlandFieldsVisible)
-	self.headlandFirst:setVisible(headlandFieldsVisible)
+	self.startOnHeadland:setVisible(headlandFieldsVisible)
 	-- force headland turn maneuver for two side mode
 	self.headlandCorners:setVisible(headlandFieldsVisible and
 		self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL))
@@ -288,37 +289,15 @@ end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland direction
-function CourseGeneratorScreen:onOpenHeadlandDirection( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_CLOCKWISE' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_COUNTERCLOCKWISE' ))
-	element:setTexts( texts )
-	local state = self.vehicle.cp.headland.userDirClockwise and 1 or 2
-	element:setState( state )
-end
-
 function CourseGeneratorScreen:onClickHeadlandDirection( state )
-	self.vehicle.cp.headland.userDirClockwise = state == 1
+	self.settings.headlandDirection:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland first
-function CourseGeneratorScreen:onOpenHeadlandFirst( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_PASSES' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_UP_DOWN_ROWS' ))
-	element:setTexts( texts )
-	local state = self.vehicle.cp.headland.orderBefore and 1 or 2
-	element:setState( state )
-	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
-end
-
-function CourseGeneratorScreen:onClickHeadlandFirst( state )
-	if state ~= self.vehicle.cp.headland.orderBefore then
-		-- must call this in order to update the bitmap in the HUD, that is apparently not being taken care of by reload
-		courseplay:toggleHeadlandOrder( self.vehicle )
-	end
-	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
+function CourseGeneratorScreen:onClickStartOnHeadland( state )
+	self.settings.startOnHeadland:setFromGuiElement()
+	self:setStartingLocationLabel(self.settings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND))
 end
 
 function CourseGeneratorScreen:setStartingLocationLabel(startOnHeadland)

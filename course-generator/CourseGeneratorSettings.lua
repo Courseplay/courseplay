@@ -364,6 +364,40 @@ function HeadlandModeSetting:init(vehicle)
 		vehicle, self.values, self.texts)
 end
 
+---@class HeadlandDirectionSetting : SettingList
+HeadlandDirectionSetting = CpObject(SettingList)
+
+function HeadlandDirectionSetting:init(vehicle)
+	self.values = {
+		courseGenerator.HEADLAND_CLOCKWISE,
+		courseGenerator.HEADLAND_COUNTERCLOCKWISE,
+	}
+	self.texts = {
+		'COURSEPLAY_HEADLAND_CLOCKWISE',
+		'COURSEPLAY_HEADLAND_COUNTERCLOCKWISE',
+	}
+	SettingList.init(self, 'headlandDirection',
+		'COURSEPLAY_HEADLAND_DIRECTION', 'COURSEPLAY_HEADLAND_DIRECTION',
+		vehicle, self.values, self.texts)
+end
+
+---@class StartOnHeadlandSetting : SettingList
+StartOnHeadlandSetting = CpObject(SettingList)
+
+function StartOnHeadlandSetting:init(vehicle)
+	self.values = {
+		courseGenerator.HEADLAND_START_ON_HEADLAND,
+		courseGenerator.HEADLAND_START_ON_UP_DOWN_ROWS,
+	}
+	self.texts = {
+		'COURSEPLAY_HEADLAND_PASSES',
+		'COURSEPLAY_UP_DOWN_ROWS',
+	}
+	SettingList.init(self, 'startOnHeadland',
+		'COURSEPLAY_START_WORKING_ON', 'COURSEPLAY_START_WORKING_ON',
+		vehicle, self.values, self.texts)
+end
+
 --- Number of headland passes
 ---@class HeadlandPassesSetting : SettingList
 HeadlandPassesSetting = CpObject(SettingList)
@@ -422,6 +456,8 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
 	container:addSetting(HeadlandModeSetting, vehicle)
 	container:addSetting(HeadlandPassesSetting, vehicle)
+	container:addSetting(HeadlandDirectionSetting, vehicle)
+	container:addSetting(StartOnHeadlandSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
