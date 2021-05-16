@@ -737,6 +737,15 @@ function FieldworkAIDriver:shouldReturnToFirstPoint()
 	end
 end
 
+--- Pass on self.speed set elsewhere to the AIDriver.
+function FieldworkAIDriver:getSpeed()
+	local speed = AIDriver.getSpeed(self)
+	-- as long as other CP components mess with the cruise control we need to reset this, for example after
+	-- a turn
+	self.vehicle:setCruiseControlMaxSpeed(speed)
+	return speed
+end
+
 --- Start the actual work. Lower and turn on implements
 function FieldworkAIDriver:startWork()
 	self:debug('Starting work: turn on and lower implements.')

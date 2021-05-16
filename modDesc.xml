@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="53">
-	<version>6.03.00060</version>
+	<version>6.03.00061</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
-	<title><!-- en=English de=German fr=French es=Spanish ru=Russian pl=Polish it=Italian br=Brazilian-Portuguese cs=Chinese(Simplified) ct=Chinese(Traditional) cz=Czech nl=Netherlands hu=Hungary jp=Japanese kr=Korean pt=Portuguese ro=Romanian tr=Turkish -->
-		<en>CoursePlay SIX</en>
-		<cs>课程玩法 SIX</cs>
-		<ct>課程玩法 SIX</ct>
-		<hu>CoursePlay SIX - A Vezetősegéd</hu>
-		<jp>コースプレイ SIX</jp>
-		<kr>코스 플레이 SIX</kr>
+	<title>
+		<en>CoursePlay</en>
+		<cs>课程玩法</cs>
+		<ct>課程玩法</ct>
+		<hu>CoursePlay - A Vezetősegéd</hu>
+		<jp>コースプレイ</jp>
+		<kr>코스 플레이</kr>
 	</title>
 
 	<description>
@@ -19,20 +19,28 @@ When using Courseplay you can set up help all around your farm, they can help yo
 You can have loads of worker driving around your farm automatically helping you out. With a little tweaking, Courseplay can fill a bunker or a trailer with a shovel, level and compact silage and much much more...
 Make your own fully automatic farm that fits your play style perfectly!
 
-Courseplay does not replace the in game worker system, it makes a new AI worker that can run side by side with your regular farm workers.]]>
+Courseplay does not replace the in game worker system, it makes a new AI worker that can run side by side with your regular farm workers.
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</en>
 		<cz>
 <![CDATA[Courseplay je mod pro Farming Simulator 19. Posune vaši hru zcela novým pracovním systémem AI, což vám umožní najmout si pracovníky zcela novým způsobem!
 Když používáte Courseplay, můžete nastavit pracovníky všude na farmě, mohou vám pomoci s pravidelnými polními pracemi, odvozem od kombajnu, prodejem sklizně nebo pouze odvozem do sila. Potřebujete pomoc s plněním bunkru? nechť ti pomůže Courseplay!
 Po vaší farmě můžete mít spoustu pracovníků, kteří vám budou automaticky pomáhat. S trochou vylepšení může Courseplay naplnit silo nebo přívěs lopatou, rovnat a dusat siláž a mnohem mnohem více ...
 Vytvořte si svou vlastní plně automatizovanou farmu, která perfektně zapadá do vašeho herního stylu!
-Courseplay nenahrazuje systém herních pracovníků, vytváří nového pracovníka AI, který může běžet bok po boku s vašimi běžnými pracovníky na farmě.]]>
+Courseplay nenahrazuje systém herních pracovníků, vytváří nového pracovníka AI, který může běžet bok po boku s vašimi běžnými pracovníky na farmě.
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</cz>
 		<de>
-<![CDATA[Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...]]>
+<![CDATA[Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
+
+IMPORTANT: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die neueste Version von AutoDrive von GitHub laden!(Version 1.1.1.0 oder höher)]]>
 		</de>
 		<fr>
-<![CDATA[Courseplay est une modification pour Farm Simulator 19, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...]]>
+<![CDATA[Courseplay est une modification pour Farm Simulator 19, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</fr>
 		<es>
 <![CDATA[Courseplay es un mod para Farming Simulator 19. ¡Llena tu juego con un nuevo sistema de trabajo de IA completo, permitiéndote contratar ayuda de una manera completamente nueva y sorprendente!
@@ -41,7 +49,9 @@ Al usar Courseplay, puede configurar la ayuda en toda su granja, pueden ayudarlo
 Puede tener un montón de trabajadores manejando alrededor de su granja automáticamente ayudándolo. Con un pequeño ajuste, Courseplay puede llenar un silo de búnker o un remolque con una pala, ensilado nivelado y compacto y mucho más ...
 ¡Crea tu propia granja totalmente automática que se adapte perfectamente a tu estilo de juego!
 
-Courseplay no reemplaza el sistema de trabajo en el juego, crea un nuevo trabajador de IA que puede correr al lado de tus trabajadores agrícolas habituales.]]>
+Courseplay no reemplaza el sistema de trabajo en el juego, crea un nuevo trabajador de IA que puede correr al lado de tus trabajadores agrícolas habituales.
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</es>
 		<ru>
 <![CDATA[Courseplay - это мод для Farming Simulator 19. Он добавит в вашу игру совершенно новую систему работников с искусственным интеллектом, позволяя вам нанять помощников совершенно новым и удивительным способом!
@@ -50,10 +60,14 @@ Courseplay no reemplaza el sistema de trabajo en el juego, crea un nuevo trabaja
 Вы можете иметь множество рабочих, которые ездят по вашей ферме, автоматически помогая вам. С небольшой настройкой Courseplay может заполнить бункер или прицеп лопатой, выровнять и утрамбовать силосную яму и многим другим ...
 Создайте свою полностью автоматизированную ферму, которая идеально подходит вашему стилю игры!
 
-Courseplay не заменяет игровую рабочую систему, он создает новый искусственный интеллект, который может работать бок о бок с обычными работниками фермы.]]>
+Courseplay не заменяет игровую рабочую систему, он создает новый искусственный интеллект, который может работать бок о бок с обычными работниками фермы.
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</ru>
 		<pl>
-<![CDATA[Courseplay to modyfikacja dla gry Farming Simulator 19. Pozwala ona wielu pojazdom na poruszanie się w sposób całkowicie autonomiczny i automatyczny - pracować na polach, wyładowywać kombajny, dowozić produkty do punktów sprzedaży, wypełniać silosy przejazdowe lub naczepę samoładującą, wyrównywać czy ugniatać kiszonkę, oraz wiele więcej...]]>
+<![CDATA[Courseplay to modyfikacja dla gry Farming Simulator 19. Pozwala ona wielu pojazdom na poruszanie się w sposób całkowicie autonomiczny i automatyczny - pracować na polach, wyładowywać kombajny, dowozić produkty do punktów sprzedaży, wypełniać silosy przejazdowe lub naczepę samoładującą, wyrównywać czy ugniatać kiszonkę, oraz wiele więcej...
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</pl>
 		<it>
 <![CDATA[Courseplay è una mod per Farming Simulator 19. Riempie il tuo gioco con un sistema operativo AI completamente nuovo, che ti consente di assumere un aiuto in un modo completamente nuovo e sorprendente!
@@ -62,44 +76,39 @@ Quando usi Courseplay puoi impostare un aiuto in tutta la tua fattoria, possono 
 Puoi avere un sacco di lavoratori che guidano all'interno della tua fattoria per aiutarti automaticamente. Con un po 'di modifica, Courseplay può riempire un bunker o un rimorchio con una pala, un insilato livellato e compatto e molto altro ancora ...
 Crea la tua fattoria completamente automatica che si adatta perfettamente al tuo stile di gioco!
 
-Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavoratore AI che può correre fianco a fianco con i tuoi normali lavoratori agricoli.]]>
+Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavoratore AI che può correre fianco a fianco con i tuoi normali lavoratori agricoli.
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</it>
         <nl>
-<![CDATA[Courseplay is een modificatie voor Farming Simulator 19. Het geeft je de mogelijkheid om veel verschillende voertuigen autonoom en automatisch te laten rond rijden, veldwerk uit te voeren, dorsen & hakselen, granen en goederen te verkopen aan verkooppunten, een bunker of trailer met een shovel te vullen, niveleren en aanrijden van kuilvoer en nog veel meer...]]>
+<![CDATA[Courseplay is een modificatie voor Farming Simulator 19. Het geeft je de mogelijkheid om veel verschillende voertuigen autonoom en automatisch te laten rond rijden, veldwerk uit te voeren, dorsen & hakselen, granen en goederen te verkopen aan verkooppunten, een bunker of trailer met een shovel te vullen, niveleren en aanrijden van kuilvoer en nog veel meer...
+
+IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</nl>
 	</description>
 
 	<multiplayer supported="true" />
 	<iconFilename>img/icon_courseplay.dds</iconFilename>
-	<l10n filenamePrefix="translations/translation" /> <!-- load translations from "translations/translation_<language>.xml file -->
+	<l10n filenamePrefix="translations/translation" />
 
 	<extraSourceFiles>
 		<sourceFile filename="register.lua" />
 	</extraSourceFiles>
 
 	<actions>
-		<!--Mouse actions-->
 		<action name="COURSEPLAY_MOUSEACTION_PRIMARY" axisType="HALF"  />
 		<action name="COURSEPLAY_MOUSEACTION_SECONDARY" axisType="HALF"  />
-
-		<!--HUD Actions-->
 		<action name="COURSEPLAY_ACTION_OPEN_CLOSE_HUD" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_NEXT_DRIVER_MODE" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_PREVIOUS_DRIVER_MODE" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_NEXT_HUD_PAGE" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE" axisType="HALF"  />
-
-		<!--Recording/ driving-->
 		<action name="COURSEPLAY_ACTION_START_STOP_RECORDING" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_PAUSE_RECORDING" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_TOGGLE_REVERSE_RECORDING" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_START_STOP_DRIVING" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_DRIVE_NOW" axisType="HALF"  />
-		
-		<!--Starting point driver-->
 		<action name="COURSEPLAY_ACTION_CHANGE_STARTING_POINT" axisType="HALF"  />
-
-		<!--Editor Actions-->
 		<action name="COURSEPLAY_ACTION_EDITOR_TOGGLE" axisType="HALF"  />
 		<action name="COURSEPLAY_ACTION_EDITOR_UNDO" axisType="HALF"  />
    		<action name="COURSEPLAY_ACTION_EDITOR_SAVE" axisType="HALF"  />
@@ -111,8 +120,6 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
     	<action name="COURSEPLAY_ACTION_EDITOR_DELETE_TO_END" axisType="HALF"  />
     	<action name="COURSEPLAY_ACTION_EDITOR_INSERT_WAYPOINT" axisType="HALF"  />
     	<action name="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE" axisType="HALF"  />
-    	
-		<!--Shovel positions save and play-->
 		<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION" axisType="HALF"  />
     	<action name="COURSEPLAY_ACTION_SHOVEL_MOVE_LOADING_POSITION" axisType="HALF"  />
     	<action name="COURSEPLAY_ACTION_SHOVEL_SAVE_TRANSPORT_POSITION" axisType="HALF"  />    
@@ -124,15 +131,12 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
     </actions>
 
 	<inputBinding>
-		<!--Mouse actions-->
 		<actionBinding action="COURSEPLAY_MOUSEACTION_PRIMARY">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_LEFT" />
         </actionBinding>
 		<actionBinding action="COURSEPLAY_MOUSEACTION_SECONDARY">
             <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_RIGHT" />
         </actionBinding>
-
-		<!--HUD Actions-->
 		<actionBinding action="COURSEPLAY_ACTION_OPEN_CLOSE_HUD">
 			<binding device="KB_MOUSE_DEFAULT" input="KEY_delete" />
 		</actionBinding>
@@ -148,8 +152,6 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<actionBinding action="COURSEPLAY_ACTION_PREVIOUS_HUD_PAGE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_minus" />
         </actionBinding>
-
-		<!--Recording/ driving-->
 		<actionBinding action="COURSEPLAY_ACTION_START_STOP_RECORDING">
 			<binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_1" />
 		</actionBinding>
@@ -165,13 +167,9 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<actionBinding action="COURSEPLAY_ACTION_DRIVE_NOW">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-		
-		<!--Starting point driver-->
 		<actionBinding action="COURSEPLAY_ACTION_CHANGE_STARTING_POINT">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_KP_5" />
         </actionBinding>
-
-		<!--Editor Actions-->
 		<actionBinding action="COURSEPLAY_ACTION_EDITOR_TOGGLE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_0" />
         </actionBinding>
@@ -205,8 +203,6 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<actionBinding action="COURSEPLAY_ACTION_EDITOR_CYCLE_WAYPOINT_TYPE">
             <binding device="KB_MOUSE_DEFAULT" input="KEY_ralt KEY_backslash" />
         </actionBinding>
-
-		<!--Shovel positions save and play-->
 		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_SAVE_LOADING_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
@@ -231,8 +227,6 @@ Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavora
 		<actionBinding action="COURSEPLAY_ACTION_SHOVEL_MOVE_UNLOADING_POSITION">
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
-
-
     </inputBinding>
 	<credits><![CDATA[
 ## Contributors
