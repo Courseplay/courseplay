@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="スムース" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="ターン" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="ラウンド" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="まくら地のリバース経路"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="ストレート" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="カーブ" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="中央部パス生成方式 (ベータ)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="上/下" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="円" />

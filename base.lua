@@ -292,19 +292,6 @@ function courseplay:onLoad(savegame)
 		islandBypassMode = Island.BYPASS_MODE_NONE,
 		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
-	self.cp.headland = {
-		-- with the new, auto direction selection course generator
-		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
-		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
-
-		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
-
-		rectWidthRatio = 1.25;
-		noGoWidthRatio = 0.975;
-		minPointDistance = 0.5;
-		maxPointDistance = 7.25;
-		};
-	link(getRootNode(), self.cp.headland.tg);
 
 	self.cp.fieldEdge = {
 	selectedField = {
@@ -658,11 +645,6 @@ function courseplay:onDelete()
 	end
 
 	if self.cp ~= nil then
-		if self.cp.headland and self.cp.headland.tg then
-			unlink(self.cp.headland.tg);
-			delete(self.cp.headland.tg);
-			self.cp.headland.tg = nil;
-		end;
 
 		if self.cp.hud.bg ~= nil then
 			self.cp.hud.bg:delete();

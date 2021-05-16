@@ -381,6 +381,26 @@ function HeadlandDirectionSetting:init(vehicle)
 		vehicle, self.values, self.texts)
 end
 
+---@class HeadlandCornerTypeSetting : SettingList
+HeadlandCornerTypeSetting = CpObject(SettingList)
+
+function HeadlandCornerTypeSetting:init(vehicle)
+	self.values = {
+		courseGenerator.HEADLAND_CORNER_TYPE_SMOOTH,
+		courseGenerator.HEADLAND_CORNER_TYPE_SHARP,
+		courseGenerator.HEADLAND_CORNER_TYPE_ROUND
+	}
+	self.texts = {
+		'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH',
+		'COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP',
+		'COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND'
+	}
+	SettingList.init(self, 'headlandCornerType',
+		'COURSEPLAY_HEADLAND_CORNERS', 'COURSEPLAY_HEADLAND_CORNERS',
+		vehicle, self.values, self.texts)
+end
+
+
 ---@class StartOnHeadlandSetting : SettingList
 StartOnHeadlandSetting = CpObject(SettingList)
 
@@ -457,6 +477,7 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(HeadlandModeSetting, vehicle)
 	container:addSetting(HeadlandPassesSetting, vehicle)
 	container:addSetting(HeadlandDirectionSetting, vehicle)
+	container:addSetting(HeadlandCornerTypeSetting, vehicle)
 	container:addSetting(StartOnHeadlandSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)

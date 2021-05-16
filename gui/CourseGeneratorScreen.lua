@@ -18,7 +18,7 @@ CourseGeneratorScreen.CONTROLS = {
 	autoWidth = 'autoWidth',
 	islandBypassMode = 'islandBypassMode',
 	headlandDirection = 'headlandDirection',
-	headlandCorners = 'headlandCorners',
+	headlandCornerType = 'headlandCornerType',
 	headlandOverlapPercent = 'headlandOverlapPercent',
 	headlandPasses = 'headlandPasses',
 	startOnHeadland = 'startOnHeadland',
@@ -258,7 +258,7 @@ function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
 	if self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_TWO_SIDE) then
 		-- force headland turn maneuver for two side mode
-		self.vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_SHARP
+		self.settings.headlandCornerType:set(courseGenerator.HEADLAND_CORNER_TYPE_SHARP)
 	end
 end
 
@@ -270,7 +270,7 @@ function CourseGeneratorScreen:setHeadlandFields()
 	self.headlandPasses:setVisible(headlandFieldsVisible)
 	self.startOnHeadland:setVisible(headlandFieldsVisible)
 	-- force headland turn maneuver for two side mode
-	self.headlandCorners:setVisible(headlandFieldsVisible and
+	self.headlandCornerType:setVisible(headlandFieldsVisible and
 		self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL))
 	self.headlandOverlapPercent:setVisible(headlandFieldsVisible)
 end
@@ -306,17 +306,8 @@ end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland corner
-function CourseGeneratorScreen:onOpenHeadlandCorners( element, parameter )
-	local texts = {}
-	for i = 1, courseplay.HEADLAND_CORNER_TYPE_MAX do
-		table.insert( texts, courseplay:loc( courseplay.cornerTypeText[ i ]))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.headland.turnType )
-end
-
-function CourseGeneratorScreen:onClickHeadlandCorners( state )
-	self.vehicle.cp.headland.turnType = state
+function CourseGeneratorScreen:onClickHeadlandCornerType(state)
+	self.settings.headlandCornerType:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onOpenHeadlandOverlapPercent( element, parameter )
