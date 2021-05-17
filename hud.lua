@@ -1077,12 +1077,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					courseplay.hud.updateLineSettingTexts(page,line,vehicle,vehicle.cp.settings.augerPipeToolPositions)
 				elseif entry.functionToCall == 'frontloaderToolPositions:setOrClearPostion' then
 					--FrontloaderToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
-					vehicle.cp.hud.content.pages[page][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
 					local texts = vehicle.cp.settings.frontloaderToolPositions:getTexts()
+					local labels = vehicle.cp.settings.frontloaderToolPositions:getLabels()
 					for i=1,4 do 
+						vehicle.cp.hud.content.pages[page][i][1].text = labels[i]
 						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
 					end
 				end
@@ -1149,10 +1147,14 @@ end;
 ---@param page number hud page
 ---@param line number hud line
 ---@param setting table setting to get the texts
-function courseplay.hud.updateLineSettingTexts(page,line,setting)
-	if not setting:isDisabled() then
-		vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
-		vehicle.cp.hud.content.pages[page][line][2].text = setting:getText()
+function courseplay.hud.updateLineSettingTexts(page,line,vehicle,setting)
+	if setting and setting.isDisabled then
+		if not setting:isDisabled() then
+			vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
+			vehicle.cp.hud.content.pages[page][line][2].text = setting:getText()
+		end
+	else 
+		print("fail: "..page..line)
 	end
 end
 
@@ -1504,31 +1506,31 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 		w = self.contentMaxWidth,
 		h = self.lineHeight
 	}
-	btn_toolTips = {
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION')
-				}
+	btn_save_toolTips = {
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION')
+	}
+	btn_move_toolTips = {
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION')
+	}
 	btn_icons = {
-				'shovelLoading',
-				'shovelTransport',
-				'shovelPreUnload',
-				'shovelUnloading'
-			}
+		'shovelLoading',
+		'shovelTransport',
+		'shovelPreUnload',
+		'shovelUnloading'
+	}
 	local funcCall = setting:getName()..":".."setOrClearPostion"
-	if setting:getTotalPositions() == 4 then --FrontloaderToolPositionsSetting
-		for i=1,4 do 
-			courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_toolTips[i]):setSetting(setting)
-			courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_toolTips[i]):setSetting(setting)
-			line = line +1
-		end
-		vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
-	else --AugerPipeToolPositionsSetting
-		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'shovelLoading'   }, 'setOrClearPostion', 1, shovelX1, self.linesButtonPosY[line], btnW, btnH, 1, nil, true, false, true):setSetting(setting)
-		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', 1, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, 1, nil, true, false, false):setSetting(setting)
-		vehicle.cp.hud.content.pages[page][line][1].functionToCall = funcCall
+	for i=1,setting:getTotalPositions() do 
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_save_toolTips[i]):setSetting(setting)
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_move_toolTips[i]):setSetting(setting)
+		line = line +1
 	end
+	vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
 end
 
 function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,startLine,stopLine, column,runCounterActive)
@@ -2241,5 +2243,75 @@ end
 function courseplay.hud:debug(vehicle,...)
 	courseplay.debugVehicle(courseplay.DBG_HUD, vehicle, ...)
 end	
+
+---- WIP!
+
+---@class HudTextElement
+HudTextElement = CpObject()
+function HudTextElement:init(page,line,column,text,textCallbackClass,textCallbackFunc,textCallbackParameter)
+	self.page = page
+	self.line = line
+	self.column = column
+	self.text = text
+	self.textCallbackClass = textCallbackClass
+	self.textCallbackFunc = textCallbackFunc
+	self.textCallbackParameter = textCallbackParameter
+end
+
+function HudTextElement:getText()
+	return self:hasValidTextCallback() and self:getTextFromCallback() or self.text
+end
+
+function HudTextElement:getPage()
+	return self.page
+end
+
+function HudTextElement:getLine()
+	return self.line
+end
+
+function HudTextElement:getColumn()
+	return self.column
+end
+function HudTextElement:getTextFromCallback()
+	return self.textCallbackClass[self.textCallbackFunc](self.textCallbackClass,self.textCallbackParameter)
+end
+
+function HudTextElement:hasValidTextCallback()
+	return self.textCallbackClass and self.textCallbackFunc
+end
+
+---@class HudSettingTextElement : HudTextElement
+HudSettingTextElement = CpObject(HudTextElement)
+function HudSettingTextElement:init(page,line,column,setting,settingTextCallback,settingTextCallbackParameter)
+	self.setting = setting
+	HudTextElement.init(page,line,column,setting,settingTextCallback,settingTextCallbackParameter)
+end
+function HudSettingTextElement:getText()
+	return not self.setting:isDisabled() and HudTextElement.getText(self)
+end
+
+---@class HudLineSettingTextElement : HudTextElement
+HudLineSettingTextElement = CpObject(HudTextElement)
+
+function HudLineSettingTextElement:init(page,line,setting,settingTextCallback,settingTextCallbackParameter,settingTextCallback_2,settingTextCallbackParameter_2)
+	HudTextElement.init(page,line)
+	self.HudSettingTextElementLeft = HudSettingTextElement(page,line,1,setting,settingTextCallback,settingTextCallbackParameter)
+	self.HudSettingTextElementRight = HudSettingTextElement(page,line,2,setting,settingTextCallback_2,settingTextCallbackParameter_2)
+end
+
+function HudLineSettingTextElement:getText()
+	return self.HudSettingTextElementLeft:getText(),self.HudSettingTextElementRight:getText()
+end
+
+function HudLineSettingTextElement:getColumn()
+	return self.HudSettingTextElementLeft:getColumn(),self.HudSettingTextElementRight:getColumn()
+end
+
+function HudLineSettingTextElement.getDefaultHudLineSettingTextElement(page,line,setting)
+	return HudLineSettingTextElement(page,line,setting,"getLabel",nil,"getText",nil)
+end
+
+
 -- do not remove this comment
 -- vim: set noexpandtab:

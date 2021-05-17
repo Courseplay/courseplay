@@ -3519,9 +3519,10 @@ WorkingToolPositionsSetting = CpObject(Setting)
 WorkingToolPositionsSetting.NetworkTypes = {}
 WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
 WorkingToolPositionsSetting.NetworkTypes.PLAY_POSITION = 1
-function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs)
-	Setting.init(self, name,label, toolTip, vehicle)
+function WorkingToolPositionsSetting:init(name, labels, toolTip, vehicle,totalPositionsAmount,validSpecs)
+	Setting.init(self, name,nil, toolTip, vehicle)
 	self.texts = {}
+	self.labels = labels
 	self.hasPosition = {}
 	self.totalPositions = totalPositionsAmount or 4
 	self.playTestPostion = nil
@@ -3543,6 +3544,10 @@ function WorkingToolPositionsSetting:getTexts()
 		texts[i] = text
 	end
 	return texts
+end
+
+function WorkingToolPositionsSetting:getLabels()
+	return self.labels
 end
 
 --save or delete tool position x
@@ -3856,9 +3861,14 @@ Cylindered.actionEventInput = Utils.overwrittenFunction(Cylindered.actionEventIn
 ---@class FrontloaderToolPositionsSetting : WorkingToolPositionsSetting
 FrontloaderToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
 function FrontloaderToolPositionsSetting:init(vehicle)
-	local label = "front"
+	local labels = {
+		courseplay:loc("COURSEPLAY_SHOVEL_LOADING_POSITION"),
+		courseplay:loc("COURSEPLAY_SHOVEL_TRANSPORT_POSITION"),
+		courseplay:loc("COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION"),
+		courseplay:loc("COURSEPLAY_SHOVEL_UNLOADING_POSITION")
+	}
 	local toolTip = "front"
-	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4)
+	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions",  labels, toolTip, vehicle,4)
 end
 
 function FrontloaderToolPositionsSetting:actionEventSavePosition(actionName, inputValue, callbackState, isAnalog)
@@ -3880,10 +3890,9 @@ end
 ---@class AugerPipeToolPositionsSetting : WorkingToolPositionsSetting
 AugerPipeToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
 function AugerPipeToolPositionsSetting:init(vehicle)
-	local label = "pipe"
 	local toolTip = "pipe"
 	local validSpecs = {Pipe}
-	WorkingToolPositionsSetting.init(self,"augerPipeToolPositions", label, toolTip, vehicle,1,validSpecs)
+	WorkingToolPositionsSetting.init(self,"augerPipeToolPositions", {"COURSEPLAY_SHOVEL_LOADING_POSITION"}, toolTip, vehicle,1,validSpecs)
 end
 
 function AugerPipeToolPositionsSetting:getText()
