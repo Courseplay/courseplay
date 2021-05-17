@@ -268,6 +268,7 @@ function GuiManager:openGui(name, asDialog)
 	self.guis[name].gui:openGui()
 
 	self.guiStates[name] = true
+	return self.guis[name].gui
 end
 
 function GuiManager:getGuiForOpen(name, asDialog)
@@ -292,7 +293,6 @@ function GuiManager:getGuiForOpen(name, asDialog)
 	else
 		self.smallGuis[name] = true
 	end
-	return self.guis[name].gui
 end
 
 function GuiManager:getGui(name)
@@ -848,11 +848,12 @@ function GuiManager:checkClickZoneNormal(x,y, drawX, drawY, sX, sY)
 	return x > drawX and y > drawY and x < drawX + sX and y < drawY + sY
 end
 
-function GuiManager:handleInputMainGui(rightClick)
+function GuiManager:handleInputMainGui(rightClick, vehicle)
 	-- TODO: Add Key setting
 
 	if not self.smallGuis["cp_main"] then
-		courseplay.guiManager:openGui("cp_main", true)
+		local gui = courseplay.guiManager:openGui("cp_main", true)
+		gui:setData(vehicle)
 	end
 
 	--if rightClick then
@@ -860,18 +861,17 @@ function GuiManager:handleInputMainGui(rightClick)
 	--end
 end
 
-function GuiManager:onEnterVehicle()
+function GuiManager:onEnterVehicle(vehicle)
 	if self.guiStates["cp_main"] then
-		courseplay.guiManager:openGui("cp_main", true)
+		local gui = courseplay.guiManager:openGui("cp_main", true)
+		gui:setData(vehicle)
 	end
-
 end
 
 function GuiManager:onLeaveVehicle()
 	if self.smallGuis["cp_main"] then
 		courseplay.guiManager:closeGui("cp_main")
 	end
-
 end
 
 function GuiManager:onCloseCpMainGui()

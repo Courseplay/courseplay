@@ -427,6 +427,8 @@ function courseplay:onEnterVehicle()
 	---Update mouse action event texts
 	CpManager:updateMouseInputText()
 	courseplay.guiManager:onEnterVehicle()
+	--MergeConflict
+	--courseplay.guiManager:onEnterVehicle(self)
 
 	if self:getIsCourseplayDriving() and self.steeringEnabled then
 		self.steeringEnabled = false;

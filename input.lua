@@ -265,4 +265,13 @@ function courseplay.inputBindings.updateInputButtonData()
 	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
 
 	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
+
+	-- MergeConflict
+	--[[
+		elseif actionName == 'COURSEPLAY_MOUSEACTION_SECONDARY' then -- open new hud (right mouse button)
+			courseplay.guiManager:handleInputMainGui(true, vehicle)
+		elseif actionName == 'COURSEPLAY_HUD_OPEN' then -- open new hud (lctrl and entf)
+			courseplay.guiManager:handleInputMainGui(false, vehicle)
+	--]]	
+
 end;

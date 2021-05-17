@@ -119,10 +119,10 @@ function CpGuiPageFunctions:registerPage(id, class, buttonId, parentElement)
     local page = {}
     page.id = id
     page.buttonId = buttonId
-    page.classGui = class:new()    
+    page.classGui = class:new(self.gui)    
 
     local xmlFile = loadXMLFile("Temp", page.classGui.xmlFilename)
-    parentElement.mainGui:loadFromXMLRec(xmlFile, "GUI", parentElement)    
+    parentElement.mainGui:loadFromXMLRec(xmlFile, "GUI", parentElement, page.classGui)    
     page.guiElement = parentElement.elements[#parentElement.elements]
 
     table.insert(self.pages, page)

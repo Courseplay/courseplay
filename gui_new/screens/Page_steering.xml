@@ -3,8 +3,26 @@
 <GUI>      
     <GuiElement type="image" template="cpMainPage">
 
-        <GuiElement type="text" template="cpMainTitle2" text="Steering" /> 
+        <!--GuiElement type="element" id="level_1" visible="false">
+            <GuiElement type="button" template="cpMainPageButton" text="Kursaufzeichnung beginnen" size="180px 15px" position="10px -10px" onClick="onClick_1_start" /> 
+            
+            <GuiElement type="image" template="cpMainPageSeperator" position="0px -40px" />
 
+            <GuiElement type="button" template="cpMainPageButton" text="Kurs kopieren:" size="180px 15px" position="10px -55px" /> 
+            <GuiElement type="button" template="cpMainPageButtonLeft" size="20px 20px" position="50px -80px" onClick="onClick_1_copy_left" />
+            <GuiElement type="text" template="cpMainPageTextCenter" text="keiner" size="150px 15px" position="0px -83px" /> 
+            <GuiElement type="button" template="cpMainPageButtonRight" size="20px 20px" position="230px -80px" onClick="onClick_1_copy_right" />
+            <GuiElement type="button" template="cpMainPageButtonAccept" size="22px 22px" position="15px -82px" onClick="onClick_1_copy" />
+        </GuiElement-->
+
+        <GuiElement type="element" id="level_2">
+            
+
+            <GuiElement type="button" template="cpMainPageButton" text="Kurs kopieren:" size="180px 15px" position="10px -55px" /> 
+
+            
+        </GuiElement>
+        
       
     </GuiElement>
 </GUI>
