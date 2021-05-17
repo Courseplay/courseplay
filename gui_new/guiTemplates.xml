@@ -41,6 +41,11 @@
 		<uv name="icon_mode8" value="384px 384px 128px 128px" />
 		<uv name="icon_mode9" value="128px 128px 128px 128px" />
 		<uv name="icon_mode10" value="256px 128px 128px 128px" />
+		
+		<uv name="icon_left" value="384px 512px 128px 128px" />
+		<uv name="icon_right" value="512px 512px 128px 128px" />
+
+		<uv name="icon_accept" value="335px 730px 50px 50px" />
 
     </uvs>
 	<templates>
@@ -63,7 +68,7 @@
 		</template>
         
         <template name="cpMain" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="350px 380px" />
+			<value name="size" value="350px 320px" />
 			<value name="position" value="700px 0px" />
 			<value name="imageColor" value="gray" />
 		</template>
@@ -137,25 +142,25 @@
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px -25px" />
-			<value name="size" value="350px 330px" />
+			<value name="size" value="350px 270px" />
 		</template>
 		<template name="cpMainLayout1" anchor="middleCenter" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="40px 320px" />
+			<value name="size" value="40px 250px" />
 		</template>
 		<template name="cpMainLayout2" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="y" />
-			<value name="alignment" value="center" />
+			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="310px 300px" />
-			<value name="margin" value="0px 30px 0px 0px" />
+			<value name="size" value="310px 270px" />
+			<value name="margin" value="0px 0px 0px 0px" />
 		</template>
 		<template name="cpMainPagePosition" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
-			<value name="size" value="310px 300px" />
-			<value name="margin" value="0px -35px 0px 0px" />
+			<value name="size" value="310px 225px" />
+			<value name="margin" value="0px 5px 0px 5px" />
 		</template>
 		<template name="cpMainLayout3" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="x" />
@@ -189,7 +194,7 @@
 			<value name="imageUVs_selected" value="icon_castSteering" />
 		</template>
 		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 12px 0px 0px" />
+			<value name="margin" value="0px 20px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_CourseManager_overlay" extends="cpMainCategorie_CourseManager">
 			<value name="imageUVs" value="icon_castCourseManager" />
@@ -226,6 +231,13 @@
 		<template name="cpMainCategorie_SettingsField_overlay" extends="cpMainCategorie_SettingsField">
 			<value name="imageUVs" value="icon_castSettingsField" />
 			<value name="imageUVs_selected" value="icon_castSettingsField" />
+		</template>
+		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="0px 20px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_Settings_overlay" extends="cpMainCategorie_Settings">
+			<value name="imageUVs" value="icon_castSettings" />
+			<value name="imageUVs_selected" value="icon_castSettings" />
 		</template>
 
 		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorie" />
@@ -314,10 +326,75 @@
 
 
         <template name="cpMainPage" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="300px 290px" />
+			<value name="size" value="300px 225px" />
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="grayLight" />
 		</template>
+	
+        <template name="cpMainPageButton" anchor="leftTop" extends="cpBase">
+			<value name="textColor" value="cpOrange" />
+			<value name="hasText" value="true" />
+		</template>
+        <template name="cpMainPageButton_text" anchor="leftTop" extends="cpMainPageButton">		
+			<value name="textSize" value="12px" />
+			<value name="textColor" value="white" />
+			<value name="textColor_selected" value="cpOrange" />
+		</template>
+        <template name="cpMainPageText" anchor="leftTop" extends="cpMainPageButton">		
+			<value name="textSize" value="12px" />
+			<value name="textColor" value="white" />
+			<value name="textColor_selected" value="cpOrange" />
+		</template>
+        <template name="cpMainPageTextCenter" anchor="middleTop" extends="cpMainPageText">
+			<value name="textAlignment" value="center" />
+		</template>
+
+        <template name="cpMainPageButtonLeft" anchor="leftTop" extends="cpBase">
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+			<value name="hasOverlay" value="true" />
+		</template>
+        <template name="cpMainPageButtonLeft_overlay" anchor="leftTop" extends="cpMainPageButtonLeft">		
+			<value name="imageUVs" value="icon_left" />
+			<value name="imageUVs_selected" value="icon_left" />
+		</template>
+        <template name="cpMainPageButtonRight" anchor="leftTop" extends="cpBase">
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+			<value name="hasOverlay" value="true" />
+		</template>
+        <template name="cpMainPageButtonRight_overlay" anchor="leftTop" extends="cpMainPageButtonRight">		
+			<value name="imageUVs" value="icon_right" />
+			<value name="imageUVs_selected" value="icon_right" />
+		</template>
+        <template name="cpMainPageButtonAccept" anchor="leftTop" extends="cpBase">
+			<value name="imageFilename" value="g_baseUIFilename" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+			<value name="hasOverlay" value="true" />
+		</template>
+        <template name="cpMainPageButtonAccept_overlay" anchor="leftTop" extends="cpMainPageButtonAccept">		
+			<value name="imageUVs" value="icon_accept" />
+			<value name="imageUVs_selected" value="icon_accept" />
+		</template>
+        <template name="cpMainPageSeperator" anchor="middleTop" extends="cpBase">
+			<value name="imageColor" value="cpOrange" />
+			<value name="size" value="280px 1px" />
+		</template>
+
+		<!--template name="cpMainCategorieActiveButton" anchor="middleTop" extends="cpBase">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="32px 32px" />
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageColor" value="white" />
+			<value name="imageColor_selected" value="cpOrange" />
+			<value name="hasOverlay" value="true" />
+			<value name="isActivable" value="true" />
+			<value name="checkParent" value="true" />
+		</template-->
+
 
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->

@@ -69,7 +69,7 @@ end
 
 function CpGuiMain:onOpen() 
     self.gui_dialog.position = self.dialogPosition
-    self.pageFunctions:setPage(self.lastPageIndex)
+    self.pageFunctions:setPageByName(self.lastPageIndex)
 end
 
 function CpGuiMain:onClose() 
@@ -93,7 +93,14 @@ function CpGuiMain:draw()
 	
 end
 
-function CpGuiMain:setData(site)
+function CpGuiMain:setData(vehicle)
+    self.vehicle = vehicle
+
+    for _,page in pairs(self.pageFunctions.pages) do
+        if page.classGui.setVehicle ~= nil then
+            page.classGui:setVehicle(vehicle)
+        end
+    end
     
 end
 
@@ -134,11 +141,6 @@ end
 function CpGuiMain:onDisableHelp(button, para)
     self.gui_helpText:setText("")
 end
-
-
-
-
-
 
 function CpGuiMain:onOpenCourseManager()
     courseplay.guiManager:openGui("cp_courseManager")

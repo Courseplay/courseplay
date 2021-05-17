@@ -59,7 +59,10 @@ function CpGui:loadFromXML()
 	delete(xmlFile)
 end
 
-function CpGui:loadFromXMLRec(xmlFile, key, actGui)
+function CpGui:loadFromXMLRec(xmlFile, key, actGui, classGui)
+	if classGui == nil then
+		classGui = self.classGui
+	end
 	local i = 0
 	while true do
 		local k = string.format("%s.GuiElement(%d)", key, i)
@@ -73,31 +76,31 @@ function CpGui:loadFromXMLRec(xmlFile, key, actGui)
 		local guiElement = nil
 		
 		if t == "text" then
-			guiElement = CpGuiText:new(self.classGui)
+			guiElement = CpGuiText:new(classGui)
 		elseif t == "image" then
-			guiElement = CpGuiOverlay:new(self.classGui)
+			guiElement = CpGuiOverlay:new(classGui)
 		elseif t == "flowLayout" then
-			guiElement = CpGuiFlowLayout:new(self.classGui)
+			guiElement = CpGuiFlowLayout:new(classGui)
 		elseif t == "button" then
-			guiElement = CpGuiButton:new(self.classGui)
+			guiElement = CpGuiButton:new(classGui)
 		elseif t == "table" then
-			guiElement = CpGuiTable:new(self.classGui)
+			guiElement = CpGuiTable:new(classGui)
 		elseif t == "input" then
-			guiElement = CpGuiInput:new(self.classGui)
+			guiElement = CpGuiInput:new(classGui)
 		elseif t == "page" then
-			guiElement = CpGuiPage:new(self.classGui)
+			guiElement = CpGuiPage:new(classGui)
 		elseif t == "pageSelector" then
-			guiElement = CpGuiPageSelector:new(self.classGui)
+			guiElement = CpGuiPageSelector:new(classGui)
 		elseif t == "ingameMap" then
-			guiElement = CpGuiIngameMap:new(self.classGui)
+			guiElement = CpGuiIngameMap:new(classGui)
 		elseif t == "tableSort" then
-			guiElement = CpGuiTableSort:new(self.classGui)
+			guiElement = CpGuiTableSort:new(classGui)
 		elseif t == "guiMover" then
-			guiElement = CpGuiMover:new(self.classGui)
+			guiElement = CpGuiMover:new(classGui)
 		elseif t == "pageLoad" then
-			guiElement = CpGuiPage:new(self.classGui, self)
+			guiElement = CpGuiPage:new(classGui, self)
 		else
-			guiElement = CpGuiElement:new(self.classGui, nil, true)
+			guiElement = CpGuiElement:new(classGui, nil, true)
 		end
 		guiElement.id = id
 		
@@ -106,10 +109,10 @@ function CpGui:loadFromXMLRec(xmlFile, key, actGui)
 		actGui:addElement(guiElement)
 		
 		if id ~= nil and id ~= "" then
-			self.classGui[id] = guiElement
+			classGui[id] = guiElement
 		end
 		
-		self:loadFromXMLRec(xmlFile, k, guiElement)
+		self:loadFromXMLRec(xmlFile, k, guiElement, classGui)
 		i = i + 1
 	end
 end
