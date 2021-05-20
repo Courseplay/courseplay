@@ -68,18 +68,18 @@
 		</template>
         
         <template name="cpMain" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="350px 320px" />
+			<value name="size" value="390px 320px" /><!--Main BG size from mid-->
 			<value name="position" value="700px 0px" />
 			<value name="imageColor" value="gray" />
 		</template>
 
         <template name="cpMainBarTop" anchor="middleTop" extends="cpBase">
-			<value name="size" value="350px 25px" />
+			<value name="size" value="390px 25px" /><!--top and bottom black bar size from mid-->
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
         <template name="cpMainGuiMover" anchor="leftTop" extends="cpBase">
-			<value name="size" value="370px 25px" />
+			<value name="size" value="350px 25px" /><!--Mover Area lenght from left-->
 			<value name="position" value="0px 0px" />
 		</template>        
         <template name="cpMainLogo" anchor="leftCenter" extends="cpBase">
@@ -105,7 +105,7 @@
 			<value name="textBold" value="false" />
 		</template>
         <template name="cpMainVersion" anchor="leftCenter" extends="cpBase">
-			<value name="position" value="200px 2px" />
+			<value name="position" value="270px 2px" /><!--Version Infotext from left-->
 			<value name="textSize" value="10px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
@@ -142,7 +142,7 @@
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px -25px" />
-			<value name="size" value="350px 270px" />
+			<value name="size" value="390px 270px" />
 		</template>
 		<template name="cpMainLayout1" anchor="middleCenter" extends="cpBase">
 			<value name="orientation" value="y" />
@@ -154,7 +154,7 @@
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="310px 270px" />
+			<value name="size" value="350px 270px" />
 			<value name="margin" value="0px 0px 0px 0px" />
 		</template>
 		<template name="cpMainPagePosition" anchor="middleTop" extends="cpBase">
@@ -166,7 +166,7 @@
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="310px 30px" />
+			<value name="size" value="340px 30px" /><!--Bottom Buttons-->
 		</template>
 
 		<template name="cpMainCategorie" anchor="middleTop" extends="cpBase">
@@ -326,7 +326,7 @@
 
 
         <template name="cpMainPage" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="300px 225px" />
+			<value name="size" value="340px 225px" /><!--Mid screen from center-->
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="grayLight" />
 		</template>
@@ -399,7 +399,7 @@
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->
 		<!--############################################################################################################################################################-->
-
+		<!--Manager--><!--change position doesn't work everywhere, Manager position get saved in XML, PDA not yet-->
         <template name="cpCmMain" anchor="middleCenter" extends="cpBase">
 			<value name="size" value="700px 800px" />
 			<value name="position" value="0px 0px" />
@@ -418,10 +418,10 @@
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template> 
-
+		<!--PDA-->
 		<template name="cpCmPda" anchor="middleCenter" extends="cpBase">
 			<value name="size" value="800px 800px" />
-			<value name="position" value="0px 0px" />	
+			<value name="position" value="0px 0px" />
 			<value name="zoomMode" value="full" />		
 			<value name="minSize" value="800px 800px" />				
 			<value name="maxSize" value="5000px 5000px" />	

@@ -16,23 +16,28 @@ CoursePlay - Gui - Main
 
 <GUI>  
   <GuiElement type="image" template="cpMain" id="gui_dialog">  
+	<!--Header-->
     <GuiElement type="image" template="cpMainBarTop">  
         <GuiElement type="guiMover" template="cpMainGuiMover" target="gui_dialog" /> 
         <GuiElement type="image" template="cpMainLogo" /> 
         <GuiElement type="text" template="cpMainTitle1" text="COURSE" /> 
         <GuiElement type="text" template="cpMainTitle2" text="PLAY" /> 
-        <GuiElement type="text" template="cpMainVersion" text="v6.02.00040dev" /> 
+        <GuiElement type="text" template="cpMainVersion" text="v6.04.00001.dev" /> 
         <GuiElement type="button" template="cpMainCloseButton" onClick="onClose" /> 
     </GuiElement>
+	
+	<!--Buttons left [PAGES]-->
     <GuiElement type="flowLayout" template="cpMainLayout">
       <GuiElement type="flowLayout" template="cpMainLayout1">
-        <GuiElement type="button" template="cpMainCategorie_Steering" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="steering" id="guiBtnSteering" /> 
-        <GuiElement type="button" template="cpMainCategorie_CourseManager"  onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenCourseManager" parameter="courseManager" /> 
-
-        <GuiElement type="button" template="cpMainCategorie_Drivers" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="drivers" id="guiBtnDrivers" /> 
-        <GuiElement type="button" template="cpMainCategorie_DriversSearch" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="driversSearch" id="guiBtnDriversSearch" /> 
-
-
+	  	<!--Recording and Driving-->
+        <GuiElement type="button" template="cpMainCategorie_Steering" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="steering" id="guiBtnSteering" />
+		<!--Opens CourseManager_GUI-->
+        <GuiElement type="button" template="cpMainCategorie_CourseManager"  onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenCourseManager" parameter="courseManager" />
+		<!--Unloader Control [Page0]-->
+        <GuiElement type="button" template="cpMainCategorie_Drivers" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="drivers" id="guiBtnDrivers" />
+		<!--Combine Manager-->
+        <GuiElement type="button" template="cpMainCategorie_DriversSearch" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="driversSearch" id="guiBtnDriversSearch" />
+		<!--Settings Page-->
         <GuiElement type="button" template="cpMainCategorie_Settings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settings" /> 
 
         <!--GuiElement type="button" template="cpMainCategorie_SettingsFilling" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="settingsFilling" /> 
@@ -48,6 +53,8 @@ CoursePlay - Gui - Main
 
                     
       </GuiElement>
+
+	  <!--pageLoad for Buttons-->
       <GuiElement type="flowLayout" template="cpMainLayout2">
         <GuiElement type="element" template="cpMainPagePosition">
           <GuiElement type="pageLoad" gui="CpGuiPageSteering" pageId="steering" buttonId="guiBtnSteering" />
@@ -55,6 +62,7 @@ CoursePlay - Gui - Main
           <GuiElement type="pageLoad" gui="CpGuiPageDriversSearch" pageId="driversSearch" buttonId="guiBtnDriversSearch" />
         </GuiElement>
         
+		<!--Buttons bottom [MODES]-->
         <GuiElement type="flowLayout" template="cpMainLayout3">
           <GuiElement type="button" template="cpMainCategorie_mode1" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode1" /> 
           <GuiElement type="button" template="cpMainCategorie_mode2" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode2" /> 
@@ -62,7 +70,7 @@ CoursePlay - Gui - Main
           <GuiElement type="button" template="cpMainCategorie_mode4" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode4" /> 
           <GuiElement type="button" template="cpMainCategorie_mode5" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode5" /> 
           <GuiElement type="button" template="cpMainCategorie_mode6" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode6" /> 
-          <!--GuiElement type="button" template="cpMainCategorie_mode7" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode7" /--> 
+          <GuiElement type="button" template="cpMainCategorie_mode7" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode7" /> 
           <GuiElement type="button" template="cpMainCategorie_mode8" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode8" />
           <GuiElement type="button" template="cpMainCategorie_mode9" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode9" />
           <GuiElement type="button" template="cpMainCategorie_mode10" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode10" />

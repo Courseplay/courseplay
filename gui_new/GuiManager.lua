@@ -21,7 +21,7 @@
 GuiManager = {}
 GuiManager._mt = Class(GuiManager)
 
-GuiManager.devVersion = true -- if true, the gui will reload every defined time
+GuiManager.devVersion = false -- if true, the gui will reload every defined time, moving the gui and buttons are a bit tricky to use...
 
 GuiManager.guiClass = {}
 courseplay.guiScreens = {}

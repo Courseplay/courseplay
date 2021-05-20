@@ -101,7 +101,7 @@ function CpCourseManager:setGuiValue(target, subTarget, val)
 end
 
 
-function CpCourseManager:saveXmlSettings(xml, key)    
+function CpCourseManager:saveXmlSettings(xml, key)	--save PDA position too ?    
     setXMLFloat(xml, key .. '.courseManager#posX', self.dialogPosition[1])
     setXMLFloat(xml, key .. '.courseManager#posY', self.dialogPosition[2])
 end
