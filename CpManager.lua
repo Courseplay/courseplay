@@ -932,7 +932,7 @@ function CpManager:showYesNoDialogue(title, text, callbackFn)
 	if courseplay.clock < 2000 or (g_gui.guis.YesNoDialog.target and g_gui.guis.YesNoDialog.target.isOpen) then
 		return
 	end
-	local text =string.format("%s\n %s",courseplay:loc('COURSEPLAY_SUPPORT_INFO'),courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'))
+	local text =string.format("%s\n\n%s",courseplay:loc('COURSEPLAY_SUPPORT_INFO'),courseplay:loc('COURSEPLAY_YES_NO_FIELDSCAN'))
 	g_gui:showYesNoDialog({text=text, title=title, callback=callbackFn, target=self})
 end;
 
