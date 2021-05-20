@@ -531,6 +531,14 @@ function Course:getNextDirectionChangeFromIx(ix)
 	end
 end
 
+function Course:getNextWaitPointFromIx(ix)
+	for i = ix, #self.waypoints do
+		if self:isWaitAt(i) then
+			return i
+		end
+	end
+end
+
 function Course:switchingToReverseAt(ix)
 	return not self:isReverseAt(ix) and self:isReverseAt(ix + 1)
 end
@@ -614,6 +622,15 @@ end
 
 function Course:getWaypointAngleDeg(ix)
 	return self.waypoints[math.min(#self.waypoints, ix)].angle
+end
+
+--- Gets the world directions of the waypoint.
+---@param ix number
+---@return dx x world direction 
+---@return dz z world direction
+function Course:getWaypointWorldDirections(ix)
+	local wp = self.waypoints[math.min(#self.waypoints, ix)]
+	return wp.dx,wp.dz
 end
 
 -- This is the radius from the course generator. For now ony island bypass waypoints nodes have a
@@ -1084,13 +1101,55 @@ function Course.createFromNode(vehicle, referenceNode, xOffset, from, to, step, 
 	return course
 end
 
+--- Create a new temporary course between two nodes.
+---@param vehicle table
+---@param startNode number
+---@param endNode number
+---@param xOffset number side offset of the new course (relative to node), left positive
+---@param zStartOffset number start at this many meters z offset from node
+---@param zEndOffset number end at this many meters z offset from node
+---@param step number step (waypoint distance), must be positive
+---@param reverse boolean is this a reverse course?
+function Course.createFromNodeToNode(vehicle, startNode, endNode, xOffset, zStartOffset, zEndOffset, step, reverse)
+	local waypoints = {}
+
+	local dist = calcDistanceFrom(startNode,endNode)
+
+	local node = createTransformGroup("temp")
+
+	local x,y,z = getWorldTranslation(startNode)
+	local dx,_,dz = getWorldTranslation(endNode)
+	local nx,nz =  MathUtil.vector2Normalize(dx-x,dz-z)
+
+	local yRot = 0
+	if nx == nx or nz == nz then
+		yRot = MathUtil.getYRotationFromDirection(nx,nz)
+	end
+
+	setTranslation(node,x,0,z)
+	setRotation(node,0,yRot,0)
+
+	for d = zStartOffset, dist + zEndOffset, step do
+		local ax, _, az = localToWorld(node, xOffset, 0, d)
+		table.insert(waypoints, {x = ax, z = az, rev = reverse})
+	end
+	---Make sure that at the end is a waypoint.
+	local ax, _, az = localToWorld(node, xOffset, 0, dist+zEndOffset)
+	table.insert(waypoints, {x = ax, z = az, rev = reverse})
+
+	courseplay.destroyNode(node)
+	local course = Course(vehicle, waypoints, true)
+	course:enrichWaypointData()
+	return course
+end
+
 --- Create a new (straight) temporary course based on a world coordinates
 ---@param vehicle table
 ---@param referenceNode number
 ---@param xOffset number side offset of the new course (relative to node), left positive
 ---@param zStartOffset number start at this many meters z offset from node
 ---@param zEndOffset number end at this many meters z offset from node
----@param step number step (waypoint distance), must be negative if to < from
+---@param step number step (waypoint distance), must be positive
 ---@param reverse boolean is this a reverse course?
 function Course.createFromTwoWorldPositions(vehicle, x, z, dx, dz, xOffset, zStartOffset, zEndOffset, step, reverse)
 	local waypoints = {}
