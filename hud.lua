@@ -686,10 +686,12 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'returnToFirstPoint:changeByX' then
 					--ReturnToFirstPointSetting 
 					if not vehicle.cp.settings.returnToFirstPoint:isDisabled() then
+						self:enableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.returnToFirstPoint)
 						self:disableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
 						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.returnToFirstPoint:getLabel()
 						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.returnToFirstPoint:getText()
 					else
+						self:disableButtonWithFunction(vehicle,page, 'changeByX',vehicle.cp.settings.returnToFirstPoint)
 						forceUpdate = true -- force reload of this page if functionToCall changed
 						entry.functionToCall = 'setCustomSingleFieldEdge'
 						self:enableButtonWithFunction(vehicle,page, 'setCustomSingleFieldEdge')
@@ -1151,13 +1153,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:enableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
 					else
 						self:disableButtonWithFunction(vehicle,page,'changeByX',vehicle.cp.settings.separateFillTypeLoading)
-					end
-				elseif entry.functionToCall == 'automaticUnloadingOnField:toggle' then
-					--not used right now!
-					--AutomaticUnloadingOnFieldSetting 
-					if not vehicle.cp.settings.automaticUnloadingOnField:isDisabled() then
-						vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticUnloadingOnField:getLabel() 
-						vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticUnloadingOnField:getText() 
 					end
 				elseif entry.functionToCall == 'baleCollectionField:changeByX' then
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.baleCollectionField:getLabel()

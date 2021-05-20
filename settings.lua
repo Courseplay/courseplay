@@ -1155,12 +1155,8 @@ function Setting:isDisabled()
 	return false
 end
 
-function Setting:hudButtonCallFunction(parameter)
-	self:changeByX(parameter)
-end
-
-function Setting:hudButtonHelpCallFunction(parameter)
-	local help = string.format("%s help: /n%s",self.label,self.label.."_HELP")
+function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
+---override
 end
 
 ---@class FloatSetting
