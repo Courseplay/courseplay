@@ -1267,6 +1267,7 @@ function HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXml
 	saveXMLFile(xmlFile)
 	delete(xmlFile)
 	courseplay.info("Finished printing to courseplayDebugPrint.xml")
+end
 
 function courseplay.appendedFunction(oldFunc, newFunc, t)
     if oldFunc ~= nil then

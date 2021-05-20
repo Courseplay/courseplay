@@ -232,10 +232,6 @@ IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest Aut
             <binding device="KB_MOUSE_DEFAULT" input="" />
         </actionBinding>
 		
-		<actionBinding action="COURSEPLAY_HUD_OPEN">
-			<binding device="KB_MOUSE_DEFAULT" input="KEY_lctrl KEY_delete" />
-		</actionBinding>
-
     </inputBinding>
 	<credits><![CDATA[
 ## Contributors

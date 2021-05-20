@@ -16,7 +16,15 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 			courseplay:setMouseCursor(vehicle, not vehicle.cp.mouseCursorActive);
 		elseif not vehicle.cp.hud.show and courseplay.globalSettings.enableOpenHudWithMouseGlobal:is(true) and vehicle.cp.settings.enableOpenHudWithMouseVehicle:is(true) then
 			courseplay:openCloseHud(vehicle, true)
+			courseplay.guiManager:handleInputMainGui(true, vehicle)
 		end;
+	-- MergeConflict
+	--[[
+		elseif actionName == 'COURSEPLAY_MOUSEACTION_SECONDARY' then -- open new hud (right mouse button)
+			courseplay.guiManager:handleInputMainGui(true, vehicle)
+		elseif actionName == 'COURSEPLAY_HUD_OPEN' then -- open new hud (lctrl and entf)
+			courseplay.guiManager:handleInputMainGui(false, vehicle)
+	--]]	
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;
@@ -262,16 +270,9 @@ function courseplay.inputBindings.updateInputButtonData()
 		courseplay.inputBindings.mouse[inputNameType .. 'ButtonId'] = Input[mouseButtonName];
 		-- print(('\t\t%sTextI18n=%q, mouseButtonId=%d'):format(inputNameType, txt, mouseButtonId));
 	end;
-	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
+--	local openCloseHudTextI18n = g_inputDisplayManager:getKeyboardInputActionKey("COURSEPLAY_HUD");
 
-	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
+--	courseplay.inputBindings.keyboard.openCloseHudTextI18n = ('%s + %s'):format(modifierTextI18n, openCloseHudTextI18n);
 
-	-- MergeConflict
-	--[[
-		elseif actionName == 'COURSEPLAY_MOUSEACTION_SECONDARY' then -- open new hud (right mouse button)
-			courseplay.guiManager:handleInputMainGui(true, vehicle)
-		elseif actionName == 'COURSEPLAY_HUD_OPEN' then -- open new hud (lctrl and entf)
-			courseplay.guiManager:handleInputMainGui(false, vehicle)
-	--]]	
 
 end;

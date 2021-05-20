@@ -1307,8 +1307,7 @@ function CpManager:loadXmlSettings()
 		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
 		courseplay.globalCourseGeneratorSettings:loadFromXML(cpSettingsXml, 'CPSettings.courseGenerator')
 
-		-- MergeConflict
-		--courseplay.guiManager:loadXmlSettings(cpSettingsXml, 'CPSettings')
+		courseplay.guiManager:loadXmlSettings(cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

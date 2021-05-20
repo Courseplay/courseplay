@@ -148,11 +148,8 @@ local function initialize()
 		'Events/InfoTextEvent',
 		'Events/WorkingToolPositionsEvents',
 		'Events/CommandEvents',
-		'Events/WorkWidthSettingEvent',
-		'Generic/LinkedList'
-		'Events/UserConnectedEvent',
-		'Events/PostSyncEvent',
-
+		'Generic/LinkedList',
+		
 		'gui_new/GuiManager',
 		'gui_new/FakeGui',
 		'gui_new/elements/Gui',
