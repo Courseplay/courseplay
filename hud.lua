@@ -1244,12 +1244,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		vehicle.cp.hud.visualWaypointsEndButton:setActive(showVisualWaypointsState>=ShowVisualWaypointsSetting.START_STOP)
 		vehicle.cp.hud.visualWaypointsAllButton:setActive(showVisualWaypointsState>=ShowVisualWaypointsSetting.ALL)
 		vehicle.cp.hud.visualWaypointsCrossingButton:setActive(showVisualCrossingPoint)
-
-		
 		-- Debug channels
-		if courseplay.isDevVersion then
-			vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
-		end
+		vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
+		
 	else
 		self:showShowWaypointsButtons(vehicle, false)
 	end
@@ -1467,7 +1464,7 @@ end;
 
 
 
---setup functions 
+--setup functions
 function courseplay.hud:setupCpModeButtons(vehicle)
 	-- setCpMode buttons
 	local totalWidth = (courseplay.NUM_MODES * self.buttonSize.big.w) + ((courseplay.NUM_MODES - 1) * self.buttonSize.big.margin);
@@ -1483,24 +1480,23 @@ end
 
 function courseplay.hud:setupDebugButtons(vehicle,debugButtonOnPage)
 	-- debug channels
-	if courseplay.isDevVersion then 
-		vehicle.cp.hud.debugChannelButtons = {};
-		local mouseWheelArea = {
-			x = self.contentMinX,
-			w = self.contentMaxWidth,
-			h = self.lineHeight
-			};
-		
-		
-		for dbg=1, courseplay.numDebugChannelButtonsPerLine do
-			local data = courseplay.debugButtonPosData[dbg];
-			local toolTip = courseplay.debugChannelsDesc[dbg];
-			vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
-		end;
-		courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage, -1, true, false);
-		courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage,  1, true, false);
-		courseplay.button:new(vehicle, debugButtonOnPage, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, debugButtonOnPage, -1, true, true);
-	end
+	vehicle.cp.hud.debugChannelButtons = {};
+	local mouseWheelArea = {
+		x = self.contentMinX,
+		w = self.contentMaxWidth,
+		h = self.lineHeight
+		};
+	
+	
+	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
+		local data = courseplay.debugButtonPosData[dbg];
+		local toolTip = courseplay.debugChannelsDesc[dbg];
+		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+	end;
+	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage, -1, true, false);
+	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage,  1, true, false);
+	courseplay.button:new(vehicle, debugButtonOnPage, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, debugButtonOnPage, -1, true, true);
+	
 end
 
 function courseplay.hud:setupRecordingButtons(vehicle)
@@ -1717,7 +1713,7 @@ function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,s
 	end
 end
 
---update functions 
+--update functions
 function courseplay.hud:updateCourseList(vehicle, page)
 	-- update courses?
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
