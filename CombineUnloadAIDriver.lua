@@ -1260,7 +1260,7 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 			-- (short) pathfinding to get under the pipe.
 			zOffset = - self:getCombinesMeasuredBackDistance() - 10
 		else
-			zOffset = - self:getCombinesMeasuredBackDistance() - 2
+			zOffset = - self:getCombinesMeasuredBackDistance() - 10 --allow trailer space to align after sharp turns (noticed it more affects potato/sugarbeet harvesters with pipes close to vehicle)
 		end
 		self:startPathfindingToCombine(self.onPathfindingDoneToCombine, nil, zOffset)
 	else

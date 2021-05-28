@@ -692,7 +692,7 @@ function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsE
 	-- rendezvous at whichever is closer
 	unloaderRendezvousWaypointIx = math.min(unloaderRendezvousWaypointIx, self.waypointIxWhenFull or unloaderRendezvousWaypointIx)
 	-- now check if this is a good idea
-	self.agreedUnloaderRendezvousWaypointIx = self:findBestWaypointToUnload(unloaderRendezvousWaypointIx)
+	self.agreedUnloaderRendezvousWaypointIx = self:findBestWaypointToUnload(unloaderRendezvousWaypointIx, unloadAIDriver)
 	if self.agreedUnloaderRendezvousWaypointIx then
 		self.unloadAIDriverToRendezvous:set(unloadAIDriver, 1000 * (unloaderEstimatedSecondsEnroute + 30))
 		self:debug('Rendezvous with unloader at waypoint %d in %d m', self.agreedUnloaderRendezvousWaypointIx, dToUnloaderRendezvous)
@@ -751,11 +751,11 @@ end
 --- we'll rendezvous the unloader or we'll be full there.
 ---@return number best waypoint to unload, ix may be adjusted to make sure it isn't in a turn or
 --- the fruit is not in the pipe.
-function CombineAIDriver:findBestWaypointToUnload(ix)
+function CombineAIDriver:findBestWaypointToUnload(ix, unloadAIDriver)
 	if self.fieldworkCourse:isOnHeadland(ix) then
 		return self:findBestWaypointToUnloadOnHeadland(ix)
 	else
-		return self:findBestWaypointToUnloadOnUpDownRows(ix)
+		return self:findBestWaypointToUnloadOnUpDownRows(ix, unloadAIDriver)
 	end
 end
 
@@ -777,7 +777,7 @@ end
 --- We calculated a waypoint to meet the unloader (either because it asked for it or we think we'll need
 --- to unload. Now make sure that this location is not around a turn or the pipe isn't in the fruit by
 --- trying to move it up or down a bit. If that's not possible, just leave it and see what happens :)
-function CombineAIDriver:findBestWaypointToUnloadOnUpDownRows(ix)
+function CombineAIDriver:findBestWaypointToUnloadOnUpDownRows(ix, unloadAIDriver)
 	local dToNextTurn = self.fieldworkCourse:getDistanceToNextTurn(ix) or math.huge
 	local lRow, ixAtRowStart = self.fieldworkCourse:getRowLength(ix)
 	local pipeInFruit = self.fieldworkCourse:isPipeInFruitAt(ix)
@@ -785,7 +785,7 @@ function CombineAIDriver:findBestWaypointToUnloadOnUpDownRows(ix)
 	local newWpIx = ix
 	self:debug('Looking for a waypoint to unload around %d on up/down row, pipe in fruit %s, dToNextTurn: %d m, lRow = %d m',
 				ix, tostring(pipeInFruit), dToNextTurn, lRow or 0)
-	if pipeInFruit then
+	if pipeInFruit and unloadAIDriver.vehicle.cp.settings.useRealisticDriving:is(true) then --if the pipe is in fruit AND the user selects 'avoid fruit'
 		if ixAtRowStart then
 			if ixAtRowStart > currentIx then
 				-- have not started the previous row yet
