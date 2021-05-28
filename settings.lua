@@ -1106,9 +1106,8 @@ function Setting:setFromNetwork(value)
 	self:onChange()
 end
 
-
-function Setting:printSetting()
-	print(self:getName()..": "..tostring(self:get()))
+function Setting:getDebugString()
+	return string.format('%s: %s', self.name, tostring(self:get()))
 end
 
 --- Set to a specific value
@@ -1455,11 +1454,8 @@ function SettingList:validateCurrentValue()
 end
 
 function SettingList:getDebugString()
-	local result = string.format('%s:\n', self.name)
-	for i = 1, #self.values do
-		result = result .. string.format('\t%s%2d: %s\n', i == self.current and '*' or ' ', i, tostring(self.values[i]))
-	end
-	return result
+	-- replace % as this string goes through multiple formats (%% does not seem to work and I have no time to figure it out
+	return string.format('%s: %s', self.name, string.gsub(self.texts[self.current], '%%', 'percent'))
 end
 
 function SettingList:onWriteStream(stream)
@@ -3872,6 +3868,18 @@ function SettingsContainer:validateSetting(setting)
 		return false
 	end
 	return true
+end
+
+function SettingsContainer:debug(channel)
+	for key, setting in pairs(self) do
+		if key ~= 'name' then
+			if setting.vehicle then
+				courseplay.debugVehicle(channel, setting.vehicle, setting:getDebugString())
+			else
+				courseplay.debugFormat(channel, setting:getDebugString())
+			end
+		end
+	end
 end
 
 function SettingsContainer.createGlobalSettings()

@@ -10,7 +10,7 @@ function WorkWidthSettingEvent:emptyNew()
 end
 
 ---@param value number (float)
-function WorkWidthSettingEvent:new(vehicle,parentName, name, value)
+function WorkWidthSettingEvent:new(vehicle, parentName, name, value)
 	courseplay:debugFormat(courseplay.DBG_MULTIPLAYER,
 		"WorkWidthSettingEvent:new(%s, %s, %s, %.1f)",nameNum(vehicle), name, parentName, value)
 	self.vehicle = nil
@@ -26,7 +26,7 @@ function WorkWidthSettingEvent:readStream(streamId, connection)
 	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 	self.parentName = streamReadString(streamId)
 	self.name = streamReadString(streamId)
-	self.value = streamReadInt32(streamId)
+	self.value = streamReadFloat32(streamId)
 
 	courseplay:debugFormat(courseplay.DBG_MULTIPLAYER, "WorkWidthSettingEvent:readStream(%s, %s, %s, %.1f)",
 		nameNum(self.vehicle), self.name, self.parentName, self.value)
@@ -41,7 +41,7 @@ function WorkWidthSettingEvent:writeStream(streamId, connection)
 	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
 	streamWriteString(streamId, self.parentName)
 	streamWriteString(streamId, self.name)
-	streamWriteInt32(streamId, self.value)
+	streamWriteFloat32(streamId, self.value)
 end
 
 -- process received event

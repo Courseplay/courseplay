@@ -58,6 +58,8 @@ function courseGenerator.generate(vehicle)
 	end ;
 	courseplay:debug(string.format("generateCourse() called for %q", fieldCourseName), courseplay.DBG_COURSES);
 
+	vehicle.cp.courseGeneratorSettings:debug(courseplay.DBG_COURSES)
+
 	local poly = {}
 	local islandNodes = {}
 	if selectedField > 0 then
