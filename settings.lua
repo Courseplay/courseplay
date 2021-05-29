@@ -2008,7 +2008,7 @@ end
 
 -- see above, refresh in case it was not initialized
 function FieldNumberSetting:get()
-	if #self.values == 0 then
+	if #self.values == 0 or self.current > #self.values then
 		self:refresh()
 	end
 	return SettingList.get(self)
@@ -2016,7 +2016,7 @@ end
 
 -- see above, refresh in case it was not initialized
 function FieldNumberSetting:getText()
-	if #self.values == 0 then
+	if #self.values == 0 or self.current > #self.values then
 		self:refresh()
 	end
 	return SettingList.getText(self)
