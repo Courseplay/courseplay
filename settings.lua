@@ -42,7 +42,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_OVERLOADER then
 		status, result = xpcall(OverloaderAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		status, result = xpcall(ShovelModeAIDriver.create, errorHandler, vehicle)
+		status, result = xpcall(ShovelAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
 		status, result = xpcall(FillableFieldworkAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
@@ -50,7 +50,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_BALE_COLLECTOR then
 		status, result = xpcall(BaleCollectorAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		status, result = xpcall(LevelCompactAIDriver, errorHandler, vehicle)
+		status, result = xpcall(BunkerSiloAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
 		status, result = xpcall(FieldSupplyAIDriver, errorHandler, vehicle)
 	end
@@ -3044,6 +3044,13 @@ function ShovelModeDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
+---@class MixerWagonAIDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+MixerWagonAIDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function MixerWagonAIDriver_SiloSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle, "MixerWagonAIDriver")
+	self.MAX_FILLTYPES = 3
+end
+
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
 ShovelModeAIDriverTriggerHandlerIsActive = CpObject(BooleanSetting)
 function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle)
@@ -3492,6 +3499,7 @@ WorkingToolPositionsSetting = CpObject(Setting)
 WorkingToolPositionsSetting.NetworkTypes = {}
 WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
 WorkingToolPositionsSetting.NetworkTypes.PLAY_POSITION = 1
+WorkingToolPositionsSetting.Settings = {}
 function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs)
 	Setting.init(self, name,label, toolTip, vehicle)
 	self.texts = {}
@@ -3504,6 +3512,9 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	self.MIN_ROT_SPEED = 0.1
 	self.MAX_TRANS_SPEED = 0.7
 	self.MIN_TRANS_SPEED = 0.2
+	--- Store all instances of this setting in ab global table
+	--- for direct access to update their manual tool positions.
+	table.insert(WorkingToolPositionsSetting.Settings,self)
 end
 
 function WorkingToolPositionsSetting:getTexts()
@@ -3597,6 +3608,13 @@ function WorkingToolPositionsSetting:updatePositions(dt,posX)
 		self.playTestPostion = nil
 	end
 	return not callback.isDirty
+end
+
+--- Updates all manual tool positions if necessary.
+function WorkingToolPositionsSetting.updateManualToolPositions(dt)
+	for _,setting in pairs(WorkingToolPositionsSetting.Settings) do 
+		setting:updatePositions(dt)
+	end
 end
 
 --update tool postions for all valid objects recursive to position "pos"
@@ -3859,6 +3877,14 @@ function AugerPipeToolPositionsSetting:getText()
 	if self.hasPosition[1] then 
 		return "ok"
 	end
+end
+
+---@class MixerWagonToolPositionsSetting : WorkingToolPositionsSetting
+MixerWagonToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function MixerWagonToolPositionsSetting:init(vehicle)
+	local label = "mixerWagon"
+	local toolTip = "mixerWagon"
+	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
 end
 
 ---@class ShovelStopAndGoSetting : BooleanSetting
@@ -4158,6 +4184,8 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)
+	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	return container
 end
 

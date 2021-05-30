@@ -287,6 +287,18 @@ function BunkerSiloManager:getSiloPartArea(line,column)
 	return siloPart.area
 end
 
+---Get the bunker silo area coordinates 
+---@return number sx/sz start position of silo
+---@return number wx/wz width position of silo
+---@return number hx/hz height position of silo
+function BunkerSiloManager:getSiloBunkerSiloAreaPositions()
+	local bunkerSiloArea = self.silo.bunkerSiloArea
+	local sx,sz = bunkerSiloArea.sx,bunkerSiloArea.sz; --start BunkerNode
+	local wx,wz = bunkerSiloArea.wx,bunkerSiloArea.wz; --width BunkerNode "x cordinate"
+	local hx,hz = bunkerSiloArea.hx,bunkerSiloArea.hz; --height/"depth" BunkerNode "z cordinate"
+	return sx,sz,wx,wz,hx,hz
+end
+
 ---Get silo part line area
 ---@param int line index
 ---@return float silo part line area
@@ -328,6 +340,15 @@ end
 ---@return int number of columns
 function BunkerSiloManager:getNumberOfLinesAndColumns()
 	return self:getNumberOfLines(),self:getNumberOfColumns()
+end
+
+---Get the fillType of the complete silo
+---@return number silo part fillType
+function BunkerSiloManager:getFillType()
+	local sx,sz,wx,wz,hx,hz = self:getSiloBunkerSiloAreaPositions()
+	local wy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wx, 1, wz);
+	local hy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, hx, 1, hz)
+	return DensityMapHeightUtil.getFillTypeAtLine(wx, wy, wz, hx, hy, hz, 5)
 end
 
 function BunkerSiloManager:getSilo()
@@ -732,15 +753,13 @@ end
 ---@param int tx,tz second point
 ---return BunkerSilo  
 function BunkerSiloManagerUtil.getBunkerSilo(vehicle,x,z,tx,tz)
-	if g_currentMission.bunkerSilos ~= nil then
-		for _, bunker in pairs(g_currentMission.bunkerSilos) do
-			local x1,z1 = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
-			local x2,z2 = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
-			local x3,z3 = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
-			if MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
-				BunkerSiloManagerUtil.debug(vehicle,"Silo was found: %s",nameNum(bunker))
-				return bunker
-			end
+	for _, bunker in pairs(Triggers.getBunkerSilos()) do
+		local x1,z1 = bunker.bunkerSiloArea.sx,bunker.bunkerSiloArea.sz
+		local x2,z2 = bunker.bunkerSiloArea.wx,bunker.bunkerSiloArea.wz
+		local x3,z3 = bunker.bunkerSiloArea.hx,bunker.bunkerSiloArea.hz
+		if MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z) then
+			BunkerSiloManagerUtil.debug(vehicle,"Silo was found: %s",nameNum(bunker))
+			return bunker
 		end
 	end
 end
@@ -874,11 +893,20 @@ end
 ---@param vehicle vehicle of the driver
 ---@param table course of the driver
 ---@param int waypoint ix to look for a silo
+---@param boolean looking for heaps allowed ?
 ---@return table bunker silo 
-function BunkerSiloManagerUtil.getTargetBunkerSiloAtWaypoint(vehicle,course,wpIx)
+function BunkerSiloManagerUtil.getTargetBunkerSiloAtWaypoint(vehicle,course,wpIx,checkForHeapsActive)
 	local x,_,z = course:getWaypointPosition(wpIx)
-	local nx,nz = x,z + 0.50
-	return BunkerSiloManagerUtil.getBunkerSilo(vehicle,x,z,nx,nz)
+	local dx,dz = course:getWaypointWorldDirections(wpIx)
+	local nx,nz = x +30*dx,z+30*dz
+	local silo = BunkerSiloManagerUtil.getBunkerSilo(vehicle,x,z,nx,nz)
+	if silo then 
+		return silo
+	end
+	--it's not a bunkersSilo, try to find a heap if it is allowed
+	if checkForHeapsActive then
+		return BunkerSiloManagerUtil.getHeapCoords(vehicle,x,z,nx,nz),true
+	end
 end
 
 ---Gets the first waypoint in the silo and the last waypoint

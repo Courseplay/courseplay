@@ -645,9 +645,8 @@ function courseplay:onUpdate(dt)
 	-- this really should be only done in one place.
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
 	
-	--updateFunction for play testing workingToolPostions(manually)
-	self.cp.settings.frontloaderToolPositions:updatePositions(dt)
-	self.cp.settings.augerPipeToolPositions:updatePositions(dt)
+	--- Updates all manual working tool positions if necessary.
+	WorkingToolPositionsSetting.updateManualToolPositions(dt)
 
 end; --END update()
 

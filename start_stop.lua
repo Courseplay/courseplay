@@ -102,7 +102,12 @@ function courseplay:start(self)
 	if self.cp.mode == courseplay.MODE_FIELDWORK then
 		self.cp.driver:delete()
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
+	elseif self.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then 
+		--- Not sure if this is needed, might have to check if the AIDriver gets reevaluated after an implement gets attached.
+		self.cp.driver:delete()
+		self.cp.driver = BunkerSiloAIDriver.create(self)
 	end
+
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 

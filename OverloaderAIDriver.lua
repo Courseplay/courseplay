@@ -113,7 +113,7 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
 		--can discharge and not pipe is moving 
 		if self.pipe.currentState == self.pipe.targetState then
             self:debug('Overloading started')
-            if self:isAugerPipeToolPositionsOkay(dt) then 
+            if self:isWorkingToolPositionReached(dt,1) then 
 				self.unloadCourseState = self.states.OVERLOADING
 			end
 		end
@@ -135,12 +135,9 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
 end
 
 --if we have augerPipeToolPositions, then wait until we have set them
-function OverloaderAIDriver:isAugerPipeToolPositionsOkay(dt)
-	local augerPipeToolPositionsSetting = self.vehicle.cp.settings.augerPipeToolPositions
-	if self.moveablePipe and augerPipeToolPositionsSetting:hasValidToolPositions() and not augerPipeToolPositionsSetting:updatePositions(dt,1) then 
-		return false
-	end
-	return true
+function OverloaderAIDriver:getWorkingToolPositionsSetting()
+    local setting = self.vehicle.cp.settings.augerPipeToolPositions
+    return self.moveablePipe and setting:hasValidToolPositions() and self.vehicle.cp.settings.augerPipeToolPositions
 end
 
 function OverloaderAIDriver:isProximitySwerveEnabled(vehicle)

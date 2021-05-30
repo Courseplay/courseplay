@@ -221,6 +221,9 @@
 			<Setup>
 				<Specialization name="spec_dynamicMountAttacher"/>
 			</Setup>
+			<Setup>
+				<Specialization name="spec_mixerWagon"/>
+			</Setup>
 		</AllowedSetups>
 		<DisallowedSetups>
 			<Setup>
@@ -248,7 +251,6 @@
 				<Specialization name="spec_treePlanter"/>
 				<!--no trailer-->
 				<Specialization name="spec_pipe"/>
-				<Specialization name="spec_trailer"/>
 				<Specialization name="spec_fillTriggerVehicle"/>
 				<Specialization name="spec_waterTrailer"/>
 			</Setup>

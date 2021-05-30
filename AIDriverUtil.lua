@@ -385,3 +385,16 @@ function AIDriverUtil.getFillTypeFromFillUnit(fillUnit)
 	end
 end
 
+--- Gets the fill level of an mixerWagon for a fill type.
+---@param object table
+---@param fillType number
+function AIDriverUtil.getMixerWagonFillLevelForFillTypes(object,fillType)
+	local spec = object.spec_mixerWagon
+	if spec then
+		for _, data in pairs(spec.mixerWagonFillTypes) do
+			if data.fillTypes[fillType] then 
+				return data.fillLevel
+			end
+		end
+	end
+end

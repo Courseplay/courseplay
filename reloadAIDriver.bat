@@ -15,5 +15,10 @@ type BalerAIDriver.lua >> %outfile%
 type CombineAIDriver.lua >> %outfile%
 type CombineUnloadAIDriver.lua >> %outfile%
 type OverloaderAIDriver.lua >> %outfile%
+type BunkerSiloAIDriver.lua >> %outfile%
+type CompactingAIDriver.lua >> %outfile%
+type ShieldAIDriver.lua >> %outfile%
+type BunkerSiloLoaderAIDriver.lua >> %outfile%
+type MixerWagonAIDriver.lua >> %outfile%
 echo ]]^> >> %outfile%
 echo ^</code^> >> %outfile%
