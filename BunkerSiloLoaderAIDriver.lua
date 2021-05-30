@@ -31,7 +31,7 @@ function BunkerSiloLoaderAIDriver:init(vehicle)
 
 end
 
-function BunkerSiloLoaderAIDriver:setBunkerSiloLoaderAIDriverContent()
+function BunkerSiloLoaderAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
 	courseplay.hud:setBunkerSiloLoaderAIDriverContent(self.vehicle)
 end
