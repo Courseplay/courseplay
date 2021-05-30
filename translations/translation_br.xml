@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"             	text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"              	text="Virar" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"              	text="Arredondado" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manobra de ré na cabeceira"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Direto" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curva" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Centro do Campo (experimental)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Normal" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circular" />

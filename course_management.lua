@@ -299,7 +299,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
 
 		vehicle.cp.hasGeneratedCourse = false;
-		courseplay:validateCourseGenerationData(vehicle);
 
 		courseplay:validateCanSwitchMode(vehicle);
 
@@ -406,7 +405,6 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.courseHeadlandDirectionCW = nil;
 
 	vehicle.cp.hasGeneratedCourse = false;
-	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");

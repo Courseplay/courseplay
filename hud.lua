@@ -1025,9 +1025,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--StopForUnloadSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopForUnload:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopForUnload:getText()
-				elseif entry.functionToCall == 'changeHeadlandReverseManeuverType' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE')
-					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
 				elseif entry.functionToCall == 'changeCombineOffset' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
 					if vehicle.cp.modeState ~= nil then
@@ -2225,7 +2222,6 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	else
 		self:addRowButton(vehicle,vehicle.cp.settings.driverPriorityUseFillLevel,'toggle', 0, 4, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.stopForUnload,'toggle', 0, 5, 1 )
-		self:addRowButton(vehicle,nil,'changeHeadlandReverseManeuverType', 0, 6, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.selfUnload,'toggle', 6, 2, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.pipeAlwaysUnfold,'toggle', 6, 3, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.strawSwath,'changeByX', 6, 4, 1 )

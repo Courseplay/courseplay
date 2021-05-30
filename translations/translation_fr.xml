@@ -227,9 +227,6 @@
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Virages lissés" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Manœuvres" />
     <text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Circualaires" />
-    <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manœuvre arrière dans les fourrières"/>
-    <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Droite" />
-    <text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Virage" />
     <text name="COURSEPLAY_CENTER_MODE"									text="Gestion des rangs" />
     <text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Allers-retours" />
     <text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circulaire (par bloc)" />

@@ -279,79 +279,19 @@ function courseplay:onLoad(savegame)
 	self.cp.copyCourseFromDriver = nil;
 	self.cp.selectedDriverNumber = 0;
 
-	--MultiTools
-	self.cp.multiTools = 1;
 	self.cp.laneNumber = 0;
 
 	--Course generation	
-	self.cp.startingCorner = 4;
-	self.cp.hasStartingCorner = false;
 	self.cp.startingDirection = 0;
 	self.cp.rowDirectionDeg = 0
-	self.cp.rowDirectionMode = courseGenerator.ROW_DIRECTION_AUTOMATIC
 	self.cp.hasStartingDirection = false;
-	self.cp.isNewCourseGenSelected = function()
-		return self.cp.hasStartingCorner and self.cp.startingCorner > courseGenerator.STARTING_LOCATION_SE_LEGACY
-	end
+
 	self.cp.hasGeneratedCourse = false;
-	self.cp.hasValidCourseGenerationData = false;
 	-- TODO: add all old course gen settings to a SettingsContainer
 	self.cp.oldCourseGeneratorSettings = {
-		startingLocation = self.cp.startingCorner,
-		manualStartingLocationWorldPos = nil,
 		islandBypassMode = Island.BYPASS_MODE_NONE,
-		nRowsToSkip = 0,
 		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
 	}
-	self.cp.headland = {
-		-- with the old, manual direction selection course generator
-		manuDirMaxNumLanes = 6;
-		-- with the new, auto direction selection course generator
-		autoDirMaxNumLanes = 50;
-		maxNumLanes = 20;
-		numLanes = 0;
-		mode = courseGenerator.HEADLAND_MODE_NORMAL;
-		userDirClockwise = true;
-		orderBefore = true;
-		-- we abuse the numLanes to switch to narrow field mode,
-		-- negative headland lanes mean we are in narrow field mode
-		-- TODO: this is an ugly hack to make life easy for the UI but needs
-		-- to be refactored
-		minNumLanes = -1;
-		-- another ugly hack: the narrow mode is like the normal headland mode
-		-- for most uses (like the turn system). The next two functions are
-		-- to be used instead of the numLanes directly to hide the narrow mode
-		getNumLanes = function()
-			if self.cp.headland.mode == courseGenerator.HEADLAND_MODE_NARROW_FIELD then
-				return math.abs( self.cp.headland.numLanes )
-			else
-				return self.cp.headland.numLanes
-			end
-		end;
-		exists = function()
-			return self.cp.headland.getNumLanes() > 0
-		end;
-		getMinNumLanes = function()
-			return self.cp.isNewCourseGenSelected() and self.cp.headland.minNumLanes or 0
-		end,
-		getMaxNumLanes = function()
-			return self.cp.isNewCourseGenSelected() and self.cp.headland.autoDirMaxNumLanes or self.cp.headland.manuDirMaxNumLanes
-		end,
-		turnType = courseplay.HEADLAND_CORNER_TYPE_SMOOTH;
-		reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT;
-
-		tg = createTransformGroup('cpPointOrig_' .. tostring(self.rootNode));
-
-		rectWidthRatio = 1.25;
-		noGoWidthRatio = 0.975;
-		minPointDistance = 0.5;
-		maxPointDistance = 7.25;
-		};
-	link(getRootNode(), self.cp.headland.tg);
-	if CpManager.isDeveloper then
-	self.cp.headland.manuDirMaxNumLanes = 30;
-	self.cp.headland.autoDirMaxNumLanes = 50;
-	end;
 
 	self.cp.fieldEdge = {
 	selectedField = {
@@ -705,11 +645,6 @@ function courseplay:onDelete()
 	end
 
 	if self.cp ~= nil then
-		if self.cp.headland and self.cp.headland.tg then
-			unlink(self.cp.headland.tg);
-			delete(self.cp.headland.tg);
-			self.cp.headland.tg = nil;
-		end;
 
 		if self.cp.hud.bg ~= nil then
 			self.cp.hud.bg:delete();
@@ -1108,6 +1043,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 
 		
 		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
+		self.cp.courseGeneratorSettings:loadFromXML(xmlFile, key .. '.courseplay')
 
 		courseplay:validateCanSwitchMode(self);
 	end;
@@ -1170,6 +1106,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)
+	self.cp.courseGeneratorSettings:saveToXML(xmlFile, newKey)
 
 end
 

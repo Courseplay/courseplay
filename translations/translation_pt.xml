@@ -222,9 +222,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Aguda" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Redonda" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Manobra de marcha-atrás na linha de cabeceira"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="linha reta" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="curva" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Campo centrado (em teste)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="cima/baixo" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="circular" />

@@ -121,7 +121,6 @@ function courseplay:stop_record(vehicle)
 	courseplay:setWaypointIndex(vehicle, 1,true);
 	vehicle.cp.numCourses = 1;
 
-	courseplay:validateCourseGenerationData(vehicle);
 	courseplay:validateCanSwitchMode(vehicle);
 	courseplay.signs:updateWaypointSigns(vehicle);
 	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');

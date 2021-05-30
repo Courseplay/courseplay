@@ -128,6 +128,8 @@ local function initialize()
 		'course-generator/ReedsShepp',
 		'course-generator/ReedsSheppSolver',
 		'course-generator/PathfinderUtil',
+		'course-generator/CourseGeneratorSettings',
+		'gui/CpGuiUtil',
 		'gui/CourseGeneratorScreen',
 		'gui/CoursePlot',
 		'gui/inputCourseNameDialogue',
@@ -145,6 +147,7 @@ local function initialize()
 		'Events/InfoTextEvent',
 		'Events/WorkingToolPositionsEvents',
 		'Events/CommandEvents',
+		'Events/WorkWidthSettingEvent',
 		'Generic/LinkedList'
 	};
 
@@ -250,29 +253,6 @@ local function setGlobalData()
 	courseplay.allowedCharacters = courseplay:getAllowedCharacters();
 	courseplay.utf8normalization = courseplay:getUtf8normalization();
 
-	-- headland turn modes
-	courseplay.HEADLAND_CORNER_TYPE_MIN = 1
-	courseplay.HEADLAND_CORNER_TYPE_SMOOTH = 1
-	courseplay.HEADLAND_CORNER_TYPE_SHARP = 2
-	courseplay.HEADLAND_CORNER_TYPE_ROUND = 3
-	courseplay.HEADLAND_CORNER_TYPE_MAX = 3
-
-	courseplay.cornerTypeText = {
-		'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH',
-		'COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP',
-		'COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND' }
-
-	-- headland turn maneuver types
-	courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MIN = 1
-	courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT = 1
-	courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_CURVE = 2
-	courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MAX = 2
-
-	courseplay.headlandReverseManeuverTypeText = {
-		'COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT',
-		'COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE' }
-
-
 	courseplay.multiplayerSyncTable = {
 
 	[1]={name='self.cp.mode',dataFormat='Int'},
@@ -287,36 +267,32 @@ local function setGlobalData()
 	[10]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
 	[11]={name='self.cp.globalInfoTextLevel',dataFormat='Int'},
 	[12]={name='self.cp.hasBaleLoader',dataFormat='Bool'},
-	[13]={name='self.cp.hasStartingCorner',dataFormat='Bool'},
-	[14]={name='self.cp.hasStartingDirection',dataFormat='Bool'},
-	[15]={name='self.cp.hasValidCourseGenerationData',dataFormat='Bool'},
-	[16]={name='self.cp.headland.numLanes',dataFormat='Int'},
-	[17]={name='self.cp.headland.turnType',dataFormat='Int'},
-    [18]={name='self.cp.hasUnloadingRefillingCourse	',dataFormat='Bool'},
-	[19]={name='self.cp.isDriving',dataFormat='Bool'},
-	[20]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[21]={name='self.cp.tipperOffset',dataFormat='Float'},
-	[22]={name='self.cp.tipperHasCover',dataFormat='Bool'},
-	[23]={name='self.cp.workWidth',dataFormat='Float'},
-	[24]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
-	[25]={name='self.cp.turnDiameter',dataFormat='Float'},
-	[26]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
-	[27]={name='self.cp.laneOffset',dataFormat='Float'},
-	[28]={name='self.cp.loadUnloadOffsetX',dataFormat='Float'},
-	[29]={name='self.cp.loadUnloadOffsetZ',dataFormat='Float'},
-	[30]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[31]={name='self.cp.waypointIndex',dataFormat='Int'},
-	[32]={name='self.cp.isRecording',dataFormat='Bool'},
-	[33]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
-	[34]={name='self.cp.searchCombineAutomatically',dataFormat='Bool'},
-	[35]={name='self.cp.waitTime',dataFormat='Int'},
-	[36]={name='self.cp.multiTools',dataFormat='Int'},
-	[37]={name='self.cp.alignment.enabled',dataFormat='Bool'},
-	[38]={name='self.cp.hasSowingMachine',dataFormat='Bool'},
-	[39]={name='self.cp.generationPosition.fieldNum',dataFormat='Int'},
-	[40]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
-	[41]={name='self.cp.generationPosition.x',dataFormat='Float'},
-	[42]={name='self.cp.generationPosition.z',dataFormat='Float'}
+	[13]={name='self.cp.hasStartingDirection',dataFormat='Bool'},
+    [14]={name='self.cp.hasUnloadingRefillingCourse	',dataFormat='Bool'},
+	[15]={name='self.cp.isDriving',dataFormat='Bool'},
+	[26]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
+	[27]={name='self.cp.tipperOffset',dataFormat='Float'},
+	[28]={name='self.cp.tipperHasCover',dataFormat='Bool'},
+	[29]={name='self.cp.workWidth',dataFormat='Float'},
+	[20]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
+	[21]={name='self.cp.turnDiameter',dataFormat='Float'},
+	[22]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
+	[23]={name='self.cp.laneOffset',dataFormat='Float'},
+	[24]={name='self.cp.loadUnloadOffsetX',dataFormat='Float'},
+	[25]={name='self.cp.loadUnloadOffsetZ',dataFormat='Float'},
+	[36]={name='self.cp.hud.currentPage',dataFormat='Int'},
+	[37]={name='self.cp.waypointIndex',dataFormat='Int'},
+	[38]={name='self.cp.isRecording',dataFormat='Bool'},
+	[39]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
+	[30]={name='self.cp.searchCombineAutomatically',dataFormat='Bool'},
+	[31]={name='self.cp.waitTime',dataFormat='Int'},
+	[32]={name='self.cp.multiTools',dataFormat='Int'},
+	[33]={name='self.cp.alignment.enabled',dataFormat='Bool'},
+	[34]={name='self.cp.hasSowingMachine',dataFormat='Bool'},
+	[35]={name='self.cp.generationPosition.fieldNum',dataFormat='Int'},
+	[36]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
+	[37]={name='self.cp.generationPosition.x',dataFormat='Float'},
+	[38]={name='self.cp.generationPosition.z',dataFormat='Float'}
 	}
 	
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()
