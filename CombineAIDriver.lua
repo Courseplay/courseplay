@@ -676,8 +676,9 @@ end
 --- If no such waypoint found, reject the rendezvous.
 ---@param unloaderEstimatedSecondsEnroute number minimum time the unloader needs to get to the combine
 ---@param unloadAIDriver CombineUnloadAIDriver the driver requesting the rendezvous
+---@param isPipeInFruitAllowed boolean a rendezvous waypoint where the pipe is in fruit is ok
 ---@return Waypoint, number, number waypoint to meet the unloader, index of waypoint, time we need to reach that waypoint
-function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsEnroute, unloadAIDriver)
+function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsEnroute, unloadAIDriver, isPipeInFruitAllowed)
 
 	local dToUnloaderRendezvous = unloaderEstimatedSecondsEnroute * self:getWorkSpeed() / 3.6
 	-- this is where we'll be when the unloader gets here
@@ -692,7 +693,7 @@ function CombineAIDriver:getUnloaderRendezvousWaypoint(unloaderEstimatedSecondsE
 	-- rendezvous at whichever is closer
 	unloaderRendezvousWaypointIx = math.min(unloaderRendezvousWaypointIx, self.waypointIxWhenFull or unloaderRendezvousWaypointIx)
 	-- now check if this is a good idea
-	self.agreedUnloaderRendezvousWaypointIx = self:findBestWaypointToUnload(unloaderRendezvousWaypointIx, unloadAIDriver.vehicle.cp.settings.useRealisticDriving:is(false))
+	self.agreedUnloaderRendezvousWaypointIx = self:findBestWaypointToUnload(unloaderRendezvousWaypointIx, isPipeInFruitAllowed)
 	if self.agreedUnloaderRendezvousWaypointIx then
 		self.unloadAIDriverToRendezvous:set(unloadAIDriver, 1000 * (unloaderEstimatedSecondsEnroute + 30))
 		self:debug('Rendezvous with unloader at waypoint %d in %d m', self.agreedUnloaderRendezvousWaypointIx, dToUnloaderRendezvous)
