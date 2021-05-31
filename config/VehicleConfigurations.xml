@@ -71,6 +71,10 @@ You can define the following custom settings:
     <!--[GIANTS]-->
 
     <!-- Harvesters -->
+	<!--\vehicles\ropa-->
+	<Vehicle name="maus5"
+			 workingWidth = "10.2"
+	/>
     <!-- Implements -->
     <!--\vehicles\arcusin-->
     <Vehicle name="arcusinFSX6372.xml"
