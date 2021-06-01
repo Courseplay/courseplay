@@ -95,13 +95,14 @@ function StartingLocationSetting:saveToXml(xml, parentKey)
 end
 
 function StartingLocationSetting:loadFromXml(xml, parentKey)
-	SettingList.loadFromXml(self, xml, parentKey)
 	local x = getXMLFloat(xml, self:getElementKey(parentKey) .. '#x')
 	local z = getXMLFloat(xml, self:getElementKey(parentKey) .. '#z')
 	if x and z then
 		self.lastVehiclePosition = { x = x, z = z }
 	end
+	-- need to update first so if there's a position we first add that option to the value list before loading from XML
 	self:update()
+	SettingList.loadFromXml(self, xml, parentKey)
 end
 
 --- A working width setting, which is a float, viewed in a MultiTextOption GUI control. The multi text box has the
