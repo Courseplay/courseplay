@@ -111,6 +111,7 @@ function CourseGeneratorScreen:onOpen()
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 
+	self.numberOfRowsPerLand:setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
 	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
 	self:setStartingLocationLabel(self.settings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND))
 	self:setHeadlandFields()
@@ -223,21 +224,9 @@ function CourseGeneratorScreen:onScrollManualRowAngle(element, isDown, isUp, but
 	return eventUsed
 end
 
------------------------------------------------------------------------------------------------------
--- Island bypass mode
-function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
-	local texts = {}
-	for i = 1, Island.BYPASS_MODE_MAX do
-		table.insert( texts, courseplay:loc( Island.bypassModeText[ i ]))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode )
-end
-
 function CourseGeneratorScreen:onClickIslandBypassMode( state )
-	self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = state
+	self.settings.islandBypassMode:setFromGuiElement()
 end
-
 
 -----------------------------------------------------------------------------------------------------
 -- Number of rows to skip
@@ -335,43 +324,17 @@ function CourseGeneratorScreen:draw()
 	end
 end
 
-function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
-	self.settings.centerMode:setGuiElement(element)
-	element:setTexts(self.settings.centerMode:getGuiElementTexts())
-	element:setState(self.settings.centerMode:getGuiElementState())
-end
-
 function CourseGeneratorScreen:onClickCenterMode(state)
 	self.settings.centerMode:setFromGuiElement()
 	self.settings.numberOfRowsPerLand:getGuiElement():setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
 end
 
-function CourseGeneratorScreen:onOpenNumberOfRowsPerLand( element, parameter )
-	self.settings.numberOfRowsPerLand:setGuiElement(element)
-	element:setTexts(self.settings.numberOfRowsPerLand:getGuiElementTexts())
-	element:setState(self.settings.numberOfRowsPerLand:getGuiElementState())
-	element:setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
-end
-
 function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
-	local setting = self.settings.numberOfRowsPerLand
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
-end
-
-function CourseGeneratorScreen:onOpenShowSeedCalculator( element, parameter )
-	local setting = self.settings.showSeedCalculator
-	setting:setGuiElement(element)
-	element:setTexts(setting:getGuiElementTexts())
-	element:setState(setting:getGuiElementState())
+	self.settings.numberOfRowsPerLand:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onClickShowSeedCalculator(state)
-	local setting = self.settings.showSeedCalculator
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
+	self.settings.showSeedCalculator:setFromGuiElement()
 end
 
 ---a very basic and simple seed calculator in the course generator

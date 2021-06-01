@@ -344,6 +344,25 @@ function MultiToolsSetting:init(vehicle)
 		vehicle, self.values, self.texts)
 end
 
+---@class IslandBypassModeSetting : SettingList
+IslandBypassModeSetting = CpObject(SettingList)
+
+function IslandBypassModeSetting:init(vehicle)
+	self.values = {
+		Island.BYPASS_MODE_NONE,
+		Island.BYPASS_MODE_SIMPLE,
+		Island.BYPASS_MODE_CIRCLE
+	}
+
+	self.texts = {
+		'COURSEPLAY_ISLAND_BYPASS_MODE_NONE',
+		'COURSEPLAY_ISLAND_BYPASS_MODE_SIMPLE',
+		'COURSEPLAY_ISLAND_BYPASS_MODE_CIRCLE'
+	}
+	SettingList.init(self, 'islandBypassMode', 'COURSEPLAY_BYPASS_ISLANDS', 'COURSEPLAY_BYPASS_ISLANDS',
+		vehicle, self.values, self.texts)
+end
+
 ---@class HeadlandModeSetting : SettingList
 HeadlandModeSetting = CpObject(SettingList)
 
@@ -496,6 +515,7 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(HeadlandCornerTypeSetting, vehicle)
 	container:addSetting(StartOnHeadlandSetting, vehicle)
 	container:addSetting(CenterModeSetting, vehicle)
+	container:addSetting(IslandBypassModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
 	return container

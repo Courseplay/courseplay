@@ -729,13 +729,6 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 	end 
 end
 
-function courseplay:changeIslandBypassMode(vehicle)
-	vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = vehicle.cp.oldCourseGeneratorSettings.islandBypassMode + 1
-	if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode > Island.BYPASS_MODE_MAX then
-		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
-	end
-end;
-
 function courseplay:setMultiTools(vehicle, set)
 	vehicle:setCpVar('multiTools',set,courseplay.isClient)
 	if vehicle.cp.multiTools%2 == 0 then

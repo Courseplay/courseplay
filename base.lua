@@ -287,11 +287,6 @@ function courseplay:onLoad(savegame)
 	self.cp.hasStartingDirection = false;
 
 	self.cp.hasGeneratedCourse = false;
-	-- TODO: add all old course gen settings to a SettingsContainer
-	self.cp.oldCourseGeneratorSettings = {
-		islandBypassMode = Island.BYPASS_MODE_NONE,
-		centerMode = courseGenerator.CENTER_MODE_UP_DOWN
-	}
 
 	self.cp.fieldEdge = {
 	selectedField = {

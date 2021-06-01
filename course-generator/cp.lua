@@ -65,7 +65,7 @@ function courseGenerator.generate(vehicle)
 	if selectedField > 0 then
 		poly.points = courseplay.utils.table.copy(courseplay.fields.fieldData[selectedField].points, true);
 		poly.numPoints = courseplay.fields.fieldData[selectedField].numPoints;
-		if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode ~= Island.BYPASS_MODE_NONE then
+		if not vehicle.cp.courseGeneratorSettings.islandBypassMode:is(Island.BYPASS_MODE_NONE) then
 			if not courseplay.fields.fieldData[selectedField].islandNodes then
 				courseGenerator.findIslands(courseplay.fields.fieldData[selectedField])
 			end
@@ -174,7 +174,7 @@ function courseGenerator.generate(vehicle)
 		minSmoothAngle, maxSmoothAngle, doSmooth,
 		roundCorners, turnRadiusAdjustedForMultiTool,
 		courseGenerator.pointsToXy(islandNodes),
-		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode, centerSettings
+		vehicle.cp.courseGeneratorSettings.islandBypassMode:get(), centerSettings
 	)
 
 	-- return on exception (but continue on not ok as that is just a warning)

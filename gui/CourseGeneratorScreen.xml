@@ -50,11 +50,12 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode" toolTip="$l10n_COURSEPLAY_BYPASS_ISLANDS" onOpen="onOpenIslandBypassMode" onClick="onClickIslandBypassMode">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="islandBypassMode"
+									onCreate="onCreateElement" onClick="onClickIslandBypassMode">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_BYPASS_ISLANDS"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -81,7 +82,7 @@
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -90,7 +91,7 @@
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_PASSES"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -99,7 +100,7 @@
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_HEADLAND_DIRECTION"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -108,7 +109,7 @@
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_START_WORKING_ON"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
@@ -129,19 +130,21 @@
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="centerMode" toolTip="$l10n_COURSEPLAY_CENTER_MODE" onOpen="onOpenCenterMode" onClick="onClickCenterMode">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="centerMode"
+									onCreate="onCreateElement" onClick="onClickCenterMode">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_CENTER_MODE"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="numberOfRowsPerLand" toolTip="$l10n_COURSEPLAY_NUMBER_OF_ROWS_PER_LAND" onOpen="onOpenNumberOfRowsPerLand" onClick="onClickNumberOfRowsPerLand">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="numberOfRowsPerLand"
+									onCreate="onCreateElement" onClick="onClickNumberOfRowsPerLand">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 					</GuiElement>
@@ -160,11 +163,12 @@
 							</GuiElement>
 							<GuiElement type="button" profile="cpWidthButton2" text="auto" onOpen="onOpenAutoWidth" onClick="onClickAutoWidth" id="autoWidth"/>
 						</GuiElement>
-						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="showSeedCalculator" toolTip="$$l10n_COURSEPLAY_SEEDUSAGECALCULATOR" onOpen="onOpenShowSeedCalculator" onClick="onClickShowSeedCalculator">
+						<GuiElement type="multiTextOption" profile="cpMultiTextOption" id="showSeedCalculator"
+									onCreate="onCreateElement"  onClick="onClickShowSeedCalculator">
 							<GuiElement type="button" profile="cpMultiTextOptionLeft" />
 							<GuiElement type="button" profile="cpMultiTextOptionRight"/>
 							<GuiElement type="text" profile="cpMultiTextOptionText" />
-							<GuiElement type="text" profile="cpMultiTextOptionTitle" text="$l10n_COURSEPLAY_SEEDUSAGECALCULATOR"/>
+							<GuiElement type="text" profile="cpMultiTextOptionTitle" />
 							<GuiElement type="bitmap" profile="cpMultiTextOptionBg" />
 						</GuiElement>
 					</GuiElement>
