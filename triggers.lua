@@ -714,7 +714,7 @@ function Triggers.addBunkerSilo(silo,superFunc,...)
 end
 BunkerSilo.load = Utils.overwrittenFunction(BunkerSilo.load,Triggers.addBunkerSilo)
 
-function Triggers.removeBunkerSilo()
+function Triggers.removeBunkerSilo(silo)
 	local triggerNode = silo.interactionTriggerNode
 	Triggers.bunkerSilos[triggerNode] = nil
 end
