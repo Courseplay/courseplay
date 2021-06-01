@@ -464,8 +464,24 @@ function HeadlandLaneChangeMinDistanceFromCorner:init()
 	self:set(10)
 end
 
+---@class CourseGeneratorSettingsContainer : SettingsContainer
+CourseGeneratorSettingsContainer = CpObject(SettingsContainer)
+
+function CourseGeneratorSettingsContainer:init()
+	-- store everything under courseGenerator
+	SettingsContainer.init(self, 'courseGeneratorSettings')
+end
+
+function CourseGeneratorSettingsContainer:saveToXML(xml, parentKey)
+	SettingsContainer.saveToXML(self, xml, parentKey .. '.' .. self.name)
+end
+
+function CourseGeneratorSettingsContainer:loadFromXML(xml, parentKey)
+	SettingsContainer.loadFromXML(self, xml, parentKey .. '.' .. self.name)
+end
+
 function SettingsContainer.createCourseGeneratorSettings(vehicle)
-	local container = SettingsContainer("courseGeneratorSettings")
+	local container = CourseGeneratorSettingsContainer()
 	container:addSetting(SelectedFieldSetting, vehicle)
 	container:addSetting(StartingLocationSetting, vehicle)
 	container:addSetting(RowDirectionSetting, vehicle)
