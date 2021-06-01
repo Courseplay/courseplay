@@ -190,11 +190,11 @@ function WorkWidthSetting:setFromNetwork(value)
 end
 
 function WorkWidthSetting:setNext()
-	self:set(self.value:get() + WorkWidthSetting.Increment)
+	self:set(math.min(self.value:get() + WorkWidthSetting.Increment, self.maxWidth))
 end
 
 function WorkWidthSetting:setPrevious()
-	self:set(self.value:get() - WorkWidthSetting.Increment)
+	self:set(math.max(self.value:get() - WorkWidthSetting.Increment, self.minWidth))
 end
 
 --- Course gen center mode setting
