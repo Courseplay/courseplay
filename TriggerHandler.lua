@@ -1303,7 +1303,6 @@ function TriggerHandler:onActivateObjectGlobalCompany(superFunc,vehicle)
 end
 
 function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
-	local isOk = superFunc(self,nodeId, source, xmlFile, xmlKey, forcedFillTypes, infiniteCapacity, blockUICapacity, baseDirectory)
 	if self.dischargeInfo == nil or self.dischargeInfo.nodes == nil or self.dischargeInfo.nodes[1] == nil or self.dischargeInfo.nodes[1].node == nil then
 		local dischargeNode = I3DUtil.indexToObject(nodeId, getXMLString(xmlFile, xmlKey .. ".dischargeInfo#dischargeNode"), source.i3dMappings)
 		if dischargeNode ~= nil then
@@ -1315,5 +1314,4 @@ function TriggerHandler:onLoad_GC_LoadingTriggerFix(superFunc,nodeId, source, xm
 			table.insert(self.dischargeInfo.nodes, {node=dischargeNode, width=width, length=length, priority=1})
 		end
 	end
-	return isOk
 end
