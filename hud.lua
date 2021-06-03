@@ -819,7 +819,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'changeLaneNumber' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-					if vehicle.cp.multiTools > 1 then
+					if vehicle.cp.courseGeneratorSettings.multiTools:get() > 1 then
 						self:enableButtonWithFunction(vehicle,page, 'changeLaneNumber')
 						if vehicle.cp.laneNumber == 0 then
 							vehicle.cp.hud.content.pages[page][line][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
@@ -832,7 +832,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'changeLaneOffset' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-					if vehicle.cp.multiTools == 1 then
+					if vehicle.cp.courseGeneratorSettings.multiTools:get() == 1 then
 						self:enableButtonWithFunction(vehicle,page, 'changeLaneOffset')
 						if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then 
 							vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
