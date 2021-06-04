@@ -116,6 +116,8 @@ function WorkWidthSetting:init(vehicle)
 	SettingList.init(self, 'workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle)
 	self.value = FloatSetting('workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle, 0)
 	self.minWidth, self.maxWidth = 1, 50
+	self:setToDefault()
+	self:refresh()
 end
 
 function WorkWidthSetting:loadFromXml(xml, parentKey)
@@ -136,7 +138,7 @@ function WorkWidthSetting:onReadStream(stream)
 	self:updateGuiElement()
 end
 
-function WorkWidthSetting:updateGuiElement()
+function WorkWidthSetting:refresh()
 	self.texts = {}
 	self.values = {}
 	-- have at most 3 values in the text box around the selected (sliding window around the current value)
@@ -150,6 +152,10 @@ function WorkWidthSetting:updateGuiElement()
 		table.insert(self.values, self.value:get() + WorkWidthSetting.Increment)
 		table.insert( self.texts, string.format(WorkWidthSetting.WidthFormatString, self.value:get() + WorkWidthSetting.Increment))
 	end
+end
+
+function WorkWidthSetting:updateGuiElement()
+	self:refresh()
 	if self.guiElement then
 		self.guiElement:setTexts(self:getGuiElementTexts())
 		if self.value:is(self.minWidth) then
