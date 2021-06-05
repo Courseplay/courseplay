@@ -192,7 +192,7 @@ function CpGuiText:draw(index)
 			x = x + self.size[1]
 		end
 				
-		renderText(x,y, self.textSize, text)
+		renderText(x,y, self.textSize, courseplay:loc(text))
 		
 		setTextBold(false)
 		setTextAlignment(RenderText.ALIGN_LEFT)

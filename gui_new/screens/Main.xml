@@ -29,21 +29,28 @@ CoursePlay - Gui - Main
 	<!--Buttons left [PAGES]-->
     <GuiElement type="flowLayout" template="cpMainLayout">
       <GuiElement type="flowLayout" template="cpMainLayout1">
-	  	<!--Recording and Driving-->
+	  	  <!--Recording and Driving-->
         <GuiElement type="button" template="cpMainCategorie_Steering" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="steering" id="guiBtnSteering" />
-		<!--Opens CourseManager_GUI-->
+		    <!--Opens CourseManager_GUI-->
         <GuiElement type="button" template="cpMainCategorie_CourseManager"  onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenCourseManager" parameter="courseManager" />
-		<!--Unloader Control [Page0]-->
+		    <!--Speed Settings-->
+        <GuiElement type="button" template="cpMainCategorie_Speed" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="speed" id="guiBtnSpeed" /> 
+        <!--Unloader Control [Page0]-->
         <GuiElement type="button" template="cpMainCategorie_Drivers" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="drivers" id="guiBtnDrivers" />
-		<!--Combine Manager-->
+		    
+        
+        
+        <!--Combine Manager-->
         <GuiElement type="button" template="cpMainCategorie_DriversSearch" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="driversSearch" id="guiBtnDriversSearch" />
-		<!--Settings Page-->
+		    <!--Settings Page-->
         <GuiElement type="button" template="cpMainCategorie_Settings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settings" /> 
 
-        <!--GuiElement type="button" template="cpMainCategorie_SettingsFilling" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="settingsFilling" /> 
-        <GuiElement type="button" template="cpMainCategorie_Speed" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="speed" /> 
-        <GuiElement type="button" template="cpMainCategorie_SettingsVehicle" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settingsVehicle" /> 
-        <GuiElement type="button" template="cpMainCategorie_SettingsField" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settingsField" /--> 
+        <!--
+        <GuiElement type="button" template="cpMainCategorie_SettingsFilling" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickOpenPage" parameter="settingsFilling" id="guiBtnSettingsFilling" /> 
+        <GuiElement type="button" template="cpMainCategorie_Speed" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="speed" id="guiBtnSpeed" /> 
+        <GuiElement type="button" template="cpMainCategorie_SettingsVehicle" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settingsVehicle" id="guiBtnSettingsVehicle" /> 
+        <GuiElement type="button" template="cpMainCategorie_SettingsField" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onOpenSettings" parameter="settingsField" />
+        --> 
 
 
         <!--GuiElement type="button" template="cpMainCategorie_VehicleSettings" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="" parameter="vehiclesettings" /--> 
@@ -60,6 +67,7 @@ CoursePlay - Gui - Main
           <GuiElement type="pageLoad" gui="CpGuiPageSteering" pageId="steering" buttonId="guiBtnSteering" />
           <GuiElement type="pageLoad" gui="CpGuiPageDrivers" pageId="drivers" buttonId="guiBtnDrivers" />
           <GuiElement type="pageLoad" gui="CpGuiPageDriversSearch" pageId="driversSearch" buttonId="guiBtnDriversSearch" />
+          <GuiElement type="pageLoad" gui="CpGuiPageDriversSpeed" pageId="speed" buttonId="guiBtnSpeed" />
         </GuiElement>
         
 		<!--Buttons bottom [MODES]-->

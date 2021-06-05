@@ -45,6 +45,7 @@ courseplay.clock = 0;
 	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
 	['8f5e9e8fb5a23375afbb3b7abbc6335c'] = true; -- Goof
 	['a3878b67bdac68d17440f63b7d30e6ef'] = true; -- Kevin
+	['d6f4fcf1f86e3e815b5e44f7276f9bef'] = true; -- CP_David
 };
 
 local function initialize()

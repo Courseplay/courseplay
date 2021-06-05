@@ -63,7 +63,7 @@ end
 
 function CpCourseManager:onClose() 
     g_depthOfFieldManager:setBlurState(false)
-    
+    courseplay.guiManager:openGui("cp_main")
 end
 
 

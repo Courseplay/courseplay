@@ -11,6 +11,7 @@
 
 
     </colors>
+	<!--All uvs, old cp ones without "px"-->
 	<uvs>
 		<uv name="colorBg" value="10px 1010px 4px 4px" />
 		<uv name="image" value="0 0 1 1" />

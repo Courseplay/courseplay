@@ -147,6 +147,8 @@ function CpGuiMain:onOpenCourseManager()
 end
 
 function CpGuiMain:onOpenSettings()
+    self:onClose()
+    courseplay:openAdvancedSettingsDialog(self.vehicle)
     --courseplay.guiManager:openGui("cp_settings")
 end
 
