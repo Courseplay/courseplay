@@ -626,6 +626,8 @@ function courseplay:onUpdateTick(dt)
 
 	if self.cp.toolsDirty then
 		courseplay:updateOnAttachOrDetach(self)
+		--- Updates the mode button availability after detaching an implement.
+		CpGuiMain.validateModeButtons(self)
 		self.cp.toolsDirty = nil
 	end
 

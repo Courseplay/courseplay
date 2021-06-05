@@ -72,16 +72,16 @@ CoursePlay - Gui - Main
         
 		<!--Buttons bottom [MODES]-->
         <GuiElement type="flowLayout" template="cpMainLayout3">
-          <GuiElement type="button" template="cpMainCategorie_mode1" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode1" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode2" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode2" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode3" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode3" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode4" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode4" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode5" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode5" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode6" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode6" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode7" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode7" /> 
-          <GuiElement type="button" template="cpMainCategorie_mode8" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode8" />
-          <GuiElement type="button" template="cpMainCategorie_mode9" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode9" />
-          <GuiElement type="button" template="cpMainCategorie_mode10" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="mode10" />
+          <GuiElement type="button" template="cpMainCategorie_mode1" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="1" id="mode1"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode2" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="2" id="mode2"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode3" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="3" id="mode3"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode4" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="4" id="mode4"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode5" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="5" id="mode5"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode6" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="6" id="mode6"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode7" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="7" id="mode7"/> 
+          <GuiElement type="button" template="cpMainCategorie_mode8" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="8" id="mode8"/>
+          <GuiElement type="button" template="cpMainCategorie_mode9" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="9" id="mode9"/>
+          <GuiElement type="button" template="cpMainCategorie_mode10" onEnter="onEnableHelp" onLeave="onDisableHelp" onClick="onClickSelectMode" parameter="10" id="mode10"/>
         </GuiElement>
 
       </GuiElement>

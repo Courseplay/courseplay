@@ -101,7 +101,7 @@ function CpGuiMain:setData(vehicle)
             page.classGui:setVehicle(vehicle)
         end
     end
-    
+    CpGuiMain.validateModeButtons(self.vehicle)
 end
 
 function CpGuiMain:setGuiMoverValues(target, pos)
@@ -156,6 +156,26 @@ function CpGuiMain:onClickOpenPage(btn, site)
     self.lastPageIndex = self.pageFunctions:setPageByName(site)
 end
 
+function CpGuiMain:onClickSelectMode(btn,mode)
+
+end
+
+--- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
+function CpGuiMain.validateModeButtons(vehicle)
+    for i=1,courseplay.NUM_MODES do 
+        --- gets the button id.
+        local buttonKey = string.format("mode%d",i)
+        if courseplay.guiManager.mainCpGui then
+            local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
+        --    courseplay.guiManager.mainCpGui[buttonKey]:setDisabled(not valid)
+            courseplay.guiManager.mainCpGui[buttonKey]:setVisible(valid)
+        end
+    end
+end
+
+function CpGuiMain:validatePageButtons()
+
+end
 
 
 

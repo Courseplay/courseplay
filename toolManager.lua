@@ -8,6 +8,8 @@ function courseplay:attachImplement(implement)
 		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, rootVehicle, '%s attached', nameNum(implement))
 		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
+	--- Updates the mode button availability.
+	CpGuiMain.validateModeButtons(rootVehicle)
 end
 
 -- We need to add a hook here as onPostAttachImplement is not called for the vehicle when an implement is attached
@@ -17,8 +19,8 @@ AttacherJoints.attachImplement = Utils.appendedFunction(AttacherJoints.attachImp
 function courseplay:detachImplement(implementIndex)
 	local spec = self.spec_attacherJoints
 	local implement = spec.attachedImplements[implementIndex]
+	local rootVehicle = implement.object:getRootVehicle()
 	if implement then
-		local rootVehicle = implement.object:getRootVehicle()
 		if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
 			rootVehicle.hasCourseplaySpec then
 			courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, rootVehicle, '%s detached', nameNum(implement.object))
