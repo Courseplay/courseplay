@@ -18,33 +18,50 @@
 
 		<uv name="icon_cpLogo" value="0 0.845 0.8125 0.15" />
 		<uv name="icon_info" value="440px 290px 150px 75px" />
-		<uv name="icon_closeX" value="580px 365px 150px 75px" />
+		<uv name="icon_closeX" value="580px 365px 150px 75px" /><!--Woher?-->
 		
-		<uv name="icon_catDrivers" value="0px 0px 128px 128px" />
-		<uv name="icon_castSteering" value="128px 0px 128px 128px" />
-		<uv name="icon_castCourseManager" value="256px 0px 128px 128px" />
-		<uv name="icon_castFillSettings" value="384px 0px 128px 128px" />
-		<uv name="icon_castDriversSearch" value="512px 0px 128px 128px" />
-		<uv name="icon_castSpeed" value="640px 0px 128px 128px" />
-		<uv name="icon_castSettings" value="768px 0px 128px 128px" />
-		<uv name="icon_castSettingsVehicle" value="896px 0px 128px 128px" />
-		<uv name="icon_castSettingsField" value="0px 128px 128px 128px" />
-		<uv name="icon_castFrontlader" value="128px 128px 128px 128px" />
-		<uv name="icon_castSilo" value="256px 128px 128px 128px" />
+		<uv name="icon_castDrivers" value="0px 0px 128px 128px" /><!--A1-->
+		<uv name="icon_castSteering" value="128px 0px 128px 128px" /><!--B1-->
+		<uv name="icon_castCourseManager" value="256px 0px 128px 128px" /><!--C1-->
+		<uv name="icon_castFillSettings" value="384px 0px 128px 128px" /><!--D1-->
+		<uv name="icon_castCombineManager" value="512px 0px 128px 128px" /><!--E1-->
+		<uv name="icon_castSpeed" value="640px 0px 128px 128px" /><!--F1-->
+		<uv name="icon_castSettings" value="768px 0px 128px 128px" /><!--G1-->
+		<uv name="icon_castSettingsVehicle" value="896px 0px 128px 128px" /><!--H1-->
+
+		<uv name="icon_castSettingsField" value="0px 128px 128px 128px" /><!--A2-->
+		<uv name="icon_castFrontloader" value="128px 128px 128px 128px" /><!--B2-->
+		<uv name="icon_castSilo" value="256px 128px 128px 128px" /><!--C2-->
+		<uv name="icon_castShovelLoad" value="384px 128px 128px 128px" /><!--D2-->
+		<uv name="icon_castShovelTransport" value="512px 128px 128px 128px" /><!--E2-->
+		<uv name="icon_castShovelPreUnload" value="640px 128px 128px 128px" /><!--F2-->
+		<uv name="icon_castShovelUnload" value="768px 128px 128px 128px" /><!--G2-->
+
+		<uv name="icon_castSelfUnload" value="0px 256px 128px 128px" /><!--A3-->
+		<uv name="icon_castPipeAlwaysUnfold" value="128px 256px 128px 128px" /><!--B3-->
+		<uv name="icon_castSettingFertilizer" value="256px 256px 128px 128px" /><!--C3-->
+		<uv name="icon_castRidgeMarkers" value="384px 256px 128px 128px" /><!--D3-->
 		
-		<uv name="icon_mode1" value="0px 384px 128px 128px" />
-		<uv name="icon_mode2" value="128px 384px 128px 128px" />
-		<uv name="icon_mode3" value="256px 384px 128px 128px" />
-		<uv name="icon_mode4" value="512px 384px 128px 128px" />
-		<uv name="icon_mode5" value="640px 384px 128px 128px" />
-		<uv name="icon_mode6" value="768px 384px 128px 128px" />
-		<uv name="icon_mode7" value="0px 0px 128px 128px" />
-		<uv name="icon_mode8" value="384px 384px 128px 128px" />
-		<uv name="icon_mode9" value="128px 128px 128px 128px" />
-		<uv name="icon_mode10" value="256px 128px 128px 128px" />
+		<uv name="icon_mode1" value="0px 384px 128px 128px" /><!--A4-->
+		<uv name="icon_mode2" value="128px 384px 128px 128px" /><!--B4-->
+		<uv name="icon_mode3" value="256px 384px 128px 128px" /><!--C4-->
+		<uv name="icon_mode4" value="512px 384px 128px 128px" /><!--E4-->
+		<uv name="icon_mode5" value="640px 384px 128px 128px" /><!--F4-->
+		<uv name="icon_mode6" value="768px 384px 128px 128px" /><!--G4-->
+		<uv name="icon_mode7" value="896px 384px 128px 128px" /><!--H4 (Placeholder)-->
+		<uv name="icon_mode8" value="384px 384px 128px 128px" /><!--D4-->
+
+		<uv name="icon_mode9" value="128px 128px 128px 128px" /><!--B2-->
+		<uv name="icon_mode10" value="256px 128px 128px 128px" /><!--C2-->
 		
-		<uv name="icon_left" value="384px 512px 128px 128px" />
-		<uv name="icon_right" value="512px 512px 128px 128px" />
+		<uv name="icon_plus" value="0px 512px 128px 128px" /><!--A5-->
+		<uv name="icon_minus" value="128px 512px 128px 128px" /><!--B5-->
+		<uv name="icon_X" value="256px 512px 128px 128px" /><!--C5-->
+		<uv name="icon_left" value="384px 512px 128px 128px" /><!--D5-->
+		<uv name="icon_right" value="512px 512px 128px 128px" /><!--E5-->
+		<uv name="icon_up" value="640px 512px 128px 128px" /><!--F5-->
+		<uv name="icon_down" value="768px 512px 128px 128px" /><!--G5-->
+		<uv name="icon_delete" value="896px 512px 128px 128px" /><!--H5-->
 
 		<uv name="icon_accept" value="335px 730px 50px 50px" />
 
@@ -203,15 +220,15 @@
 		</template>
 		<template name="cpMainCategorie_Drivers" anchor="middleTop" extends="cpMainCategorieActiveButton" />
 		<template name="cpMainCategorie_Drivers_overlay" extends="cpMainCategorie_Drivers">
-			<value name="imageUVs" value="icon_catDrivers" />
-			<value name="imageUVs_selected" value="icon_catDrivers" />
+			<value name="imageUVs" value="icon_castDrivers" />
+			<value name="imageUVs_selected" value="icon_castDrivers" />
 		</template>
 		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="0px 12px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_DriversSearch_overlay" extends="cpMainCategorie_DriversSearch">
-			<value name="imageUVs" value="icon_castDriversSearch" />
-			<value name="imageUVs_selected" value="icon_castDriversSearch" />
+			<value name="imageUVs" value="icon_castCombineManager" />
+			<value name="imageUVs_selected" value="icon_castCombineManager" />
 		</template>
 		<template name="cpMainCategorie_SettingsFilling" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_SettingsFilling_overlay" extends="cpMainCategorie_SettingsFilling">
@@ -314,8 +331,8 @@
 
 		<template name="cpMainCategorie_Frontlader" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_Frontlader_overlay" extends="cpMainCategorie_Frontlader">
-			<value name="imageUVs" value="icon_castFrontlader" />
-			<value name="imageUVs_selected" value="icon_castFrontlader" />
+			<value name="imageUVs" value="icon_castFrontloader" />
+			<value name="imageUVs_selected" value="icon_castFrontloader" />
 		</template>
 		<template name="cpMainCategorie_Silo" anchor="middleTop" extends="cpMainCategorie">
 			<value name="margin" value="0px 20px 0px 0px" />
