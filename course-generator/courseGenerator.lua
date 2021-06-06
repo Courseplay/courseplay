@@ -226,9 +226,9 @@ end
 
 --- Island finder wrapper for CP, 
 -- expects FS coordinates
-function courseGenerator.findIslands( fieldData )
-	local islandNodes = Island.findIslands( Polygon:new( courseGenerator.pointsToXy( fieldData.points )))
-	fieldData.islandNodes = courseGenerator.pointsToCxCz( islandNodes )
+function courseGenerator.findIslands(boundary)
+	local islandNodes = Island.findIslands( Polygon:new( courseGenerator.pointsToXy(boundary)))
+	return courseGenerator.pointsToCxCz( islandNodes )
 end
 
 --- Find the starting location coordinates when the user wants to start

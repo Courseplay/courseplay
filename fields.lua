@@ -555,10 +555,8 @@ function courseplay.fields.saveAllFields()
 				for i,point in ipairs(fieldData.points) do
 					setXMLString(fileName, key .. (".point%d#pos"):format(i), ("%.2f %.2f %.2f"):format(point.cx, point.cy, point.cz))
 				end;
-				if not fieldData.islandNodes then
-					courseGenerator.findIslands( fieldData )
-				end
-				for i, islandNode in ipairs( fieldData.islandNodes ) do
+				local islandNodes = courseGenerator.findIslands( fieldData.points )
+				for i, islandNode in ipairs(islandNodes) do
 					setXMLString( fileName, key .. ( ".islandNode%d#pos"):format( i ), ("%.2f %2.f"):format( islandNode.cx, islandNode.cz ))
 				end
 				
