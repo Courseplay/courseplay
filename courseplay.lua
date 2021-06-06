@@ -149,6 +149,7 @@ local function initialize()
 		'Events/InfoTextEvent',
 		'Events/WorkingToolPositionsEvents',
 		'Events/CommandEvents',
+		'Events/WorkWidthSettingEvent',
 		'Generic/LinkedList',
 		
 		'gui_new/GuiManager',
