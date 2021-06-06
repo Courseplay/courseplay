@@ -241,68 +241,68 @@
 			<value name="imageUVs_selected" value="icon_castSettings" />
 		</template>
 
-		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorie" />
+		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorieActiveButton" />
 		<template name="cpMainCategorie_mode1_overlay" extends="cpMainCategorie_mode1">
 			<value name="imageUVs" value="icon_mode1" />
 			<value name="imageUVs_selected" value="icon_mode1" />
 		</template>
-		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode2_overlay" extends="cpMainCategorie_mode2">
 			<value name="imageUVs" value="icon_mode2" />
 			<value name="imageUVs_selected" value="icon_mode2" />
 		</template>
-		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode3_overlay" extends="cpMainCategorie_mode3">
 			<value name="imageUVs" value="icon_mode3" />
 			<value name="imageUVs_selected" value="icon_mode3" />
 		</template>
-		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode4_overlay" extends="cpMainCategorie_mode4">
 			<value name="imageUVs" value="icon_mode4" />
 			<value name="imageUVs_selected" value="icon_mode4" />
 		</template>
-		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode5_overlay" extends="cpMainCategorie_mode5">
 			<value name="imageUVs" value="icon_mode5" />
 			<value name="imageUVs_selected" value="icon_mode5" />
 		</template>
-		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode6_overlay" extends="cpMainCategorie_mode6">
 			<value name="imageUVs" value="icon_mode6" />
 			<value name="imageUVs_selected" value="icon_mode6" />
 		</template>
-		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode7_overlay" extends="cpMainCategorie_mode7">
 			<value name="imageUVs" value="icon_mode7" />
 			<value name="imageUVs_selected" value="icon_mode7" />
 		</template>
-		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode8_overlay" extends="cpMainCategorie_mode8">
 			<value name="imageUVs" value="icon_mode8" />
 			<value name="imageUVs_selected" value="icon_mode8" />
 		</template>
-		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode9_overlay" extends="cpMainCategorie_mode9">
 			<value name="imageUVs" value="icon_mode9" />
 			<value name="imageUVs_selected" value="icon_mode9" />
 		</template>
-		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorie" >
+		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode10_overlay" extends="cpMainCategorie_mode10">

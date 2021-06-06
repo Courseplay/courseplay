@@ -23,6 +23,9 @@ CpGuiMain.xmlFilename = courseplay.path .. "gui_new/screens/Main.xml"
 
 CpGuiMain._mt = Class(CpGuiMain)
 
+CpGuiMain.selectedMode = 5
+CpGuiMain.defaultMode = 5
+
 GuiManager.guiClass.main = CpGuiMain
 
 GuiManager.BUTTONS = {}
@@ -70,6 +73,7 @@ end
 function CpGuiMain:onOpen() 
     self.gui_dialog.position = self.dialogPosition
     self.pageFunctions:setPageByName(self.lastPageIndex)
+    CpGuiMain.getModeButton(self,self.selectedMode):setActive(true)
 end
 
 function CpGuiMain:onClose() 
@@ -157,20 +161,42 @@ function CpGuiMain:onClickOpenPage(btn, site)
 end
 
 function CpGuiMain:onClickSelectMode(btn,mode)
-
+    mode = tonumber(mode)
+    if mode ~= self.selectedMode then 
+        CpGuiMain.getModeButton(self, self.selectedMode):setActive(false)
+        CpGuiMain.getModeButton(self, mode):setActive(true)
+        self.selectedMode = mode
+    end
 end
+
+--- TODO: moves this into a setting: DriverModeSetting!
 
 --- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
 function CpGuiMain.validateModeButtons(vehicle)
+    local mainCpGui = courseplay.guiManager.mainCpGui
+    if not mainCpGui then 
+        return
+    end
     for i=1,courseplay.NUM_MODES do 
-        --- gets the button id.
-        local buttonKey = string.format("mode%d",i)
-        if courseplay.guiManager.mainCpGui then
-            local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
-        --    courseplay.guiManager.mainCpGui[buttonKey]:setDisabled(not valid)
-            courseplay.guiManager.mainCpGui[buttonKey]:setVisible(valid)
+        --- Is the mode valid ?
+        local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
+        local btn = CpGuiMain.getModeButton(mainCpGui,i)
+    --    courseplay.guiManager.mainCpGui[buttonKey]:setDisabled(not valid)
+        btn:setVisible(valid)
+        if mainCpGui.selectedMode == i then 
+            --- Check if the current selectedMode still is valid, else switch to the default mode.
+            if not valid then 
+                btn:setActive(false)
+                mainCpGui.selectedMode = mainCpGui.defaultMode
+                CpGuiMain.getModeButton(mainCpGui, mainCpGui.defaultMode):setActive(true)
+            end
         end
     end
+end
+
+function CpGuiMain.getModeButton(mainCpGui,i)
+    local buttonKey = string.format("mode%d",i) 
+    return courseplay.guiManager.mainCpGui[buttonKey]
 end
 
 function CpGuiMain:validatePageButtons()
