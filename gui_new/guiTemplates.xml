@@ -36,11 +36,16 @@
 		<uv name="icon_castShovelTransport" value="512px 128px 128px 128px" /><!--E2-->
 		<uv name="icon_castShovelPreUnload" value="640px 128px 128px 128px" /><!--F2-->
 		<uv name="icon_castShovelUnload" value="768px 128px 128px 128px" /><!--G2-->
+		<uv name="icon_castFoldAtEnd" value="896px 128px 128px 128px" /><!--H2-->
 
 		<uv name="icon_castSelfUnload" value="0px 256px 128px 128px" /><!--A3-->
 		<uv name="icon_castPipeAlwaysUnfold" value="128px 256px 128px 128px" /><!--B3-->
 		<uv name="icon_castSettingFertilizer" value="256px 256px 128px 128px" /><!--C3-->
 		<uv name="icon_castRidgeMarkers" value="384px 256px 128px 128px" /><!--D3-->
+		<uv name="icon_castStrawDischarge" value="512px 256px 128px 128px" /><!--E3-->
+		<uv name="icon_castStrawDischargeMid" value="640px 256px 128px 128px" /><!--F3-->
+		<uv name="icon_castUnloadFirstHeadlandOn" value="768px 256px 128px 128px" /><!--G3-->
+		<uv name="icon_castUnloadFirstHeadlandOff" value="896px 256px 128px 128px" /><!--H3-->
 		
 		<uv name="icon_mode1" value="0px 384px 128px 128px" /><!--A4-->
 		<uv name="icon_mode2" value="128px 384px 128px 128px" /><!--B4-->
@@ -48,7 +53,7 @@
 		<uv name="icon_mode4" value="512px 384px 128px 128px" /><!--E4-->
 		<uv name="icon_mode5" value="640px 384px 128px 128px" /><!--F4-->
 		<uv name="icon_mode6" value="768px 384px 128px 128px" /><!--G4-->
-		<uv name="icon_mode7" value="896px 384px 128px 128px" /><!--H4 (Placeholder)-->
+		<uv name="icon_mode7" value="896px 384px 128px 128px" /><!--H4-->
 		<uv name="icon_mode8" value="384px 384px 128px 128px" /><!--D4-->
 
 		<uv name="icon_mode9" value="128px 128px 128px 128px" /><!--B2-->
@@ -62,6 +67,8 @@
 		<uv name="icon_up" value="640px 512px 128px 128px" /><!--F5-->
 		<uv name="icon_down" value="768px 512px 128px 128px" /><!--G5-->
 		<uv name="icon_delete" value="896px 512px 128px 128px" /><!--H5-->
+
+		<uv name="icon_trailer" value="0px 640px 128px 128px" /><!--A6-->
 
 		<uv name="icon_accept" value="335px 730px 50px 50px" />
 
