@@ -57,6 +57,10 @@ function StartingLocationSetting:setSelectedPosition(x, z)
 end
 
 function StartingLocationSetting:getSelectedPosition()
+	if self.worldPosition == nil then
+		-- make sure there's a position, just use the vehicle pos
+		self.worldPosition = self:getVehiclePosition()
+	end
 	return self.worldPosition
 end
 
@@ -349,6 +353,16 @@ function MultiToolsSetting:init(vehicle)
 	end
 	SettingList.init(self, 'multiTools', 'COURSEPLAY_MULTI_TOOLS', 'COURSEPLAY_MULTI_TOOLS',
 		vehicle, self.values, self.texts)
+end
+
+function MultiToolsSetting:onChange()
+	-- TODO: consolidate the (poorly named) laneNumber and laneOffset and this into a single setting as they
+	-- can only change together (instead of having logic all over the place according to the good old CP practices)
+	if self:get() % 2 == 0 then
+		courseplay:changeLaneNumber(self.vehicle, 1)
+	else
+		courseplay:changeLaneNumber(self.vehicle, 0, true)
+	end
 end
 
 ---@class IslandBypassModeSetting : SettingList

@@ -158,7 +158,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
 			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			course.multiTools = course.multiTools or 1
-			courseplay:setMultiTools(vehicle, course.multiTools)
+			vehicle.cp.courseGeneratorSettings.multiTools:set(course.multiTools)
 
 			courseplay:debug(string.format("course_management %d: %s: no course was loaded -> new course = course -> currentCourseName=%q, numCourses=%s",
 				debug.getinfo(1).currentline, nameNum(vehicle), tostring(vehicle.cp.currentCourseName),
@@ -279,7 +279,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				vehicle.cp.courseWorkWidth = course.workWidth;
 				--Place here to prevent it being reset back to one multi Tool on course addition when course isn't auto generated
 				course.multiTools = course.multiTools or 1
-				courseplay:setMultiTools(vehicle, course.multiTools)
+				vehicle.cp.courseGeneratorSettings.multiTools:set(course.multiTools)
 			end;
 			if not vehicle.cp.courseNumHeadlandLanes then
 				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
@@ -353,13 +353,13 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.copyCourseFromDriver = nil;
 		
 		--MultiTools
-		if src.cp.multiTools > 1 then
+		if src.cp.courseGeneratorSettings.multiTools:get() > 1 then
 			vehicle.cp.workWidth = src.cp.workWidth
 			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
 			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
-			courseplay:setMultiTools(vehicle, src.cp.multiTools)
+			vehicle.cp.courseGeneratorSettings.multiTools:set(src.cp.courseGeneratorSettings.multiTools:get())
 		else
-			courseplay:setMultiTools(vehicle, 1)
+			vehicle.cp.courseGeneratorSettings.multiTools:set(1)
 		end;
 		
 		courseplay:validateCanSwitchMode(vehicle);

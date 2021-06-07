@@ -286,13 +286,8 @@ local function setGlobalData()
 	[39]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
 	[30]={name='self.cp.searchCombineAutomatically',dataFormat='Bool'},
 	[31]={name='self.cp.waitTime',dataFormat='Int'},
-	[32]={name='self.cp.multiTools',dataFormat='Int'},
-	[33]={name='self.cp.alignment.enabled',dataFormat='Bool'},
-	[34]={name='self.cp.hasSowingMachine',dataFormat='Bool'},
-	[35]={name='self.cp.generationPosition.fieldNum',dataFormat='Int'},
-	[36]={name='self.cp.generationPosition.hasSavedPosition',dataFormat='Bool'},
-	[37]={name='self.cp.generationPosition.x',dataFormat='Float'},
-	[38]={name='self.cp.generationPosition.z',dataFormat='Float'}
+	[32]={name='self.cp.alignment.enabled',dataFormat='Bool'},
+	[33]={name='self.cp.hasSowingMachine',dataFormat='Bool'},
 	}
 	
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()

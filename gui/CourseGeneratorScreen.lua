@@ -191,12 +191,6 @@ end
 
 function CourseGeneratorScreen:onClickStartingLocation( state )
 	self.settings.startingLocation:setFromGuiElement()
-	if self.settings.startingLocation:is(courseGenerator.STARTING_LOCATION_SELECT_ON_MAP) and
-		self.settings.startingLocation:getSelectedPosition() == nil then
-		-- make sure there's a position, just use the vehicle pos
-		local x, _, z = getWorldTranslation(self.vehicle.rootNode)
-		self.settings.startingLocation:setSelectedPosition(x, z)
-	end
 end
 
 -----------------------------------------------------------------------------------------------------

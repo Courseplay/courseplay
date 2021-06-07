@@ -99,8 +99,6 @@ function courseplay:onLoad(savegame)
 	self.cp.slippingStage = 0;
 	self.cp.saveFuel = false;
 	self.cp.hasAugerWagon = false;
-	self.cp.generationPosition = {}
-	self.cp.generationPosition.hasSavedPosition = false
 
 	-- Visual i3D waypoint signs
 	self.cp.signs = {
@@ -764,11 +762,7 @@ function courseplay:onReadStream(streamId, connection)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onReadStream(streamId)
 -------------------	
-	local savedFieldNum = streamDebugReadInt32(streamId)
-	if savedFieldNum > 0 then
-		self.cp.generationPosition.fieldNum = savedFieldNum
-	end
-		
+
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
 		self.cp.copyCourseFromDriver = NetworkUtil.getObject(copyCourseFromDriverId) 
@@ -837,8 +831,7 @@ function courseplay:onWriteStream(streamId, connection)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onWriteStream(streamId)
 -------------
-	streamDebugWriteInt32(streamId, self.cp.generationPosition.fieldNum)
-	
+
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
 		copyCourseFromDriverID = NetworkUtil.getObjectId(self.cp.copyCourseFromDriver)
@@ -1010,10 +1003,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.abortWork							= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),				0);
 		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
 		self.cp.lastValidTipDistance				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#lastValidTipDistance'),	0);
-		self.cp.generationPosition.hasSavedPosition	= Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#hasSavedPosition'),		false);
-		self.cp.generationPosition.x				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionX'),			0);
-		self.cp.generationPosition.z				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#savedPositionZ'),			0);
-		self.cp.generationPosition.fieldNum 		= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#savedFieldNum'),			0);
 		if self.cp.abortWork == 0 then
 			self.cp.abortWork = nil;
 		end;
@@ -1094,10 +1083,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
 	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))
-	setXMLBool(xmlFile, newKey..".fieldWork #hasSavedPosition", self.cp.generationPosition.hasSavedPosition)
-	setXMLString(xmlFile, newKey..".fieldWork #savedPositionX", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.x,0)))
-	setXMLString(xmlFile, newKey..".fieldWork #savedPositionZ", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.z,0)))
-	setXMLString(xmlFile, newKey..".fieldWork #savedFieldNum", string.format("%.1f",Utils.getNoNil(self.cp.generationPosition.fieldNum,0)))
 
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)

@@ -83,12 +83,6 @@ function courseGenerator.generate(vehicle)
 		workWidth = workWidth * vehicle.cp.courseGeneratorSettings.multiTools:get()
 	end
 
-	if vehicle.cp.courseGeneratorSettings.startingLocation:is(courseGenerator.STARTING_LOCATION_VEHICLE_POSITION) then
-		vehicle.cp.generationPosition.x, _, vehicle.cp.generationPosition.z = getWorldTranslation(vehicle.rootNode)
-		vehicle.cp.generationPosition.hasSavedPosition = true
-		vehicle:setCpVar('generationPosition.fieldNum', selectedField, courseplay.isClient)
-	end
-
 	local field = {}
 	local headlandSettings = {}
 	field.boundary = Polygon:new(courseGenerator.pointsToXy(poly.points))

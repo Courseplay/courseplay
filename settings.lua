@@ -176,14 +176,15 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 end;
 
 function courseplay:changeLaneNumber(vehicle, changeBy, reset)
-	--This function takes input from the hud. And claculates laneOffset by dividing tool workwidth and multiplying that by the lane number counting outwards.
-	local toolsIsEven = vehicle.cp.multiTools%2 == 0
+	-- This function takes input from the hud. And calculates laneOffset by dividing tool workwidth and multiplying that
+	-- by the lane number counting outwards.
+	local toolsIsEven = vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0
 	
 	if reset then
 		vehicle.cp.laneNumber = 0;
 		vehicle.cp.laneOffset = 0
 	else
-		--skip zero if multiTools is even
+		-- skip zero if multiTools is even
 		if toolsIsEven then
 			if vehicle.cp.laneNumber == -1 and changeBy > 0 then
 				changeBy = 2
@@ -191,7 +192,9 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 				changeBy = -2
 			end
 		end
-		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy, math.floor(vehicle.cp.multiTools/2)*-1, math.floor(vehicle.cp.multiTools/2));
+		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy,
+			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2) * -1,
+			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2));
 		local newOffset = 0
 		if toolsIsEven then
 			if vehicle.cp.laneNumber > 0 then
@@ -200,7 +203,7 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 				newOffset = -vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber+1))
 			end
 		else
-			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
+			newOffset = vehicle.cp.workWidth * vehicle.cp.laneNumber
 		end
 		courseplay:changeLaneOffset(vehicle, nil , newOffset)
 	end;
@@ -266,7 +269,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	elseif force ~= nil and noDraw == nil then
 		vehicle.cp.manualWorkWidth = nil
 		courseplay:changeLaneNumber(vehicle, 0, true)
-		courseplay:setMultiTools(vehicle, 1)
+		vehicle.cp.courseGeneratorSettings.multiTools:set(1)
 		--print("is set by calculate button")
 	end
 	if force then
@@ -730,8 +733,8 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 end
 
 function courseplay:setMultiTools(vehicle, set)
-	vehicle:setCpVar('multiTools',set,courseplay.isClient)
-	if vehicle.cp.multiTools%2 == 0 then
+	vehicle:setCpVar('multiTools', set, courseplay.isClient)
+	if vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0 then
 		courseplay:changeLaneNumber(vehicle, 1)
 	else
 		courseplay:changeLaneNumber(vehicle, 0, true)
