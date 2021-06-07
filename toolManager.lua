@@ -8,8 +8,6 @@ function courseplay:attachImplement(implement)
 		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, rootVehicle, '%s attached', nameNum(implement))
 		courseplay:updateOnAttachOrDetach(rootVehicle)
 	end
-	--- Updates the mode button availability.
-	CpGuiMain.validateModeButtons(rootVehicle)
 end
 
 -- We need to add a hook here as onPostAttachImplement is not called for the vehicle when an implement is attached
@@ -41,7 +39,7 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 
 	courseplay:resetTools(vehicle)
 	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
-	vehicle.cp.settings:validateCurrentValues()
+	vehicle.cp.settings:validateCurrentValues(vehicle)
 
 	-- reset tool offset to the preconfigured value if exists
 	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()

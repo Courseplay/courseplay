@@ -15,8 +15,6 @@
 -- 
 -- 
 -- ToDo:
---
---
 
 GuiManager = {}
 GuiManager._mt = Class(GuiManager)
@@ -48,6 +46,9 @@ function GuiManager:new(customMt)
 
 	--Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, self.init)
 
+	self.oldDrawFunc = BaseMission.draw
+	self.oldUpdateFunc = Gui.update
+
 	BaseMission.draw = courseplay.appendedFunction(BaseMission.draw, self.draw, self)
 	Gui.update = courseplay.appendedFunction(Gui.update, self.update, self)
 
@@ -72,6 +73,7 @@ function GuiManager:load()
 end
 
 function GuiManager:update(dt)
+	--[[
 	if GuiManager.devVersion then
 		if self.devVersionTimeCurrent == nil or self.devVersionTimeCurrent <= 0 then
 			self.mainCpGui.pageFunctions.pages = {}
@@ -100,7 +102,7 @@ function GuiManager:update(dt)
 			self.devVersionTimeCurrent = self.devVersionTimeCurrent - dt
 		end		
 	end
-	
+	]]--
 	if self.activeGui == nil then
 		for name, open in pairs(self.smallGuis) do
 			if open then
@@ -172,7 +174,12 @@ function GuiManager:draw()
 end
 
 function GuiManager:delete() 
-	
+	courseplay.guiManager:closeActiveGui()
+	for name,gui in pairs(self.guis) do		
+		gui.gui:deleteElements()
+	end
+	BaseMission.draw = self.oldDrawFunc
+	Gui.update = self.oldUpdateFunc
 end
 
 function GuiManager:loadGui(class, name, isFullGui, canExit)
@@ -889,4 +896,18 @@ function GuiManager:loadXmlSettings(xml, key)
 	key = key .. ".guiNew"
 	self.mainCpGui:loadXmlSettings(xml, key)
 	self.courseManagerCpGui:loadXmlSettings(xml, key)
+end
+
+function GuiManager.devKeyEvent(unicode, sym, modifier, isDown)
+	if bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_h then
+		courseplay.guiManager:delete()
+		print(CpManager:loadFile("gui_new/reloadGui.xml"))
+		courseplay.guiManager = nil 
+		courseplay.guiManager = GuiManager:new()
+		courseplay.guiManager:load()
+		if g_currentMission.controlledVehicle then 
+			courseplay.guiManager:onEnterVehicle(g_currentMission.controlledVehicle)
+
+		end
+	end
 end

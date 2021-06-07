@@ -1,0 +1,4860 @@
+<code> 
+<![CDATA[ 
+-- 
+-- CoursePlay 
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 18.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+
+GuiManager = {}
+GuiManager._mt = Class(GuiManager)
+
+GuiManager.devVersion = false -- if true, the gui will reload every defined time, moving the gui and buttons are a bit tricky to use...
+
+GuiManager.guiClass = {}
+courseplay.guiScreens = {}
+
+function GuiManager:new(customMt)
+	local self = {}
+	setmetatable(self, customMt or GuiManager._mt)
+
+	self.devVersionTimeReload = 1000 -- time for reload
+	self.devVersionTemplateFiles = {}
+
+	self.guis = {}
+	self.smallGuis = {}
+	self.toInit_actionEvents = {}
+	self.activeGuiDialogs = {}
+	self.registeredActionEvents = {} -- TODO: Need this variable?
+	self.guiStates = {}
+
+	self.template = {}
+	self.template.colors = {}
+	self.template.uvs = {}
+	self.template.templates = {}
+	self.template.uiElements = {}
+
+	--Mission00.onStartMission = Utils.appendedFunction(Mission00.onStartMission, self.init)
+
+	self.oldDrawFunc = BaseMission.draw
+	self.oldUpdateFunc = Gui.update
+
+	BaseMission.draw = courseplay.appendedFunction(BaseMission.draw, self.draw, self)
+	Gui.update = courseplay.appendedFunction(Gui.update, self.update, self)
+
+	return self
+end
+
+--function GuiManager:init()
+--end
+
+function GuiManager:load()
+	self:loadGuiTemplates(courseplay.path .. "gui_new/guiTemplates.xml")
+
+	self.fakeGui = GuiManager.fakeGui:new()
+	g_gui:loadGui(courseplay.path .. self.fakeGui.guiInformations.guiXml, "cp_fakeGui", self.fakeGui)
+	
+	self:registerUiElements("g_cpIconsOld", courseplay.path .. "img/iconSprite.dds")
+	self:registerUiElements("g_cpIcons", courseplay.path .. "img/ui_courseplay.dds")
+	
+	self.mainCpGui = self:registerGui("cp_main", InputAction.COURSEPLAY_MOUSEACTION_SECONDARY, GuiManager.guiClass.main, false, false, true).classGui
+	self.courseManagerCpGui = self:registerGui("cp_courseManager", nil, GuiManager.guiClass.courseManager, true, true, true).classGui
+	--self:registerInput("cp_main", InputAction.COURSEPLAY_HUD_OPEN, true) 
+end
+
+function GuiManager:update(dt)
+	--[[
+	if GuiManager.devVersion then
+		if self.devVersionTimeCurrent == nil or self.devVersionTimeCurrent <= 0 then
+			self.mainCpGui.pageFunctions.pages = {}
+			self.mainCpGui.pageFunctions.pagesById = {}
+			for _, fileName in pairs(self.devVersionTemplateFiles) do				
+				self:loadGuiTemplates(fileName)
+			end
+			for name,gui in pairs(self.guis) do		
+				gui.gui:deleteElements()
+				gui.gui:loadFromXML()
+			end
+			if self.activeGui ~= nil then
+				self.guis[self.activeGui].gui:openGui()
+			else
+				for name, open in pairs(self.smallGuis) do
+					if open then
+						self.guis[name].gui:openGui()
+					end
+				end 
+			end
+			if self.activeGuiDialog ~= nil then
+				self.guis[self.activeGuiDialog].gui:openGui()
+			end
+			self.devVersionTimeCurrent = self.devVersionTimeReload
+		else
+			self.devVersionTimeCurrent = self.devVersionTimeCurrent - dt
+		end		
+	end
+	]]--
+	if self.activeGui == nil then
+		for name, open in pairs(self.smallGuis) do
+			if open then
+				self.guis[name].gui:update(dt)
+			end
+		end
+	else
+		if g_gui:getIsDialogVisible() then
+			self:closeGui(self.activeGui)
+		else
+			self.guis[self.activeGui].gui:update(dt)
+		end
+	end
+	for _, name in pairs(self.activeGuiDialogs) do
+		self.guis[name].gui:update(dt)
+	end
+end
+
+function GuiManager:mouseEvent(posX, posY, isDown, isUp, button) 
+	if self.activeGuiDialog ~= nil then
+		self.guis[self.activeGuiDialog].gui:mouseEvent(posX, posY, isDown, isUp, button)
+	elseif self.activeGui ~= nil then
+		self.guis[self.activeGui].gui:mouseEvent(posX, posY, isDown, isUp, button)
+	else		
+		for name, open in pairs(self.smallGuis) do
+			if open then
+				self.guis[name].gui:mouseEvent(posX, posY, isDown, isUp, button)
+			end
+		end
+	end
+end
+
+function GuiManager:keyEvent(unicode, sym, modifier, isDown) 
+	if self.activeGuiDialog ~= nil then
+		self.guis[self.activeGuiDialog].gui:keyEvent(unicode, sym, modifier, isDown)
+	-- TODO: Need this really?
+	--elseif self.activeGui == nil then
+	--	for name, open in pairs(self.smallGuis) do
+	--		if open then
+	--			self.guis[name].gui:keyEvent(unicode, sym, modifier, isDown)
+	--		end
+	--	end
+	elseif self.activeGui ~= nil then
+		self.guis[self.activeGui].gui:keyEvent(unicode, sym, modifier, isDown)
+	else		
+		for name, open in pairs(self.smallGuis) do
+			if open then
+				self.guis[name].gui:keyEvent(unicode, sym, modifier, isDown)
+			end
+		end
+	end
+end
+
+function GuiManager:draw()
+	if self.activeGui == nil then
+		if not g_gui:getIsGuiVisible() or g_currentMission == nil then
+			for name, open in pairs(self.smallGuis) do
+				if open then
+					self.guis[name].gui:draw()
+				end
+			end
+		end
+	else
+		self.guis[self.activeGui].gui:draw()
+	end
+	for _, name in pairs(self.activeGuiDialogs) do
+		self.guis[name].gui:draw()
+	end
+end
+
+function GuiManager:delete() 
+	courseplay.guiManager:closeActiveGui()
+	for name,gui in pairs(self.guis) do		
+		gui.gui:deleteElements()
+	end
+	BaseMission.draw = self.oldDrawFunc
+	Gui.update = self.oldUpdateFunc
+end
+
+function GuiManager:loadGui(class, name, isFullGui, canExit)
+	if self.guis[name] ~= nil then
+		print(string.format("Gui %s already exist.", name))
+		return
+	else 
+		self.guis[name] = {}
+	end
+
+	self.guis[name].isFullGui = Utils.getNoNil(isFullGui, true)
+	self.guis[name].canExit = Utils.getNoNil(canExit, true)
+
+	local classGui = class:new()
+	local newGui = CpGui:new(name)
+	newGui:assignClass(classGui)
+	self.guis[name].gui = newGui
+	newGui:loadFromXML()
+	return newGui
+end
+
+function GuiManager:registerGui(name, inputAction, class, isFullGui, canExit, inVehicle)
+	if self.guis[name] ~= nil then
+		print(string.format("Gui %s already exist.", name))
+		return
+	else 
+		self.guis[name] = {}
+	end
+	
+	local classGui = class:new()
+	local newGui = CpGui:new(name)
+	newGui:assignClass(classGui)
+	self.guis[name].gui = newGui
+	self.guis[name].isFullGui = Utils.getNoNil(isFullGui, true)
+	self.guis[name].canExit = canExit
+		
+	if not self.guis[name].isFullGui then
+		self.smallGuis[name] = false		
+	end
+	
+	if inputAction ~= nil then
+		local func = function() self:openGui(name) end	
+		table.insert(self.toInit_actionEvents, {inputAction=inputAction, func=func, inVehicle=inVehicle})
+	end
+	
+	newGui:loadFromXML()
+	
+	return newGui
+end
+
+function GuiManager:registerInput(name, inputAction, inVehicle)
+	local func = function() self:openGui(name) end	
+	table.insert(self.toInit_actionEvents, {inputAction=inputAction, func=func, inVehicle=inVehicle})
+end
+
+function GuiManager:setCanExit(name, canExit)
+	if self.guis[name] ~= nil then
+		self.guis[name].canExit = canExit
+	end
+end
+
+function GuiManager:unregisterGui()
+	if self.guis[name] ~= nil then
+		self.guis[name].gui:delete()
+		self.guis[name] = nil
+	end
+end
+
+function GuiManager:openGui(name, asDialog)
+	if not asDialog then
+		self:closeActiveGui()
+	end
+	
+	if self.guis[name] == nil then
+		print(string.format("Gui %s not exist.", name))
+		return
+	end
+	if self.guis[name].isFullGui then
+		g_gui:showGui("cp_fakeGui")
+		self.fakeGui:setExit(self.guis[name].canExit)
+		
+		if not asDialog then
+			for nameG,_ in pairs(self.smallGuis) do
+				self.guis[nameG].gui:closeGui()
+			end
+			
+			self.activeGui = name
+			print("open gui " .. self.activeGui)
+		end
+	else
+		self.smallGuis[name] = true
+	end
+	self.guis[name].gui:openGui()
+
+	self.guiStates[name] = true
+	return self.guis[name].gui
+end
+
+function GuiManager:getGuiForOpen(name, asDialog)
+	if self.guis[name] == nil then
+		print(string.format("Gui %s not exist.", name))
+		return
+	end
+	if self.guis[name].isFullGui then
+		g_gui:showGui("cp_fakeGui")
+		self.fakeGui:setExit(self.guis[name].canExit)
+		
+		if asDialog then
+			table.insert(self.activeGuiDialogs, name)
+			self.activeGuiDialog = name
+		else
+			for nameG,_ in pairs(self.smallGuis) do
+				self.guis[nameG].gui:closeGui()
+			end
+			
+			self.activeGui = name
+		end
+	else
+		self.smallGuis[name] = true
+	end
+end
+
+function GuiManager:getGui(name)
+	return self.guis[name].gui
+end
+
+function GuiManager:openGuiWithData(guiName, asDialog, ...)
+	local gui = self:getGuiForOpen(guiName, asDialog)
+	gui.classGui:setData(...)
+	gui:openGui()
+	return gui
+end
+
+function GuiManager:updateGuiData(guiName, ...)
+	if self.activeGui == guiName then
+		self.guis[guiName].gui.classGui:updateData(...)
+	end
+end
+
+function GuiManager:closeGui(name)
+	if self.guis[name].isFullGui then
+		for nameG,open in pairs(self.smallGuis) do
+			if open then
+				self.guis[nameG].gui:openGui()
+			end
+		end
+		self.activeGui = nil
+		self.fakeGui:setExit(true)
+		self.guis[name].gui:closeGui()
+		g_gui:showGui("")
+	else
+		self.smallGuis[name] = false
+	end	
+end
+
+function GuiManager:closeActiveGui(guiName, ...)
+	if self.activeGui ~= nil then
+		self:closeGui(self.activeGui)
+	end
+	if guiName ~= nil then
+		self:openGuiWithData(guiName, ...)
+	end
+end
+
+function GuiManager:getGuiIsOpen(guiName)
+	return self.activeGui ~= nil and self.activeGui == guiName
+end
+
+function GuiManager:closeActiveDialog()
+	if self.activeGuiDialog ~= nil then
+		self.guis[self.activeGuiDialog].gui:closeGui()
+		table.remove(self.activeGuiDialogs, #self.activeGuiDialogs)
+		self.activeGuiDialog = nil	
+		for _,dialogName in pairs(self.activeGuiDialogs) do
+			self.activeGuiDialog = dialogName
+		end
+	end
+end
+
+function GuiManager:getGuiFromName(name)
+	return self.guis[name].gui
+end
+
+function GuiManager:loadGuiTemplates(xmlFilename, noWarning)
+    local showWarnings = not GuiManager.devVersion
+	
+	local xmlFile = loadXMLFile("Temp", xmlFilename)
+
+	if xmlFile == nil or xmlFile == 0 then		
+		print(string.format("Gui can't load templates %s", xmlFilename))			
+		return
+	end
+	
+	self.devVersionTemplateFiles[xmlFilename] = xmlFilename
+	
+	local i = 0
+	while true do
+		local key = string.format("guiTemplates.colors.color(%d)", i)
+		if not hasXMLProperty(xmlFile, key) then
+			break
+		end
+		local name = getXMLString(xmlFile, string.format("%s#name", key))
+		local value = getXMLString(xmlFile, string.format("%s#value", key))
+		
+		if name == nil or name == "" then			
+			print(string.format("Gui template haven't name at %s", key))
+			break
+		end
+		if self.template.colors[name] ~= nil and showWarnings then	
+			print(string.format("Gui template colour %s already exist", name))
+			break
+		end
+		
+		if value == nil or value == "" then			
+			print(string.format("Gui template haven't value at %s", key))
+			break
+		end
+		
+		local r,g,b,a = unpack(StringUtil.splitString(" ", value))
+		if r == nil or g == nil or b == nil or a == nil then	
+			print(string.format("Gui template haven't correct color at %s", key))	
+			break
+		end
+		
+		self.template.colors[name] = {tonumber(r), tonumber(g), tonumber(b), tonumber(a)}
+		i = i + 1
+	end
+	
+	if hasXMLProperty(xmlFile, "guiTemplates.uvs") then
+		i = 0
+		while true do
+			local key = string.format("guiTemplates.uvs.uv(%d)", i)
+			if not hasXMLProperty(xmlFile, key) then
+				break
+			end
+			local name = getXMLString(xmlFile, string.format("%s#name", key))
+			local value = getXMLString(xmlFile, string.format("%s#value", key))
+			
+			if name == nil or name == "" then			
+				print(string.format("Gui template haven't name at %s", key))
+				break
+			end
+			if self.template.uvs[name] ~= nil and showWarnings then	
+				print(string.format("Gui template uv %s already exist", name))
+				break
+			end
+			
+			if value == nil or value == "" then			
+				print(string.format("Gui template haven't value at %s", key))
+				break
+			end
+			
+			self.template.uvs[name] = value
+		i = i + 1
+		end
+	end
+	
+	i = 0
+	while true do
+		local key = string.format("guiTemplates.templates.template(%d)", i)
+		if not hasXMLProperty(xmlFile, key) then
+			break
+		end
+		local name = getXMLString(xmlFile, string.format("%s#name", key))
+		local anchor = getXMLString(xmlFile, string.format("%s#anchor", key))
+		local extends = getXMLString(xmlFile, string.format("%s#extends", key))
+		
+		if name == nil or name == "" then			
+			print(string.format("Gui template haven't name at %s", key))
+			break
+		end
+		if self.template.templates[name] ~= nil and showWarnings then
+			print(string.format("Gui template template %s already exist", name))	
+			break
+		end
+		
+		if anchor == nil or anchor == "" then			
+			anchor = "middleCenter"
+		end
+		
+		self.template.templates[name] = {}
+		self.template.templates[name].anchor = anchor
+		self.template.templates[name].values = {}
+		self.template.templates[name].extends = {}		
+		
+		if extends ~= nil and extends ~= "" then
+			self.template.templates[name].extends = StringUtil.splitString(" ", extends)
+		end
+		
+		local j = 0
+		while true do
+			local key = string.format("guiTemplates.templates.template(%d).value(%d)", i, j)
+			if not hasXMLProperty(xmlFile, key) then
+				break
+			end
+			
+			local nameV = getXMLString(xmlFile, string.format("%s#name", key))
+			local valueV = getXMLString(xmlFile, string.format("%s#value", key))
+			
+			if nameV ~= nil and nameV ~= "" and valueV ~= nil and valueV ~= "" then
+				if self.template.templates[name].values[nameV] ~= nil and showWarnings then	
+					print(string.format("Gui template template %s already exist", nameV))
+					break
+				end
+				self.template.templates[name].values[nameV] = valueV
+			else
+				print(string.format("Gui template template error at %s", key))
+			end				
+			j = j + 1
+		end
+		i = i + 1
+	end
+end
+
+function GuiManager:registerUiElements(name, path)
+	self.template.uiElements[name] = path
+end
+
+function GuiManager:getUiElement(name)
+	return self.template.uiElements[name]
+end
+
+function GuiManager:getTemplateValueParents(templateName, valueName)
+	if self.template.templates[templateName] ~= nil then
+		local val
+		for _,extend in pairs(self.template.templates[templateName].extends) do
+			local rVal = self:getTemplateValue(extend, valueName, nil, true)
+			if rVal ~= nil then
+				val = rVal
+				break
+			end
+		end
+		if val ~= nil then
+			return val
+		end
+		for _,extend in pairs(self.template.templates[templateName].extends) do
+			local rVal = self:getTemplateValueParents(extend, valueName, nil)
+			if rVal ~= nil then
+				val = rVal
+				break
+			end
+		end
+		return val
+	end
+	return nil
+end
+
+function GuiManager:getTemplateValue(templateName, valueName, default, ignoreExtends)
+	if self.template.templates[templateName] ~= nil then
+		if self.template.templates[templateName].values[valueName] ~= nil then
+			return self.template.templates[templateName].values[valueName]
+		elseif not ignoreExtends then
+			local parentV = self:getTemplateValueParents(templateName, valueName)
+			if parentV ~= nil then
+				return parentV
+			else
+				return default
+			end
+		else
+			return default
+		end
+	else
+		return default
+	end
+end
+
+function GuiManager:getTemplateValueBool(templateName, valueName, default)
+	local val = self:getTemplateValue(templateName, valueName)
+	if val ~= nil then
+		return val:lower() == "true"
+	end
+	return default
+end
+
+function GuiManager:getTemplateValueNumber(templateName, valueName, default)
+	local val = self:getTemplateValue(templateName, valueName, default)
+	if val ~= nil and val ~= "nil" then
+		return tonumber(val)
+	end
+	return default
+end
+
+function GuiManager:getTemplateValueColor(templateName, valueName, default)
+	local var = self:getTemplateValue(templateName, valueName)
+	
+	if self.template.colors[var] ~= nil then
+		return self.template.colors[var]
+	else
+		return GuiUtils.getColorArray(var, default)
+	end
+end
+
+function GuiManager:getTemplateValueUVs(templateName, valueName, imageSize, default)
+	local var = self:getTemplateValue(templateName, valueName)
+	
+	if self.template.uvs[var] ~= nil then
+		return GuiUtils.getUVs(self.template.uvs[var], imageSize, default)
+	else
+		return GuiUtils.getUVs(var, imageSize, default)
+	 end
+end
+
+function GuiManager:getTemplateValueXML(xmlFile, name, key, default)
+	local val = getXMLString(xmlFile, string.format("%s#%s", key, name))	
+	if val ~= nil then
+		return val
+	end
+	return default
+end
+
+function GuiManager:getTemplateValueNumberXML(xmlFile, name, key, default)
+	local val = getXMLString(xmlFile, string.format("%s#%s", key, name))	
+	if val ~= nil then
+		return tonumber(val)
+	end
+	return default
+end
+
+function GuiManager:getTemplateValueBoolXML(xmlFile, name, key, default)
+	local val = getXMLString(xmlFile, string.format("%s#%s", key, name))	
+	if val ~= nil then
+		return val:lower() == "true"
+	end
+	return default
+end
+
+function GuiManager:getTemplateAnchor(templateName)
+	if self.template.templates[templateName] ~= nil then
+		return self.template.templates[templateName].anchor
+	else
+		return "middleCenter"
+	end
+end
+
+function GuiManager:calcDrawPos(element, index)
+	local x,y	
+	local anchor = element:getAnchor():lower()
+	local isLeft = anchor:find("left")
+	local isMiddle = anchor:find("middle")
+	local isRight = anchor:find("right")
+	local isTop = anchor:find("top")
+	local isCenter = anchor:find("center")
+	local isBottom = anchor:find("bottom")
+	
+	if element.parent.name == "flowLayout" then
+		if element.parent.orientation == CpGuiFlowLayout.ORIENTATION_X then			
+			if element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_LEFT then
+				x = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if i == index then
+							break
+						else
+							x = x + elementF.size[1] + elementF.margin[1] + elementF.margin[3] + elementF.position[1]
+						end
+					end
+				end
+				
+				x = x + element.parent.drawPosition[1] + element.margin[1] + element.position[1]					
+			elseif element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_MIDDLE then			
+				local fullSize = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						fullSize = fullSize + elementF.size[1] + elementF.margin[1] + elementF.margin[3] + elementF.position[1]
+					end
+				end	
+				local leftToStart = (element.parent.size[1] - fullSize) / 2
+				
+				x = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if i == index then
+							break
+						else
+							x = x + elementF.size[1] + elementF.margin[1] + elementF.margin[3]
+						end
+					end
+				end
+
+				x = x + leftToStart + element.parent.drawPosition[1] + element.margin[1] + element.position[1]			
+			elseif element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_RIGHT then			
+				x = 0
+				local search = true
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if search then
+							if i == index then
+								search = false
+							end
+						else
+							x = x + elementF.size[1] + elementF.margin[1] + elementF.margin[3] + elementF.position[1]
+						end
+					end
+				end
+				
+				x = element.parent.drawPosition[1] + element.parent.size[1] - element.margin[3] - element.size[1] + element.position[1] - x	
+			end
+			
+			if isTop then
+				y = element.parent.drawPosition[2] + element.parent.size[2] - element.margin[2] - element.size[2] + element.position[2]
+			elseif isCenter then
+				y = element.parent.drawPosition[2] + (element.parent.size[2] * 0.5) + element.position[2] - (element.size[2] * 0.5)
+			elseif isBottom then
+				y = element.parent.drawPosition[2] + element.margin[4] + element.position[2]
+			end
+		elseif element.parent.orientation == CpGuiFlowLayout.ORIENTATION_Y then		
+			if element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_TOP then
+				y = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if i == index then
+							break
+						else
+							if elementF.name == "text" then							
+								y = y + elementF:getTextHeight() + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							else
+								y = y + elementF.size[2] + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							end
+						end
+					end
+				end
+				
+				y = element.parent.drawPosition[2] + element.parent.size[2] - y - element.size[2] - element.margin[2] + element.position[2]	
+			elseif element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_CENTER then
+				local fullSize = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						fullSize = fullSize + elementF.size[2] + elementF.margin[2] + elementF.margin[4]
+					end
+				end	
+				local topToStart = (element.parent.size[2] - fullSize) / 2
+				
+				y = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if i == index then
+							break
+						else
+							if elementF.name == "text" then							
+								y = y + elementF:getTextHeight() + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							else
+								y = y + elementF.size[2] + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							end
+						end
+					end
+				end
+				
+				y = element.parent.drawPosition[2] + element.parent.size[2] - topToStart - y - element.size[2] - element.margin[2] + element.position[2]			
+			elseif element.parent.alignment == CpGuiFlowLayout.ALIGNMENT_BOTTOM then
+				local fullSize = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						fullSize = fullSize + elementF.size[2] + elementF.margin[2] + elementF.margin[4]
+					end
+				end	
+				local topToStart = element.parent.size[2] - fullSize
+				
+				y = 0
+				for i, elementF in pairs(element.parent.elements) do
+					if elementF:getVisible() then
+						if i == index then
+							break
+						else
+							if elementF.name == "text" then							
+								y = y + elementF:getTextHeight() + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							else
+								y = y + elementF.size[2] + elementF.margin[2] + elementF.margin[4] + elementF.position[1]
+							end
+						end
+					end
+				end
+				
+				y = element.parent.drawPosition[2] + element.parent.size[2] - topToStart - y - element.size[2] - element.margin[2] + element.position[2]		
+			end
+		
+			if isLeft then
+				x = element.parent.drawPosition[1] + element.margin[1] + element.position[1]
+			elseif isMiddle then
+				x = element.parent.drawPosition[1] + (element.parent.size[1] * 0.5) + element.position[1]  - (element.size[1] * 0.5)
+			elseif isRight then
+				x = element.parent.drawPosition[1] + element.parent.size[1] - element.margin[3] - element.size[1] + element.position[1]
+			end
+		end
+	elseif element.parent.name == "table" and element.name ~= "slider" then
+		if element.parent.orientation == CpGuiTable.ORIENTATION_X then				
+			local xRow = math.floor((index - 1) / element.parent.maxItemsY)
+			local yRow = (index - 1) % element.parent.maxItemsY
+			
+			x = element.parent.drawPosition[1] + xRow * (element.margin[1] + element.size[1] + element.margin[3]) + element.margin[1]
+			y = element.parent.drawPosition[2] + element.parent.size[2] - (yRow) * (element.margin[2] + element.size[2] + element.margin[4]) - element.margin[2] - element.size[2]
+		elseif element.parent.orientation == CpGuiTable.ORIENTATION_Y then	
+			
+			local yRow = math.floor((index - 1) / element.parent.maxItemsX)
+			local xRow = (index - 1) % element.parent.maxItemsX
+			
+			x = element.parent.drawPosition[1] + xRow * (element.margin[1] + element.size[1] + element.margin[3]) + element.margin[1]
+			y = element.parent.drawPosition[2] + element.parent.size[2] - (yRow) * (element.margin[2] + element.size[2] + element.margin[4]) - element.margin[2] - element.size[2]
+			
+			
+		end
+	else
+		if isLeft then
+			x = element.parent.drawPosition[1] + element.margin[1] + element.position[1]
+		elseif isMiddle then
+			x = element.parent.drawPosition[1] + (element.parent.size[1] * 0.5) + element.position[1]  - (element.size[1] * 0.5) + element.margin[1]
+		elseif isRight then
+			x = element.parent.drawPosition[1] + element.parent.size[1] - element.margin[3] - element.size[1] + element.position[1]
+		end
+		
+		if isTop then
+			y = element.parent.drawPosition[2] + element.parent.size[2] - element.margin[2] - element.size[2] + element.position[2]
+		elseif isCenter then
+			y = element.parent.drawPosition[2] + (element.parent.size[2] * 0.5) + element.position[2] - (element.size[2] * 0.5) + element.margin[2]
+		elseif isBottom then
+			y = element.parent.drawPosition[2] + element.margin[4] + element.position[2]
+		end
+	end	
+	
+	if x == nil or y == nil then
+		x = 0
+		y = 0
+	end
+
+	return x,y
+end
+
+function GuiManager:getOutputSize()	
+	local factor =  1920 / g_screenWidth
+	if g_screenWidth / 2 > g_screenHeight then
+		factor =  1080 / g_screenHeight
+	end
+	return {g_screenWidth * factor, g_screenHeight * factor}
+end
+
+-- http://alienryderflex.com/polygon/
+function GuiManager:checkClickZone(x,y, clickZone, isRound)		
+	if isRound then	
+		local dx = math.abs(clickZone[1] - x)
+		local dy = math.abs(clickZone[2] - y)	
+		return math.sqrt(dx*dx + dy*dy) <= clickZone[3]		
+	else	
+		local polyX = {}
+		local polyY = {}
+		
+		local num = table.getn(clickZone)
+		
+		for i=1, num do
+			if i % 2 == 0 then
+				table.insert(polyY, clickZone[i])
+			else
+				table.insert(polyX, clickZone[i])
+			end
+		end
+		
+		num = num / 2
+		
+		local j = num
+		local insert = false
+		
+		for i=1, num do
+			if polyY[i]< y and polyY[j]>=y or polyY[j]< y and polyY[i]>=y then
+				if polyX[i] + (y-polyY[i]) / (polyY[j]-polyY[i])*(polyX[j]-polyX[i]) < x then
+					insert = not insert
+				end
+			end
+			j=i
+		end		
+		return insert
+	end
+end
+
+function GuiManager:checkClickZoneNormal(x,y, drawX, drawY, sX, sY)
+	return x > drawX and y > drawY and x < drawX + sX and y < drawY + sY
+end
+
+function GuiManager:handleInputMainGui(rightClick, vehicle)
+	-- TODO: Add Key setting
+
+	if not self.smallGuis["cp_main"] then
+		local gui = courseplay.guiManager:openGui("cp_main", true)
+		gui:setData(vehicle)
+	end
+
+	--if rightClick then
+
+	--end
+end
+
+function GuiManager:onEnterVehicle(vehicle)
+	if self.guiStates["cp_main"] then
+		local gui = courseplay.guiManager:openGui("cp_main", true)
+		gui:setData(vehicle)
+	end
+end
+
+function GuiManager:onLeaveVehicle()
+	if self.smallGuis["cp_main"] then
+		courseplay.guiManager:closeGui("cp_main")
+	end
+end
+
+function GuiManager:onCloseCpMainGui()
+	courseplay.guiManager:closeGui("cp_main")
+	self.guiStates["cp_main"] = false
+end
+
+function GuiManager:saveXmlSettings(xml, key)
+	key = key .. ".guiNew"
+	self.mainCpGui:saveXmlSettings(xml, key)
+	self.courseManagerCpGui:saveXmlSettings(xml, key)
+end
+
+function GuiManager:loadXmlSettings(xml, key)
+	key = key .. ".guiNew"
+	self.mainCpGui:loadXmlSettings(xml, key)
+	self.courseManagerCpGui:loadXmlSettings(xml, key)
+end
+
+function GuiManager.devKeyEvent(unicode, sym, modifier, isDown)
+	if bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_h then
+		courseplay.guiManager:delete()
+		print(CpManager:loadFile("gui_new/reloadGui.xml"))
+		courseplay.guiManager = nil 
+		courseplay.guiManager = GuiManager:new()
+		courseplay.guiManager:load()
+		if g_currentMission.controlledVehicle then 
+			courseplay.guiManager:onEnterVehicle(g_currentMission.controlledVehicle)
+
+		end
+	end
+end 
+-- 
+-- CoursePlay 
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+FakeGui = {}
+FakeGui.guiInformations = {}
+FakeGui.guiInformations.guiXml = "gui_new/FakeGui.xml"
+
+GuiManager.fakeGui = FakeGui
+
+FakeGui._mt = Class(FakeGui, ScreenElement)
+
+function FakeGui:new(target, custom_mt)
+    return ScreenElement:new(target, FakeGui._mt)
+end
+function FakeGui:onCreate() 
+	self.exit = true
+end
+
+function FakeGui:update(dt)
+	FakeGui:superClass().update(self, dt)
+end
+function FakeGui:onOpen()
+    FakeGui:superClass().onOpen(self)	
+end
+function FakeGui:onClose(element)
+    FakeGui:superClass().onClose(self)
+end
+function FakeGui:onClickBack()
+	if self.exit then
+		courseplay.guiManager:closeActiveGui()
+		g_gui:showGui("")
+	end
+end
+function FakeGui:setExit(val)
+	self.exit = val
+end 
+-- 
+-- CoursePlay - Gui
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGui = {}
+local CpGui_mt = Class(CpGui)
+
+function CpGui:new(name)	
+	local self = setmetatable({}, CpGui_mt)
+	self.name = name
+	self.rootElement = CpGuiElement:new()
+	
+	return self
+end
+
+function CpGui:assignClass(class)
+	if self.classGui == nil then
+		self.classGui = class
+	end
+end
+
+function CpGui:setData( ... )
+	if self.classGui ~= nil then
+		self.classGui:setData(...)
+	end
+end
+
+function CpGui:loadFromXML()
+	if self.classGui.xmlFilename == nil then
+		print(string.format("Gui %s haven't xmlFilename", self.name))
+		return
+	end	
+	local xmlFile = loadXMLFile("Temp", self.classGui.xmlFilename)
+
+	if xmlFile == nil or xmlFile == 0 then		
+		print(string.format("Gui can't load xml %s", self.classGui.xmlFilename))
+		return
+	end
+
+	self.classGui.rootElement = self.rootElement
+	self:loadFromXMLRec(xmlFile, "GUI", self.rootElement)
+	
+	if self.classGui.onLoad then 
+		self.classGui:onLoad(xmlFile, "GUI")
+	end
+	self.classGui:onCreate()
+	delete(xmlFile)
+end
+
+function CpGui:loadFromXMLRec(xmlFile, key, actGui, classGui)
+	if classGui == nil then
+		classGui = self.classGui
+	end
+	local i = 0
+	while true do
+		local k = string.format("%s.GuiElement(%d)", key, i)
+		if not hasXMLProperty(xmlFile, k) then
+			break
+		end
+		
+		local t = getXMLString(xmlFile, string.format("%s#type", k))		
+		local id = getXMLString(xmlFile, string.format("%s#id", k))		
+		local templateName = getXMLString(xmlFile, string.format("%s#template", k))			
+		local guiElement = nil
+		
+		if t == "text" then
+			guiElement = CpGuiText:new(classGui)
+		elseif t == "image" then
+			guiElement = CpGuiOverlay:new(classGui)
+		elseif t == "flowLayout" then
+			guiElement = CpGuiFlowLayout:new(classGui)
+		elseif t == "button" then
+			guiElement = CpGuiButton:new(classGui)
+		elseif t == "table" then
+			guiElement = CpGuiTable:new(classGui)
+		elseif t == "input" then
+			guiElement = CpGuiInput:new(classGui)
+		elseif t == "page" then
+			guiElement = CpGuiPage:new(classGui)
+		elseif t == "pageSelector" then
+			guiElement = CpGuiPageSelector:new(classGui)
+		elseif t == "ingameMap" then
+			guiElement = CpGuiIngameMap:new(classGui)
+		elseif t == "tableSort" then
+			guiElement = CpGuiTableSort:new(classGui)
+		elseif t == "guiMover" then
+			guiElement = CpGuiMover:new(classGui)
+		elseif t == "pageLoad" then
+			guiElement = CpGuiPage:new(classGui, self)
+		else
+			guiElement = CpGuiElement:new(classGui, nil, true)
+		end
+		guiElement.id = id
+		
+		guiElement:setParent(actGui)
+		guiElement:loadTemplate(templateName, xmlFile, k)
+		actGui:addElement(guiElement)
+		
+		if id ~= nil and id ~= "" then
+			classGui[id] = guiElement
+		end
+		
+		self:loadFromXMLRec(xmlFile, k, guiElement, classGui)
+		i = i + 1
+	end
+end
+
+function CpGui:delete()
+
+end
+
+function CpGui:deleteElements()
+	for _,element in pairs(self.rootElement.elements) do
+		element:delete()
+	end
+	self.rootElement.elements = {}
+end
+
+function CpGui:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	if self.classGui.mouseEvent ~= nil then
+		self.classGui:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	end
+	self.rootElement:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGui:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	if self.classGui.keyEvent ~= nil then
+		self.classGui:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	end
+	self.rootElement:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGui:update(dt)
+	if self.classGui.update ~= nil then
+		self.classGui:update(dt)
+	end
+	self.rootElement:update(dt)
+end
+
+function CpGui:draw()
+	self.rootElement:draw()
+	if self.classGui.draw ~= nil then
+		self.classGui:draw()
+	end
+end
+
+function CpGui:openGui()
+	if self.classGui.onOpen ~= nil then
+		self.classGui:onOpen()
+	end
+	self.rootElement:onOpen()
+end
+
+function CpGui:closeGui()
+	if self.classGui.onClose ~= nil then
+		self.classGui:onClose()
+	end
+end 
+-- 
+-- CoursePlay - Gui - Element
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiElement = {}
+local CpGuiElement_mt = Class(CpGuiElement)
+
+function CpGuiElement:isElement()
+
+end
+
+function CpGuiElement:new(gui, custom_mt, isOnlyElement)	
+	if custom_mt == nil then
+		custom_mt = CpGuiElement_mt
+	end
+	
+	local self = setmetatable({}, custom_mt)
+	self.name = "empty"
+	self.elements = {}
+	self.gui = gui
+	
+	self.isOnlyElement = isOnlyElement or false
+	self.position = {0,0} 
+	self.drawPosition = {0,0} 
+	self.size = {1,1}
+	self.margin = {0,0,0,0} --left, top, right, bottom
+	self.outputSize = courseplay.guiManager:getOutputSize()
+    self.imageSize = {1024, 1024}
+	self.visible = true
+	self.disabled = false
+	self.selected = false
+	self.debugEnabled = false
+	self.parameter = false
+	
+	self.newLayer = false	
+	return self
+end
+
+function CpGuiElement:loadTemplate(templateName, xmlFile, key)
+	self.anchor = courseplay.guiManager:getTemplateAnchor(templateName)
+	self.position = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "position"), self.outputSize, self.position)
+	self.size = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "size"), self.outputSize, self.size)
+	self.margin = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "margin"), self.outputSize, self.margin)
+	self.imageSize = GuiUtils.get2DArray(courseplay.guiManager:getTemplateValue(templateName, "imageSize"), self.imageSize)
+	
+	self.visible = courseplay.guiManager:getTemplateValueBool(templateName, "visible", self.visible)
+	self.disabled = courseplay.guiManager:getTemplateValueBool(templateName, "disabled", self.disabled)
+	self.debugEnabled = courseplay.guiManager:getTemplateValueBool(templateName, "debugEnabled", self.debugEnabled)
+	self.newLayer = courseplay.guiManager:getTemplateValueBool(templateName, "newLayer", self.newLayer)
+	
+	self.toolTip = courseplay.guiManager:getTemplateValue(templateName, "toolTip", "")
+
+	if xmlFile ~= nil then
+		self.visible = courseplay.guiManager:getTemplateValueBoolXML(xmlFile, "visible", key, self.visible)
+		self.disabled = courseplay.guiManager:getTemplateValueBoolXML(xmlFile, "disabled", key, self.disabled)
+		
+		self.position = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValueXML(xmlFile, "position", key), self.outputSize, self.position)
+		self.size = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValueXML(xmlFile, "size", key), self.outputSize, self.size)
+		self.margin = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValueXML(xmlFile, "margin", key), self.outputSize, self.margin)
+		
+		self.anchor = courseplay.guiManager:getTemplateValueXML(xmlFile, "anchor", key, self.anchor)
+		self.parameter = courseplay.guiManager:getTemplateValueXML(xmlFile, "parameter", key)
+		
+		self.callback_onOpen = courseplay.guiManager:getTemplateValueXML(xmlFile, "onOpen", key)
+		self.callback_onCreate = courseplay.guiManager:getTemplateValueXML(xmlFile, "onCreate", key)
+		self.callback_onDraw = courseplay.guiManager:getTemplateValueXML(xmlFile, "onDraw", key)
+	end
+	
+	if self.isOnlyElement then
+		self:loadOnCreate()
+	end
+end
+
+function CpGuiElement:loadOnCreate()
+	if self.callback_onCreate ~= nil then
+		self.gui[self.callback_onCreate](self.gui, self, self.parameter)
+	end
+end
+
+function CpGuiElement:onOpen()
+	if self.isOnlyElement and self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	for _,v in ipairs(self.elements) do
+		v:onOpen()
+	end
+end
+	
+function CpGuiElement:copy(src)	
+	self.anchor = src.anchor
+	self.position = src.position
+	self.size = src.size
+	self.margin = src.margin
+	self.imageSize = src.imageSize
+	
+	self.visible = src.visible
+	self.disabled = src.disabled
+	self.debugEnabled = src.debugEnabled
+	
+	self.visible = src.visible
+	self.disabled = src.disabled
+	
+	self.callback_onCreate = src.callback_onCreate
+	
+	--for k,element in pairs(self.elements) do
+	--	element:copy(src.elements[k])
+	--end
+	if self.isOnlyElement then
+		self:copyOnCreate()
+	end
+end
+
+function CpGuiElement:copyOnCreate()
+	if self.callback_onCreate ~= nil then
+		self.gui[self.callback_onCreate](self.gui, self, self.parameter)
+	end
+end
+
+function CpGuiElement:setParent(parent)
+	self.parent = parent
+	if self.isOnlyElement then
+		self:copy(parent)
+		self.position = {0,0} 
+		self.margin = {0,0,0,0}
+	end
+end
+
+function CpGuiElement:delete()
+	for _,v in ipairs(self.elements) do
+		v:delete()
+	end
+end
+
+function CpGuiElement:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	for _,v in ipairs(self.elements) do
+		if v:getVisible() then
+			v:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+		end
+	end
+end
+
+function CpGuiElement:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	for _,v in ipairs(self.elements) do
+		if v:getVisible() then
+			v:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+		end
+	end
+end
+
+function CpGuiElement:update(dt)
+	for _,v in ipairs(self.elements) do
+		if v:getVisible() then
+			v:update(dt)
+		end
+	end
+end
+
+function CpGuiElement:draw(index, gui)
+	if self.isOnlyElement then
+		self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index, gui)
+	end
+	if self.newLayer then
+		new2DLayer()
+	end
+	
+	if self.debugEnabled then
+		local xPixel = 1 / g_screenWidth
+		local yPixel = 1 / g_screenHeight
+		setOverlayColor(GuiElement.debugOverlay, 1, 0,0,1)
+		renderOverlay(GuiElement.debugOverlay, self.drawPosition[1]-xPixel, self.drawPosition[2]-yPixel, self.size[1]+2*xPixel, yPixel)
+		renderOverlay(GuiElement.debugOverlay, self.drawPosition[1]-xPixel, self.drawPosition[2]+self.size[2], self.size[1]+2*xPixel, yPixel)
+		renderOverlay(GuiElement.debugOverlay, self.drawPosition[1]-xPixel, self.drawPosition[2], xPixel, self.size[2])
+		renderOverlay(GuiElement.debugOverlay, self.drawPosition[1]+self.size[1], self.drawPosition[2], xPixel, self.size[2])
+	end
+
+	if self.callback_onDraw ~= nil then
+		self.gui[self.callback_onDraw](self.gui, self, self.parameter)
+	end
+
+	for k,v in ipairs(self.elements) do
+		if v:getVisible() then
+			v:draw(k)
+		end
+	end
+end
+
+function CpGuiElement:addElement(element)
+	if element.parent ~= nil then
+		element.parent:removeElement(element)
+	end
+	table.insert(self.elements, element)
+	element.parent = self
+end
+
+function CpGuiElement:removeElement(element)
+	for k,e in pairs(self.elements) do
+		if e == element then
+			table.remove(self.elements, k)
+			element.parent = nil
+			break
+		end
+	end
+end
+
+function CpGuiElement:removeElements()
+	for k,e in pairs(self.elements) do
+		e.parent = nil
+	end
+	self.elements = {}
+end
+
+function CpGuiElement:setDisabled(state)
+	if state == nil then
+		state = false
+	end
+	self.disabled = state
+	for _,element in pairs(self.elements) do
+		element:setDisabled(state)
+	end
+end
+
+function CpGuiElement:getDisabled()
+	return self.disabled
+end
+
+function CpGuiElement:setVisible(state)
+	if state == nil then
+		state = false
+	end
+	self.visible = state
+	for _,element in pairs(self.elements) do
+		element:setVisible(state)
+	end
+end
+
+function CpGuiElement:getVisible()
+	return self.visible
+end
+
+function CpGuiElement:setSelected(state, noCheckButton)
+	if state == nil then
+		state = false
+	end
+	self.selected = state
+	for _,element in pairs(self.elements) do
+		if noCheckButton then
+			if element.name ~= "button" then
+				element:setSelected(state)
+			end
+		else
+			element:setSelected(state)
+		end
+	end
+end
+
+function CpGuiElement:getIsSelected()
+	return self.selected
+end
+
+function CpGuiElement:getAnchor()
+	return self.anchor
+end
+
+function CpGuiElement:setPosition(str)
+	self.position = GuiUtils.getNormalizedValues(str, self.outputSize, self.position)
+end
+
+function CpGuiElement:getXleft()
+	return self.position[1] + self.margin[1]
+end
+
+function CpGuiElement:getXright()
+	return self.position[1] + self.margin[1] + self.size[1]
+end
+
+function CpGuiElement:getYbottom()
+	return self.position[2] + self.margin[2]
+end
+
+function CpGuiElement:getYtop()
+	return self.position[2] + self.margin[2] + self.size[2]
+end
+
+function CpGuiElement:setSortName(sortName)
+	self.sortName = sortName
+end 
+-- 
+-- CoursePlay - Gui - Borders
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiBorders = {}
+local CpGuiBorders_mt = Class(CpGuiBorders, CpGuiElement)
+
+function CpGuiBorders:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiBorders_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "borders"
+	
+	self.borderLeftSize = 0
+	self.borderRightSize = 0
+	self.borderTopSize = 0
+	self.borderBottomSize = 0
+	
+	self.borderLeftSize_selected = 0
+	self.borderRightSize_selected = 0
+	self.borderTopSize_selected = 0
+	self.borderBottomSize_selected = 0
+	
+	self.borderLeftSize_disabled = 0
+	self.borderRightSize_disabled = 0
+	self.borderTopSize_disabled = 0
+	self.borderBottomSize_disabled = 0
+	
+	self.borderLeftColor = {1,1,1,1}
+	self.borderRightColor = {1,1,1,1}
+	self.borderTopColor = {1,1,1,1}
+	self.borderBottomColor = {1,1,1,1}
+	
+	self.borderLeftColor_selected = {1,1,1,1}
+	self.borderRightColor_selected = {1,1,1,1}
+	self.borderTopColor_selected = {1,1,1,1}
+	self.borderBottomColor_selected = {1,1,1,1}
+	
+	self.borderLeftColor_disabled = {1,1,1,1}
+	self.borderRightColor_disabled = {1,1,1,1}
+	self.borderTopColor_disabled = {1,1,1,1}
+	self.borderBottomColor_disabled = {1,1,1,1}
+		
+	return self
+end
+
+function CpGuiBorders:loadTemplate(templateName, xmlFile, key)
+	CpGuiBorders:superClass().loadTemplate(self, templateName, xmlFile, key)
+	
+	if overlayName == nil then
+		overlayName = "image"
+	end
+	
+	local imageFilename = g_baseUIFilename	
+		
+	self.borderLeftSize = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderLeftSize"), self.outputSize, {self.borderLeftSize})[1]
+	self.borderRightSize = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderRightSize"), self.outputSize, {self.borderRightSize})[1]
+	self.borderTopSize = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderTopSize"), self.outputSize, {self.borderTopSize})[1]
+	self.borderBottomSize = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderBottomSize"), self.outputSize, {self.borderBottomSize})[1]
+	
+	self.borderLeftSize_selected = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderLeftSize_selected"), self.outputSize, {self.borderLeftSize_selected})[1]
+	self.borderRightSize_selected = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderRightSize_selected"), self.outputSize, {self.borderRightSize_selected})[1]
+	self.borderTopSize_selected = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderTopSize_selected"), self.outputSize, {self.borderTopSize_selected})[1]
+	self.borderBottomSize_selected = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderBottomSize_selected"), self.outputSize, {self.borderBottomSize_selected})[1]
+	
+	self.borderLeftSize_disabled = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderLeftSize_disabled"), self.outputSize, {self.borderLeftSize_disabled})[1]
+	self.borderRightSize_disabled = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderRightSize_disabled"), self.outputSize, {self.borderRightSize_disabled})[1]
+	self.borderTopSize_disabled = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderTopSize_disabled"), self.outputSize, {self.borderTopSize_disabled})[1]
+	self.borderBottomSize_disabled = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "borderBottomSize_disabled"), self.outputSize, {self.borderBottomSize_disabled})[1]
+	
+	self.borderLeftColor = courseplay.guiManager:getTemplateValueColor(templateName, "borderLeftColor", self.borderLeftColor)	
+	self.borderRightColor = courseplay.guiManager:getTemplateValueColor(templateName, "borderRightColor", self.borderRightColor)	
+	self.borderTopColor = courseplay.guiManager:getTemplateValueColor(templateName, "borderTopColor", self.borderTopColor)	
+	self.borderBottomColor = courseplay.guiManager:getTemplateValueColor(templateName, "borderBottomColor", self.borderBottomColor)	
+	
+	self.borderLeftColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, "borderLeftColor_selected", self.borderLeftColor_selected)	
+	self.borderRightColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, "borderRightColor_selected", self.borderRightColor_selected)	
+	self.borderTopColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, "borderTopColor_selected", self.borderTopColor_selected)	
+	self.borderBottomColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, "borderBottomColor_selected", self.borderBottomColor_selected)	
+	
+	self.borderLeftColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, "borderLeftColor_disabled", self.borderLeftColor_disabled)	
+	self.borderRightColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, "borderRightColor_disabled", self.borderRightColor_disabled)	
+	self.borderTopColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, "borderTopColor_disabled", self.borderTopColor_disabled)	
+	self.borderBottomColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, "borderBottomColor_disabled", self.borderBottomColor_disabled)	
+	
+	self.uv = GuiUtils.getUVs("10px 1010px 4px 4px", self.imageSize, {0,0,1,1})
+	
+	self.imageLeft = createImageOverlay(imageFilename)
+	self.imageRight = createImageOverlay(imageFilename)
+	self.imageTop = createImageOverlay(imageFilename)
+	self.imageBottom = createImageOverlay(imageFilename)
+	
+	self:loadOnCreate()
+end
+
+function CpGuiBorders:copy(src)
+	CpGuiBorders:superClass().copy(self, src)
+	
+	self.borderLeftSize = src.borderLeftSize
+	self.borderRightSize = src.borderRightSize
+	self.borderTopSize = src.borderTopSize
+	self.borderBottomSize = src.borderBottomSize
+	
+	self.borderLeftSize_selected = src.borderLeftSize_selected
+	self.borderRightSize_selected = src.borderRightSize_selected
+	self.borderTopSize_selected = src.borderTopSize_selected
+	self.borderBottomSize_selected = src.borderBottomSize_selected
+	
+	self.borderLeftSize_disabled = src.borderLeftSize_disabled
+	self.borderRightSize_disabled = src.borderRightSize_disabled
+	self.borderTopSize_disabled = src.borderTopSize_disabled
+	self.borderBottomSize_disabled = src.borderBottomSize_disabled
+	
+	self.borderLeftColor = src.borderLeftColor
+	self.borderRightColor = src.borderRightColor
+	self.borderTopColor = src.borderTopColor
+	self.borderBottomColor = src.borderBottomColor
+	
+	self.borderLeftColor_selected = src.borderLeftColor_selected
+	self.borderRightColor_selected = src.borderRightColor_selected
+	self.borderTopColor_selected = src.borderTopColor_selected
+	self.borderBottomColor_selected = src.borderBottomColor_selected
+	
+	self.borderLeftColor_disabled = src.borderLeftColor_disabled
+	self.borderRightColor_disabled = src.borderRightColor_disabled
+	self.borderTopColor_disabled = src.borderTopColor_disabled
+	self.borderBottomColor_disabled = src.borderBottomColor_disabled
+	
+	self.uv = src.uv
+	self.imageLeft = src.imageLeft
+	self.imageRight = src.imageRight
+	self.imageTop = src.imageTop
+	self.imageBottom = src.imageBottom
+	self:copyOnCreate()
+end
+
+function CpGuiBorders:setImageFilename(filename)
+	self.imageOverlay = createImageOverlay(filename)
+end
+
+function CpGuiBorders:delete()
+	CpGuiBorders:superClass().delete(self)
+	if self.imageOverlay ~= nil then
+		delete(self.imageOverlay)
+		self.imageOverlay = nil
+	end
+end
+
+function CpGuiBorders:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiBorders:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiBorders:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiBorders:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiBorders:update(dt)
+	CpGuiBorders:superClass().update(self, dt)
+end
+
+function CpGuiBorders:draw(index)		
+	local sizeLeft = self:getBorderLeftSize()
+	local sizeRight = self:getBorderRightSize()
+	local sizeTop = self:getBorderTopSize()
+	local sizeBottom = self:getBorderBottomSize()
+
+	if sizeLeft > 0 then
+		local  x = self.parent.drawPosition[1]
+		local  y = self.parent.drawPosition[2]
+		setOverlayUVs(self.imageLeft, unpack(self.uv))
+		setOverlayColor(self.imageLeft, unpack(self:getBorderLeftColor()))		
+		local sizeX = math.max(sizeLeft, 1 / g_screenWidth)
+		local sizeY = math.max(self.parent.size[2], 1 / g_screenHeight)
+		renderOverlay(self.imageLeft, x,y,sizeX, sizeY)
+	end
+	if sizeRight > 0 then
+		local  x = self.parent.drawPosition[1] + self.parent.size[1] - self:getBorderRightSize()
+		local  y = self.parent.drawPosition[2]
+		setOverlayUVs(self.imageRight, unpack(self.uv))
+		setOverlayColor(self.imageRight, unpack(self:getBorderRightColor()))
+		local sizeX = math.max(sizeRight, 1 / g_screenWidth)
+		local sizeY = math.max(self.parent.size[2], 1 / g_screenHeight)
+		renderOverlay(self.imageRight, x,y,sizeX, sizeY)
+	end
+	if sizeTop > 0 then
+		local  x = self.parent.drawPosition[1]
+		local  y = self.parent.drawPosition[2] + self.parent.size[2] - self:getBorderTopSize()
+		setOverlayUVs(self.imageTop, unpack(self.uv))
+		setOverlayColor(self.imageTop, unpack(self:getBorderTopColor()))
+		local sizeX = math.max(self.parent.size[1], 1 / g_screenWidth)
+		local sizeY = math.max(sizeTop, 1 / g_screenHeight)
+		renderOverlay(self.imageTop, x,y,sizeX, sizeY)
+	end
+	if sizeBottom > 0 then
+		local  x = self.parent.drawPosition[1]
+		local  y = self.parent.drawPosition[2]
+		setOverlayUVs(self.imageBottom, unpack(self.uv))
+		setOverlayColor(self.imageBottom, unpack(self:getBorderBottomColor()))		
+		local sizeX = math.max(self.parent.size[1], 1 / g_screenWidth)
+		local sizeY = math.max(sizeBottom, 1 / g_screenHeight)
+		renderOverlay(self.imageBottom, x,y,sizeX, sizeY)
+	end
+	CpGuiBorders:superClass().draw(self,index)
+end
+
+function CpGuiBorders:getBorderLeftColor()
+    if self:getDisabled() then
+        return self.borderLeftColor_disabled
+    elseif self:getIsSelected() then
+        return self.borderLeftColor_selected
+    else
+        return self.borderLeftColor
+    end
+end
+
+function CpGuiBorders:getBorderRightColor()
+    if self:getDisabled() then
+        return self.borderRightColor_disabled
+    elseif self:getIsSelected() then
+        return self.borderRightColor_selected
+    else
+        return self.borderRightColor
+    end
+end
+
+function CpGuiBorders:getBorderTopColor()
+    if self:getDisabled() then
+        return self.borderTopColor_disabled
+    elseif self:getIsSelected() then
+        return self.borderTopColor_selected
+    else
+        return self.borderTopColor
+    end
+end
+
+function CpGuiBorders:getBorderBottomColor()
+    if self:getDisabled() then
+        return self.borderBottomColor_disabled
+    elseif self:getIsSelected() then
+        return self.borderBottomColor_selected
+    else
+        return self.borderBottomColor
+    end
+end
+
+function CpGuiBorders:getBorderLeftSize()
+    if self:getDisabled() then
+        return self.borderLeftSize_disabled
+    elseif self:getIsSelected() then
+        return self.borderLeftSize_selected
+    else
+        return self.borderLeftSize
+    end
+end
+
+function CpGuiBorders:getBorderRightSize()
+    if self:getDisabled() then
+        return self.borderRightSize_disabled
+    elseif self:getIsSelected() then
+        return self.borderRightSize_selected
+    else
+        return self.borderRightSize
+    end
+end
+
+function CpGuiBorders:getBorderTopSize()
+    if self:getDisabled() then
+        return self.borderTopSize_disabled
+    elseif self:getIsSelected() then
+        return self.borderTopSize_selected
+    else
+        return self.borderTopSize
+    end
+end
+
+function CpGuiBorders:getBorderBottomSize()
+    if self:getDisabled() then
+        return self.borderBottomSize_disabled
+    elseif self:getIsSelected() then
+        return self.borderBottomSize_selected
+    else
+        return self.borderBottomSize
+    end
+end
+
+function CpGuiBorders:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiBorders:superClass().onOpen(self)
+end 
+-- 
+-- CoursePlay - Gui - Button
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiButton = {}
+local CpGuiButton_mt = Class(CpGuiButton, CpGuiElement)
+
+function CpGuiButton:new(gui, custom_mt)
+    if custom_mt == nil then
+		custom_mt = CpGuiButton_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "button"
+	
+	self.data = {}
+	self.isRoundButton = false	
+	self.isActivable = false
+	self.isActive = false
+	self.mouseDown = false
+	self.mouseEntered = false
+	self.isTableTemplate = false
+	self.isMultiSelect = false
+	self.checkParent = false
+	self.canDeactivable = true
+
+	self.inputAction = nil
+	self.clickSound = nil
+	
+    self.doubleClickInterval = 1000
+	self.doubleClickTime = 0
+	
+	self.sliderPosition = {0,0}
+	return self
+end
+
+function CpGuiButton:loadTemplate(templateName, xmlFile, key)
+	CpGuiButton:superClass().loadTemplate(self, templateName, xmlFile, key)
+	
+	self.isActivable = courseplay.guiManager:getTemplateValueBool(templateName, "isActivable", self.isActivable)
+	self.canDeactivable = courseplay.guiManager:getTemplateValueBool(templateName, "canDeactivable", self.canDeactivable)
+	self.isRoundButton = courseplay.guiManager:getTemplateValueBool(templateName, "isRoundButton", self.isRoundButton)		
+	self.isMultiSelect = courseplay.guiManager:getTemplateValueBool(templateName, "isMultiSelect", self.isMultiSelect)		
+	self.checkParent = courseplay.guiManager:getTemplateValueBool(templateName, "checkParent", self.checkParent)		
+	self.clickZone = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "clickZone"), self.outputSize, nil)
+		
+	self.isTableTemplate = courseplay.guiManager:getTemplateValueBool(templateName, "isTableTemplate", self.isTableTemplate)
+	self.hasOverlay = courseplay.guiManager:getTemplateValueBool(templateName, "hasOverlay", false)
+	self.hasText = courseplay.guiManager:getTemplateValueBool(templateName, "hasText", false)
+	local inputAction = courseplay.guiManager:getTemplateValue(templateName, "inputAction")
+
+	if xmlFile ~= nil then
+		self.callback_onClick = courseplay.guiManager:getTemplateValueXML(xmlFile, "onClick", key, nil)
+		self.callback_onDoubleClick = courseplay.guiManager:getTemplateValueXML(xmlFile, "onDoubleClick", key, nil)
+		self.callback_onEnter = courseplay.guiManager:getTemplateValueXML(xmlFile, "onEnter", key, nil)
+		self.callback_onLeave = courseplay.guiManager:getTemplateValueXML(xmlFile, "onLeave", key, nil)
+
+		self.openPage = courseplay.guiManager:getTemplateValueXML(xmlFile, "openPage", key, nil)
+		
+		self.isTableTemplate = courseplay.guiManager:getTemplateValueBoolXML(xmlFile, "isTableTemplate", key, self.isTableTemplate)
+
+		inputAction = courseplay.guiManager:getTemplateValueXML(xmlFile, "inputAction", key, inputAction)
+	end
+
+	if inputAction ~= nil and InputAction[inputAction] ~= nil then
+		self.inputAction = InputAction[inputAction]
+		self.hasText = true
+	end
+	
+	if self.hasOverlay then
+		self.overlayElement = CpGuiOverlay:new(self.gui)
+		self.overlayElement:loadTemplate(string.format("%s_overlay", templateName), xmlFile, key)
+		self.overlayElement.position = { 0,0 }
+		self:addElement(self.overlayElement)
+		--if id ~= nil and id ~= "" then
+		--	self.gui[id] = self.overlayElement
+		--end
+	end
+
+	if self.hasText then
+		self.textElement = CpGuiText:new(self.gui)
+		self.textElement:loadTemplate(string.format("%s_text", templateName), xmlFile, key)
+		self.textElement.position = { 0,0 }
+		self:addElement(self.textElement)
+		--if id ~= nil and id ~= "" then
+		--	self.gui[id] = self.textElement
+		--end
+		
+		if self.inputAction ~= nil then
+			self.textElement:setText(g_inputDisplayManager:getKeyboardInputActionKey(self.inputAction))
+		end
+	end
+	
+	if self.isTableTemplate then
+		self.parent:setTableTemplate(self)
+	end
+	self:loadOnCreate()
+end
+
+function CpGuiButton:copy(src)
+	CpGuiButton:superClass().copy(self, src)
+	
+	self.isActivable = src.isActivable
+	self.isRoundButton = src.isRoundButton
+	self.isMultiSelect = src.isMultiSelect
+	self.canDeactivable = src.canDeactivable
+	self.checkParent = src.checkParent
+	self.clickZone = src.clickZone
+	
+	self.callback_onClick = src.callback_onClick
+	self.callback_onDoubleClick = src.callback_onDoubleClick
+	self.callback_onEnter = src.callback_onEnter
+	self.callback_onLeave = src.callback_onLeave
+	self.openPage = src.openPage
+	
+	--self.isTableTemplate = src.isTableTemplate
+	self:copyOnCreate()
+end
+
+function CpGuiButton:delete()
+	CpGuiButton:superClass().delete(self)
+end
+
+function CpGuiButton:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	if not self:getDisabled() then
+		eventUsed = CpGuiButton:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+			
+		local clickZone = {}		
+		if self.clickZone == nil then			
+			clickZone[1] = self.drawPosition[1]
+			clickZone[2] = self.drawPosition[2] + self.size[2]
+			clickZone[3] = self.drawPosition[1] + self.size[1]
+			clickZone[4] = self.drawPosition[2] + self.size[2]
+			clickZone[5] = self.drawPosition[1] + self.size[1]
+			clickZone[6] = self.drawPosition[2]
+			clickZone[7] = self.drawPosition[1]
+			clickZone[8] = self.drawPosition[2]
+		else
+			if self.isRoundButton then
+				clickZone[1] = self.drawPosition[1] + self.clickZone[1] + self.margin[1]
+				clickZone[2] = self.drawPosition[2] + self.clickZone[2] + self.margin[4]
+				clickZone[3] = self.clickZone[3]
+			else
+				for i=1, table.getn(self.clickZone), 2 do
+					clickZone[i] = self.drawPosition[1] + self.clickZone[i] + self.margin[1]
+					clickZone[i+1] = self.drawPosition[2] + self.clickZone[i+1] + self.margin[4]
+				end			
+			end
+		end
+		
+		if not eventUsed then
+			if courseplay.guiManager:checkClickZone(posX, posY, clickZone, self.isRoundButton) then
+				if not self.mouseEntered then
+					self.mouseEntered = true					
+					self.backupPos = {posX, posY}
+					self:setSelected(true, self.parent.name == "table")
+					if self.callback_onEnter ~= nil then
+						self.gui[self.callback_onEnter](self.gui, self, self.parameter)
+					end
+				end
+				
+				if isDown and button == Input.MOUSE_BUTTON_LEFT then
+					self.mouseDown = true
+				end
+				
+				if isUp and button == Input.MOUSE_BUTTON_LEFT and self.mouseDown then
+					self.mouseDown = false
+					if self.isActivable then
+						if not self.canDeactivable then
+							if not self.isActive then
+								self:setActive(not self.isActive)
+							end
+						else
+							self:setActive(not self.isActive)
+						end
+					end
+					if self.doubleClickTime <= 0 then
+						self.doubleClickTime = self.doubleClickInterval
+					else
+						if self.callback_onDoubleClick ~= nil then
+							self.gui[self.callback_onDoubleClick](self.gui, self, self.parameter)
+						end
+						self.doubleClickTime = 0
+					end
+					
+					if self.callback_onClick ~= nil and self.gui[self.callback_onClick] ~= nil then
+						self.gui[self.callback_onClick](self.gui, self, self.parameter)
+					end
+					
+					if self.openPage ~= nil and self.parent ~= nil and self.parent.parent ~= nil and self.parent.parent.name == "pageSelector" then
+						self.parent.parent:openPage(self.openPage)
+					end
+				end
+			else
+				if self.mouseEntered then
+					self.mouseEntered = false
+					if self.isActivable then
+						if not self.isActive then
+							self:setSelected(false)
+						end
+					else
+						self:setSelected(false)
+					end					
+					if self.callback_onLeave ~= nil then
+						self.gui[self.callback_onLeave](self.gui, self, self.parameter)
+					end
+				end
+			end
+			if self.mouseDown and self.parent.name == "slider" then
+				if isUp and button == Input.MOUSE_BUTTON_LEFT and self.mouseDown then
+					self.mouseDown = false
+					self:setSelected(false)
+				else
+					self:setSelected(true)
+					self.parent:moveSlider(self.backupPos[1] - posX, self.backupPos[2] - posY)	
+					self.backupPos = {posX, posY}
+				end
+			end
+		end		
+	end	
+	return eventUsed
+end
+
+function CpGuiButton:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiButton:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiButton:update(dt)
+	CpGuiButton:superClass().update(self, dt)
+	if self.doubleClickTime > 0 then
+		self.doubleClickTime = self.doubleClickTime - dt
+	end
+end
+
+function CpGuiButton:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)			
+	
+	if self.debugEnabled then
+		local xPixel = 1 / g_screenWidth
+		local yPixel = 1 / g_screenHeight
+		setOverlayColor(GuiElement.debugOverlay, 1, 0,0,1)
+				
+		if self.isRoundButton then		
+			local y = self.clickZone[3] * (g_screenWidth / g_screenHeight)
+			renderOverlay(GuiElement.debugOverlay, self.drawPosition[1] + self.clickZone[1] + self.margin[1], self.drawPosition[2] + self.clickZone[2] + self.margin[4], self.clickZone[3],yPixel)
+			renderOverlay(GuiElement.debugOverlay, self.drawPosition[1] + self.clickZone[1] + self.margin[1], self.drawPosition[2] + self.clickZone[2] + self.margin[4], xPixel,y)
+		else
+			local clickZone = {}		
+			if self.clickZone == nil then				
+				clickZone[1] = self.drawPosition[1]
+				clickZone[2] = self.drawPosition[2] + self.size[2]
+				clickZone[3] = self.drawPosition[1] + self.size[1]
+				clickZone[4] = self.drawPosition[2] + self.size[2]
+				clickZone[5] = self.drawPosition[1] + self.size[1]
+				clickZone[6] = self.drawPosition[2]
+				clickZone[7] = self.drawPosition[1]
+				clickZone[8] = self.drawPosition[2]
+			else
+				for i=1, table.getn(self.clickZone), 2 do
+					clickZone[i] = self.drawPosition[1] + self.clickZone[i] + self.margin[1]
+					clickZone[i+1] = self.drawPosition[2] + self.clickZone[i+1] + self.margin[4]
+				end	
+			end	
+			
+			for i=1, table.getn(clickZone), 2 do
+				renderOverlay(GuiElement.debugOverlay, clickZone[i], clickZone[i+1], xPixel*3,yPixel*3)
+			end
+		end
+	end
+
+	self.drawPosition[1] = self.drawPosition[1] + self.sliderPosition[1]
+	self.drawPosition[2] = self.drawPosition[2] - self.sliderPosition[2]
+	
+	CpGuiButton:superClass().draw(self)
+end
+
+function CpGuiButton:setActive(state, checkNotParent)
+	if state == nil then
+		state = false
+	end
+
+	if not checkNotParent and not self.isMultiSelect and state and (self.parent.name == "table" or self.checkParent) then
+		self.parent:setActive(false, true)
+	end
+	self.isActive = state
+	self:setSelected(state, self.parent.name == "table")
+end
+
+function CpGuiButton:getActive()
+	return self.isActive
+end
+
+function CpGuiButton:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiButton:superClass().onOpen(self)
+end
+
+
+function CpGuiButton:setText(...)
+	if self.inputAction ~= nil then
+		return
+	end
+	for _,v in ipairs(self.elements) do
+		if v.setText ~= nil then
+			v:setText(...)
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - FlowLayout
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiFlowLayout = {}
+
+CpGuiFlowLayout.ORIENTATION_X = 1
+CpGuiFlowLayout.ORIENTATION_Y = 2
+
+CpGuiFlowLayout.ALIGNMENT_LEFT = 1
+CpGuiFlowLayout.ALIGNMENT_MIDDLE = 2
+CpGuiFlowLayout.ALIGNMENT_RIGHT = 3
+CpGuiFlowLayout.ALIGNMENT_TOP = 4
+CpGuiFlowLayout.ALIGNMENT_CENTER = 5
+CpGuiFlowLayout.ALIGNMENT_BOTTOM = 6
+
+local CpGuiFlowLayout_mt = Class(CpGuiFlowLayout, CpGuiElement)
+
+function CpGuiFlowLayout:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiFlowLayout_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "flowLayout"
+	
+	self.orientation = CpGuiFlowLayout.ORIENTATION_X
+	self.alignment = CpGuiFlowLayout.ALIGNMENT_LEFT
+	
+	return self
+end
+
+function CpGuiFlowLayout:loadTemplate(templateName, xmlFile, key)
+	CpGuiFlowLayout:superClass().loadTemplate(self, templateName, xmlFile, key)
+	
+	local orientation = courseplay.guiManager:getTemplateValue(templateName, "orientation")
+	local alignment = courseplay.guiManager:getTemplateValue(templateName, "alignment")
+	
+	if orientation == "x" then
+		self.orientation = CpGuiFlowLayout.ORIENTATION_X
+	elseif orientation == "y" then
+		self.orientation = CpGuiFlowLayout.ORIENTATION_Y
+	end
+	
+	if alignment == "left" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_LEFT
+	elseif alignment == "middle" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_MIDDLE
+	elseif alignment == "right" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_RIGHT
+	elseif alignment == "top" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_TOP
+	elseif alignment == "center" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_CENTER
+	elseif alignment == "bottom" then
+		self.alignment = CpGuiFlowLayout.ALIGNMENT_BOTTOM
+	end	
+	self:loadOnCreate()
+end
+
+function CpGuiFlowLayout:copy(src)
+	CpGuiFlowLayout:superClass().copy(self, src)
+	
+	self.orientation = src.orientation
+	self.alignment = src.alignment
+	self:copyOnCreate()
+end
+
+function CpGuiFlowLayout:delete()
+	CpGuiFlowLayout:superClass().delete(self)
+end
+
+function CpGuiFlowLayout:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiFlowLayout:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiFlowLayout:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiFlowLayout:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiFlowLayout:update(dt)
+	CpGuiFlowLayout:superClass().update(self, dt)
+end
+
+function CpGuiFlowLayout:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+	CpGuiFlowLayout:superClass().draw(self)
+end
+
+function CpGuiFlowLayout:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiFlowLayout:superClass().onOpen(self)
+end
+
+function CpGuiFlowLayout:setActive(state, e)
+	for _,element in pairs(self.elements) do
+		if e ~= element then
+			element:setActive(state)
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Screen
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiScreen = {}
+local CpGuiScreen_mt = Class(CpGuiScreen)
+
+function CpGuiScreen:new(custom_mt)	
+	if custom_mt == nil then
+        custom_mt = CpGuiScreen_mt
+    end
+    local self = setmetatable({}, custom_mt)	
+    
+    self.texts = {}
+    
+	return self
+end
+
+function CpGuiScreen:onOpen()
+    g_depthOfFieldManager:setBlurState(true)
+end
+
+function CpGuiScreen:onClose()
+    g_depthOfFieldManager:setBlurState(false)
+    
+end
+
+function CpGuiScreen:onCreate()
+    self.gui_headerLocationSep_1:setVisible(false)
+    self.gui_headerLocationSep_2:setVisible(false)
+end
+
+function CpGuiScreen:onClickClose()
+	courseplay.guiManager:closeActiveGui()
+end
+
+
+-- function CpGuiScreen:setPage(num, text)
+--     local goToPage = num or 1
+--     if goToPage ~= self.currentPage and goToPage > 0 and goToPage < 4 then
+--         self["gui_headerLocationText_" .. goToPage]:setText(text)
+--         if self.currentPage ~= nil then
+--             if goToPage > self.currentPage then
+--                 self["gui_headerLocationSep_" .. goToPage]:setVisible(true)
+--             end
+--             if goToPage < self.currentPage then
+--                 self["gui_headerLocationSep_" .. (goToPage + 1)]:setVisible(false)
+--                 self["gui_headerLocationText_" .. (goToPage + 1)]:setText("")
+--             end
+--         end
+--         self.currentPage = goToPage        
+--     end
+-- end
+
+function CpGuiScreen:setPage(page)
+    if page.parentPage == nil then
+        self.gui_headerLocationText_1:setText(page.pageHeader)
+    else
+
+    end
+end 
+-- 
+-- CoursePlay - Gui - IngameMap
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiIngameMap = {}
+local CpGuiIngameMap_mt = Class(CpGuiIngameMap, CpGuiElement)
+
+CpGuiIngameMap.ZOOMMODE = {}
+CpGuiIngameMap.ZOOMMODE.BOX = 1
+CpGuiIngameMap.ZOOMMODE.FULL = 2
+
+
+function CpGuiIngameMap:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiIngameMap_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "ingameMap"
+	
+	self.zoomFactorMax = 8
+	self.zoomFactor = self.zoomFactorMax
+	self.lastPxPosX = 0
+	self.lastPxPosY = 0
+	self.lastPxPosY = 0
+
+	self.bitmaps = {}
+	self.pdaMarkerCount = -1
+	self.pdaMarkers = {}
+	
+	self.zoomMode = CpGuiIngameMap.ZOOMMODE.BOX
+	self.zoomFullMin = {0, 0}
+	self.zoomFullMax = {0, 0}
+
+	self.pdaWith = 2048
+	if fileExists(g_currentMission.missionInfo.baseDirectory.."modDesc.xml") then
+		local path = g_currentMission.missionInfo.baseDirectory .. g_currentMission.missionInfo.mapXMLFilename
+		if fileExists(path) then
+			local xml = loadXMLFile("map",path,"map")
+			self.pdaWith = getXMLInt(xml, "map#width")
+			delete(xml)
+		end
+	end
+
+	self.lastSize = self.zoomFactor * 128
+	self.sizeFactor = self.pdaWith / 2048
+	
+	return self
+end
+
+function CpGuiIngameMap:loadTemplate(templateName, xmlFile, key)
+	CpGuiIngameMap:superClass().loadTemplate(self, templateName, xmlFile, key)
+
+	local zoomMode = courseplay.guiManager:getTemplateValue(templateName, "zoomMode")
+	if zoomMode ~= nil then
+		if zoomMode == "box" then
+			self.zoomMode = CpGuiIngameMap.ZOOMMODE.BOX
+		elseif zoomMode == "full" then
+			self.zoomMode = CpGuiIngameMap.ZOOMMODE.FULL
+		end			
+	end
+
+	self.zoomFullMin = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "minSize"), self.outputSize, self.zoomFullMin)
+	self.zoomFullMax = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "maxSize"), self.outputSize, self.zoomFullMax)
+	
+    self.overlayElement = CpGuiOverlay:new(self.gui)
+    self.overlayElement:loadTemplate(string.format("%s_overlay", templateName), xmlFile, key)
+    self.overlayElement:setImageFilename(g_currentMission.mapImageFilename)
+	self:addElement(self.overlayElement)
+	
+	
+	if self.isTableTemplate then
+		self.parent:setTableTemplate(self)
+	end
+	self:loadOnCreate()
+end
+
+function CpGuiIngameMap:copy(src)
+	CpGuiIngameMap:superClass().copy(self, src)	
+
+	self:copyOnCreate()
+end
+
+function CpGuiIngameMap:delete()
+	CpGuiIngameMap:superClass().delete(self)
+end
+
+function CpGuiIngameMap:onOpen()
+	
+end
+
+function CpGuiIngameMap:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	if not self:getDisabled() then
+		eventUsed = CpGuiIngameMap:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+				
+		if not eventUsed then
+			local clickZone = {}		
+			clickZone[1] = self.drawPosition[1]
+			clickZone[2] = self.drawPosition[2] + self.size[2]
+			clickZone[3] = self.drawPosition[1] + self.size[1]
+			clickZone[4] = self.drawPosition[2] + self.size[2]
+			clickZone[5] = self.drawPosition[1] + self.size[1]
+			clickZone[6] = self.drawPosition[2]
+			clickZone[7] = self.drawPosition[1]
+			clickZone[8] = self.drawPosition[2]
+
+			if courseplay.guiManager:checkClickZone(posX, posY, clickZone, self.isRoundButton) then
+				if not self.mouseEntered then
+					self.mouseEntered = true
+					if self.callback_onEnter ~= nil then
+						self.gui[self.callback_onEnter](self.gui, self, self.parameter)
+					end
+				end
+				
+				if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
+                    self:zoom(-1, posX, posY)
+                    eventUsed = true
+                end
+                if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
+                    self:zoom(1, posX, posY)
+                    eventUsed = true
+				end
+				
+                if isDown and button == Input.MOUSE_BUTTON_LEFT then
+                    eventUsed = true
+                    if not self.mouseDown then
+                        self.mouseDown = true
+                        self.lastMousePosX = posX
+                        self.lastMousePosY = posY
+                    end
+                end
+                if isUp and button == Input.MOUSE_BUTTON_LEFT then
+                    self.mouseDown = false
+                end
+
+                if self.mouseDown then
+					self:move(posX, posY)					
+                    self.lastMousePosX = posX
+                    self.lastMousePosY = posY
+				end
+			else
+				if self.mouseEntered then
+					self.mouseDown = false
+					self.mouseEntered = false	
+					if self.callback_onLeave ~= nil then
+						self.gui[self.callback_onLeave](self.gui, self, self.parameter)
+					end
+				end
+			end
+		end
+	end
+	return eventUsed
+end
+
+function CpGuiIngameMap:keyEvent(unicode, sym, modifier, isDown, eventUsed)   
+	CpGuiIngameMap:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiIngameMap:update(dt)
+    CpGuiIngameMap:superClass().update(self, dt)
+end
+
+function CpGuiIngameMap:zoom(value, posX, posY, ignoreSameZoom)
+	local oldZoom = self.zoomFactor
+	self.zoomFactor = self.zoomFactor + value
+	ignoreSameZoom = ignoreSameZoom or false
+
+	if self.zoomFactor < 1 or self.zoomFactor > 8 then
+		self.zoomFactor = oldZoom
+	end
+
+	if self.zoomFactor == oldZoom and not ignoreSameZoom then 
+		return
+	end	
+
+
+
+	if self.zoomMode == CpGuiIngameMap.ZOOMMODE.BOX then
+		local factorX = (posX - self.drawPosition[1]) / self.size[1]
+		local factorY = 1 - (posY - self.drawPosition[2]) / self.size[2]
+
+		self.lastPxPosX = math.ceil(self.lastPxPosX + 128 * factorX * value * -1)
+		self.lastPxPosY = math.ceil(self.lastPxPosY + 128 * factorY * value * -1)
+
+		self.lastSize = self.zoomFactor * 128
+
+		self.lastPxPosX = self:checkEdges(self.lastPxPosX)
+		self.lastPxPosY = self:checkEdges(self.lastPxPosY)
+		
+		self.overlayElement:setUV(string.format("%spx %spx %spx %spx", self.lastPxPosX, self.lastPxPosY, self.lastSize, self.lastSize))
+	else
+
+		--local factorX1 = (posX - self.drawPosition[1]) / self.size[1]
+
+		if self.zoomFactorMax == self.zoomFactor then
+			self.size[1] = self.zoomFullMin[1]
+			self.size[2] = self.zoomFullMin[2]
+		else
+			self.size[1] = self.zoomFullMin[1] + ((self.zoomFullMax[1] - self.zoomFullMin[1]) / self.zoomFactorMax * (self.zoomFactorMax - self.zoomFactor))
+			self.size[2] = self.zoomFullMin[2] + ((self.zoomFullMax[2] - self.zoomFullMin[2]) / self.zoomFactorMax * (self.zoomFactorMax - self.zoomFactor))
+		end
+
+		--local factorX2 = (posX - self.drawPosition[1]) / self.size[1]
+		--local factorY = 1 - (posY - self.drawPosition[2]) / self.size[2]
+
+		self.overlayElement.size[1] = self.size[1]
+		self.overlayElement.size[2] = self.size[2]
+		
+		--self.position[1] = self.position[1] + factorX1 + factorX2
+		--self.position[2] = self.position[2] - (factorY / 2)
+
+		--self.overlayElement.position[1] = self.position[1]
+		--self.overlayElement.position[2] = self.position[2]
+
+		
+		if self.gui.setGuiValue ~= nil then
+			self.gui:setGuiValue(self.id, "size", self.overlayElement.size)
+			self.gui:setGuiValue(self.id, "zoomFactor", self.zoomFactor)
+		end
+	end
+	self:checkPdaMarkers()
+end
+
+function CpGuiIngameMap:checkEdges(lastPos)
+	if lastPos < 0 then
+		return 0
+	elseif lastPos + self.lastSize > 1024 then
+		return lastPos - ((lastPos + self.lastSize) - 1024)
+	end
+	return lastPos
+end
+
+function CpGuiIngameMap:move(posX, posY)
+	if self.zoomMode == CpGuiIngameMap.ZOOMMODE.BOX then
+		self.lastPxPosX = self.lastPxPosX + ((self.lastMousePosX - posX) / self.size[1] * self.lastSize)
+		self.lastPxPosY = self.lastPxPosY + ((posY - self.lastMousePosY) / self.size[2] * self.lastSize)
+
+		self.lastPxPosX = self:checkEdges(self.lastPxPosX)
+		self.lastPxPosY = self:checkEdges(self.lastPxPosY)
+
+		self.overlayElement:setUV(string.format("%spx %spx %spx %spx", self.lastPxPosX, self.lastPxPosY, self.lastSize, self.lastSize))
+	else
+		self.position[1] = self.position[1] - (self.lastMousePosX - posX)
+		self.position[2] = self.position[2] - (self.lastMousePosY - posY)
+		
+		if self.gui.setGuiValue ~= nil then
+			self.gui:setGuiValue(self.id, "position", self.position)
+		end
+	end
+	self:checkPdaMarkers()
+end
+
+function CpGuiIngameMap:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+	
+	CpGuiIngameMap:superClass().draw(self)
+end
+
+function CpGuiIngameMap:addPdaMarker(element)
+	self.pdaMarkerCount = self.pdaMarkerCount + 1
+	table.insert(self.pdaMarkers, {id = self.pdaMarkerCount, element = element, posX = 0, posY = 0, worldPosX = 0, worldPosY = 0, size = element.size})
+	return self.pdaMarkerCount
+end
+
+function CpGuiIngameMap:setPdaMarkerPosition(id, x, y)
+	for _,marker in pairs(self.pdaMarkers) do
+		if marker.id == id then
+			marker.worldPosX = x / self.sizeFactor
+			marker.worldPosY = y / self.sizeFactor
+		end
+	end
+	self:checkPdaMarkers()
+end
+
+function CpGuiIngameMap:checkPdaMarkers()		
+	for _,marker in pairs(self.pdaMarkers) do
+		if self.zoomMode == CpGuiIngameMap.ZOOMMODE.BOX then
+			local sizeH = marker.size[1] / 2
+			
+			local pdaPosX = (marker.worldPosX + self.pdaWith / 2 / self.sizeFactor) / 2
+			local pdaPosY = (marker.worldPosY + self.pdaWith / 2 / self.sizeFactor) / 2
+			
+			if self.lastPxPosX < pdaPosX and pdaPosX < (self.lastPxPosX + self.lastSize) and self.lastPxPosY < pdaPosY and pdaPosY < (self.lastPxPosY + self.lastSize)  then
+
+				local posX = (880 / self.lastSize * (pdaPosX - self.lastPxPosX)) - 440
+				local posY = 440 - (880 / self.lastSize * (pdaPosY - self.lastPxPosY))
+
+				marker.element.position = GuiUtils.getNormalizedValues(string.format("%spx %spx", posX, posY), marker.element.outputSize, marker.element.position)
+				marker.element:setVisible(true)
+			else
+				marker.element:setVisible(false)
+			end
+		else
+
+
+
+
+
+
+
+	
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Input
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiInput = {}
+local CpGuiInput_mt = Class(CpGuiInput, CpGuiElement)
+
+function CpGuiInput:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiInput_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "input"	
+	
+	return self
+end
+
+function CpGuiInput:loadTemplate(templateName, xmlFile, key)
+	CpGuiInput:superClass().loadTemplate(self, templateName, xmlFile, key)
+	
+	self.buttonElement = CpGuiButton:new(self.gui)
+	self.buttonElement:loadTemplate(templateName, xmlFile, key)
+
+	self:addElement(self.buttonElement)
+		        
+    self.textElement = CpGuiText:new(self.gui)
+    self.textElement:loadTemplate(string.format("%s_text", templateName), xmlFile, key)
+    self:addElement(self.textElement)
+        	
+	if self.isTableTemplate then
+		self.parent:setTableTemplate(self)
+	end
+	self:loadOnCreate()
+end
+
+function CpGuiInput:copy(src)
+	CpGuiInput:superClass().copy(self, src)	
+
+	self:copyOnCreate()
+end
+
+function CpGuiInput:delete()
+	CpGuiInput:superClass().delete(self)
+end
+
+function CpGuiInput:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiInput:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiInput:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+    if self.buttonElement:getActive() and isDown then
+		local currentText = self.textElement.text
+        if sym == Input.KEY_backspace then
+			currentText = currentText:sub(0, currentText:len() - 1)
+        else
+            currentText = currentText .. unicodeToUtf8(unicode)
+        end
+        self.textElement:setText(currentText)
+    end
+	CpGuiInput:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiInput:update(dt)
+    CpGuiInput:superClass().update(self, dt)
+end
+
+function CpGuiInput:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+	
+	CpGuiInput:superClass().draw(self)
+end 
+-- 
+-- CoursePlay - Gui - Overlay
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiOverlay = {}
+local CpGuiOverlay_mt = Class(CpGuiOverlay, CpGuiElement)
+
+function CpGuiOverlay:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiOverlay_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "overlay"
+	
+	self.imageColor = {1,1,1,1}
+	self.imageColor_disabled = {1,1,1,1}
+	self.imageColor_selected = {1,1,1,1}
+	self.imageColor_disabledSelected = {1,1,1,1}
+	
+	self.uvs = {0, 0, 0, 1, 1, 0, 1, 1}
+	self.uvs_selected = {0, 0, 0, 1, 1, 0, 1, 1}
+	self.uvs_disabled = {0, 0, 0, 1, 1, 0, 1, 1}
+	self.uvs_disabledSelected = {0, 0, 0, 1, 1, 0, 1, 1}
+	
+	self.borderLeftSize = 0
+	self.borderRightSize = 0
+	self.borderTopSize = 0
+	self.borderBottomSize = 0
+	
+	self.borderLeftColor = 0
+	self.borderRightColor = 0
+	self.borderTopColor = 0
+	self.borderBottomColor = 0
+
+	self.scaleX = 1
+	self.scaleY = 1
+	
+	self.rotation = 0
+	
+	return self
+end
+
+function CpGuiOverlay:loadTemplate(templateName, xmlFile, key, overlayName)
+	CpGuiOverlay:superClass().loadTemplate(self, templateName, xmlFile, key)
+	
+	if overlayName == nil then
+		overlayName = "image"
+	end
+	
+	self.imageFilename = courseplay.guiManager:getTemplateValue(templateName, overlayName .. "Filename")		
+		
+	self.uvs = courseplay.guiManager:getTemplateValueUVs(templateName, overlayName .. "UVs", self.imageSize, self.uvs)
+	self.uvs_selected = courseplay.guiManager:getTemplateValueUVs(templateName, overlayName .. "UVs_selected", self.imageSize, self.uvs_selected)
+	self.uvs_disabled = courseplay.guiManager:getTemplateValueUVs(templateName, overlayName .. "UVs_disabled", self.imageSize, self.uvs_disabled)	
+	self.uvs_disabledSelected = courseplay.guiManager:getTemplateValueUVs(templateName, overlayName .. "UVs_disabledSelected", self.imageSize, self.uvs_disabledSelected)	
+	
+	self.imageColor = courseplay.guiManager:getTemplateValueColor(templateName, overlayName .. "Color", self.imageColor)
+	self.imageColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, overlayName .. "Color_disabled", self.imageColor_disabled)
+	self.imageColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, overlayName .. "Color_selected", self.imageColor_selected)	
+	self.imageColor_disabledSelected = courseplay.guiManager:getTemplateValueColor(templateName, overlayName .. "Color_disabledSelected", self.imageColor_disabledSelected)	
+	
+	self.isCamera = courseplay.guiManager:getTemplateValueBool(templateName, "isCamera", false)	
+	self.hasBorders = courseplay.guiManager:getTemplateValueBool(templateName, "hasBorders", false)	
+	if self.hasBorders then
+		self.borders = CpGuiBorders:new(self.gui)
+		self.borders:loadTemplate(templateName, xmlFile, key)
+		self:addElement(self.borders)
+	end
+	
+	self.rotation = courseplay.guiManager:getTemplateValueNumber(templateName, "rotation", self.rotation)
+	
+	local uiElement = courseplay.guiManager:getUiElement(self.imageFilename)
+	if self.imageFilename == "g_baseUIFilename" then
+		self.imageFilename = g_baseUIFilename
+	elseif self.imageFilename == "g_baseHUDFilename" then
+		self.imageFilename = g_baseHUDFilename
+	elseif self.imageFilename == "pda" then
+		self.imageFilename = g_currentMission.mapImageFilename
+	elseif uiElement ~= nil then
+        self.imageFilename = uiElement
+	end
+	
+	self.imageOverlay = createImageOverlay(self.imageFilename)
+	self:loadOnCreate()
+end
+
+function CpGuiOverlay:copy(src)
+	CpGuiOverlay:superClass().copy(self, src)
+	
+	self:setImageFilename(src.imageFilename)
+	self.uvs = src.uvs
+	self.uvs_selected = src.uvs_selected
+	self.uvs_disabled = src.uvs_disabled
+	self.uvs_disabledSelected = src.uvs_disabledSelected
+	
+	self.imageColor = src.imageColor
+	self.imageColor_disabled = src.imageColor_disabled
+	self.imageColor_selected = src.imageColor_selected
+	self.imageColor_disabledSelected = src.imageColor_disabledSelected
+	
+	self.rotation = src.rotation
+	self.hasBorders = src.hasBorders
+	
+	if self.hasBorders then
+		self.borders = CpGuiBorders:new(self.gui)
+		self.borders:copy(src.borders)
+		self:addElement(self.borders)
+	end
+	
+	--self.imageOverlay = createImageOverlay(self.imageFilename)
+	self:copyOnCreate()
+end
+
+function CpGuiOverlay:setImageFilename(filename)
+	local uiElement = courseplay.guiManager:getUiElement(filename)
+	if uiElement ~= nil then
+		filename = uiElement
+	end
+	self.imageFilename = filename
+	self.imageOverlay = createImageOverlay(self.imageFilename)
+end
+
+function CpGuiOverlay:setImageOverlay(overlay)
+	self.imageOverlay = overlay
+end
+
+function CpGuiOverlay:delete()
+	CpGuiOverlay:superClass().delete(self)
+	if self.imageOverlay ~= nil and self.imageOverlay ~= 0 then
+		delete(self.imageOverlay)
+		self.imageOverlay = nil
+	end
+end
+
+function CpGuiOverlay:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiOverlay:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiOverlay:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiOverlay:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiOverlay:update(dt)
+	CpGuiOverlay:superClass().update(self, dt)
+end
+
+function CpGuiOverlay:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+	
+	--if self:getVisible() then
+		if self.isCamera then
+			setOverlayRotation(self.imageOverlay, self.rotation, self.size[1] * 0.5, self.size[2] * 0.5)
+			renderOverlay(self.imageOverlay, self.drawPosition[1], self.drawPosition[2], self.size[1], self.size[2])
+		else
+			setOverlayRotation(self.imageOverlay, self.rotation, self.size[1] * 0.5, self.size[2] * 0.5)
+			setOverlayUVs(self.imageOverlay, unpack(self:getUVs()))
+			setOverlayColor(self.imageOverlay, unpack(self:getImageColor()))
+			
+			local sizeX = math.max(self.size[1], 1 / g_screenWidth)
+			local sizeY = math.max(self.size[2], 1 / g_screenHeight)			
+			renderOverlay(self.imageOverlay, self.drawPosition[1], self.drawPosition[2], sizeX * self.scaleX, sizeY * self.scaleY)
+		end
+	--end
+
+	CpGuiOverlay:superClass().draw(self)
+end
+
+function CpGuiOverlay:setScale(x,y)
+	self.scaleX = x
+	self.scaleY = Utils.getNoNil(y,self.scaleY)
+end
+
+function CpGuiOverlay:setUV(str)
+	self.uvs = GuiUtils.getUVs(str, self.imageSize, nil)
+end
+
+function CpGuiOverlay:getUVs()
+    if self:getDisabled() and self:getIsSelected() then
+        return self.uvs_disabledSelected
+	elseif self:getDisabled() then
+        return self.uvs_disabled
+    elseif self:getIsSelected() then
+        return self.uvs_selected
+    else
+        return self.uvs
+    end
+end
+
+function CpGuiOverlay:getImageColor()
+    if self:getDisabled() and self:getIsSelected() then
+        return self.imageColor_disabledSelected
+	elseif self:getDisabled() then
+        return self.imageColor_disabled
+    elseif self:getIsSelected() then
+        return self.imageColor_selected
+    else
+        return self.imageColor
+    end
+end
+
+function CpGuiOverlay:setRotation(rotation)
+	self.rotation = rotation
+end
+
+function CpGuiOverlay:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiOverlay:superClass().onOpen(self)
+end
+
+function CpGuiOverlay:setImageUv(uv, all)
+	if courseplay.guiManager.template.uvs[uv] ~= nil then
+		self.uvs = GuiUtils.getUVs(courseplay.guiManager.template.uvs[uv], self.imageSize, self.default)
+		if all then
+			self.uvs_selected = self.uvs
+			self.uvs_disabled = self.uvs
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Page
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiPage = {}
+local CpGuiPage_mt = Class(CpGuiPage, CpGuiElement)
+
+function CpGuiPage:new(gui, custom_mt)	
+	if custom_mt == nil then
+        custom_mt = CpGuiPage_mt
+    end
+	local self = CpGuiElement:new(gui, custom_mt)
+    
+	return self
+end
+
+function CpGuiPage:loadTemplate(templateName, xmlFile, key)
+	CpGuiPage:superClass().loadTemplate(self, templateName, xmlFile, key)
+    
+	if xmlFile ~= nil then
+		self.pageName = courseplay.guiManager:getTemplateValueXML(xmlFile, "pageName", key, nil)
+		self.pageHeader = courseplay.guiManager:getTemplateValueXML(xmlFile, "pageHeader", key, nil)
+	end
+	
+	if self.pageName == nil then
+		print("No pagename defined.")
+	end
+
+	self:loadOnCreate()
+end
+
+function CpGuiPage:copy(src)
+	CpGuiPage:superClass().copy(self, src)
+
+	self:copyOnCreate()
+end
+
+function CpGuiPage:delete()
+	CpGuiPage:superClass().delete(self)
+end
+
+function CpGuiPage:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	return CpGuiPage:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiPage:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiPage:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiPage:update(dt)
+	CpGuiPage:superClass().update(self, dt)
+end
+
+function CpGuiPage:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+		
+	CpGuiPage:superClass().draw(self)
+end 
+-- 
+-- CoursePlay - Gui - PageSelector
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiPageSelector = {}
+local CpGuiPageSelector_mt = Class(CpGuiPageSelector, CpGuiElement)
+
+
+function CpGuiPageSelector:new(gui, custom_mt)	
+	if custom_mt == nil then
+        custom_mt = CpGuiPageSelector_mt
+    end
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "pageSelector"
+	
+	self.skipFirstElement = true
+	    
+	return self
+end
+
+function CpGuiPageSelector:loadTemplate(templateName, xmlFile, key)
+	CpGuiPageSelector:superClass().loadTemplate(self, templateName, xmlFile, key)
+
+	if xmlFile ~= nil then
+		self.currentPage = courseplay.guiManager:getTemplateValueXML(xmlFile, "pageNameOnOpen", key, nil)
+	end
+
+	self:loadOnCreate()
+end
+
+
+function CpGuiPageSelector:copy(src)
+	CpGuiPageSelector:superClass().copy(self, src)
+
+	self:copyOnCreate()
+end
+
+function CpGuiPageSelector:delete()
+	CpGuiPageSelector:superClass().delete(self)
+end
+
+function CpGuiPageSelector:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	return CpGuiPageSelector:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiPageSelector:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiPageSelector:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiPageSelector:update(dt)
+	CpGuiPageSelector:superClass().update(self, dt)	
+end
+
+function CpGuiPageSelector:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+		
+	CpGuiPageSelector:superClass().draw(self)
+end
+
+function CpGuiPageSelector:onOpen()
+	CpGuiPageSelector:superClass().onOpen(self)
+	if self.currentPage == nil then
+		self:openPage(self:findFirstPageName())
+	else
+		self:openPage(self.currentPage)
+	end
+end
+
+function CpGuiPageSelector:findFirstPageName()
+	if self.currentPage == nil then
+		local skipFirstElement = self.skipFirstElement
+		for _, page in pairs(self.elements) do
+			if skipFirstElement then
+				skipFirstElement = false
+			else
+				return page.pageName
+			end
+		end
+	end
+end
+
+function CpGuiPageSelector:openPage(pageName)
+	local skipFirstElement = self.skipFirstElement
+	local activePageIndx = -1
+	for k, page in pairs(self.elements) do
+		if skipFirstElement then
+			skipFirstElement = false			
+		else
+			if page.pageName == pageName then
+				page:setVisible(true)
+				self.currentPage = page.pageName
+				activePageIndx = k - 1
+				self.gui:setPage(page)
+			else
+				page:setVisible(false)
+			end
+		end
+	end
+	
+	if self.skipFirstElement then
+		for _,buttons in pairs(self.elements) do
+			for k, button in pairs(buttons.elements) do
+				button:setSelected(k == activePageIndx)
+			end
+			break
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Slider
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiSlider = {}
+local CpGuiSlider_mt = Class(CpGuiSlider, CpGuiElement)
+
+function CpGuiSlider:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiSlider_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "slider"
+
+	self.minHeight = GuiUtils.getNormalizedValues("20px", self.outputSize)	
+	return self
+end
+
+function CpGuiSlider:loadTemplate(templateName, xmlFile, key, overlayName)
+	CpGuiSlider:superClass().loadTemplate(self, templateName, xmlFile, key)	
+	
+	self.buttonElement = CpGuiButton:new(self.gui)
+	self.buttonElement:loadTemplate(templateName, xmlFile, key)
+
+	self:addElement(self.buttonElement)
+	
+	self:loadOnCreate()
+end
+
+function CpGuiSlider:copy(src)
+	CpGuiSlider:superClass().copy(self, src)
+	self:copyOnCreate()
+end
+
+function CpGuiSlider:delete()
+	CpGuiSlider:superClass().delete(self)	
+end
+
+function CpGuiSlider:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)	
+	if not self:getDisabled() then
+		eventUsed = CpGuiSlider:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+	end
+	return eventUsed
+end
+
+function CpGuiSlider:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiSlider:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiSlider:update(dt)
+	CpGuiSlider:superClass().update(self, dt)
+end
+
+function CpGuiSlider:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+	CpGuiSlider:superClass().draw(self,index)
+end
+
+function CpGuiSlider:setController(table)
+	self.controller = table
+	self:updateItems()
+end
+
+function CpGuiSlider:setPosition(pos)	
+	if self.stepsize ~= nil then
+		self.buttonElement.sliderPosition[2] = self.stepsize * pos
+	end
+end
+
+function CpGuiSlider:moveSlider(x, y)
+	self.buttonElement.sliderPosition[2] = math.min(math.max(self.buttonElement.sliderPosition[2] + y, 0), self.size[2] - self.buttonElement.size[2])	
+	self.controller:setPosition(math.floor(self.buttonElement.sliderPosition[2] / self.stepsize))
+end
+
+function CpGuiSlider:updateItems()
+	if self.controller ~= nil then
+		if #self.controller.items <= self.controller.maxItemsX * self.controller.maxItemsY then
+			self:setVisible(false)
+		else
+			self:setVisible(true)
+			--self.stepsize = self.size[2] / ( 1 + (#self.controller.items - (self.controller.maxItemsX * self.controller.maxItemsY))) --set correct direction!
+			if self.controller.maxItemsX > 1 then
+				self.stepsize = self.size[2] / math.ceil( 1 + (math.ceil(#self.controller.items / self.controller.maxItemsX) / (self.controller.maxItemsY)))
+			else
+				self.stepsize = self.size[2] / ( 1 + (#self.controller.items - self.controller.maxItemsY))
+			end 
+			local size = math.max(self.stepsize, self.minHeight[1])
+			self.buttonElement.size[2] = size
+			if self.buttonElement.overlayElement ~= nil then
+				self.buttonElement.overlayElement.size[2] = size
+			end
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Table
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiTable = {}
+local CpGuiTable_mt = Class(CpGuiTable, CpGuiElement)
+
+CpGuiTable.ORIENTATION_X = 1
+CpGuiTable.ORIENTATION_Y = 2
+
+CpGuiTable.TYP_TABLE = 1
+CpGuiTable.TYP_LIST = 2
+
+function CpGuiTable:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiTable_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "table"
+	
+	self.items = {}
+	self.itemTemplate = nil
+	self.orientation = CpGuiTable.ORIENTATION_X
+	self.type = CpGuiTable.TYP_TABLE
+	
+	self.itemWidth = 0.1
+	self.itemHeight = 0.1
+	self.itemMargin = {0,0,0,0}
+	
+	self.maxItemsX = 5
+	self.maxItemsY = 1
+	
+	self.scrollCount = 0
+	self.selectRow = 0
+	
+	return self
+end
+
+function CpGuiTable:loadTemplate(templateName, xmlFile, key, overlayName)
+	CpGuiTable:superClass().loadTemplate(self, templateName, xmlFile, key)	
+	
+	self.itemWidth = unpack(GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "itemWidth"), {self.outputSize[1]}, {self.itemWidth}))
+	self.itemHeight = unpack(GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "itemHeight"), {self.outputSize[2]}, {self.itemHeight}))
+	self.itemMargin = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "itemMargin"), self.outputSize, self.itemMargin)
+	
+	self.maxItemsX = courseplay.guiManager:getTemplateValueNumber(templateName, "maxItemsX", self.maxItemsX)
+	self.maxItemsY = courseplay.guiManager:getTemplateValueNumber(templateName, "maxItemsY", self.maxItemsY)
+
+	self.hasSlider = courseplay.guiManager:getTemplateValueBool(templateName, "hasSlider", false)	
+	
+	local orientation = courseplay.guiManager:getTemplateValue(templateName, "orientation")	
+
+	if orientation == "x" then
+		self.orientation = CpGuiTable.ORIENTATION_X
+	elseif orientation == "y" then
+		self.orientation = CpGuiTable.ORIENTATION_Y
+	end
+	if self.maxItemsX == 1 then
+		self.typ = CpGuiTable.TYP_TABLE
+	else
+		self.typ = CpGuiTable.TYP_LIST
+	end
+
+	if self.hasSlider then
+		self.slider = CpGuiSlider:new()
+		self.slider:loadTemplate(string.format( "%s_slider",templateName), xmlFile, key)
+		self.slider.parent = self
+		--self:addElement(self.slider)
+		if self.id ~= nil then
+			self.gui[string.format("%s_slider",self.id)] = self.slider
+		end
+		self.slider:setController(self)
+	end
+
+	self:loadOnCreate()
+end
+
+function CpGuiTable:copy(src)
+	CpGuiTable:superClass().copy(self, src)
+	
+	self.itemWidth = src.itemWidth
+	self.itemHeight = src.itemHeight
+	self.itemMargin = src.itemMargin
+	
+	self.maxItemsX = src.maxItemsX
+	self.maxItemsY = src.maxItemsY
+
+	self.hasSlider = src.hasSlider
+	
+	self.orientation = src.orientation
+	self:copyOnCreate()
+end
+
+function CpGuiTable:delete()
+	CpGuiTable:superClass().delete(self)
+	
+end
+
+function CpGuiTable:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)	
+	if not self:getDisabled() then
+		eventUsed = CpGuiTable:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+	
+		if not eventUsed and courseplay.guiManager:checkClickZoneNormal(posX, posY, self.drawPosition[1], self.drawPosition[2], self.size[1], self.size[2]) then
+			if isDown then
+				if Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_UP) then
+					eventUsed = true
+					self:scrollTable(-1)
+					if self.hasSlider then
+						self.slider:setPosition(self.scrollCount)
+					end
+				elseif Input.isMouseButtonPressed(Input.MOUSE_BUTTON_WHEEL_DOWN) then
+					eventUsed = true
+					self:scrollTable(1)
+					if self.hasSlider then
+						self.slider:setPosition(self.scrollCount)
+					end
+				end
+			end		
+		end
+
+		if not eventUsed and self.slider ~= nil then
+			self.slider:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+		end
+	end
+	return eventUsed
+end
+
+function CpGuiTable:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiTable:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+	if self.slider ~= nil then
+		self.slider:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	end
+end
+
+function CpGuiTable:update(dt)
+	CpGuiTable:superClass().update(self, dt)
+	if self.slider ~= nil then
+		self.slider:update(dt)
+	end
+end
+
+function CpGuiTable:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+	if self.slider ~= nil then
+		self.slider:draw(index)
+	end
+	CpGuiTable:superClass().draw(self,index)
+end
+
+function CpGuiTable:setTableTemplate(element)
+	self.itemTemplate = element
+	self:removeElement(element)
+end
+
+function CpGuiTable:addElement(element)
+	if not element.isTableTemplate then
+		if element.parent ~= nil then
+			element.parent:removeElement(element)
+		end
+		element:setParent(self)
+		table.insert(self.items, element)
+		self:updateVisibleItems()
+	end
+end
+
+function CpGuiTable:removeElements()
+	for _,element in pairs(self.elements) do
+		element.parent = nil
+		element:delete()
+	end
+	self.items = {}
+	self.elements = {}
+end
+
+function CpGuiTable:updateVisibleItems()	
+	self.elements = {}
+	
+	local start
+	if self.orientation == CpGuiTable.ORIENTATION_X then
+		start = self.scrollCount * self.maxItemsY + 1
+	elseif self.orientation == CpGuiTable.ORIENTATION_Y then
+		start = self.scrollCount * self.maxItemsX + 1
+	end
+	local maxNum = self.maxItemsX * self.maxItemsY
+	
+	for k,element in pairs(self.items) do
+		if k >= start and k < start + maxNum then
+			table.insert(self.elements, element)
+		end
+		if k >= maxNum + start then
+			break
+		end
+	end
+	if self.hasSlider then
+		self.slider:updateItems()
+	end
+end
+
+function CpGuiTable:setPosition(pos)
+	if self.scrollCount ~= pos then
+		self.scrollCount = pos
+		self:scrollItems()
+	end
+end
+
+function CpGuiTable:scrollTable(num)
+	if num == nil then
+		self.scrollCount = 0
+	else
+		self.scrollCount = self.scrollCount + num			
+	end
+	self:scrollItems()
+	self:updateVisibleItems()
+end
+
+function CpGuiTable:scrollItems()
+	local m,s,e
+	if self.orientation == CpGuiTable.ORIENTATION_X then
+		m = self.maxItemsY
+	elseif self.orientation == CpGuiTable.ORIENTATION_Y then
+		m = self.maxItemsX
+	end			
+	self:updateVisibleItems() --#Pfusch am Mod
+	if self.maxItemsY*self.maxItemsX - table.getn(self.elements) >= m then
+		self.scrollCount = self.scrollCount - 1
+	end
+	
+	if self.scrollCount < 0 then
+		self.scrollCount = 0
+	end
+end
+
+function CpGuiTable:setActive(state, e)
+	for _,element in pairs(self.items) do
+		if e ~= element then
+			element:setActive(state)
+		end
+	end
+end
+
+function CpGuiTable:setSelected(state, e)	
+	if state == nil then
+		state = false
+	end
+	for _,element in pairs(self.items) do
+		if e ~= element then
+			element:setSelected(state, true)
+		end
+	end
+end
+
+function CpGuiTable:createItem()
+	if self.itemTemplate ~= nil then
+		local item = CpGuiButton:new(self.gui)
+		self:addElement(item)
+		item:copy(self.itemTemplate)
+		for _,element in pairs(self.itemTemplate.elements) do		
+			self:createItemRec(self, element, item)
+		end
+		
+		return item
+	end
+	return nil
+end
+
+function CpGuiTable:createItemRec(t, element, parent)
+	local item = element:new(t.gui)
+	parent:addElement(item)
+	item:copy(element)
+	for _,e in pairs(element.elements) do		
+		t:createItemRec(t, e, item)
+	end
+end
+
+function CpGuiTable:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiTable:superClass().onOpen(self)
+end
+
+function CpGuiTable:selectFirstItem()
+	self:scrollTable()
+	for k,element in pairs(self.items) do
+			element:setActive(true)
+			if element.callback_onClick ~= nil then
+				element.gui[element.callback_onClick](element.gui, element, element.parameter)
+			end
+		break
+	end
+end 
+-- 
+-- CoursePlay - Gui - TableSort
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiTableSort = {}
+local CpGuiTableSort_mt = Class(CpGuiTableSort, CpGuiElement)
+
+function CpGuiTableSort:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiTableSort_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "tableSort"
+	
+	self.sortDirection = 1
+	
+	return self
+end
+
+function CpGuiTableSort:loadTemplate(templateName, xmlFile, key)
+	CpGuiTableSort:superClass().loadTemplate(self, templateName, xmlFile, key)
+  
+    self.buttonElement = CpGuiButton:new(self.gui)
+	self.buttonElement:loadTemplate(string.format("%s_button", templateName), xmlFile, key)
+    self:addElement(self.buttonElement)
+    
+    self.overlayElement = CpGuiOverlay:new(self.gui)
+    self.overlayElement:loadTemplate(string.format("%s_overlay", templateName), xmlFile, key)
+	self:addElement(self.overlayElement)
+	
+	self.size = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValueXML(xmlFile, "tableSortSize", key), self.outputSize, self.size)
+	self.buttonElement.size = self.size
+	self.buttonElement.overlayElement.size = self.size
+	
+	if self.isTableTemplate then
+		self.parent:setTableTemplate(self)
+	end
+	self:loadOnCreate()
+end
+
+function CpGuiTableSort:copy(src)
+	CpGuiTableSort:superClass().copy(self, src)
+	
+	self:copyOnCreate()
+end
+
+function CpGuiTableSort:delete()
+	CpGuiTableSort:superClass().delete(self)
+end
+
+function CpGuiTableSort:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiTableSort:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiTableSort:keyEvent(unicode, sym, modifier, isDown, eventUsed)   
+	CpGuiTableSort:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiTableSort:update(dt)
+    CpGuiTableSort:superClass().update(self, dt)
+end
+
+function CpGuiTableSort:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+	
+	CpGuiTableSort:superClass().draw(self)
+end
+
+function CpGuiTableSort:changeSortDirection()
+	self.sortDirection = self.sortDirection * -1
+	self:setSortIcon()
+end
+
+function CpGuiTableSort:setSortDirection(sortDirection)
+	self.sortDirection = sortDirection
+	self:setSortIcon()
+end
+
+function CpGuiTableSort:setSortIcon()	
+	if self.sortDirection == 1 then
+		self.overlayElement:setRotation(math.rad(0))
+	else
+		self.overlayElement:setRotation(math.rad(180))
+	end
+end
+
+function CpGuiTableSort:sortTable(tableC)
+	local needSort = {}
+	for k,element in pairs(tableC.items) do
+		table.insert(needSort, element.sortName)
+	end
+	table.sort(needSort, function(a, b) return a:lower() < b:lower() end)
+
+	local newItems = {}
+
+	for _,sortName in pairs(needSort) do
+		local toDelete
+		for k,oE in pairs(tableC.items) do
+			if sortName == oE.sortName then
+				table.insert(newItems, oE)
+				toDelete = k
+				break
+			end
+		end
+		table.remove(tableC.items, toDelete)
+	end
+	tableC.items = newItems
+	
+	if self.sortDirection == -1 then
+		local i, j = 1, table.getn(tableC.items)
+		while i < j do
+			tableC.items[i], tableC.items[j] = tableC.items[j], tableC.items[i]
+			i = i + 1
+			j = j - 1
+		end
+	end
+end 
+-- 
+-- CoursePlay - Gui - Mover
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 20.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiMover = {}
+local CpGuiMover_mt = Class(CpGuiMover, CpGuiElement)
+
+function CpGuiMover:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiMover_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "mover"
+	
+	self.mouseDown = false
+	self.mouseEntered = false
+        
+	return self
+end
+
+function CpGuiMover:loadTemplate(templateName, xmlFile, key)
+	CpGuiMover:superClass().loadTemplate(self, templateName, xmlFile, key)
+	       
+    self.target = courseplay.guiManager:getTemplateValueXML(xmlFile, "target", key)
+        
+	self:loadOnCreate()
+end
+
+function CpGuiMover:copy(src)
+	CpGuiMover:superClass().copy(self, src)    
+    
+	self:copyOnCreate()
+end
+
+function CpGuiMover:delete()
+	CpGuiMover:superClass().delete(self)
+end
+
+function CpGuiMover:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+    eventUsed = CpGuiMover:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+    
+    if not eventUsed then
+		local clickZone = {}		
+        clickZone[1] = self.drawPosition[1]
+        clickZone[2] = self.drawPosition[2] + self.size[2]
+        clickZone[3] = self.drawPosition[1] + self.size[1]
+        clickZone[4] = self.drawPosition[2] + self.size[2]
+        clickZone[5] = self.drawPosition[1] + self.size[1]
+        clickZone[6] = self.drawPosition[2]
+        clickZone[7] = self.drawPosition[1]
+        clickZone[8] = self.drawPosition[2]
+			
+        if courseplay.guiManager:checkClickZone(posX, posY, clickZone, self.isRoundButton) then
+            if not self.mouseEntered then
+                self.mouseEntered = true		
+                eventUsed = true
+                self.lastPos = {posX, posY}
+            end
+            
+            if isDown and button == Input.MOUSE_BUTTON_LEFT then
+                self.mouseDown = true
+                eventUsed = true
+            end
+            
+            if isUp and button == Input.MOUSE_BUTTON_LEFT and self.mouseDown then
+                self.mouseDown = false
+                self.mouseEntered = false
+            end
+        end
+
+        if self.mouseEntered and self.mouseDown then
+            self.gui[self.target].position[1] = self.gui[self.target].position[1] - (self.lastPos[1] - posX)
+            self.gui[self.target].position[2] = self.gui[self.target].position[2] - (self.lastPos[2] - posY)
+            
+            if self.gui.setGuiMoverValues ~= nil then
+                self.gui:setGuiMoverValues(self.target, self.gui[self.target].position)
+            end
+            eventUsed = true
+        end
+
+        self.lastPos = {posX, posY}
+    end
+	return eventUsed
+end
+
+function CpGuiMover:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiMover:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiMover:update(dt)
+	CpGuiMover:superClass().update(self, dt)
+end
+
+function CpGuiMover:draw(index)			
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)	
+	CpGuiMover:superClass().draw(self,index)
+end
+
+function CpGuiMover:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiMover:superClass().onOpen(self)
+end 
+-- 
+-- CoursePlay - Gui - Text
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiText = {}
+local CpGuiText_mt = Class(CpGuiText, CpGuiElement)
+
+function CpGuiText:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiText_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "text"
+	
+	self.textColor = {1,1,1,1}
+	self.textColor_disabled = {1,1,1,1}
+	self.textColor_selected = {1,1,1,1}
+	
+	self.textBold = false
+	self.textBold_disabled = false
+	self.textBold_selected = false
+	
+	self.textUpperCase = false
+	self.textUpperCase_disabled = false
+	self.textUpperCase_selected = false
+	
+	self.textSize = 0.025
+	self.textLineHeightScale = 1.1
+	self.textMaxWidth = nil
+	self.textWrapWidth = 1
+	self.textMaxNumLines = 1
+
+	self.autoSize = false
+	
+	self.textAlignment = RenderText.ALIGN_LEFT
+	self.text = ""	
+	
+	return self
+end
+
+function CpGuiText:loadTemplate(templateName, xmlFile, key)
+	CpGuiText:superClass().loadTemplate(self, templateName, xmlFile, key)
+		
+	self.textColor = courseplay.guiManager:getTemplateValueColor(templateName, "textColor", self.textColor)
+	self.textColor_disabled = courseplay.guiManager:getTemplateValueColor(templateName, "textColor_disabled", self.textColor_disabled)
+	self.textColor_selected = courseplay.guiManager:getTemplateValueColor(templateName, "textColor_selected", self.textColor_selected)
+	
+	self.textBold = courseplay.guiManager:getTemplateValueBool(templateName, "textBold", self.textBold)
+	self.textBold_disabled = courseplay.guiManager:getTemplateValueBool(templateName, "textBold_disabled", self.textBold_disabled)
+	self.textBold_selected = courseplay.guiManager:getTemplateValueBool(templateName, "textBold_selected", self.textBold_selected)
+	
+	self.textUpperCase = courseplay.guiManager:getTemplateValueBool(templateName, "textUpperCase", self.textUpperCase)
+	self.textUpperCase_disabled = courseplay.guiManager:getTemplateValueBool(templateName, "textUpperCase_disabled", self.textUpperCase_disabled)
+	self.textUpperCase_selected = courseplay.guiManager:getTemplateValueBool(templateName, "textUpperCase_selected", self.textUpperCase_selected)
+	
+	self.autoSize = courseplay.guiManager:getTemplateValueBool(templateName, "autoSize", self.autoSize)
+	
+	self.textSize = unpack(GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "textSize"), {self.outputSize[2]}, {self.textSize}))
+	self.textMaxWidth = unpack(GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "textMaxWidth"), {self.outputSize[1]}, {self.textMaxWidth}))
+	self.textWrapWidth = unpack(GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "textWrapWidth"), {self.outputSize[1]}, {self.textWrapWidth}))
+	self.textMaxNumLines = courseplay.guiManager:getTemplateValueNumber(templateName, "textMaxNumLines", self.textMaxNumLines)
+	self.textLineHeightScale = courseplay.guiManager:getTemplateValueNumber(templateName, "textLineHeightScale", self.textLineHeightScale)
+	self.margin = GuiUtils.getNormalizedValues(courseplay.guiManager:getTemplateValue(templateName, "textMargin"), self.outputSize, self.margin)
+
+	local textAlignment = courseplay.guiManager:getTemplateValue(templateName, "textAlignment")
+	if textAlignment ~= nil then
+		textAlignment = textAlignment:lower()
+		if textAlignment == "left" then
+			self.textAlignment = RenderText.ALIGN_LEFT
+		elseif textAlignment == "center" then
+			self.textAlignment = RenderText.ALIGN_CENTER
+		elseif textAlignment == "right" then
+			self.textAlignment = RenderText.ALIGN_RIGHT
+		end
+	end
+	
+	local text = ""
+	if xmlFile ~= nil then
+	 	text = getXMLString(xmlFile, string.format("%s#text", key))	
+	end
+
+	if text ~= nil then 
+		local addColon = text:sub(-1) == ":"
+		if addColon then
+			text = text:sub(1, text:len() - 1)
+		end
+		
+		if text:sub(1, 6) == "$l10n_" then
+			text = text:sub(7, text:len())
+			text = g_i18n:getText(text)
+		end
+
+		if addColon then
+			text = text .. ":"
+		end		 
+		self:setText(text, true)
+    end
+	self:loadOnCreate()
+end
+
+function CpGuiText:copy(src)
+	CpGuiText:superClass().copy(self, src)
+	
+	self.textColor = src.textColor
+	self.textColor_disabled = src.textColor_disabled
+	self.textColor_selected = src.textColor_selected
+	
+	self.textBold = src.textBold
+	self.textBold_disabled = src.textBold_disabled
+	self.textBold_selected = src.textBold_selected
+	
+	self.textUpperCase = src.textUpperCase
+	self.textUpperCase_disabled = src.textUpperCase_disabled
+	self.textUpperCase_selected = src.textUpperCase_selected
+	
+	self.textSize = src.textSize
+	self.textMaxWidth = src.textMaxWidth
+	self.textWrapWidth = src.textWrapWidth
+	self.textMaxNumLines = src.textMaxNumLines
+
+	self.autoSize = src.autoSize
+	
+	self.textAlignment = src.textAlignment
+	self:setText(src.text, true)
+	self:copyOnCreate()
+end
+
+function CpGuiText:delete()
+	CpGuiText:superClass().delete(self)
+end
+
+function CpGuiText:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiText:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiText:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiText:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiText:update(dt)
+	CpGuiText:superClass().update(self, dt)
+end
+
+function CpGuiText:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+
+	if self.text ~= nil and self.text ~= "" then		
+		setTextAlignment(self.textAlignment)
+		setTextWrapWidth(self.textWrapWidth)
+		setTextLineHeightScale(self.textLineHeightScale)
+		
+		local text = self.text
+		if self.textUpperCase then
+			text = utf8ToUpper(text)
+		end
+		
+		setTextBold(self:getTextBold())
+		local r,g,b,a = unpack(self:getTextColor())
+		setTextColor(r,g,b,a)		
+		
+		if self.textMaxWidth ~= nil then
+			text = Utils.limitTextToWidth(text, self.textSize, self.textMaxWidth, false, "...")
+		end
+
+		if self.autoSize then
+			self.size[1] = self:getTextWidth()
+			self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+		end		
+		
+		local x,y = self.drawPosition[1], self.drawPosition[2]
+		
+		if self.textAlignment == RenderText.ALIGN_CENTER then
+			x = x + self.size[1] / 2
+		elseif self.textAlignment == RenderText.ALIGN_RIGHT then
+			x = x + self.size[1]
+		end
+				
+		renderText(x,y, self.textSize, courseplay:loc(text))
+		
+		setTextBold(false)
+		setTextAlignment(RenderText.ALIGN_LEFT)
+		setTextLineHeightScale(RenderText.DEFAULT_LINE_HEIGHT_SCALE)
+		setTextColor(1, 1, 1, 1)
+		setTextWrapWidth(0)
+		
+		if self.debugEnabled then
+			setOverlayColor(GuiElement.debugOverlay, 0, 1, 0, 1)
+				local yPixel = 1 / g_screenHeight
+			if self.textMaxWidth ~= nil then
+				renderOverlay(GuiElement.debugOverlay, self.drawPosition[1], self.drawPosition[2], self.textMaxWidth, yPixel)
+			else
+				renderOverlay(GuiElement.debugOverlay, self.drawPosition[1], self.drawPosition[2], self.size[1], yPixel)
+			end
+		end
+		
+	end
+	CpGuiText:superClass().draw(self)
+end
+
+function CpGuiText:setTextSize(size)
+    self.textSize = size
+	self.size[2] = self.textSize
+end
+
+function CpGuiText:setText(text, forceTextSize)
+	text = tostring(text)
+	if self.textUpperCase then
+        text = utf8ToUpper(text)
+    end
+	local leftover = nil
+    if self.textMaxNumLines ~= nil and self.textWrapWidth ~= nil then
+        setTextWrapWidth(self.textWrapWidth)
+        local l = getTextLength(self.textSize, text, self.textMaxNumLines)
+        setTextWrapWidth(0)
+        leftover = utf8Substr(text, l)
+        text = utf8Substr(text, 0, l)
+    end
+
+    self.text = text
+
+    if (self.size[1] == 0 and self.size[2] == 0) or forceTextSize then
+        local width = self:getTextWidth()
+        if self.textWrapWidth > 0 then
+            width = math.min(width, self.textWrapWidth)
+        end
+		if self.size[1] ~= 0 then
+			self.size = {self.size[1], self.textSize}
+		else
+			self.size = {width, self.textSize}
+		end
+    end
+
+    return leftover
+end
+
+function CpGuiText:setTextColor(r,g,b,a)
+    self.textColor = {r,g,b,a}
+end
+
+function CpGuiText:setTextColorSelected(r,g,b,a)
+    self.textColor_selected = {r,g,b,a}
+end
+
+function CpGuiText:getTextWidth(text)
+	if text == nil then
+		text = self.text
+	end
+    setTextBold(self.textBold)
+    local width = getTextWidth(self.textSize, self.text)
+    setTextBold(false)
+    return width
+end
+
+function CpGuiText:getTextHeight()
+    setTextWrapWidth(self.textWrapWidth)
+    setTextBold(self.textBold)
+    setTextLineHeightScale(self.textLineHeightScale)
+    local height, numLines = getTextHeight(self.textSize, self.text)
+    setTextLineHeightScale(RenderText.DEFAULT_LINE_HEIGHT_SCALE)
+    setTextBold(false)
+    setTextWrapWidth(0)
+    return height, numLines
+end
+
+function CpGuiText:getTextColor()
+    if self:getDisabled() then
+        return self.textColor_disabled
+    elseif self:getIsSelected() then
+        return self.textColor_selected
+    else
+        return self.textColor
+    end
+end
+
+function CpGuiText:getTextBold()
+    if self:getDisabled() then
+        return self.textBold_disabled
+    elseif self:getIsSelected() then
+        return self.textBold_selected
+    else
+        return self.textBold
+    end
+end
+
+function CpGuiText:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiText:superClass().onOpen(self)
+end 
+CpGuiPage = {}
+
+-- 
+-- CoursePlay - Gui - Text
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiPage = {}
+local CpGuiPage_mt = Class(CpGuiPage, CpGuiElement)
+
+function CpGuiPage:new(gui, mainGui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPage_mt
+    end
+	
+	local self = CpGuiElement:new(gui, custom_mt)
+	self.name = "guiPage"
+    self.gui = gui
+    self.mainGui = mainGui
+    gui.guiPage = self
+	
+	return self
+end
+
+function CpGuiPage:loadTemplate(templateName, xmlFile, key)
+	CpGuiPage:superClass().loadTemplate(self, templateName, xmlFile, key)
+    
+    if xmlFile ~= nil then
+        local guiClassName = getXMLString(xmlFile, string.format("%s#gui", key))
+        local pageId = getXMLString(xmlFile, string.format("%s#pageId", key))
+        local buttonId = getXMLString(xmlFile, string.format("%s#buttonId", key))
+        
+        if self.gui.pageFunctions ~= nil then
+            local guiClass = _G[guiClassName]
+            self.gui.pageFunctions:registerPage(pageId, guiClass, buttonId, self)
+        else
+            print("Do not implement pageFunctions")
+        end
+    end
+
+	self:loadOnCreate()
+end
+
+function CpGuiPage:copy(src)
+	CpGuiPage:superClass().copy(self, src)
+	
+	self:copyOnCreate()
+end
+
+function CpGuiPage:delete()
+	CpGuiPage:superClass().delete(self)
+end
+
+function CpGuiPage:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+	CpGuiPage:superClass().mouseEvent(self, posX, posY, isDown, isUp, button, eventUsed)
+end
+
+function CpGuiPage:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+	CpGuiPage:superClass().keyEvent(self, unicode, sym, modifier, isDown, eventUsed)
+end
+
+function CpGuiPage:update(dt)
+	CpGuiPage:superClass().update(self, dt)
+end
+
+function CpGuiPage:draw(index)
+	self.drawPosition[1], self.drawPosition[2] = courseplay.guiManager:calcDrawPos(self, index)
+
+	CpGuiPage:superClass().draw(self)
+end
+
+function CpGuiPage:onOpen()
+	if self.callback_onOpen ~= nil then
+		self.gui[self.callback_onOpen](self.gui, self, self.parameter)
+	end
+	CpGuiPage:superClass().onOpen(self)
+end
+
+
+
+CpGuiPageFunctions = {}
+local CpGuiPageFunctions_mt = Class(CpGuiPageFunctions)
+
+function CpGuiPageFunctions:new(gui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageFunctions_mt
+    end
+	local self = setmetatable({}, custom_mt)
+        
+    self.gui = gui
+
+    self.pages = {}
+    self.pagesById = {}
+
+	return self
+end
+
+function CpGuiPageFunctions:registerPage(id, class, buttonId, parentElement)
+    if self.pagesById[id] ~= nil then
+		print(string.format("Page id %s already exist.", id))
+		return
+	end
+
+    local page = {}
+    page.id = id
+    page.buttonId = buttonId
+    page.classGui = class:new(self.gui)    
+
+    local xmlFile = loadXMLFile("Temp", page.classGui.xmlFilename)
+    parentElement.mainGui:loadFromXMLRec(xmlFile, "GUI", parentElement, page.classGui)    
+    page.guiElement = parentElement.elements[#parentElement.elements]
+
+    table.insert(self.pages, page)
+    self.pagesById[page.id] = page
+end
+
+function CpGuiPageFunctions:setPage(pageIndex)
+    for id,page in pairs(self.pages) do
+        page.guiElement:setVisible(id == pageIndex)
+        self.gui[page.buttonId]:setActive(id == pageIndex, false)
+    end
+end
+
+function CpGuiPageFunctions:setPageByName(pageName)
+    local pageId = 0
+    local counter = 0
+    for id,page in pairs(self.pages) do
+        page.guiElement:setVisible(page.id == pageName)
+        self.gui[page.buttonId]:setActive(page.id == pageName, false)
+
+        if page.id == pageName then
+            pageId = id
+        end
+
+        counter = counter + 1
+    end
+    return pageId
+end 
+-- 
+-- CoursePlay - Gui - Main
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpGuiMain = {}
+CpGuiMain.xmlFilename = courseplay.path .. "gui_new/screens/Main.xml"
+
+CpGuiMain._mt = Class(CpGuiMain)
+
+CpGuiMain.defaultPage = "steering"
+
+GuiManager.guiClass.main = CpGuiMain
+
+GuiManager.BUTTONS = {}
+GuiManager.BUTTONS.STEERING = "steering"
+GuiManager.BUTTONS.COURSEMANAGER = "courseManager"
+GuiManager.BUTTONS.DRIVERS = "drivers"
+GuiManager.BUTTONS.DRIVERSSEARCH = "driversSearch"
+GuiManager.BUTTONS.SETTINGS = "settings"
+
+--GuiManager.BUTTONS.TEMPO = "tempo"
+--GuiManager.BUTTONS.SETTINGSVEHICLE = "vehiclesettings"
+--GuiManager.BUTTONS.SETTINGSFIELDS = "settingsFields"
+--GuiManager.BUTTONS.FRONTLADER = "frontlader"
+--GuiManager.BUTTONS.SILO = "silo"
+GuiManager.BUTTONS.SETTINGS = "settings"
+
+function CpGuiMain:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiMain._mt
+    end
+    local self = setmetatable({}, custom_mt)
+	
+    self.dialogPosition = {0, 0}
+
+    self.pageFunctions = CpGuiPageFunctions:new(self)
+    self.lastPageIndex = self.defaultPage
+	return self
+end
+
+function CpGuiMain:onLoad(xmlFile, baseKey)
+    self:loadDisabledPagesByModes(xmlFile,baseKey)
+end
+
+function CpGuiMain:loadDisabledPagesByModes(xmlFile,baseKey)
+    self.disabledPagesByModes = {}
+    
+    local baseKey = string.format("%s.DisabledPagesByModes",baseKey)
+    local i = 0
+    while true do 
+        local key = string.format("%s.DisabledPageByModes(%d)",baseKey,i)
+        if not hasXMLProperty(xmlFile, key) then
+			break
+		end
+        local pageName = getXMLString(xmlFile,string.format("%s#name", key))
+        local disabledModesStr = getXMLString(xmlFile,string.format("%s#value", key))
+        self.disabledPagesByModes[pageName] = {StringUtil.getVectorFromString(disabledModesStr)}
+        i = i + 1
+    end
+end
+
+function CpGuiMain:onCreate() 
+    --- TODO: moves this to guiTemplate btn toolTips. The same as "cpMainCategorie_Steering"! 
+    self.languages = {}
+    self.languages[GuiManager.BUTTONS.STEERING] = courseplay:loc("COURSEPLAY_PAGE_TITLE_CP_CONTROL")
+    self.languages[GuiManager.BUTTONS.COURSEMANAGER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COURSES")
+    self.languages[GuiManager.BUTTONS.DRIVERS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
+    --self.languages[GuiManager.BUTTONS.FILLSETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_COMBI_MODE")
+    self.languages[GuiManager.BUTTONS.DRIVERSSEARCH] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COMBINES")
+    --self.languages[GuiManager.BUTTONS.TEMPO] = courseplay:loc("COURSEPLAY_PAGE_TITLE_SPEEDS")
+    --self.languages[GuiManager.BUTTONS.VEHICLESETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_DRIVING_SETTINGS")
+    --self.languages[GuiManager.BUTTONS.FIELDSETTINGS] = courseplay:loc("COURSEPLAY_MODESPECIFIC_SETTINGS")
+    self.languages[GuiManager.BUTTONS.SETTINGS] = courseplay:loc("COURSEPLAY_PAGE_TITLE_GENERAL_SETTINGS")    
+end
+
+function CpGuiMain:onOpen() 
+    self.gui_dialog.position = self.dialogPosition
+    self.pageFunctions:setPageByName(self.lastPageIndex)
+end
+
+function CpGuiMain:onClose() 
+    
+end
+
+
+function CpGuiMain:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+    
+end
+
+function CpGuiMain:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+   
+end
+
+function CpGuiMain:update(dt)
+	
+end
+
+function CpGuiMain:draw()
+	
+end
+
+function CpGuiMain:setData(vehicle)
+    self.vehicle = vehicle
+    self.driverModeSetting = vehicle.cp.settings.driverMode
+    self.driverModeSetting:validateCurrentValue(vehicle)
+    for _,page in pairs(self.pageFunctions.pages) do
+        if page.classGui.setVehicle ~= nil then
+            page.classGui:setVehicle(vehicle)
+        end
+    end
+end
+
+function CpGuiMain:setGuiMoverValues(target, pos)
+    if target == "gui_dialog" then
+        self.dialogPosition = pos
+    end
+end
+
+
+function CpGuiMain:saveXmlSettings(xml, key)    
+    setXMLFloat(xml, key .. '.main#posX', self.dialogPosition[1])
+    setXMLFloat(xml, key .. '.main#posY', self.dialogPosition[2])
+end
+
+function CpGuiMain:loadXmlSettings(xml, key)    
+    if hasXMLProperty(xml, key .. '.main#posX') then
+        self.dialogPosition[1] = getXMLFloat(xml, key .. '.main#posX')
+        self.dialogPosition[2] = getXMLFloat(xml, key .. '.main#posY')
+    end
+end
+
+
+
+function CpGuiMain:onClose()
+    courseplay.guiManager:onCloseCpMainGui()
+end
+
+--- Displays button toolTip.
+function CpGuiMain:onEnableHelp(button, para)
+    if button.toolTip ~="" then
+        self.gui_helpText:setText(courseplay:loc(button.toolTip),true)
+    else 
+        self.gui_helpText:setText(string.format("Missing text for %s!", para), true)
+    end
+end
+
+--- Resets button toolTip.
+function CpGuiMain:onDisableHelp(button, para)
+    self.gui_helpText:setText("")
+end
+
+function CpGuiMain:onOpenCourseManager()
+    courseplay.guiManager:openGui("cp_courseManager")
+end
+
+function CpGuiMain:onOpenSettings()
+    self:onClose()
+    courseplay:openAdvancedSettingsDialog(self.vehicle)
+    --courseplay.guiManager:openGui("cp_settings")
+end
+
+function CpGuiMain:onClickOpenPage(btn, site)
+    self.lastPageIndex = self.pageFunctions:setPageByName(site)
+end
+
+function CpGuiMain:resetPageToDefault()
+    self.lastPageIndex = self.pageFunctions:setPageByName(self.driverModeSetting:getDefaultMode())
+end
+
+function CpGuiMain:onClickSelectMode(btn,mode)
+    mode = tonumber(mode)
+    local curMode = self.driverModeSetting:get()
+    if mode ~= curMode then 
+        self.driverModeSetting:set(mode)
+        self.driverModeSetting:validateCurrentValue(self.vehicle)
+        self:validatePageButtons()
+        self:resetPageToDefault()
+    end
+end
+
+--- TODO: moves this into a setting: DriverModeSetting!
+
+--- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
+function CpGuiMain:validateModeButtons(validModes,currentMode,wasResetToDefault)
+    for i = 1,DriverModeSetting.NUM_MODES do
+        local btn = self:getModeButton(i)
+        btn:setDisabled(not validModes[i])
+        btn:setActive(i == currentMode)
+    end
+    if wasResetToDefault then 
+        self:resetPageToDefault()
+    end
+    self:validatePageButtons()
+end
+
+function CpGuiMain:getModeButton(i)
+    local buttonKey = string.format("mode%d",i) 
+    return self[buttonKey]
+end
+
+function CpGuiMain:validatePageButtons()
+    for _,page in pairs(self.pageFunctions.pages) do
+        local disabled = self:isPageForModeDisabled(page)
+        self[page.buttonId]:setVisible(not disabled)
+    end
+end
+
+function CpGuiMain:isPageForModeDisabled(page)
+    for _,mode in pairs(self.disabledPagesByModes[page.id]) do 
+        if mode and self.driverModeSetting and mode == self.driverModeSetting:get() then 
+            return true
+        end
+    end
+end
+
+
+ 
+-- 
+-- CoursePlay - Gui - CourseManager
+-- 
+-- @Interface: 1.6.0.0 b9166
+-- @Author: LS-Modcompany / kevink98
+-- @Date: 19.07.2020
+-- @Version: 1.0.0.0
+-- 
+-- @Changelog:
+--		
+-- 	v1.0.0.0 (kevink98):
+-- 		- initial fs19
+-- 
+-- Notes:
+-- 
+-- 
+-- ToDo:
+--
+--
+
+CpCourseManager = {}
+CpCourseManager.xmlFilename = courseplay.path .. "gui_new/screens/CourseManager.xml"
+
+CpCourseManager._mt = Class(CpCourseManager)
+
+GuiManager.guiClass.courseManager = CpCourseManager
+
+function CpCourseManager:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpCourseManager._mt
+    end
+    local self = setmetatable({}, custom_mt)
+    
+    self.dialogPosition = {0, 0}
+    self.pdaPosition = {0, 0}
+    self.pdaSize = {0, 0}
+    self.pdaZoomFactor = 0
+    
+
+	return self
+end
+
+function CpCourseManager:onCreate() 
+    
+    
+end
+
+function CpCourseManager:onOpen() 
+    g_depthOfFieldManager:setBlurState(true)
+    self.gui_dialog.position = self.dialogPosition
+
+    if self.pdaSize[1] ~= 0 then
+        self.gui_ingameMap.size = self.pdaSize
+        self.gui_ingameMap.overlayElement.size = self.pdaSize
+    end
+    if self.pdaPosition[0] ~= 0 then
+        self.gui_ingameMap.position = self.pdaPosition
+    end    
+    if self.pdaZoomFactor ~= 0 then
+        self.gui_ingameMap.zoomFactor = self.pdaZoomFactor
+    end
+end
+
+function CpCourseManager:onClose() 
+    g_depthOfFieldManager:setBlurState(false)
+    courseplay.guiManager:openGui("cp_main")
+end
+
+
+function CpCourseManager:mouseEvent(posX, posY, isDown, isUp, button, eventUsed)
+    
+end
+
+function CpCourseManager:keyEvent(unicode, sym, modifier, isDown, eventUsed)
+   
+end
+
+function CpCourseManager:update(dt)
+	
+end
+
+function CpCourseManager:draw()
+	
+end
+
+function CpCourseManager:setData()
+    
+end
+
+function CpCourseManager:setGuiValue(target, subTarget, val)
+    if val == nil then return end
+    if target == "gui_ingameMap" then
+        if subTarget == "size" then
+            self.pdaSize = val
+        elseif subTarget == "zoomFactor" then
+            self.pdaZoomFactor = val
+        elseif subTarget == "position" then
+            self.pdaPosition = val
+        end
+    end
+end
+
+
+function CpCourseManager:saveXmlSettings(xml, key)	--save PDA position too ?    
+    setXMLFloat(xml, key .. '.courseManager#posX', self.dialogPosition[1])
+    setXMLFloat(xml, key .. '.courseManager#posY', self.dialogPosition[2])
+end
+
+function CpCourseManager:loadXmlSettings(xml, key)    
+    if hasXMLProperty(xml, key .. '.courseManager#posX') then  
+        self.dialogPosition[1] = getXMLFloat(xml, key .. '.courseManager#posX')
+        self.dialogPosition[2] = getXMLFloat(xml, key .. '.courseManager#posY')
+    end
+end
+
+
+
+
+ 
+CpGuiPageDrivers = {}
+CpGuiPageDrivers.xmlFilename = courseplay.path .. "gui_new/screens/Page_drivers.xml"
+
+
+local CpGuiPageDrivers_mt = Class(CpGuiPageDrivers)
+
+function CpGuiPageDrivers:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageDrivers_mt
+    end;
+	local self = setmetatable({}, CpGuiPageDrivers_mt)
+
+	return self
+end
+
+function CpGuiPageDrivers:onCreate() 
+
+end
+
+function CpGuiPageDrivers:onOpen() 
+      
+end
+
+function CpGuiPageDrivers:onClose() 
+
+end 
+CpGuiPageDriversSearch = {}
+CpGuiPageDriversSearch.xmlFilename = courseplay.path .. "gui_new/screens/Page_driversSearch.xml"
+
+
+local CpGuiPageDriversSearch_mt = Class(CpGuiPageDriversSearch)
+
+function CpGuiPageDriversSearch:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageDriversSearch_mt
+    end;
+	local self = setmetatable({}, CpGuiPageDriversSearch_mt)
+
+	return self
+end
+
+function CpGuiPageDriversSearch:onCreate() 
+
+end
+
+function CpGuiPageDriversSearch:onOpen() 
+      
+end
+
+function CpGuiPageDriversSearch:onClose() 
+
+end 
+CpGuiPageSettingsFilling = {}
+CpGuiPageSettingsFilling.xmlFilename = courseplay.path .. "gui_new/screens/Page_settingsFilling.xml"
+
+local CpGuiPageSettingsFilling_mt = Class(CpGuiPageSettingsFilling)
+
+function CpGuiPageSettingsFilling:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageSettingsFilling_mt
+    end;
+	local self = setmetatable({}, CpGuiPageSettingsFilling_mt)
+
+	return self
+end
+
+function CpGuiPageSettingsFilling:onCreate() 
+
+end
+
+function CpGuiPageSettingsFilling:onOpen() 
+      
+end
+
+function CpGuiPageSettingsFilling:onClose() 
+
+end 
+CpGuiPageSettingsField = {}
+CpGuiPageSettingsField.xmlFilename = courseplay.path .. "gui_new/screens/Page_settingsField.xml"
+
+
+local CpGuiPageSettingsField_mt = Class(CpGuiPageSettingsField)
+
+function CpGuiPageSettingsField:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageSettingsField_mt
+    end;
+	local self = setmetatable({}, CpGuiPageSettingsField_mt)
+
+	return self
+end
+
+function CpGuiPageSettingsField:onCreate() 
+
+end
+
+function CpGuiPageSettingsField:onOpen() 
+      
+end
+
+function CpGuiPageSettingsField:onClose() 
+
+end 
+CpGuiPageSettingsVehicle = {}
+CpGuiPageSettingsVehicle.xmlFilename = courseplay.path .. "gui_new/screens/Page_settingsVehicle.xml"
+
+
+local CpGuiPageSettingsVehicle_mt = Class(CpGuiPageSettingsVehicle)
+
+function CpGuiPageSettingsVehicle:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageSettingsVehicle_mt
+    end;
+	local self = setmetatable({}, CpGuiPageSettingsVehicle_mt)
+
+	return self
+end
+
+function CpGuiPageSettingsVehicle:onCreate() 
+
+end
+
+function CpGuiPageSettingsVehicle:onOpen() 
+      
+end
+
+function CpGuiPageSettingsVehicle:onClose() 
+
+end 
+CpGuiPageDriversShovel = {}
+CpGuiPageDriversShovel.xmlFilename = courseplay.path .. "gui_new/screens/Page_shovel.xml"
+
+
+local CpGuiPageDriversShovel_mt = Class(CpGuiPageDriversShovel)
+
+function CpGuiPageDriversShovel:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageDriversShovel_mt
+    end;
+	local self = setmetatable({}, CpGuiPageDriversShovel_mt)
+
+	return self
+end
+
+function CpGuiPageDriversShovel:onCreate() 
+
+end
+
+function CpGuiPageDriversShovel:onOpen() 
+      
+end
+
+function CpGuiPageDriversShovel:onClose() 
+
+end 
+CpGuiPageDriversSiloCompaction = {}
+CpGuiPageDriversSiloCompaction.xmlFilename = courseplay.path .. "gui_new/screens/Page_siloCompaction.xml"
+
+
+local CpGuiPageDriversSiloCompaction_mt = Class(CpGuiPageDriversSiloCompaction)
+
+function CpGuiPageDriversSiloCompaction:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageDriversSiloCompaction_mt
+    end;
+	local self = setmetatable({}, CpGuiPageDriversSiloCompaction_mt)
+
+	return self
+end
+
+function CpGuiPageDriversSiloCompaction:onCreate() 
+
+end
+
+function CpGuiPageDriversSiloCompaction:onOpen() 
+      
+end
+
+function CpGuiPageDriversSiloCompaction:onClose() 
+
+end 
+CpGuiPageDriversSpeed = {}
+CpGuiPageDriversSpeed.xmlFilename = courseplay.path .. "gui_new/screens/Page_speed.xml"
+
+
+local CpGuiPageDriversSpeed_mt = Class(CpGuiPageDriversSpeed)
+
+function CpGuiPageDriversSpeed:new(target, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageDriversSpeed_mt
+    end;
+	local self = setmetatable({}, CpGuiPageDriversSpeed_mt)
+
+	return self
+end
+
+function CpGuiPageDriversSpeed:onCreate() 
+
+end
+
+function CpGuiPageDriversSpeed:onOpen() 
+      
+end
+
+function CpGuiPageDriversSpeed:onClose() 
+
+end 
+CpGuiPageSteering = {}
+CpGuiPageSteering.xmlFilename = courseplay.path .. "gui_new/screens/Page_steering.xml"
+
+local CpGuiPageSteering_mt = Class(CpGuiPageSteering)
+
+function CpGuiPageSteering:new(parentGui, custom_mt)
+    if custom_mt == nil then
+        custom_mt = CpGuiPageSteering_mt
+    end;
+	local self = setmetatable({}, CpGuiPageSteering_mt)
+    self.parentGui = parentGui
+	return self
+end
+
+function CpGuiPageSteering:setVehicle(vehicle) 
+    self.vehicle = vehicle
+end
+
+function CpGuiPageSteering:onCreate() 
+
+end
+
+function CpGuiPageSteering:onOpen() 
+      
+end
+
+function CpGuiPageSteering:onClose() 
+
+end
+
+function CpGuiPageSteering:onClick_1_start(btn, para)
+    courseplay:startStop(self.vehicle)
+end
+
+function CpGuiPageSteering:onClick_1_copy_left(btn, para) 
+
+end
+
+function CpGuiPageSteering:onClick_1_copy_right(btn, para) 
+
+end
+
+function CpGuiPageSteering:onClick_1_copy(btn, para) 
+
+end
+
+ 
+]]> 
+</code> 

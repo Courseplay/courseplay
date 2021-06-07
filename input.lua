@@ -18,13 +18,6 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 			courseplay:openCloseHud(vehicle, true)
 			courseplay.guiManager:handleInputMainGui(true, vehicle)
 		end;
-	-- MergeConflict
-	--[[
-		elseif actionName == 'COURSEPLAY_MOUSEACTION_SECONDARY' then -- open new hud (right mouse button)
-			courseplay.guiManager:handleInputMainGui(true, vehicle)
-		elseif actionName == 'COURSEPLAY_HUD_OPEN' then -- open new hud (lctrl and entf)
-			courseplay.guiManager:handleInputMainGui(false, vehicle)
-	--]]	
 	end;
 
 	local hudGfx = courseplay.hud.visibleArea;

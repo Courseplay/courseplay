@@ -23,8 +23,6 @@ CpGuiMain.xmlFilename = courseplay.path .. "gui_new/screens/Main.xml"
 
 CpGuiMain._mt = Class(CpGuiMain)
 
-CpGuiMain.selectedMode = 5
-CpGuiMain.defaultMode = 5
 CpGuiMain.defaultPage = "steering"
 
 GuiManager.guiClass.main = CpGuiMain
@@ -53,7 +51,6 @@ function CpGuiMain:new(target, custom_mt)
 
     self.pageFunctions = CpGuiPageFunctions:new(self)
     self.lastPageIndex = self.defaultPage
-
 	return self
 end
 
@@ -95,7 +92,6 @@ end
 function CpGuiMain:onOpen() 
     self.gui_dialog.position = self.dialogPosition
     self.pageFunctions:setPageByName(self.lastPageIndex)
-    CpGuiMain.getModeButton(self,self.selectedMode):setActive(true)
 end
 
 function CpGuiMain:onClose() 
@@ -121,13 +117,13 @@ end
 
 function CpGuiMain:setData(vehicle)
     self.vehicle = vehicle
-
+    self.driverModeSetting = vehicle.cp.settings.driverMode
+    self.driverModeSetting:validateCurrentValue(vehicle)
     for _,page in pairs(self.pageFunctions.pages) do
         if page.classGui.setVehicle ~= nil then
             page.classGui:setVehicle(vehicle)
         end
     end
-    CpGuiMain.validateModeButtons(self.vehicle)
 end
 
 function CpGuiMain:setGuiMoverValues(target, pos)
@@ -184,15 +180,15 @@ function CpGuiMain:onClickOpenPage(btn, site)
 end
 
 function CpGuiMain:resetPageToDefault()
-    self.lastPageIndex = self.pageFunctions:setPageByName(self.defaultMode)
+    self.lastPageIndex = self.pageFunctions:setPageByName(self.driverModeSetting:getDefaultMode())
 end
 
 function CpGuiMain:onClickSelectMode(btn,mode)
     mode = tonumber(mode)
-    if mode ~= self.selectedMode then 
-        CpGuiMain.getModeButton(self, self.selectedMode):setActive(false)
-        CpGuiMain.getModeButton(self, mode):setActive(true)
-        self.selectedMode = mode
+    local curMode = self.driverModeSetting:get()
+    if mode ~= curMode then 
+        self.driverModeSetting:set(mode)
+        self.driverModeSetting:validateCurrentValue(self.vehicle)
         self:validatePageButtons()
         self:resetPageToDefault()
     end
@@ -201,34 +197,21 @@ end
 --- TODO: moves this into a setting: DriverModeSetting!
 
 --- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
-function CpGuiMain.validateModeButtons(vehicle)
-    local mainCpGui = courseplay.guiManager.mainCpGui
-    if not mainCpGui then 
-        return
+function CpGuiMain:validateModeButtons(validModes,currentMode,wasResetToDefault)
+    for i = 1,DriverModeSetting.NUM_MODES do
+        local btn = self:getModeButton(i)
+        btn:setDisabled(not validModes[i])
+        btn:setActive(i == currentMode)
     end
-    for i=1,courseplay.NUM_MODES do 
-        --- Is the mode valid ?
-        local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
-        local btn = CpGuiMain.getModeButton(mainCpGui,i)
-    --    courseplay.guiManager.mainCpGui[buttonKey]:setDisabled(not valid)
-        btn:setDisabled(not valid)
-        if mainCpGui.selectedMode == i then 
-            --- Check if the current selectedMode still is valid, else switch to the default mode.
-            if not valid then 
-                btn:setActive(false)
-                mainCpGui.selectedMode = mainCpGui.defaultMode
-                CpGuiMain.getModeButton(mainCpGui, mainCpGui.defaultMode):setActive(true)
-                --- Make sure the page button gets reset, as the page might not be valid for this mode.
-                CpGuiMain.resetPageToDefault(mainCpGui)
-            end
-        end
+    if wasResetToDefault then 
+        self:resetPageToDefault()
     end
-    CpGuiMain.validatePageButtons(mainCpGui)
+    self:validatePageButtons()
 end
 
-function CpGuiMain.getModeButton(mainCpGui,i)
+function CpGuiMain:getModeButton(i)
     local buttonKey = string.format("mode%d",i) 
-    return courseplay.guiManager.mainCpGui[buttonKey]
+    return self[buttonKey]
 end
 
 function CpGuiMain:validatePageButtons()
@@ -240,7 +223,7 @@ end
 
 function CpGuiMain:isPageForModeDisabled(page)
     for _,mode in pairs(self.disabledPagesByModes[page.id]) do 
-        if mode and mode == self.selectedMode then 
+        if mode and self.driverModeSetting and mode == self.driverModeSetting:get() then 
             return true
         end
     end

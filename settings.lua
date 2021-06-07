@@ -3825,6 +3825,67 @@ function LevelCompactShieldHeightSetting:isDisabled()
 	return self.vehicle.cp.settings.levelCompactMode:get() == LevelCompactModeSetting.COMPACTING
 end
 
+---@class DriverModeSetting : SettingList
+DriverModeSetting = CpObject(SettingList)
+DriverModeSetting.GRAIN_TRANSPORT_AIDRIVER = 1
+DriverModeSetting.COMBINE_UNLOAD_AIDRIVER = 2
+DriverModeSetting.OVERLOADER_AIDRIVER = 3
+DriverModeSetting.FILLABLE_FIELDWORK_AIDRIVER = 4
+DriverModeSetting.AIDRIVER = 5
+DriverModeSetting.FIELDWORK_AIDRIVER = 6
+DriverModeSetting.BALE_COLLECTOR_AIDRIVER = 7
+DriverModeSetting.FIELD_SUPPLY_AIDRIVER = 8
+DriverModeSetting.SHOVEL_AIDIRIVER = 9
+DriverModeSetting.BUNKER_SILO_AIDRIVER = 10
+DriverModeSetting.NUM_MODES = 10
+
+DriverModeSetting.defaultMode = 5
+
+function DriverModeSetting:init(vehicle,mainCpGui)
+	self.mainCpGui = mainCpGui
+	local values = {}
+	local texts = {}
+	for i=1,self.NUM_MODES do 
+		values[i] = i
+		texts[i] = i
+	end
+	SettingList.init(self,"driverMode","driverMode","driverMode",vehicle,values,texts)
+	self:set(self.defaultMode)
+end
+
+function DriverModeSetting:validateCurrentValue(vehicle)
+	if not vehicle then 
+		return
+	end
+	self.validModes = {}
+	local wasResetToDefault = false
+	for i=1,self.NUM_MODES do 
+		local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
+		self.validModes[i] = valid or false
+		if self:get() == i and not valid then 
+			self:resetToDefault()
+			wasResetToDefault = true
+		end
+	end
+	self.mainCpGui:validateModeButtons(self.validModes,self:get(),wasResetToDefault)
+end
+
+function DriverModeSetting:onChange()
+	--- TODO: move cp.mode here until it is completely adjusted
+end
+
+function DriverModeSetting:resetToDefault()
+	self:set(self.defaultMode)
+end
+
+function DriverModeSetting:getDefaultMode()
+	return self.defaultMode
+end
+
+function DriverModeSetting:getValidModes()
+	return self.validModes
+end
+
 --[[
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
@@ -3875,10 +3936,10 @@ function SettingsContainer:loadFromXML(xml, parentKey)
 	end
 end
 
-function SettingsContainer:validateCurrentValues()
+function SettingsContainer:validateCurrentValues(vehicle)
 	for k, setting in pairs(self) do
 		if self.validateSetting(setting) then 
-			setting:validateCurrentValue()
+			setting:validateCurrentValue(vehicle)
 		end
 	end
 end
@@ -4015,6 +4076,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)
 	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
+	container:addSetting(DriverModeSetting, vehicle,courseplay.guiManager.mainCpGui)
 	return container
 end
 

@@ -49,7 +49,6 @@ function CpGuiElement:new(gui, custom_mt, isOnlyElement)
 	self.parameter = false
 	
 	self.newLayer = false	
-	
 	return self
 end
 

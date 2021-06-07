@@ -776,7 +776,7 @@ function CpManager:loadFile(fileName)
 		return 'Could not load ' .. path
 	else
 		local code = getXMLString(g_xmlFile, 'code')
-		local f = getfenv(0).loadstring('setfenv(1, courseplay); ' .. code)
+		local f = assert(getfenv(0).loadstring('setfenv(1, courseplay); ' .. code))
 		if f then
 			f()
 			return 'OK: ' .. path .. ' loaded.'

@@ -185,6 +185,7 @@ function DevHelper:keyEvent(unicode, sym, modifier, isDown)
         -- restore vehicle position
         DevHelper.restoreVehiclePosition(g_currentMission.controlledVehicle)
     end
+    GuiManager.devKeyEvent(unicode, sym, modifier, isDown)
 end
 
 function DevHelper:startPathfinding()
