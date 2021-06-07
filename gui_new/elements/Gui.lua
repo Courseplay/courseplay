@@ -55,6 +55,10 @@ function CpGui:loadFromXML()
 
 	self.classGui.rootElement = self.rootElement
 	self:loadFromXMLRec(xmlFile, "GUI", self.rootElement)
+	
+	if self.classGui.onLoad then 
+		self.classGui:onLoad(xmlFile, "GUI")
+	end
 	self.classGui:onCreate()
 	delete(xmlFile)
 end

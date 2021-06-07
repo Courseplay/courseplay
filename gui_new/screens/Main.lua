@@ -25,6 +25,7 @@ CpGuiMain._mt = Class(CpGuiMain)
 
 CpGuiMain.selectedMode = 5
 CpGuiMain.defaultMode = 5
+CpGuiMain.defaultPage = "steering"
 
 GuiManager.guiClass.main = CpGuiMain
 
@@ -51,13 +52,34 @@ function CpGuiMain:new(target, custom_mt)
     self.dialogPosition = {0, 0}
 
     self.pageFunctions = CpGuiPageFunctions:new(self)
-    self.lastPageIndex = "steering"
+    self.lastPageIndex = self.defaultPage
 
 	return self
 end
 
-function CpGuiMain:onCreate() 
+function CpGuiMain:onLoad(xmlFile, baseKey)
+    self:loadDisabledPagesByModes(xmlFile,baseKey)
+end
+
+function CpGuiMain:loadDisabledPagesByModes(xmlFile,baseKey)
+    self.disabledPagesByModes = {}
     
+    local baseKey = string.format("%s.DisabledPagesByModes",baseKey)
+    local i = 0
+    while true do 
+        local key = string.format("%s.DisabledPageByModes(%d)",baseKey,i)
+        if not hasXMLProperty(xmlFile, key) then
+			break
+		end
+        local pageName = getXMLString(xmlFile,string.format("%s#name", key))
+        local disabledModesStr = getXMLString(xmlFile,string.format("%s#value", key))
+        self.disabledPagesByModes[pageName] = {StringUtil.getVectorFromString(disabledModesStr)}
+        i = i + 1
+    end
+end
+
+function CpGuiMain:onCreate() 
+    --- TODO: moves this to guiTemplate btn toolTips. The same as "cpMainCategorie_Steering"! 
     self.languages = {}
     self.languages[GuiManager.BUTTONS.STEERING] = courseplay:loc("COURSEPLAY_PAGE_TITLE_CP_CONTROL")
     self.languages[GuiManager.BUTTONS.COURSEMANAGER] = courseplay:loc("COURSEPLAY_PAGE_TITLE_MANAGE_COURSES")
@@ -133,15 +155,16 @@ function CpGuiMain:onClose()
     courseplay.guiManager:onCloseCpMainGui()
 end
 
-    
+--- Displays button toolTip.
 function CpGuiMain:onEnableHelp(button, para)
-    if self.languages[para] ~= nil then
-        self.gui_helpText:setText(self.languages[para], true)
-    else
+    if button.toolTip ~="" then
+        self.gui_helpText:setText(courseplay:loc(button.toolTip),true)
+    else 
         self.gui_helpText:setText(string.format("Missing text for %s!", para), true)
     end
 end
 
+--- Resets button toolTip.
 function CpGuiMain:onDisableHelp(button, para)
     self.gui_helpText:setText("")
 end
@@ -160,12 +183,18 @@ function CpGuiMain:onClickOpenPage(btn, site)
     self.lastPageIndex = self.pageFunctions:setPageByName(site)
 end
 
+function CpGuiMain:resetPageToDefault()
+    self.lastPageIndex = self.pageFunctions:setPageByName(self.defaultMode)
+end
+
 function CpGuiMain:onClickSelectMode(btn,mode)
     mode = tonumber(mode)
     if mode ~= self.selectedMode then 
         CpGuiMain.getModeButton(self, self.selectedMode):setActive(false)
         CpGuiMain.getModeButton(self, mode):setActive(true)
         self.selectedMode = mode
+        self:validatePageButtons()
+        self:resetPageToDefault()
     end
 end
 
@@ -182,16 +211,19 @@ function CpGuiMain.validateModeButtons(vehicle)
         local valid = courseplay:getIsToolCombiValidForCpMode(vehicle,i)
         local btn = CpGuiMain.getModeButton(mainCpGui,i)
     --    courseplay.guiManager.mainCpGui[buttonKey]:setDisabled(not valid)
-        btn:setVisible(valid)
+        btn:setDisabled(not valid)
         if mainCpGui.selectedMode == i then 
             --- Check if the current selectedMode still is valid, else switch to the default mode.
             if not valid then 
                 btn:setActive(false)
                 mainCpGui.selectedMode = mainCpGui.defaultMode
                 CpGuiMain.getModeButton(mainCpGui, mainCpGui.defaultMode):setActive(true)
+                --- Make sure the page button gets reset, as the page might not be valid for this mode.
+                CpGuiMain.resetPageToDefault(mainCpGui)
             end
         end
     end
+    CpGuiMain.validatePageButtons(mainCpGui)
 end
 
 function CpGuiMain.getModeButton(mainCpGui,i)
@@ -200,8 +232,18 @@ function CpGuiMain.getModeButton(mainCpGui,i)
 end
 
 function CpGuiMain:validatePageButtons()
-
+    for _,page in pairs(self.pageFunctions.pages) do
+        local disabled = self:isPageForModeDisabled(page)
+        self[page.buttonId]:setVisible(not disabled)
+    end
 end
 
+function CpGuiMain:isPageForModeDisabled(page)
+    for _,mode in pairs(self.disabledPagesByModes[page.id]) do 
+        if mode and mode == self.selectedMode then 
+            return true
+        end
+    end
+end
 
 

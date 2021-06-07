@@ -212,12 +212,15 @@
 			<value name="isActivable" value="true" />
 			<value name="checkParent" value="true" />
 		</template>
-
-		<template name="cpMainCategorie_Steering" anchor="middleTop" extends="cpMainCategorieActiveButton" />
+		<!--Recording and Driving-->
+		<template name="cpMainCategorie_Steering" anchor="middleTop" extends="cpMainCategorieActiveButton">
+			<value name="toolTip" value="COURSEPLAY_PAGE_TITLE_CP_CONTROL"/>
+		</template>
 		<template name="cpMainCategorie_Steering_overlay" extends="cpMainCategorie_Steering">
 			<value name="imageUVs" value="icon_castSteering" />
 			<value name="imageUVs_selected" value="icon_castSteering" />
 		</template>
+		<!--Opens CourseManager_GUI-->
 		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie" >
 			<value name="margin" value="0px 20px 0px 0px" />
 		</template>
@@ -225,11 +228,13 @@
 			<value name="imageUVs" value="icon_castCourseManager" />
 			<value name="imageUVs_selected" value="icon_castCourseManager" />
 		</template>
+		<!--Unloader Control [Page0]-->
 		<template name="cpMainCategorie_Drivers" anchor="middleTop" extends="cpMainCategorieActiveButton" />
 		<template name="cpMainCategorie_Drivers_overlay" extends="cpMainCategorie_Drivers">
 			<value name="imageUVs" value="icon_castDrivers" />
 			<value name="imageUVs_selected" value="icon_castDrivers" />
 		</template>
+		<!--Combine Manager-->
 		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="0px 12px 0px 0px" />
 		</template>
@@ -237,32 +242,53 @@
 			<value name="imageUVs" value="icon_castCombineManager" />
 			<value name="imageUVs_selected" value="icon_castCombineManager" />
 		</template>
+		<!--Filling Settings-->
 		<template name="cpMainCategorie_SettingsFilling" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_SettingsFilling_overlay" extends="cpMainCategorie_SettingsFilling">
 			<value name="imageUVs" value="icon_castFillSettings" />
 			<value name="imageUVs_selected" value="icon_castFillSettings" />
 		</template>
+		<!--Speed Settings-->
 		<template name="cpMainCategorie_Speed" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_Speed_overlay" extends="cpMainCategorie_Speed">
 			<value name="imageUVs" value="icon_castSpeed" />
 			<value name="imageUVs_selected" value="icon_castSpeed" />
 		</template>
+		<!--Vehicle Settings-->
 		<template name="cpMainCategorie_SettingsVehicle" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_SettingsVehicle_overlay" extends="cpMainCategorie_SettingsVehicle">
 			<value name="imageUVs" value="icon_castSettingsVehicle" />
 			<value name="imageUVs_selected" value="icon_castSettingsVehicle" />
 		</template>
+		<!--Field Settings-->
 		<template name="cpMainCategorie_SettingsField" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_SettingsField_overlay" extends="cpMainCategorie_SettingsField">
 			<value name="imageUVs" value="icon_castSettingsField" />
 			<value name="imageUVs_selected" value="icon_castSettingsField" />
 		</template>
+		<!--Advanced Settings Gui-->
 		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie" >
 			<value name="margin" value="0px 20px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_Settings_overlay" extends="cpMainCategorie_Settings">
 			<value name="imageUVs" value="icon_castSettings" />
 			<value name="imageUVs_selected" value="icon_castSettings" />
+		</template>
+		<!--Mode 9 Settings-->
+		<template name="cpMainCategorie_ShovelMode" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="0px 20px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_ShovelMode_overlay" extends="cpMainCategorie_ShovelMode">
+			<value name="imageUVs" value="icon_mode9" />
+			<value name="imageUVs_selected" value="icon_mode9" />
+		</template>
+		<!--Mode 10 Settings-->
+		<template name="cpMainCategorie_BunkerSilo" anchor="middleTop" extends="cpMainCategorie" >
+			<value name="margin" value="0px 20px 0px 0px" />
+		</template>
+		<template name="cpMainCategorie_BunkerSilo_overlay" extends="cpMainCategorie_BunkerSilo">
+			<value name="imageUVs" value="icon_mode10" />
+			<value name="imageUVs_selected" value="icon_mode10" />
 		</template>
 
 		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorieActiveButton" />

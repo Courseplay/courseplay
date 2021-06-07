@@ -64,7 +64,9 @@ function CpGuiElement:loadTemplate(templateName, xmlFile, key)
 	self.disabled = courseplay.guiManager:getTemplateValueBool(templateName, "disabled", self.disabled)
 	self.debugEnabled = courseplay.guiManager:getTemplateValueBool(templateName, "debugEnabled", self.debugEnabled)
 	self.newLayer = courseplay.guiManager:getTemplateValueBool(templateName, "newLayer", self.newLayer)
-		
+	
+	self.toolTip = courseplay.guiManager:getTemplateValue(templateName, "toolTip", "")
+
 	if xmlFile ~= nil then
 		self.visible = courseplay.guiManager:getTemplateValueBoolXML(xmlFile, "visible", key, self.visible)
 		self.disabled = courseplay.guiManager:getTemplateValueBoolXML(xmlFile, "disabled", key, self.disabled)
