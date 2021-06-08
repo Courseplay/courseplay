@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="morbide" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="secche" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="circolari" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE" 				text="Manovra d'inversione in testata del campo" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT" 	text="dritta" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE" 		text="circolare" />
 		<text name="COURSEPLAY_CENTER_MODE" 								text="Centro del campo (sperimentale)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN" 						text="su/giù" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR" 						text="circolare" />

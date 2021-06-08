@@ -302,6 +302,9 @@ function AIDriver:beforeStart()
 	self:addForwardProximitySensor()
 	self:enableProximitySpeedControl()
 	self:enableProximitySwerve()
+
+	---Reset Moved distance on start.
+	self.movedDistance = 0
 end
 
 --- Start driving
@@ -407,6 +410,14 @@ function AIDriver:updateInfoText()
 	end
 end
 
+--- Displays an one time ingame warning. 
+---@param msgReference string this can be a global info text or just a translation text.
+function AIDriver:displayWarning(msgReference)
+	local msg = CpManager.globalInfoText.msgReference[msgReference] or msgReference
+	local text = string.format("%s: %s",nameNum(self.vehicle),courseplay:loc(msg))
+	g_currentMission:addIngameNotification(FSBaseMission.INGAME_NOTIFICATION_CRITICAL, text)
+end
+
 --- Update AI driver, everything that needs to run in every loop
 function AIDriver:update(dt)
 	self:updatePathfinding()
@@ -417,6 +428,18 @@ function AIDriver:update(dt)
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
 	self:shouldDriverBeReleased()
+
+	self:updateDistanceMovedSinceStart(dt)
+end
+
+---Update moved distance since start.
+function AIDriver:updateDistanceMovedSinceStart(dt)
+	self.movedDistance = self.movedDistance + self.vehicle.lastMovedDistance
+end
+
+---Gets the moved distance since start.
+function AIDriver:getDistanceMovedSinceStart()
+	return self.movedDistance
 end
 
 --- UpdateTick AI driver
@@ -1031,7 +1054,7 @@ function AIDriver:detectCollision(dt)
 
 	local isInTraffic, trafficSpeed = self.collisionDetector:getStatus(dt)
 
-	if self.collisionDetectionEnabled then
+	if self:isCollisionDetectionEnabled() then
 
 		if trafficSpeed and trafficSpeed ~= 0 then
 			--get the speed from the target vehicle
@@ -1044,13 +1067,17 @@ function AIDriver:detectCollision(dt)
 		end
 	end
 
-	if isInTraffic then
+	if self:isCollisionDetectionEnabled() and isInTraffic then
 		self:setInfoText('TRAFFIC')
 	else
 		self:clearInfoText('TRAFFIC')
 	end
 
 	return self.allowedToDrive
+end
+
+function AIDriver:isCollisionDetectionEnabled()
+	return self.collisionDetectionEnabled
 end
 
 function AIDriver:areBeaconLightsEnabled()
@@ -2230,3 +2257,25 @@ function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
 	return superFunc(self,preSuperFunc)
 end
 AttacherJoints.isDetachAllowed = Utils.overwrittenFunction(AttacherJoints.isDetachAllowed, AIDriver.isDetachAllowed)
+
+--- Are all working tool positions set correctly ?
+---@return boolean working tool positions set correctly
+function AIDriver:areWorkingToolPositionsValid()
+	local setting = self:getWorkingToolPositionsSetting()
+	local validToolPositions = setting and setting:hasValidToolPositions()
+	if setting and not validToolPositions then 
+		courseplay:setInfoText(self.vehicle, 'COURSEPLAY_SHOVEL_POSITIONS_MISSING')
+	end
+	return validToolPositions
+end
+
+--- Is working tool positions reached ?
+---@return boolean working tool positions reached
+function AIDriver:isWorkingToolPositionReached(dt,positionIx)
+	local setting = self:getWorkingToolPositionsSetting()
+	return setting and setting:updatePositions(dt,positionIx) or setting == nil
+end
+
+function AIDriver:getWorkingToolPositionsSetting()
+	--- override
+end

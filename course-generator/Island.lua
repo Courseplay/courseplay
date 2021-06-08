@@ -58,11 +58,9 @@ end
 
 
 -- bypass types
-Island.BYPASS_MODE_MIN = 1
 Island.BYPASS_MODE_NONE = 1
 Island.BYPASS_MODE_SIMPLE = 2
 Island.BYPASS_MODE_CIRCLE = 3
-Island.BYPASS_MODE_MAX = 3
 
 Island.bypassModeText = {
 	'COURSEPLAY_ISLAND_BYPASS_MODE_NONE',

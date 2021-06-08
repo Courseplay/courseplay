@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="53">
-	<version>6.04</version>
+	<version>6.4.0.0</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<en>CoursePlay</en>
@@ -38,9 +38,13 @@ IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest Aut
 IMPORTANT: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die neueste Version von AutoDrive von GitHub laden!(Version 1.1.1.0 oder höher)]]>
 		</de>
 		<fr>
-<![CDATA[Courseplay est une modification pour Farm Simulator 19, qui permet à divers véhicules de travailler de manière autonome, de décharger les moissonneuses-batteuses, de transporter des fruits aux points de vente, de remplir un bunker ou une remorque par godet, de fermer hermétiquement un silo et bien plus...
+<![CDATA[Courseplay est un mod pour Farming Simulator 19. Il ajoute au jeu une nouvelle IA pour les ouvriers, permettant de gérer vos chantiers d’une toute nouvelle manière !
+En utilisant Courseplay, vous pouvez engager des ouvriers pour la majorité des travaux de votre ferme, du travail des champs en passant par la gestion des bennes lors des récoltes jusqu’à la livraison de vos produits dans les différents points de vente.
+Vous pouvez avoir un grand nombre d’ouvriers qui conduisent de façon complément automatique pour réaliser vos travaux. Avec un peu d’expérience et de peaufinages, Courseplay peut permettre de remplir vos silos, charger une benne avec un télescopique, niveler et compacter un silo d’ensilage, et bien plus encore…
+Courseplay ne remplace pas le système d’ouvrier du jeu, il propose un nouveau type d’ouvriers avec une nouvelle IA, ils peuvent travailler les uns à côté des autres
 
-IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
+IMPORTANT: Si vous souhaitez utiliser AutoDrive avec Courseplay, vous devez avoir la dernière version de l’AutoDrive disponible sur GitHub! (Version 1.1.1.0 ou plus récente)]]>
+
 		</fr>
 		<es>
 <![CDATA[Courseplay es un mod para Farming Simulator 19. ¡Llena tu juego con un nuevo sistema de trabajo de IA completo, permitiéndote contratar ayuda de una manera completamente nueva y sorprendente!

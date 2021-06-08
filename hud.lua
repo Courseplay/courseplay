@@ -712,7 +712,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 						self:updateSiloSelectedFillTypeList(vehicle,page,3,4,"FieldSupplyDriver",line)	
 					elseif string.find(entry.functionToCall, "ShovelModeDriver") then --ShovelModeDriver
 						self:updateSiloSelectedFillTypeList(vehicle,page,6,8,"ShovelModeDriver",line)	
-					end				
+					elseif string.find(entry.functionToCall, "MixerWagonAIDriver") then --MixerWagonAIDriver
+						self:updateSiloSelectedFillTypeList(vehicle,page,4,6,"MixerWagonAIDriver",line)	
+					end			
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
@@ -817,7 +819,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'changeLaneNumber' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-					if vehicle.cp.multiTools > 1 then
+					if vehicle.cp.courseGeneratorSettings.multiTools:get() > 1 then
 						self:enableButtonWithFunction(vehicle,page, 'changeLaneNumber')
 						if vehicle.cp.laneNumber == 0 then
 							vehicle.cp.hud.content.pages[page][line][2].text = ('%s'):format(courseplay:loc('COURSEPLAY_CENTER'));
@@ -830,7 +832,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				
 				elseif entry.functionToCall == 'changeLaneOffset' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LANE_OFFSET');
-					if vehicle.cp.multiTools == 1 then
+					if vehicle.cp.courseGeneratorSettings.multiTools:get() == 1 then
 						self:enableButtonWithFunction(vehicle,page, 'changeLaneOffset')
 						if vehicle.cp.laneOffset and vehicle.cp.laneOffset ~= 0 then 
 							vehicle.cp.hud.content.pages[page][line][2].text = ('%.1f%s (%s)'):format(abs(vehicle.cp.laneOffset), courseplay:loc('COURSEPLAY_UNIT_METER'), courseplay:loc(vehicle.cp.laneOffset > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'));
@@ -1023,9 +1025,6 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--StopForUnloadSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.stopForUnload:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.stopForUnload:getText()
-				elseif entry.functionToCall == 'changeHeadlandReverseManeuverType' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE')
-					vehicle.cp.hud.content.pages[page][line][2].text = courseplay:loc( courseplay.headlandReverseManeuverTypeText[ vehicle.cp.headland.reverseManeuverType ])
 				elseif entry.functionToCall == 'changeCombineOffset' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_COMBINE_OFFSET_HORIZONTAL');
 					if vehicle.cp.modeState ~= nil then
@@ -1200,6 +1199,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--AugerPipeToolPositionsSetting
 					vehicle.cp.hud.content.pages[page][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
 					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.settings.augerPipeToolPositions:getText()
+				elseif entry.functionToCall == 'mixerWagonToolPositions:setOrClearPostion' then
+					--MixerWagonToolPositionsSetting
+					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
+					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
+					local texts = vehicle.cp.settings.mixerWagonToolPositions:getTexts()
+					for i=1,2 do 
+						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
+					end
 				elseif entry.functionToCall == 'frontloaderToolPositions:setOrClearPostion' then
 					--FrontloaderToolPositionsSetting
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
@@ -1244,12 +1251,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		vehicle.cp.hud.visualWaypointsEndButton:setActive(showVisualWaypointsState>=ShowVisualWaypointsSetting.START_STOP)
 		vehicle.cp.hud.visualWaypointsAllButton:setActive(showVisualWaypointsState>=ShowVisualWaypointsSetting.ALL)
 		vehicle.cp.hud.visualWaypointsCrossingButton:setActive(showVisualCrossingPoint)
-
-		
 		-- Debug channels
-		if courseplay.isDevVersion then
-			vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
-		end
+		vehicle.cp.hud.content.pages[6][8][1].text = courseplay:loc('COURSEPLAY_DEBUG_CHANNELS');
+		
 	else
 		self:showShowWaypointsButtons(vehicle, false)
 	end
@@ -1467,7 +1471,7 @@ end;
 
 
 
---setup functions 
+--setup functions
 function courseplay.hud:setupCpModeButtons(vehicle)
 	-- setCpMode buttons
 	local totalWidth = (courseplay.NUM_MODES * self.buttonSize.big.w) + ((courseplay.NUM_MODES - 1) * self.buttonSize.big.margin);
@@ -1483,24 +1487,23 @@ end
 
 function courseplay.hud:setupDebugButtons(vehicle,debugButtonOnPage)
 	-- debug channels
-	if courseplay.isDevVersion then 
-		vehicle.cp.hud.debugChannelButtons = {};
-		local mouseWheelArea = {
-			x = self.contentMinX,
-			w = self.contentMaxWidth,
-			h = self.lineHeight
-			};
-		
-		
-		for dbg=1, courseplay.numDebugChannelButtonsPerLine do
-			local data = courseplay.debugButtonPosData[dbg];
-			local toolTip = courseplay.debugChannelsDesc[dbg];
-			vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
-		end;
-		courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage, -1, true, false);
-		courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage,  1, true, false);
-		courseplay.button:new(vehicle, debugButtonOnPage, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, debugButtonOnPage, -1, true, true);
-	end
+	vehicle.cp.hud.debugChannelButtons = {};
+	local mouseWheelArea = {
+		x = self.contentMinX,
+		w = self.contentMaxWidth,
+		h = self.lineHeight
+		};
+	
+	
+	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
+		local data = courseplay.debugButtonPosData[dbg];
+		local toolTip = courseplay.debugChannelsDesc[dbg];
+		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+	end;
+	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage, -1, true, false);
+	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage,  1, true, false);
+	courseplay.button:new(vehicle, debugButtonOnPage, nil, 'changeDebugChannelSection', -1, mouseWheelArea.x, self.linesButtonPosY[8], mouseWheelArea.w, mouseWheelArea.h, debugButtonOnPage, -1, true, true);
+	
 end
 
 function courseplay.hud:setupRecordingButtons(vehicle)
@@ -1661,31 +1664,33 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 		w = self.contentMaxWidth,
 		h = self.lineHeight
 	}
-	btn_toolTips = {
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
-					courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION')
-				}
+	btn_saveToolTips = {
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_PRE_UNLOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_UNLOADING_POSITION')
+	}
+	btn_moveToolTips = {
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_LOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_TRANSPORT_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_PRE_UNLOADING_POSITION'),
+		courseplay:loc('COURSEPLAY_SHOVEL_MOVE_TO_UNLOADING_POSITION')
+	}
 	btn_icons = {
-				'shovelLoading',
-				'shovelTransport',
-				'shovelPreUnload',
-				'shovelUnloading'
-			}
+		'shovelLoading',
+		'shovelTransport',
+		'shovelPreUnload',
+		'shovelUnloading'
+	}
+	
 	local funcCall = setting:getName()..":".."setOrClearPostion"
-	if setting:getTotalPositions() == 4 then --FrontloaderToolPositionsSetting
-		for i=1,4 do 
-			courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_toolTips[i]):setSetting(setting)
-			courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_toolTips[i]):setSetting(setting)
-			line = line +1
-		end
-		vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
-	else --AugerPipeToolPositionsSetting
-		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'shovelLoading'   }, 'setOrClearPostion', 1, shovelX1, self.linesButtonPosY[line], btnW, btnH, 1, nil, true, false, true):setSetting(setting)
-		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', 1, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, 1, nil, true, false, false):setSetting(setting)
-		vehicle.cp.hud.content.pages[page][line][1].functionToCall = funcCall
+	for i=1,setting:getTotalPositions() do 
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_saveToolTips[i]):setSetting(setting)
+		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_moveToolTips[i]):setSetting(setting)
+		line = line +1
 	end
+	vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
+	
 end
 
 function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,startLine,stopLine, column,runCounterActive)
@@ -1717,7 +1722,7 @@ function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,s
 	end
 end
 
---update functions 
+--update functions
 function courseplay.hud:updateCourseList(vehicle, page)
 	-- update courses?
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
@@ -2217,7 +2222,6 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	else
 		self:addRowButton(vehicle,vehicle.cp.settings.driverPriorityUseFillLevel,'toggle', 0, 4, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.stopForUnload,'toggle', 0, 5, 1 )
-		self:addRowButton(vehicle,nil,'changeHeadlandReverseManeuverType', 0, 6, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.selfUnload,'toggle', 6, 2, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.pipeAlwaysUnfold,'toggle', 6, 3, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.strawSwath,'changeByX', 6, 4, 1 )
@@ -2300,13 +2304,13 @@ function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
 	--page10
 	self:enablePageButton(vehicle, 10)
 
-	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactMode,'changeByX', 10, 1, 1)
-	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver,'changeByX', 10, 2, 1)
-	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSiloTyp,'changeByX', 10, 3, 1)
-	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactSearchRadius,'changeByX', 10, 4, 1 )
-	self:addSettingsRow(vehicle,nil,'changeBladeWorkWidth', 10, 5, 1)
-	self:setupCalculateWorkWidthButton(vehicle,10, 5)
-	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 6, 1 )
+---	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactMode,'changeByX', 10, 1, 1)
+	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver,'changeByX', 10, 1, 1)
+	self:addRowButton(vehicle,vehicle.cp.settings.levelCompactSiloTyp,'changeByX', 10, 2, 1)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactSearchRadius,'changeByX', 10, 3, 1 )
+	self:addSettingsRow(vehicle,nil,'changeBladeWorkWidth', 10, 4, 1)
+	self:setupCalculateWorkWidthButton(vehicle,10, 4)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 5, 1 )
 --	self:addSettingsRow(vehicle,vehicle.cp.settings.levelCompactShieldHeight,'changeByX', 10, 6, 1 )
 end
 
@@ -2341,8 +2345,23 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
+function courseplay.hud:setMixerWagonAIDriverContent(vehicle)
+	--page 9
+	self:enablePageButton(vehicle, 9)
+	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.mixerWagonToolPositions,9,1)
+	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver,'addFilltype', 9, 3, 1 )
+	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver, 9, 4, 6, 1)
+	self:addSettingsRow(vehicle,nil,'changeWorkWidth',9,7,1, 0.1)
+	self:setupCalculateWorkWidthButton(vehicle,9, 7)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 8, 1 )
+end
 
-
+function courseplay.hud:setBunkerSiloLoaderAIDriverContent(vehicle)
+	--page 9
+	self:enablePageButton(vehicle, 9)
+	self:addSettingsRow(vehicle,nil,'changeWorkWidth',9,1,1, 0.1)
+	self:setupCalculateWorkWidthButton(vehicle,9, 1)
+end
 
 
 --different buttons to set

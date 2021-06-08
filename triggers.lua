@@ -1,6 +1,10 @@
 -- triggers
 local _;
 
+--- TODO: 	courseplay:updateAllTriggers() needs to be removed
+---			and the triggers should be checked from the tables of Triggers at the end of the file.
+---			Cleaning up all the possible raycast would also be needed. No idea what is happening there.
+
 
 -- FIND TRIGGERS
 function courseplay:doTriggerRaycasts(vehicle, triggerType, direction, sides, x, y, z, nx, ny, nz, raycastDistance)
@@ -516,21 +520,19 @@ function courseplay:updateAllTriggers()
 		courseplay:debug(('   %i found'):format(counter), courseplay.DBG_TRIGGERS);
 	end;
 
-	if g_currentMission.bunkerSilos ~= nil then
+	for _, trigger in pairs(Triggers.getBunkerSilos()) do
 		courseplay:debug('   check bunkerSilos', courseplay.DBG_TRIGGERS);
-		for _, trigger in pairs(g_currentMission.bunkerSilos) do
-			if courseplay:isValidTipTrigger(trigger) and trigger.bunkerSilo then
-				local triggerId = trigger.triggerId;
-				courseplay:debug(('    add tipTrigger: id=%d, is BunkerSiloTipTrigger '):format(triggerId), courseplay.DBG_TRIGGERS);
-							
-				--local area = trigger.bunkerSiloArea
-				--local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
-				--local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
-				trigger.capacity = 10000000 --DensityMapHeightUtil.volumePerPixel*totalArea*800 ;
-				--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
-				courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
-				
-			end
+		if courseplay:isValidTipTrigger(trigger) and trigger.bunkerSilo then
+			local triggerId = trigger.triggerId;
+			courseplay:debug(('    add tipTrigger: id=%d, is BunkerSiloTipTrigger '):format(triggerId), courseplay.DBG_TRIGGERS);
+						
+			--local area = trigger.bunkerSiloArea
+			--local px,pz, pWidthX,pWidthZ, pHeightX,pHeightZ = Utils.getXZWidthAndHeight(detailId, area.sx,area.sz, area.wx, area.wz, area.hx, area.hz);
+			--local _ ,_,totalArea = getDensityParallelogram(detailId, px, pz, pWidthX, pWidthZ, pHeightX, pHeightZ, g_currentMission.terrainDetailTypeFirstChannel, g_currentMission.terrainDetailTypeNumChannels);
+			trigger.capacity = 10000000 --DensityMapHeightUtil.volumePerPixel*totalArea*800 ;
+			--print(string.format("capacity= %s  fillLevel= %s ",tostring(trigger.capacity),tostring(trigger.fillLevel)))
+			courseplay:cpAddTrigger(triggerId, trigger, 'tipTrigger');
+			
 		end
 	end
 	
@@ -606,45 +608,98 @@ function courseplay:printTipTriggersFruits(trigger)
 		print(('    %s: %s'):format(tostring(k), tostring(g_fillTypeManager.indexToName[k])));
 	end
 end;
+--[[
+	Global table to store all triggers types:
+
+	They get stored by their unique trigger id.
+
+ 	- LoadTriggers are basically all placeable triggers to fill upon.
+
+ 	- FillTriggers are all vehicles with fill triggers spec.
+
+ 	- UnloadTriggers are basically all placeable triggers to unload at, except bunker silos.
+ 		They can be separated in normal unload trigger and bale unload triggers.
+
+	- BunkerSilos 
+]]--
+Triggers = {}
+
+Triggers.loadingTriggers = {}
+Triggers.unloadingTriggers = {}
+Triggers.baleUnloadingTriggers = {}
+Triggers.fillTriggers = {}
+Triggers.bunkerSilos = {}
+
+function Triggers.getBunkerSilos()
+	return Triggers.bunkerSilos
+end
+
+---Add all relevant triggers on create and remove them on delete.
+function Triggers.addLoadingTrigger(trigger,superFunc,...)
+	local returnValue = superFunc(trigger,...)
+
+	if trigger.triggerNode then
+		Triggers.loadingTriggers[trigger.triggerNode] = trigger
+	end
+	return returnValue
+end
+LoadTrigger.load = Utils.overwrittenFunction(LoadTrigger.load,Triggers.addLoadingTrigger)
+
+function Triggers.addUnloadingTrigger(trigger,superFunc,...)
+	local returnValue = superFunc(trigger,...)
+
+	if trigger.exactFillRootNode then
+		Triggers.unloadingTriggers[trigger.exactFillRootNode] = trigger
+	end
+
+	if trigger.baleTriggerNode then 
+		Triggers.baleUnloadingTriggers[trigger.baleTriggerNode] = trigger
+	end
+
+	return returnValue
+end
+UnloadTrigger.load = Utils.overwrittenFunction(UnloadTrigger.load,Triggers.addUnloadingTrigger)
+
+function Triggers.addFillTrigger(_,superFunc,triggerId, ...)
+	local trigger = superFunc(_,triggerId, ...)
+	if trigger.triggerId then
+		Triggers.fillTriggers[triggerId] = trigger
+	end 
+	return trigger
+end
+FillTrigger.new = Utils.overwrittenFunction(FillTrigger.new,Triggers.addFillTrigger)
+
+function Triggers.removeLoadingTrigger(trigger)
+	if trigger.triggerNode then
+		Triggers.loadingTriggers[trigger.triggerNode] = trigger
+	end
+end
+LoadTrigger.delete = Utils.appendedFunction(LoadTrigger.delete,Triggers.removeLoadingTrigger)
+
+function Triggers.removeUnloadingTrigger(trigger)
+	if trigger.exactFillRootNode then 
+		Triggers.unloadingTriggers[trigger.exactFillRootNode] = nil
+	end
+
+	if trigger.baleTriggerNode then 
+		Triggers.baleUnloadingTriggers[trigger.baleTriggerNode] = nil
+	end
+
+end
+UnloadTrigger.delete = Utils.prependedFunction(UnloadTrigger.delete,Triggers.removeUnloadingTrigger)
+
+function Triggers.removeFillTrigger(trigger)
+	if trigger.triggerId then
+		Triggers.fillTriggers[trigger.triggerId] = nil
+	end
+end
+FillTrigger.delete = Utils.prependedFunction(FillTrigger.delete,Triggers.removeFillTrigger)
 
 
---------------------------------------------------
--- Adding easy access to SiloTrigger
---------------------------------------------------
-function courseplay:SiloTrigger_TriggerCallback(self, triggerId, otherActorId, onEnter, onLeave, onStay, otherShapeId)
-	courseplay:debug(' SiloTrigger_TriggerCallback',courseplay.DBG_LOAD_UNLOAD);
-	local trailer = g_currentMission.nodeToObject[otherShapeId];
-	if trailer ~= nil then
-		-- Make sure cp table is present in the trailer.
-		if not trailer.cp then
-			trailer.cp = {};
-		end;
-		if not trailer.cp.siloTriggerHits then
-			trailer.cp.siloTriggerHits = 0;
-		end;
-		-- self.Schnecke is only set for MischStation and that one is not an real SiloTrigger and should not be used as one.
-		if onEnter then --and not self.Schnecke and trailer.getAllowFillFromAir ~= nil and trailer:getAllowFillFromAir() then
-			-- Add the current SiloTrigger to the cp table, for easier access.
-			if not trailer.cp.currentSiloTrigger then
-				trailer.cp.currentSiloTrigger = self;
-				courseplay:debug(('%s: SiloTrigger Added! (onEnter)'):format(nameNum(trailer)), courseplay.DBG_LOAD_UNLOAD);
-			end;
-			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits + 1;
-		elseif onLeave and not self.Schnecke and trailer.cp.siloTriggerHits >= 1 then 
-			-- Remove the current SiloTrigger.
-			if trailer.cp.currentSiloTrigger ~= nil and trailer.cp.siloTriggerHits == 1 then
-				trailer.cp.currentSiloTrigger = nil;
-				courseplay:debug(('%s: SiloTrigger Removed! (onLeave)'):format(nameNum(trailer)), courseplay.DBG_LOAD_UNLOAD);
-			end;
-			trailer.cp.siloTriggerHits = trailer.cp.siloTriggerHits - 1;
-		end;
-	end;
-end;
+function Triggers.addBunkerSilo(silo,superFunc,...)
+	local returnValue = superFunc(silo,...)
 
----Add bunker silo to a global table on create.
-local loadBunkerSilo = function(silo,superFunc,id, xmlFile, key)
-	local returnValue = superFunc(silo,id,xmlFile,key)
-
+	--- Not sure if this is needed, some old magic maybe ?
 	silo.triggerId = silo.interactionTriggerNode
 	silo.bunkerSilo = true
 	silo.className = "BunkerSiloTipTrigger"
@@ -653,22 +708,27 @@ local loadBunkerSilo = function(silo,superFunc,id, xmlFile, key)
 	silo.triggerEndId = silo.bunkerSiloArea.height
 	silo.triggerWidth = courseplay:nodeToNodeDistance(silo.bunkerSiloArea.start, silo.bunkerSiloArea.width)
 
-	if g_currentMission.bunkerSilos == nil then
-		g_currentMission.bunkerSilos = {}
-	end
-	g_currentMission.bunkerSilos[silo.triggerId] = silo
+	Triggers.bunkerSilos[silo.triggerId] = silo
+	return returnValue
+
+end
+BunkerSilo.load = Utils.overwrittenFunction(BunkerSilo.load,Triggers.addBunkerSilo)
+
+function Triggers.removeBunkerSilo(silo)
+	local triggerNode = silo.interactionTriggerNode
+	Triggers.bunkerSilos[triggerNode] = nil
+end
+BunkerSilo.delete = Utils.prependedFunction(BunkerSilo.delete,Triggers.removeBunkerSilo)
+
+---Global Company
+
+function Triggers.addLoadingTriggerGC(trigger,superFunc,...)
+	local returnValue = Triggers.addLoadingTrigger(trigger,superFunc,...)
+
+	TriggerHandler.onLoad_GC_LoadingTriggerFix(trigger,superFunc,...)
 
 	return returnValue
 end
-BunkerSilo.load = Utils.overwrittenFunction(BunkerSilo.load,loadBunkerSilo)
 
----Delete bunker silo from the global table.
-local deleteBunkerSilo = function(silo)
-	if g_currentMission.bunkerSilos then
-		local triggerNode = silo.interactionTriggerNode
-		g_currentMission.bunkerSilos[triggerNode] = nil
-	end
-end
-BunkerSilo.delete = Utils.prependedFunction(BunkerSilo.delete,deleteBunkerSilo)
 -- do not remove this comment
 -- vim: set noexpandtab:

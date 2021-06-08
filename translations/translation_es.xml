@@ -227,9 +227,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  				text="Suave" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="Girar" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="Redondo (girar radio)" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Marcha atrás en cabecera"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Recto" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Curva" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Centro de campo (experimental)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Arriba y abajo" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Circular" />

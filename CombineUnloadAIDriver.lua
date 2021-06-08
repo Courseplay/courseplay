@@ -1260,7 +1260,11 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 			-- (short) pathfinding to get under the pipe.
 			zOffset = - self:getCombinesMeasuredBackDistance() - 10
 		else
-			zOffset = - self:getCombinesMeasuredBackDistance() - 10 --allow trailer space to align after sharp turns (noticed it more affects potato/sugarbeet harvesters with pipes close to vehicle)
+			-- allow trailer space to align after sharp turns (noticed it more affects potato/sugarbeet harvesters with
+			-- pipes close to vehicle)
+			local pipeLength = math.abs(self:getPipeOffset(self.combineToUnload))
+			-- allow for more align space for shorter pipes
+			zOffset = - self:getCombinesMeasuredBackDistance() - (pipeLength > 6 and 2 or 10)
 		end
 		self:startPathfindingToCombine(self.onPathfindingDoneToCombine, nil, zOffset)
 	else
@@ -1397,7 +1401,8 @@ function CombineUnloadAIDriver:arrangeRendezvousWithCombine(d)
 	end
 	local estimatedSecondsEnroute = d / (self:getFieldSpeed() / 3.6) + 3 -- add a few seconds to allow for starting the engine/accelerating
 	local rendezvousWaypoint, rendezvousWaypointIx =
-	self.combineToUnload.cp.driver:getUnloaderRendezvousWaypoint(estimatedSecondsEnroute, self)
+	self.combineToUnload.cp.driver:getUnloaderRendezvousWaypoint(estimatedSecondsEnroute, self,
+		self.vehicle.cp.settings.useRealisticDriving:is(false))
 	if rendezvousWaypoint then
 		local xOffset, zOffset = self:getPipeOffset(self.combineToUnload)
 		if self:isPathfindingNeeded(self.vehicle, rendezvousWaypoint, xOffset, zOffset, 25) then

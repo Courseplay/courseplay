@@ -297,8 +297,8 @@ function courseplay:turn(vehicle, dt, turnContext)
 		-------------------------------------------------------------
 		-- A SHARP TURN, LIKELY ON THE HEADLAND BUT NOT A LANE SWITCH
 		-------------------------------------------------------------
-		courseplay:debug(string.format("%s:(Turn) Direction difference is %.1f, this is a corner, maneuver type = %d.",
-			nameNum(vehicle), turnContext.directionChangeDeg, vehicle.cp.headland.reverseManeuverType), 14);
+		courseplay.debugVehicle(courseplay.DBG_TURN, vehicle, "%s:(Turn) Direction difference is %.1f, this is a corner.",
+			turnContext.directionChangeDeg)
 
 		vehicle.cp.turnCorner = turnContext:createCorner(vehicle, turnInfo.turnRadius)
 

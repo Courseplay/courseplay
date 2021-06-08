@@ -25,8 +25,8 @@ function CoursePlot:new(x, y, width, height, terrainSize)
 	newCoursePlot = {}
 	setmetatable( newCoursePlot, self )
 	self.courseOverlayId = createImageOverlay('dataS/scripts/shared/graph_pixel.dds')
-	self.startSignOverlayId = createImageOverlay(Utils.getFilename('img/signs/start.dds', courseplay.path))
-	self.stopSignOverlayId = createImageOverlay(Utils.getFilename('img/signs/stop.dds', courseplay.path))
+	self.startSignOverlayId = createImageOverlay(Utils.getFilename('img/signs/start_noMM.dds', courseplay.path))
+	self.stopSignOverlayId = createImageOverlay(Utils.getFilename('img/signs/stop_noMM.dds', courseplay.path))
 	self.x, self.y = x, y
 	self.width, self.height = width, height
 	self.startPosition = {}

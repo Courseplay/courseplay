@@ -222,9 +222,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Simított" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 					text="Fordulómanőver" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="Kerekített" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Fordulósáv tolatómanőver"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="egyenes" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="kanyarodó" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Tábla közepe (kísérleti)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="fel/le" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="körkörös" />

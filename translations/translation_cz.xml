@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="Zaoblený" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="Pocouvnutí" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 					text="Průjezd" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="Opačné otoč. na souvrati"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="Rovně" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="Křivka" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Střed pole (experimental)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="nahoru/dolů" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="dokola" />

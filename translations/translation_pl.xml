@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 			 	text="Gładko" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP" 				 	text="Obrót" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND" 				 	text="Kółko" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"			 	text="Manewr zawracania na uwrociach:"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"	 	text="Prosto" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"	 	text="Po łuku" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="Środek pola (eksperymentalne)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="Tam i z powrotem" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="Na około" />

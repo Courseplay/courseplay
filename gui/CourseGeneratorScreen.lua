@@ -7,22 +7,21 @@ local CourseGeneratorScreen_mt = Class(CourseGeneratorScreen, ScreenElement)
 CourseGeneratorScreen.SHOW_NOTHING = 0
 CourseGeneratorScreen.SHOW_FULL_MAP = 1
 CourseGeneratorScreen.SHOW_SELECTED_FIELD = 2
-CourseGeneratorScreen.WidthFormatString = '%.1f m'
 
 -- these are needed to be able to access those screen elements with self.<id>
 CourseGeneratorScreen.CONTROLS = {
 	fieldSelector = 'fieldSelector',
 	startingLocation = 'startingLocation',
-	rowDirectionMode = 'rowDirectionMode',
-	manualDirectionAngle = 'manualDirectionAngle',
-	width = 'width',
+	rowDirection = 'rowDirection',
+	manualRowAngle = 'manualRowAngle',
+	workWidth = 'workWidth',
 	autoWidth = 'autoWidth',
 	islandBypassMode = 'islandBypassMode',
 	headlandDirection = 'headlandDirection',
-	headlandCorners = 'headlandCorners',
+	headlandCornerType = 'headlandCornerType',
 	headlandOverlapPercent = 'headlandOverlapPercent',
 	headlandPasses = 'headlandPasses',
-	headlandFirst = 'headlandFirst',
+	startOnHeadland = 'startOnHeadland',
 	numberOfRowsPerLand = 'numberOfRowsPerLand',
 	ingameMap = 'ingameMap',
 	mapCursor = 'mapCursor'
@@ -34,7 +33,7 @@ function CourseGeneratorScreen:new(vehicle)
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
 	self.vehicle = vehicle
-
+	self.settings = vehicle.cp.courseGeneratorSettings
 	self.directions = {}
 	-- map to look up gui element state from angle
 	self.directionToState = {}
@@ -54,12 +53,6 @@ function CourseGeneratorScreen:setVehicle( vehicle )
 	self.vehicle = vehicle
 end
 
-function CourseGeneratorScreen:setFromGui(setting)
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
-end
-
 --- function to override the standard icon sizes so map symbols like field numbers don't look too big
 -- when the maximum zoom level is higher than the standard one.
 function CourseGeneratorScreen:updateMap()
@@ -75,7 +68,6 @@ function CourseGeneratorScreen:showCourse()
 end
 
 function CourseGeneratorScreen:onCreate()
-	print('CourseGeneratorScreen:onCreate()')
 	self.ingameMap:setIngameMap(g_currentMission.hud.ingameMap)
 	-- fix icon sizes at higher zoom level
 	self.ingameMap.updateMap = Utils.appendedFunction(self.ingameMap.updateMap, self.updateMap)
@@ -88,27 +80,20 @@ function CourseGeneratorScreen:onCreate()
 	self.ingameMap:zoom(0)
 end
 
+-- bind GUI elements to settings
+function CourseGeneratorScreen:onCreateElement(element)
+	CpGuiUtil.bindSetting(self.settings, element, 'CourseGeneratorScreen')
+end
+
 function CourseGeneratorScreen:onOpen()
-	-- Make sure we always load the most up to date field data
-	-- List of fields
-	self.fields = {}
-	for key, field in pairs( courseplay.fields.fieldData ) do
-		table.insert( self.fields, { name = field.name, number = key })
-	end
-	table.sort( self.fields, function( a, b ) return a.number < b.number end )
-
-	-- set up a reverse lookup table
-	self.fieldToState = {}
-	for i, f in ipairs( self.fields ) do
-		self.fieldToState[ f.number ] = i
-		i = i + 1
-	end
-
-	-- add the 'currently loaded course' option
-	table.insert( self.fields, { name = courseplay:loc( 'COURSEPLAY_CURRENTLY_LOADED_COURSE' ), number = 0 })
-	self.fieldToState[ 0 ] = #self.fields
 
 	g_currentMission.isPlayerFrozen = true
+
+	self.settings.selectedField:refresh()
+	-- work width not set
+	if self.settings.workWidth:is(0) then
+		self.settings.workWidth:setToDefault()
+	end
 
 	CourseGeneratorScreen:superClass().onOpen(self)
 	if not self.coursePlot then
@@ -126,14 +111,14 @@ function CourseGeneratorScreen:onOpen()
 	end
 	self.state = CourseGeneratorScreen.SHOW_FULL_MAP
 
+	self.numberOfRowsPerLand:setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
+	self:setStartingLocationLabel(self.settings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND))
+	self:setHeadlandFields()
 end
 
 
 function CourseGeneratorScreen:generate()
-	-- save the selected field as generateCourse will reset it.
-	-- this way we can regenerate the course with different settings without
-	-- having to reselect the field or closing the GUI
-	local selectedField = self.vehicle.cp.fieldEdge.selectedField.fieldNum
 	local status, ok = courseGenerator.generate(self.vehicle)
 
 	if not status then
@@ -146,10 +131,9 @@ function CourseGeneratorScreen:generate()
 		-- show message if the generated course may have issues due to the selected track direction
 		g_gui:showInfoDialog({text=courseplay:loc('COURSEPLAY_COURSE_SUBOPTIMAL')})
 	end
-	
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = selectedField
-	-- update number of headland passes in case we ended up generating less 
+	-- update number of headland passes in case we ended up generating less
 	self:setHeadlandProperties()
+	self.settings.headlandPasses:updateGuiElement()
 	self:showCourse()
 end
 
@@ -171,352 +155,152 @@ function CourseGeneratorScreen:onClose()
 	CourseGeneratorScreen:superClass().onClose(self)
 end
 
------------------------------------------------------------------------------------------------------
--- Field selector
-function CourseGeneratorScreen:onOpenFieldSelector( element, parameter )
-	local texts = {}
-	if self.fields then
-		for _, field in ipairs( self.fields ) do
-			table.insert( texts, field.name )
-		end
-	end
-	element:setTexts( texts )
-	element:setState( self.fieldToState[ self.vehicle.cp.fieldEdge.selectedField.fieldNum ])
-	end
-
-function CourseGeneratorScreen:onClickFieldSelector( state )
-	self:selectField( self.fields[ state ].number )
-end
-
-function CourseGeneratorScreen:selectField( fieldNum )
-	self.vehicle.cp.fieldEdge.selectedField.fieldNum = fieldNum
-end
------------------------------------------------------------------------------------------------------
--- Working width
-function CourseGeneratorScreen:onOpenWidth( element )
-	local texts = {}
-	self.minWidth, self.maxWidth = 1, 50
-	local w = self.vehicle.cp.workWidth
-	-- have at most 3 values in the text box around the selected
-	if w > self.minWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w - 0.1)) end
-	table.insert(texts, string.format(CourseGeneratorScreen.WidthFormatString, w))
-	if w < self.maxWidth then table.insert( texts, string.format(CourseGeneratorScreen.WidthFormatString, w + 0.1)) end
-	element:setTexts(texts)
-	if w == self.minWidth then
-		element:setState(1)
-	else
-		element:setState(2)
-	end
+function CourseGeneratorScreen:onClickSelectedField( state )
+	self.settings.selectedField:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onClickWidth( state )
-	if state == 1 then
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
-	else
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
-	end
-	self:onOpenWidth(self.width)
+	self.settings.workWidth:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onOpenAutoWidth(element)
 	local autoWidth = courseplay:getWorkWidth(self.vehicle)
 	if autoWidth > 0 then
 		element:setVisible(true)
-		element:setText(string.format(CourseGeneratorScreen.WidthFormatString, courseplay:getWorkWidth(self.vehicle)))
 	else
 		element:setVisible(false)
 	end
 end
 
 function CourseGeneratorScreen:onClickAutoWidth(state)
-	local autoWidth = courseplay:getWorkWidth(self.vehicle)
-	if autoWidth > 0 then
-		self.vehicle.cp.workWidth = autoWidth
-		self:onOpenWidth(self.width)
-	end
+	self.settings.workWidth:setToDefault()
 end
 
 function CourseGeneratorScreen:onScrollWidth(element, isDown, isUp, button)
 	local eventUsed = false
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
 		eventUsed = true
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth + 0.1, self.minWidth, self.maxWidth)
-		self:onOpenWidth(self.width)
+		self.settings.workWidth:setNext()
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
 		eventUsed = true
-		self.vehicle.cp.workWidth = MathUtil.clamp(self.vehicle.cp.workWidth - 0.1, self.minWidth, self.maxWidth)
-		self:onOpenWidth(self.width)
+		self.settings.workWidth:setPrevious()
 	end
 	return eventUsed
 end
 
------------------------------------------------------------------------------------------------------
--- Starting location
-function CourseGeneratorScreen:onOpenStartingLocation( element, parameter )
-	self.startingLocationSetting = StartingLocationSetting(self.vehicle)
-	element:setTexts(self.startingLocationSetting:getGuiElementTexts())
-
-	-- force new course gen settings.
-	if not self.vehicle.cp.isNewCourseGenSelected() or not self.vehicle.cp.hasStartingCorner then
-		courseplay:setStartingCorner( self.vehicle, courseGenerator.STARTING_LOCATION_VEHICLE_POSITION )
-		self.startingLocationSetting:set(courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION)
-	end
-	element:setState(self.startingLocationSetting:getGuiElementStateFromValue(self.vehicle.cp.startingCorner))
-end
-
 function CourseGeneratorScreen:onClickStartingLocation( state )
-	courseplay:setStartingCorner(self.vehicle, self.startingLocationSetting:getValueFromGuiElementState(state))
-	if self.vehicle.cp.startingCorner == courseGenerator.STARTING_LOCATION_SELECT_ON_MAP and
-		not self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos then
-		if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 then
-			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = self.vehicle.Waypoints[1].cx, z = self.vehicle.Waypoints[1].cz})
-		else
-			local x, _, z = getWorldTranslation(self.vehicle.rootNode)
-			self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = ({ x = x, z = z })
-		end
-	end
+	self.settings.startingLocation:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
--- Row direction mode
-local function getRowDirectionModeState( rowDirectionMode )
-	return rowDirectionMode - courseGenerator.ROW_DIRECTION_MIN + 1
-end
-
-local function getRowDirectionMode( rowDirectionModeState )
-	return rowDirectionModeState + courseGenerator.ROW_DIRECTION_MIN - 1
-end
-
-function CourseGeneratorScreen:onOpenRowDirectionMode( element, parameter )
-	local texts = {}
-	for i = courseGenerator.ROW_DIRECTION_MIN, courseGenerator.ROW_DIRECTION_MAX do
-		table.insert( texts, courseplay:loc(string.format('COURSEPLAY_DIRECTION_%d', i )))
-	end
-	element:setTexts( texts )
-	element:setState( getRowDirectionModeState( self.vehicle.cp.rowDirectionMode ))
-end
-
-function CourseGeneratorScreen:onClickRowDirectionMode( state )
-	courseplay:setRowDirectionMode( self.vehicle, getRowDirectionMode( state ))
-	self.manualDirectionAngle:setVisible( self.vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_MANUAL )
+-- Row direction
+function CourseGeneratorScreen:onClickRowDirection( state )
+	self.settings.rowDirection:setFromGuiElement()
+	self.manualRowAngle:setVisible( self.settings.rowDirection:is(courseGenerator.ROW_DIRECTION_MANUAL))
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Manual row angle
-function CourseGeneratorScreen:onOpenManualDirectionAngle( element, parameter )
-	local texts = {}
-	for i, direction in ipairs( self.directions ) do
-		table.insert( texts, tostring( direction.compassAngleDeg ) .. '°' .. ' (' .. courseplay:loc( courseGenerator.getCompassDirectionText( direction.gameAngleDeg )) .. ')')
-	end
-	element:setTexts( texts )
-	element:setState( self.directionToState[ self.vehicle.cp.rowDirectionDeg ])
-	-- enable only when manual row direction is selected.
-	element:setVisible( self.vehicle.cp.rowDirectionMode == courseGenerator.ROW_DIRECTION_MANUAL )
+
+function CourseGeneratorScreen:onClickManualRowAngle( state )
+	self.settings.manualRowAngle:setFromGuiElement()
 end
 
-function CourseGeneratorScreen:onClickManualDirectionAngle( state )
-	self.vehicle.cp.rowDirectionDeg = self.directions[ state ].gameAngleDeg
-end
-
-function CourseGeneratorScreen:onScrollManualDirectionAngle(element, isDown, isUp, button)
+function CourseGeneratorScreen:onScrollManualRowAngle(element, isDown, isUp, button)
 	local eventUsed = false
-	local currentState = self.manualDirectionAngle:getState()
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_UP then
-		eventUsed = true
-		local newState = currentState + 1
-		newState = newState <= #self.directions and newState or 1
-		self.manualDirectionAngle:setState(newState)
-		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+		self.settings.manualRowAngle:setNext()
 	end
 	if isDown and button == Input.MOUSE_BUTTON_WHEEL_DOWN then
-		eventUsed = true
-		local newState = currentState - 1
-		newState = newState > 0 and newState or #self.directions
-		self.manualDirectionAngle:setState(newState)
-		self.vehicle.cp.rowDirectionDeg = self.directions[ newState ].gameAngleDeg
+		self.settings.manualRowAngle:setPrevious()
 	end
 	return eventUsed
 end
 
------------------------------------------------------------------------------------------------------
--- Island bypass mode
-function CourseGeneratorScreen:onOpenIslandBypassMode( element, parameter )
-	local texts = {}
-	for i = 1, Island.BYPASS_MODE_MAX do
-		table.insert( texts, courseplay:loc( Island.bypassModeText[ i ]))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode )
-end
-
 function CourseGeneratorScreen:onClickIslandBypassMode( state )
-	self.vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = state
+	self.settings.islandBypassMode:setFromGuiElement()
 end
-
 
 -----------------------------------------------------------------------------------------------------
 -- Number of rows to skip
-function CourseGeneratorScreen:onOpenSkipRows( element, parameter )
-	local texts = {}
-	for i = 0, 3 do
-		table.insert( texts, tostring( i ))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip + 1 )
-end
-
-function CourseGeneratorScreen:onClickSkipRows( state )
-	self.vehicle.cp.oldCourseGeneratorSettings.nRowsToSkip = state - 1
+function CourseGeneratorScreen:onClickRowsToSkip( state )
+	self.settings.rowsToSkip:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Multiple tools
-function CourseGeneratorScreen:onOpenMultiTools( element, parameter )
-	local texts = {}
-	for i = 1,8 do
-		table.insert( texts, i )
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.multiTools )
-end
 
 function CourseGeneratorScreen:onClickMultiTools( state )
-	--Courseplay call here cause of courseplay:changeLaneNumber function is called when this number is changed
-	courseplay:setMultiTools(self.vehicle, state)
+	self.settings.multiTools:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland mode
 function CourseGeneratorScreen:setHeadlandProperties()
 	-- headland properties only if we in normal headland mode
-	if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NORMAL or
-		self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
-		if self.vehicle.cp.headland.getNumLanes() == 0 then
-			self.vehicle.cp.headland.numLanes = 1
-		end
-		self.headlandPasses:setState( self.vehicle.cp.headland.numLanes )
-		if self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE then
-			-- force headland turn maneuver for two side mode
-			self.vehicle.cp.headland.turnType = courseplay.HEADLAND_CORNER_TYPE_SHARP
-		end
-	elseif self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_NONE then
-		self.vehicle.cp.headland.numLanes = 0
+	if self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_TWO_SIDE) then
+		-- force headland turn maneuver for two side mode
+		self.settings.headlandCornerType:set(courseGenerator.HEADLAND_CORNER_TYPE_SHARP)
 	end
 end
 
 function CourseGeneratorScreen:setHeadlandFields()
-	local headlandFieldsVisible = self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode == courseGenerator.HEADLAND_MODE_TWO_SIDE
-  self.headlandDirection:setVisible( self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL or self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NARROW_FIELD )
-	self.headlandPasses:setVisible( headlandFieldsVisible )
-	self.headlandFirst:setVisible( headlandFieldsVisible )
+	local headlandFieldsVisible = self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL)
+		or self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_TWO_SIDE)
+  self.headlandDirection:setVisible(self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL)
+	  or self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NARROW_FIELD))
+	self.headlandPasses:setVisible(headlandFieldsVisible)
+	self.startOnHeadland:setVisible(headlandFieldsVisible)
 	-- force headland turn maneuver for two side mode
-	self.headlandCorners:setVisible( headlandFieldsVisible and self.vehicle.cp.headland.mode ==
-		courseGenerator.HEADLAND_MODE_NORMAL)
-	self.headlandOverlapPercent:setVisible( headlandFieldsVisible )
-end
-
-function CourseGeneratorScreen:onOpenHeadlandMode( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NONE' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NORMAL' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_NARROW_FIELD' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_MODE_TWO_SIDE' ))
-	element:setTexts( texts )
-	self:setHeadlandProperties()
-	element:setState( self.vehicle.cp.headland.mode )
-	self:setHeadlandFields()
+	self.headlandCornerType:setVisible(headlandFieldsVisible and
+		self.settings.headlandMode:is(courseGenerator.HEADLAND_MODE_NORMAL))
+	self.headlandOverlapPercent:setVisible(headlandFieldsVisible)
 end
 
 function CourseGeneratorScreen:onClickHeadlandMode( state )
-	self.vehicle.cp.headland.mode = state
+	self.settings.headlandMode:setFromGuiElement()
 	self:setHeadlandProperties()
 	self:setHeadlandFields()
 end
 -----------------------------------------------------------------------------------------------------
 -- Headland passes
-function CourseGeneratorScreen:onOpenHeadlandPasses( element, parameter )
-	local texts = {}
-	for i = 1, self.vehicle.cp.headland.autoDirMaxNumLanes do
-		table.insert( texts, tostring( i ))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.headland.getNumLanes())
-end
 
 function CourseGeneratorScreen:onClickHeadlandPasses( state )
-	self.vehicle.cp.headland.numLanes = state
+	self.settings.headlandPasses:setFromGuiElement()
 end
-
 
 -----------------------------------------------------------------------------------------------------
 -- Headland direction
-function CourseGeneratorScreen:onOpenHeadlandDirection( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_CLOCKWISE' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_COUNTERCLOCKWISE' ))
-	element:setTexts( texts )
-	local state = self.vehicle.cp.headland.userDirClockwise and 1 or 2
-	element:setState( state )
-end
-
 function CourseGeneratorScreen:onClickHeadlandDirection( state )
-	self.vehicle.cp.headland.userDirClockwise = state == 1
+	self.settings.headlandDirection:setFromGuiElement()
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland first
-function CourseGeneratorScreen:onOpenHeadlandFirst( element, parameter )
-	local texts = {}
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_HEADLAND_PASSES' ))
-	table.insert( texts, courseplay:loc( 'COURSEPLAY_UP_DOWN_ROWS' ))
-	element:setTexts( texts )
-	local state = self.vehicle.cp.headland.orderBefore and 1 or 2
-	element:setState( state )
-	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
+function CourseGeneratorScreen:onClickStartOnHeadland( state )
+	self.settings.startOnHeadland:setFromGuiElement()
+	self:setStartingLocationLabel(self.settings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_HEADLAND))
 end
 
-function CourseGeneratorScreen:onClickHeadlandFirst( state )
-	if state ~= self.vehicle.cp.headland.orderBefore then
-		-- must call this in order to update the bitmap in the HUD, that is apparently not being taken care of by reload
-		courseplay:toggleHeadlandOrder( self.vehicle )
-	end
-	self:setStartingLocationLabel(self.vehicle.cp.headland.orderBefore)
-end
-
-function CourseGeneratorScreen:setStartingLocationLabel(headlandFirst)
-	local label = headlandFirst and
-			courseplay:loc('COURSEPLAY_STARTING_LOCATION') or
-			courseplay:loc('COURSEPLAY_ENDING_LOCATION')
-	self.startingLocation.labelElement.text = label
+function CourseGeneratorScreen:setStartingLocationLabel(startOnHeadland)
+	self.startingLocation:setLabel(self.settings.startingLocation:getLabel(startOnHeadland))
 end
 
 -----------------------------------------------------------------------------------------------------
 -- Headland corner
-function CourseGeneratorScreen:onOpenHeadlandCorners( element, parameter )
-	local texts = {}
-	for i = 1, courseplay.HEADLAND_CORNER_TYPE_MAX do
-		table.insert( texts, courseplay:loc( courseplay.cornerTypeText[ i ]))
-	end
-	element:setTexts( texts )
-	element:setState( self.vehicle.cp.headland.turnType )
-end
-
-function CourseGeneratorScreen:onClickHeadlandCorners( state )
-	self.vehicle.cp.headland.turnType = state
+function CourseGeneratorScreen:onClickHeadlandCornerType(state)
+	self.settings.headlandCornerType:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onOpenHeadlandOverlapPercent( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent:getGuiElementState())
+	self.settings.headlandOverlapPercent:setGuiElement(element)
+	element:setTexts(self.settings.headlandOverlapPercent:getGuiElementTexts())
+	element:setState(self.settings.headlandOverlapPercent:getGuiElementState())
 end
 
 function CourseGeneratorScreen:onClickHeadlandOverlapPercent(state)
-	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.headlandOverlapPercent)
+	self.settings.headlandOverlapPercent:setFromGuiElement()
 end
 
 
@@ -529,55 +313,28 @@ function CourseGeneratorScreen:draw()
 		self.coursePlot:setSize(self.ingameMap.size[1], self.ingameMap.size[2])
 		self.coursePlot:draw()
 	end
-	if self.vehicle.cp.courseGeneratorSettings.showSeedCalculator:is(true) then
+	if self.settings.showSeedCalculator:is(true) then
 		self:drawSeedCalculator(self.ingameMap.absPosition[ 1 ],self.ingameMap.absPosition[2]+0.025)
 	end
 end
 
-function CourseGeneratorScreen:onOpenCenterMode( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.centerMode:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.centerMode:getGuiElementState())
-end
-
 function CourseGeneratorScreen:onClickCenterMode(state)
-	self:setFromGui(self.vehicle.cp.courseGeneratorSettings.centerMode)
-	print(self.vehicle.cp.courseGeneratorSettings.centerMode:get())
-	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElement():setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
-end
-
-function CourseGeneratorScreen:onOpenNumberOfRowsPerLand( element, parameter )
-	self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:setGuiElement(element)
-	element:setTexts(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementTexts())
-	element:setState(self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand:getGuiElementState())
-	element:setVisible(self.vehicle.cp.courseGeneratorSettings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
+	self.settings.centerMode:setFromGuiElement()
+	self.settings.numberOfRowsPerLand:getGuiElement():setVisible(self.settings.centerMode:is(courseGenerator.CENTER_MODE_LANDS))
 end
 
 function CourseGeneratorScreen:onClickNumberOfRowsPerLand(state)
-	local setting = self.vehicle.cp.courseGeneratorSettings.numberOfRowsPerLand
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
-end
-
-function CourseGeneratorScreen:onOpenShowSeedCalculator( element, parameter )
-	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
-	setting:setGuiElement(element)
-	element:setTexts(setting:getGuiElementTexts())
-	element:setState(setting:getGuiElementState())
+	self.settings.numberOfRowsPerLand:setFromGuiElement()
 end
 
 function CourseGeneratorScreen:onClickShowSeedCalculator(state)
-	local setting = self.vehicle.cp.courseGeneratorSettings.showSeedCalculator
-	if setting:getGuiElement() then
-		setting:setToIx(setting:getGuiElement():getState())
-	end
+	self.settings.showSeedCalculator:setFromGuiElement()
 end
 
 ---a very basic and simple seed calculator in the course generator
 function CourseGeneratorScreen:drawSeedCalculator(xPos,yPos)
 	-- do have a valid field selected ?
-	local currentFieldNumber = self.vehicle.cp.fieldEdge.selectedField.fieldNum
+	local currentFieldNumber = self.vehicle.cp.courseGeneratorSettings.selectedField:get()
 	if currentFieldNumber ~= 0 then 
 		local fieldAreaHa = courseplay.fields.fieldData[currentFieldNumber].areaHa
 		local fieldAreaSqm = courseplay.fields.fieldData[currentFieldNumber].areaSqm
@@ -637,21 +394,16 @@ end
 
 function CourseGeneratorScreen:onClickMap(element, posX, posZ)
 
-	if courseGenerator.STARTING_LOCATION_SELECT_ON_MAP == self.startingLocationSetting:getValueFromGuiElementState(self.startingLocation:getState()) then
-		self.vehicle.cp.oldCourseGeneratorSettings.startingLocationWorldPos = {x = posX, z = posZ }
+	if self.settings.startingLocation:is(courseGenerator.STARTING_LOCATION_SELECT_ON_MAP) then
+		self.settings.startingLocation:setSelectedPosition(posX, posZ)
 		self.coursePlot:setStartPosition(posX, posZ)
 	end
 
 	local fieldNum = courseplay.fields:getFieldNumForPosition(posX, posZ)
-	if fieldNum > 0 and self.fields then
+	if fieldNum > 0 then
 		-- clicked on a field, set it as selected
-		for i, field in ipairs(self.fields) do
-			if field.number == fieldNum then
-				-- field found
-				self.fieldSelector:setState(i)
-				self:selectField( fieldNum )
-			end
-		end
+		self.settings.selectedField:set(fieldNum)
+		self.settings.selectedField:updateGuiElement()
 	end
 end
 
@@ -676,11 +428,11 @@ function CourseGeneratorScreen:mouseEvent(posX, posY, isDown, isUp, button, even
 		eventUsed = true
 	end
 
-	if self:isOverElement(posX, posY, self.width) then
+	if self:isOverElement(posX, posY, self.workWidth) then
 		return self:onScrollWidth(self.width, isDown, isUp, button)
 	end
-	if self:isOverElement(posX, posY, self.manualDirectionAngle) then
-		return self:onScrollManualDirectionAngle(self.width, isDown, isUp, button)
+	if self:isOverElement(posX, posY, self.manualRowAngle) then
+		return self:onScrollManualRowAngle(self.width, isDown, isUp, button)
 	end
 
 	if button == Input.MOUSE_BUTTON_WHEEL_UP or button == Input.MOUSE_BUTTON_WHEEL_DOWN then

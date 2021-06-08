@@ -86,8 +86,8 @@ function inputCourseNameDialogue:onSaveClick()
 		if vehicle.cp.courseHeadlandDirectionCW ~= nil then
 			course.headlandDirectionCW = vehicle.cp.courseHeadlandDirectionCW;
 		end;
-		if vehicle.cp.multiTools ~= 1 then
-			course.multiTools = vehicle.cp.multiTools
+		if vehicle.cp.courseGeneratorSettings.multiTools:get() ~= 1 then
+			course.multiTools = vehicle.cp.courseGeneratorSettings.multiTools:get()
 		end;
 
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course

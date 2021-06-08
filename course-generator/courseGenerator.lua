@@ -73,6 +73,24 @@ courseGenerator.HEADLAND_MODE_MAX = 4
 
 courseGenerator.headlandModeTexts = { 'none', 'normal', 'narrow', 'two side'}
 
+courseGenerator.HEADLAND_CLOCKWISE = 1
+courseGenerator.HEADLAND_COUNTERCLOCKWISE = 2
+
+courseGenerator.HEADLAND_START_ON_HEADLAND = 1
+courseGenerator.HEADLAND_START_ON_UP_DOWN_ROWS = 3
+
+
+-- headland turn modes
+courseGenerator.HEADLAND_CORNER_TYPE_SMOOTH = 1
+courseGenerator.HEADLAND_CORNER_TYPE_SHARP = 2
+courseGenerator.HEADLAND_CORNER_TYPE_ROUND = 3
+
+courseplay.cornerTypeText = {
+	'COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH',
+	'COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP',
+	'COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND' }
+
+
 function courseGenerator.isOrdinalDirection( startingLocation )
 	return startingLocation >= courseGenerator.STARTING_LOCATION_SW and
 		startingLocation <= courseGenerator.STARTING_LOCATION_SE

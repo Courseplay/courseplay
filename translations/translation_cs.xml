@@ -226,9 +226,6 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH" 				text="光滑" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="转" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="圆" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE"				text="反向夹角运动"/>
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_STRAIGHT"		text="直行" />
-		<text name="COURSEPLAY_HEADLAND_REVERSE_MANEUVER_TYPE_CURVE"		text="曲行" />
 		<text name="COURSEPLAY_CENTER_MODE"									text="围绕地块 (测试功能)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="上/下" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="围绕" />

@@ -42,7 +42,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_OVERLOADER then
 		status, result = xpcall(OverloaderAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
-		status, result = xpcall(ShovelModeAIDriver.create, errorHandler, vehicle)
+		status, result = xpcall(ShovelAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_SEED_FERTILIZE then
 		status, result = xpcall(FillableFieldworkAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELDWORK then
@@ -50,7 +50,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	elseif mode == courseplay.MODE_BALE_COLLECTOR then
 		status, result = xpcall(BaleCollectorAIDriver, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then
-		status, result = xpcall(LevelCompactAIDriver, errorHandler, vehicle)
+		status, result = xpcall(BunkerSiloAIDriver.create, errorHandler, vehicle)
 	elseif mode == courseplay.MODE_FIELD_SUPPLY then
 		status, result = xpcall(FieldSupplyAIDriver, errorHandler, vehicle)
 	end
@@ -176,14 +176,15 @@ function courseplay:changeLaneOffset(vehicle, changeBy, force)
 end;
 
 function courseplay:changeLaneNumber(vehicle, changeBy, reset)
-	--This function takes input from the hud. And claculates laneOffset by dividing tool workwidth and multiplying that by the lane number counting outwards.
-	local toolsIsEven = vehicle.cp.multiTools%2 == 0
+	-- This function takes input from the hud. And calculates laneOffset by dividing tool workwidth and multiplying that
+	-- by the lane number counting outwards.
+	local toolsIsEven = vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0
 	
 	if reset then
 		vehicle.cp.laneNumber = 0;
 		vehicle.cp.laneOffset = 0
 	else
-		--skip zero if multiTools is even
+		-- skip zero if multiTools is even
 		if toolsIsEven then
 			if vehicle.cp.laneNumber == -1 and changeBy > 0 then
 				changeBy = 2
@@ -191,7 +192,9 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 				changeBy = -2
 			end
 		end
-		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy, math.floor(vehicle.cp.multiTools/2)*-1, math.floor(vehicle.cp.multiTools/2));
+		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy,
+			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2) * -1,
+			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2));
 		local newOffset = 0
 		if toolsIsEven then
 			if vehicle.cp.laneNumber > 0 then
@@ -200,7 +203,7 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 				newOffset = -vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber+1))
 			end
 		else
-			newOffset = vehicle.cp.workWidth*vehicle.cp.laneNumber
+			newOffset = vehicle.cp.workWidth * vehicle.cp.laneNumber
 		end
 		courseplay:changeLaneOffset(vehicle, nil , newOffset)
 	end;
@@ -266,7 +269,7 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	elseif force ~= nil and noDraw == nil then
 		vehicle.cp.manualWorkWidth = nil
 		courseplay:changeLaneNumber(vehicle, 0, true)
-		courseplay:setMultiTools(vehicle, 1)
+		vehicle.cp.courseGeneratorSettings.multiTools:set(1)
 		--print("is set by calculate button")
 	end
 	if force then
@@ -723,122 +726,19 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
-
---still used in CourseGeneratorScreen.lua ??
-function courseplay:setStartingCorner( vehicle, newStartingCorner )
-	vehicle.cp.startingCorner = newStartingCorner
-	vehicle.cp.hasStartingCorner = true;
-	if vehicle.cp.isNewCourseGenSelected() then
-		-- starting direction is always auto when starting corner is vehicle location
-		vehicle.cp.hasStartingDirection = true;
-		vehicle.cp.startingDirection = vehicle.cp.rowDirectionMode
-		courseplay:changeHeadlandNumLanes(vehicle, 0)
-	else
-		vehicle:setCpVar('hasStartingDirection',false,courseplay.isClient);
-		vehicle:setCpVar('startingDirection',0,courseplay.isClient);
-		courseplay:changeHeadlandNumLanes(vehicle, 0)
-	end
-	courseplay:validateCourseGenerationData(vehicle);
-end;
-
-function courseplay:setRowDirectionMode( vehicle, newRowDirectionMode )
-	vehicle:setCpVar('rowDirectionMode', newRowDirectionMode, courseplay.isClient);
-	vehicle:setCpVar('startingDirection', newRowDirectionMode, courseplay.isClient);
-end
-
 function courseplay:changeRowAngle( vehicle, changeBy )
 	if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then
 		vehicle.cp.rowDirectionDeg = ( vehicle.cp.rowDirectionDeg + changeBy ) % 360
 	end 
 end
-	
-function courseplay:changeHeadlandNumLanes(vehicle, changeBy)
-	vehicle.cp.headland.numLanes = MathUtil.clamp(vehicle.cp.headland.numLanes + changeBy,
-		vehicle.cp.headland.getMinNumLanes(), vehicle.cp.headland.getMaxNumLanes());
-	if vehicle.cp.headland.numLanes < 0 then
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NARROW_FIELD
-	elseif vehicle.cp.headland.numLanes == 0 then
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NONE
-	else
-		vehicle.cp.headland.mode = courseGenerator.HEADLAND_MODE_NORMAL
-	end
-	courseplay:validateCourseGenerationData(vehicle);
-end;
 
-function courseplay:toggleHeadlandDirection(vehicle)
-	vehicle.cp.headland.userDirClockwise = not vehicle.cp.headland.userDirClockwise;
-	vehicle.cp.headland.directionButton:setSpriteSectionUVs(vehicle.cp.headland.userDirClockwise and 'headlandDirCW' or 'headlandDirCCW');
-end;
-
-function courseplay:toggleHeadlandOrder(vehicle)
-	vehicle.cp.headland.orderBefore = not vehicle.cp.headland.orderBefore;
-	--vehicle.cp.headland.orderButton:setSpriteSectionUVs(vehicle.cp.headland.orderBefore and 'headlandOrdBef' or 'headlandOrdAft');
-	-- courseplay:debug(string.format('toggleHeadlandOrder(): orderBefore=%s -> set to %q, setOverlay(orderButton, %d)', tostring(not vehicle.cp.headland.orderBefore), tostring(vehicle.cp.headland.orderBefore), vehicle.cp.headland.orderBefore and 1 or 2), courseplay.DBG_COURSES);
-end;
-
-function courseplay:changeIslandBypassMode(vehicle)
-	vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = vehicle.cp.oldCourseGeneratorSettings.islandBypassMode + 1
-	if vehicle.cp.oldCourseGeneratorSettings.islandBypassMode > Island.BYPASS_MODE_MAX then
-		vehicle.cp.oldCourseGeneratorSettings.islandBypassMode = Island.BYPASS_MODE_MIN
-	end
-end;
-
-function courseplay:changeHeadlandTurnType( vehicle )
-  if vehicle.cp.headland.exists() then
-    local newTurnType = vehicle.cp.headland.turnType + 1
-    if newTurnType > courseplay.HEADLAND_CORNER_TYPE_MAX then
-      newTurnType = courseplay.HEADLAND_CORNER_TYPE_MIN
-    end
-	vehicle:setCpVar('headland.turnType',newTurnType,courseplay.isClient)
-	end
-end
-
-function courseplay:changeHeadlandReverseManeuverType( vehicle )
-		vehicle.cp.headland.reverseManeuverType = vehicle.cp.headland.reverseManeuverType + 1
-		if vehicle.cp.headland.reverseManeuverType > courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MAX then
-			vehicle.cp.headland.reverseManeuverType = courseplay.HEADLAND_REVERSE_MANEUVER_TYPE_MIN
-		end
-end
-
-function courseplay:changeByMultiTools(vehicle, changeBy)
-	courseplay:setMultiTools(vehicle, MathUtil.clamp(vehicle.cp.multiTools + changeBy, 1, 8))
-end;
 function courseplay:setMultiTools(vehicle, set)
-	vehicle:setCpVar('multiTools',set,courseplay.isClient)
-	if vehicle.cp.multiTools%2 == 0 then
+	vehicle:setCpVar('multiTools', set, courseplay.isClient)
+	if vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0 then
 		courseplay:changeLaneNumber(vehicle, 1)
 	else
 		courseplay:changeLaneNumber(vehicle, 0, true)
 	end;
-end;
-
-function courseplay:validateCourseGenerationData(vehicle)
-	local numWaypoints = 0;
-	if vehicle.cp.fieldEdge.selectedField.fieldNum > 0 then
-		numWaypoints = #(courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points);
-	elseif vehicle.Waypoints ~= nil then
-		numWaypoints = #(vehicle.Waypoints);
-	end;
-
-	local hasEnoughWaypoints = numWaypoints >= 4
-	if vehicle.cp.headland.exists() then
-		hasEnoughWaypoints = numWaypoints >= 20;
-	end;
-
-	if (vehicle.cp.fieldEdge.selectedField.fieldNum > 0 or not vehicle.cp.hasGeneratedCourse)
-	and hasEnoughWaypoints
-	and vehicle.cp.hasStartingCorner == true 
-	and vehicle.cp.hasStartingDirection == true 
-	and (vehicle.cp.numCourses == nil or (vehicle.cp.numCourses ~= nil and vehicle.cp.numCourses == 1) or vehicle.cp.fieldEdge.selectedField.fieldNum > 0) 
-	then
-		vehicle.cp.hasValidCourseGenerationData = true;
-	else
-		vehicle.cp.hasValidCourseGenerationData = false;
-	end;
-	--courseplay.buttons:setActiveEnabled(vehicle, 'generateCourse');
-
-	courseplay:debug(string.format("%s: hasGeneratedCourse=%s, hasEnoughWaypoints=%s, hasStartingCorner=%s, hasStartingDirection=%s, numCourses=%s, fieldEdge.selectedField.fieldNum=%s ==> hasValidCourseGenerationData=%s",
-		nameNum(vehicle), tostring(vehicle.cp.hasGeneratedCourse), tostring(hasEnoughWaypoints), tostring(vehicle.cp.hasStartingCorner), tostring(vehicle.cp.hasStartingDirection), tostring(vehicle.cp.numCourses), tostring(vehicle.cp.fieldEdge.selectedField.fieldNum), tostring(vehicle.cp.hasValidCourseGenerationData)), courseplay.DBG_COURSES);
 end;
 
 function courseplay:validateCanSwitchMode(vehicle)
@@ -944,27 +844,12 @@ function courseplay:createFieldEdgeButtons(vehicle)
 end;
 
 function courseplay:setFieldEdgePath(vehicle, changeDir, force)
-	local newFieldNum = force or vehicle.cp.fieldEdge.selectedField.fieldNum + changeDir;
-	if newFieldNum == 0 then
-		vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
-		return;
-	end;
-	while courseplay.fields.fieldData[newFieldNum] == nil do
-		if newFieldNum == 0 then
-			vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
-			return;
-		end;
-		newFieldNum = MathUtil.clamp(newFieldNum + changeDir, 0, courseplay.fields.numAvailableFields);
-	end;
-
-	vehicle.cp.fieldEdge.selectedField.fieldNum = newFieldNum;
+	vehicle.cp.courseGeneratorSettings.selectedField:changeByX(changeDir)
 
 	--courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
 	if vehicle.cp.fieldEdge.customField.show then
 		courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
 	end;
-	
-	courseplay:validateCourseGenerationData(vehicle);
 end;
 
 function courseplay:toggleSelectedFieldEdgePathShow(vehicle, force)
@@ -1046,8 +931,8 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 		points = vehicle.cp.fieldEdge.customField.points;
 		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
 	elseif pathType == "selectedField" then
-		points = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].points;
-		numPoints = courseplay.fields.fieldData[vehicle.cp.fieldEdge.selectedField.fieldNum].numPoints;
+		points = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].points;
+		numPoints = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].numPoints;
 	end;
 
 	if numPoints > 0 then
@@ -1217,9 +1102,8 @@ function Setting:setFromNetwork(value)
 	self:onChange()
 end
 
-
-function Setting:printSetting()
-	print(self:getName()..": "..tostring(self:get()))
+function Setting:getDebugString()
+	return string.format('%s: %s', self.name, tostring(self:get()))
 end
 
 --- Set to a specific value
@@ -1251,6 +1135,15 @@ end
 
 function Setting:setParent(name)
 	self.parentName = name
+end
+
+-- remember the associated GUI element
+function Setting:setGuiElement(element)
+	self.guiElement = element
+end
+
+function Setting:getGuiElement()
+	return self.guiElement
 end
 
 --- Should this setting be disabled on the GUI?
@@ -1431,7 +1324,7 @@ function SettingList:next()
 end
 
 -- private function to set to the value at ix
-function SettingList:setToIx(ix,noEventSend)
+function SettingList:setToIx(ix, noEventSend)
 	if ix ~= self.current then
 		self.previous = self.current
 		self.current = ix
@@ -1494,14 +1387,6 @@ function SettingList:getValueFromGuiElementState(state)
 	return self.values[state]
 end
 
-function SettingList:setGuiElement(element)
-	self.guiElement = element
-end
-
-function SettingList:getGuiElement()
-	return self.guiElement
-end
-
 function SettingList:getGuiElementState()
 	return self:getGuiElementStateFromValue(self.values[self.current])
 end
@@ -1515,8 +1400,25 @@ function SettingList:getGuiElementStateFromValue(value)
 	return nil
 end
 
+function SettingList:setFromGuiElement()
+	if self.guiElement then
+		self:setToIx(self.guiElement:getState())
+	end
+end
+
+function SettingList:updateGuiElement()
+	if self.guiElement then
+		self.guiElement:setTexts(self:getGuiElementTexts())
+		self.guiElement:setState(self:getGuiElementState())
+	end
+end
+
 function SettingList:getKey(parentKey)
-	return parentKey .. '.' .. self.xmlKey .. self.xmlAttribute
+	return  self:getElementKey(parentKey) .. self.xmlAttribute
+end
+
+function SettingList:getElementKey(parentKey)
+	return parentKey .. '.' .. self.xmlKey
 end
 
 function SettingList:loadFromXml(xml, parentKey)
@@ -1548,11 +1450,8 @@ function SettingList:validateCurrentValue()
 end
 
 function SettingList:getDebugString()
-	local result = string.format('%s:\n', self.name)
-	for i = 1, #self.values do
-		result = result .. string.format('\t%s%2d: %s\n', i == self.current and '*' or ' ', i, tostring(self.values[i]))
-	end
-	return result
+	-- replace % as this string goes through multiple formats (%% does not seem to work and I have no time to figure it out
+	return string.format('%s: %s', self.name, string.gsub(self.texts[self.current], '%%', 'percent'))
 end
 
 function SettingList:onWriteStream(stream)
@@ -1904,122 +1803,6 @@ function StartingPointSetting:isDisabled()
 	return self.vehicle:getIsCourseplayDriving() or not self.vehicle.cp.canDrive
 end
 
----@class StartingLocationSetting : SettingList
-StartingLocationSetting = CpObject(SettingList)
-
-function StartingLocationSetting:init(vehicle)
-	SettingList.init(self, 'startingLocation', 'COURSEPLAY_STARTING_LOCATION', '', vehicle,
-		{
-			courseGenerator.STARTING_LOCATION_VEHICLE_POSITION,
-			courseGenerator.STARTING_LOCATION_LAST_VEHICLE_POSITION,
-			courseGenerator.STARTING_LOCATION_SW,
-			courseGenerator.STARTING_LOCATION_NW,
-			courseGenerator.STARTING_LOCATION_NE,
-			courseGenerator.STARTING_LOCATION_SE,
-			courseGenerator.STARTING_LOCATION_SELECT_ON_MAP
-		},
-		{
-			'COURSEPLAY_CORNER_5',
-			'COURSEPLAY_CORNER_6',
-			'COURSEPLAY_CORNER_7',
-			'COURSEPLAY_CORNER_8',
-			'COURSEPLAY_CORNER_9',
-			'COURSEPLAY_CORNER_10',
-			'COURSEPLAY_CORNER_11'
-		})
-	if not self.vehicle.cp.generationPosition.hasSavedPosition then
-		table.remove(self.values, 2)
-		table.remove(self.texts, 2)
-	end
-end
-
---- Course gen center mode setting
----@class CenterModeSetting : SettingList
-CenterModeSetting = CpObject(SettingList)
-
-function CenterModeSetting:init(vehicle)
-	SettingList.init(self, 'centerMode', 'COURSEPLAY_CENTER_MODE', '', vehicle,
-		{
-			courseGenerator.CENTER_MODE_UP_DOWN,
-			courseGenerator.CENTER_MODE_CIRCULAR,
-			courseGenerator.CENTER_MODE_SPIRAL,
-			courseGenerator.CENTER_MODE_LANDS
-		},
-		{
-			'COURSEPLAY_CENTER_MODE_UP_DOWN',
-			'COURSEPLAY_CENTER_MODE_CIRCULAR',
-			'COURSEPLAY_CENTER_MODE_SPIRAL',
-			'COURSEPLAY_CENTER_MODE_LANDS'
-		})
-end
-
---- Number of rows per land in Lands center mode
----@class NumberOfRowsPerLand
-NumberOfRowsPerLandSetting = CpObject(SettingList)
-
-function NumberOfRowsPerLandSetting:init(vehicle)
-	SettingList.init(self, 'numberOfRowsPerLand', 'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND',
-			'COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP', vehicle,
-			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24},
-			{4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24})
-	self:set(6)
-end
-
---- Percentage of Overlap for Headland
----@class HeadlandOverlapPercent
-HeadlandOverlapPercent = CpObject(SettingList)
-
-function HeadlandOverlapPercent:init(vehicle)
-	local values, texts = {}, {}
-	for i = 0, 20 do
-		table.insert(values, i)
-		table.insert(texts, string.format('%d %%', i))
-	end
-	SettingList.init(self, 'headlandOverlapPercent', 'COURSEPLAY_HEADLAND_OVERLAP_PERCENT',
-			'COURSEPLAY_HEADLAND_OVERLAP_PERCENT_TOOLTIP', vehicle,
-			values, texts)
-	-- reasonable default used for years
-	self:set(7)
-end
-
----@class ShowSeedCalculatorSetting : BooleanSetting
-ShowSeedCalculatorSetting = CpObject(BooleanSetting)
-function ShowSeedCalculatorSetting:init(vehicle)
-	BooleanSetting.init(self, 'showSeedCalculator', 'COURSEPLAY_SEEDUSAGECALCULATOR','COURSEPLAY_SEEDUSAGECALCULATOR', vehicle)
-	self:set(false)
-end
-
---- Course generator settings (read from the XML, may be added to the UI later when needed):
----
---- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
---- we only change lanes on relatively straight sections of the headland (not around corners)
----@class HeadlandLaneChangeMinRadius
-HeadlandLaneChangeMinRadius = CpObject(IntSetting)
-
-function HeadlandLaneChangeMinRadius:init()
-	IntSetting.init(self, 'headlandLaneChangeMinRadius', 'HeadlandLaneChangeMinRadius',
-			'Minimum radius where a lane change on the headland is allowed')
-	self:set(20)
-end
-
---- No lane change allowed on the headland if there is a corner ahead within this distance in meters
----@class HeadlandLaneChangeMinDistanceToCorner
-HeadlandLaneChangeMinDistanceToCorner = CpObject(IntSetting)
-function HeadlandLaneChangeMinDistanceToCorner:init()
-	IntSetting.init(self, 'headlandLaneChangeMinDistanceToCorner', 'HeadlandLaneChangeMinDistanceToCorner',
-			'Minimum distance to a corner for a lane change on the headland')
-	self:set(20)
-end
-
---- No lane change allowed on the headland if there is a corner behind within this distance in meters
----@class HeadlandLaneChangeMinDistanceFromCorner
-HeadlandLaneChangeMinDistanceFromCorner = CpObject(IntSetting)
-function HeadlandLaneChangeMinDistanceFromCorner:init()
-	IntSetting.init(self, 'headlandLaneChangeMinDistanceFromCorner', 'HeadlandLaneChangeMinDistanceFromCorner',
-			'Minimum distance from a corner for a lane change on the headland')
-	self:set(10)
-end
-
 --- Pathfinder parameters settings (read from the XML, may be added to the UI later when needed):
 ---
 
@@ -2046,9 +1829,6 @@ function MaxDeltaAngleAtGoal:init()
 			'Maximum angle difference allowed at goal')
 	self:set(math.pi / 4)
 end
-
---toggleHeadlandDirection
---toggleHeadlandOrder
 
 --- Implement raise/lower  setting
 ---@class ImplementRaiseLowerTimeSetting : SettingList
@@ -2099,7 +1879,7 @@ end
 --- Return to first point after finishing fieldwork
 ---@class ReturnToFirstPointSetting : SettingList
 ReturnToFirstPointSetting = CpObject(SettingList)
-ReturnToFirstPointSetting.DEACTIVED = 0
+ReturnToFirstPointSetting.DEACTIVATED = 0
 ReturnToFirstPointSetting.RETURN_TO_START = 1
 ReturnToFirstPointSetting.RELEASE_DRIVER = 2
 ReturnToFirstPointSetting.RETURN_TO_START_AND_RELEASE_DRIVER = 3
@@ -2107,7 +1887,7 @@ function ReturnToFirstPointSetting:init(vehicle)
 	SettingList.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
 		'COURSEPLAY_RETURN_TO_FIRST_POINT', vehicle,
 		{
-			self.DEACTIVED,
+			self.DEACTIVATED,
 			self.RETURN_TO_START,
 			self.RELEASE_DRIVER,
 			self.RETURN_TO_START_AND_RELEASE_DRIVER	
@@ -2224,7 +2004,7 @@ end
 
 -- see above, refresh in case it was not initialized
 function FieldNumberSetting:get()
-	if #self.values == 0 then
+	if #self.values == 0 or self.current > #self.values then
 		self:refresh()
 	end
 	return SettingList.get(self)
@@ -2232,7 +2012,7 @@ end
 
 -- see above, refresh in case it was not initialized
 function FieldNumberSetting:getText()
-	if #self.values == 0 then
+	if #self.values == 0 or self.current > #self.values then
 		self:refresh()
 	end
 	return SettingList.getText(self)
@@ -3044,6 +2824,13 @@ function ShovelModeDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
+---@class MixerWagonAIDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
+MixerWagonAIDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
+function MixerWagonAIDriver_SiloSelectedFillTypeSetting:init(vehicle)
+	SiloSelectedFillTypeSetting.init(self, vehicle, "MixerWagonAIDriver")
+	self.MAX_FILLTYPES = 3
+end
+
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
 ShovelModeAIDriverTriggerHandlerIsActive = CpObject(BooleanSetting)
 function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle)
@@ -3067,11 +2854,11 @@ end
 
 ---@class SeparateFillTypeLoadingSetting : SettingList
 SeparateFillTypeLoadingSetting = CpObject(SettingList)
-SeparateFillTypeLoadingSetting.DEACTIVED = 0
+SeparateFillTypeLoadingSetting.DEACTIVATED = 0
 function SeparateFillTypeLoadingSetting:init(vehicle)
 	SettingList.init(self, 'separateFillTypeLoading', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', vehicle,
 		{ 
-			SeparateFillTypeLoadingSetting.DEACTIVED,
+			SeparateFillTypeLoadingSetting.DEACTIVATED,
 			2,
 			3
 		},
@@ -3418,13 +3205,13 @@ end
 
 ---@class ShowVisualWaypointsSetting : SettingList
 ShowVisualWaypointsSetting = CpObject(SettingList)
-ShowVisualWaypointsSetting.DEACTIVED = 0
+ShowVisualWaypointsSetting.DEACTIVATED = 0
 ShowVisualWaypointsSetting.START_STOP = 1
 ShowVisualWaypointsSetting.ALL = 3
 function ShowVisualWaypointsSetting:init(vehicle)
 	SettingList.init(self, 'showVisualWaypoints', 'COURSEPLAY_WAYPOINT_MODE', 'COURSEPLAY_WAYPOINT_MODE', vehicle,
 		{ 
-			ShowVisualWaypointsSetting.DEACTIVED,
+			ShowVisualWaypointsSetting.DEACTIVATED,
 			ShowVisualWaypointsSetting.START_STOP,
 			ShowVisualWaypointsSetting.ALL 
 		}
@@ -3492,6 +3279,7 @@ WorkingToolPositionsSetting = CpObject(Setting)
 WorkingToolPositionsSetting.NetworkTypes = {}
 WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
 WorkingToolPositionsSetting.NetworkTypes.PLAY_POSITION = 1
+WorkingToolPositionsSetting.Settings = {}
 function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs)
 	Setting.init(self, name,label, toolTip, vehicle)
 	self.texts = {}
@@ -3504,6 +3292,9 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	self.MIN_ROT_SPEED = 0.1
 	self.MAX_TRANS_SPEED = 0.7
 	self.MIN_TRANS_SPEED = 0.2
+	--- Store all instances of this setting in ab global table
+	--- for direct access to update their manual tool positions.
+	table.insert(WorkingToolPositionsSetting.Settings,self)
 end
 
 function WorkingToolPositionsSetting:getTexts()
@@ -3597,6 +3388,13 @@ function WorkingToolPositionsSetting:updatePositions(dt,posX)
 		self.playTestPostion = nil
 	end
 	return not callback.isDirty
+end
+
+--- Updates all manual tool positions if necessary.
+function WorkingToolPositionsSetting.updateManualToolPositions(dt)
+	for _,setting in pairs(WorkingToolPositionsSetting.Settings) do 
+		setting:updatePositions(dt)
+	end
 end
 
 --update tool postions for all valid objects recursive to position "pos"
@@ -3861,6 +3659,14 @@ function AugerPipeToolPositionsSetting:getText()
 	end
 end
 
+---@class MixerWagonToolPositionsSetting : WorkingToolPositionsSetting
+MixerWagonToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function MixerWagonToolPositionsSetting:init(vehicle)
+	local label = "mixerWagon"
+	local toolTip = "mixerWagon"
+	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
+end
+
 ---@class ShovelStopAndGoSetting : BooleanSetting
 ShovelStopAndGoSetting = CpObject(BooleanSetting)
 function ShovelStopAndGoSetting:init(vehicle)
@@ -4060,6 +3866,18 @@ function SettingsContainer:validateSetting(setting)
 	return true
 end
 
+function SettingsContainer:debug(channel)
+	for key, setting in pairs(self) do
+		if key ~= 'name' then
+			if setting.vehicle then
+				courseplay.debugVehicle(channel, setting.vehicle, setting:getDebugString())
+			else
+				courseplay.debugFormat(channel, setting:getDebugString())
+			end
+		end
+	end
+end
+
 function SettingsContainer.createGlobalSettings()
 	local container = SettingsContainer("globalSettings")
 	container:addSetting(LoadCoursesAtStartupSetting)
@@ -4074,13 +3892,6 @@ function SettingsContainer.createGlobalSettings()
 	return container
 end
 
-function SettingsContainer.createGlobalCourseGeneratorSettings()
-	local container = SettingsContainer('globalCourseGeneratorSettings')
-	container:addSetting(HeadlandLaneChangeMinRadius)
-	container:addSetting(HeadlandLaneChangeMinDistanceToCorner)
-	container:addSetting(HeadlandLaneChangeMinDistanceFromCorner)
-	return container
-end
 
 function SettingsContainer.createGlobalPathfinderSettings()
 	local container = SettingsContainer('globalPathfinderSettings')
@@ -4158,15 +3969,8 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)
-	return container
-end
-
-function SettingsContainer.createCourseGeneratorSettings(vehicle)
-	local container = SettingsContainer("courseGeneratorSettings")
-	container:addSetting(NumberOfRowsPerLandSetting, vehicle)
-	container:addSetting(CenterModeSetting, vehicle)
-	container:addSetting(HeadlandOverlapPercent, vehicle)
-	container:addSetting(ShowSeedCalculatorSetting, vehicle)
+	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
+	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	return container
 end
 

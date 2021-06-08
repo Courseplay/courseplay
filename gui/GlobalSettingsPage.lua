@@ -31,17 +31,7 @@ function GlobalSettingsPage:onFrameClose()
 end;
 
 function GlobalSettingsPage:onCreateGlobalSettingsPage(element)
-	---@type SettingList
-    local setting = courseplay.globalSettings[element.name]
-	if setting then
-		setting:setGuiElement(element)
-		element.labelElement.text = setting:getLabel()
-		element.toolTipText = setting:getToolTip()
-		element:setTexts(setting:getGuiElementTexts())
-		element:setState(setting:getGuiElementState())
-	else
-		courseplay.info('GlobalSettingsPage: can\'t find setting %s', element.name)
-	end
+	CpGuiUtil.bindSetting(courseplay.globalSettings, element, 'GlobalSettingsPage')
 end;
 
 function GlobalSettingsPage:copyAttributes(src) 
