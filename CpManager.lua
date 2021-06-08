@@ -46,8 +46,7 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD NEW GUI 
 	courseplay.guiManager = GuiManager:new()
-	courseplay.guiManager:load()
-
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.load)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- LOAD SETTINGS FROM COURSEPLAYSETTINGS.XML / SAVE DEFAULT SETTINGS IF NOT EXISTING
 	if g_server ~= nil then
@@ -241,7 +240,7 @@ function CpManager:deleteMap()
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete gui
-	courseplay.guiManager:delete()
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.delete)
 end;
 
 function CpManager:update(dt)
@@ -311,7 +310,7 @@ function CpManager:update(dt)
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- GUI
-	courseplay.guiManager:update(dt)
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.update,dt)
 end;
 
 
@@ -359,8 +358,7 @@ end;
 function CpManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- GUI
-	courseplay.guiManager:mouseEvent(posX, posY, isDown, isUp, mouseKey)
-
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.mouseEvent,posX, posY, isDown, isUp, mouseKey)
 	-- if the game is paused or a gui is open (e.g. Shop or Landscaping) then ignore the input
 	if g_currentMission.paused or g_gui.currentGui~= nil then return; end;
 
@@ -479,7 +477,7 @@ function CpManager:keyEvent(unicode, sym, modifier, isDown)
 	
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- GUI
-	courseplay.guiManager:keyEvent(unicode, sym, modifier, isDown)
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.keyEvent,unicode, sym, modifier, isDown)
 end;
 
 -- ####################################################################################################
@@ -519,7 +517,7 @@ function CpManager.saveXmlSettings(self)
 		courseplay.globalSettings:saveToXML(cpSettingsXml, 'CPSettings')
 		courseplay.globalCourseGeneratorSettings:saveToXML(cpSettingsXml, 'CPSettings.courseGenerator')
 
-		courseplay.guiManager:saveXmlSettings(cpSettingsXml, 'CPSettings')
+		courseplay.guiManager:executeExternFunction(courseplay.guiManager.saveXmlSettings,cpSettingsXml, 'CPSettings')
 
 		saveXMLFile(cpSettingsXml);
 		delete(cpSettingsXml);
@@ -1307,7 +1305,7 @@ function CpManager:loadXmlSettings()
 		courseplay.globalSettings:loadFromXML(cpSettingsXml, 'CPSettings')
 		courseplay.globalCourseGeneratorSettings:loadFromXML(cpSettingsXml, 'CPSettings.courseGenerator')
 
-		courseplay.guiManager:loadXmlSettings(cpSettingsXml, 'CPSettings')
+		courseplay.guiManager:executeExternFunction(courseplay.guiManager.loadXmlSettings,cpSettingsXml, 'CPSettings')
 		--------------------------------------------------
 		delete(cpSettingsXml);
 	end;

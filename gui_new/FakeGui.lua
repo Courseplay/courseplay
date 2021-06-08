@@ -22,8 +22,6 @@ FakeGui = {}
 FakeGui.guiInformations = {}
 FakeGui.guiInformations.guiXml = "gui_new/FakeGui.xml"
 
-GuiManager.fakeGui = FakeGui
-
 FakeGui._mt = Class(FakeGui, ScreenElement)
 
 function FakeGui:new(target, custom_mt)

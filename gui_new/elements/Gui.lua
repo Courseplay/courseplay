@@ -172,3 +172,9 @@ function CpGui:closeGui()
 		self.classGui:onClose()
 	end
 end
+
+function CpGui:raiseDirtyFlag()
+	if self.classGui.raiseDirtyFlag ~= nil then
+		self.classGui:raiseDirtyFlag()
+	end
+end

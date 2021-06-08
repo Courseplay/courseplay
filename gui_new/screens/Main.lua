@@ -108,7 +108,10 @@ function CpGuiMain:keyEvent(unicode, sym, modifier, isDown, eventUsed)
 end
 
 function CpGuiMain:update(dt)
-	
+	if self.isDirty then 
+        self:validateModeButtons()
+        self.isDirty = false
+    end
 end
 
 function CpGuiMain:draw()
@@ -117,13 +120,13 @@ end
 
 function CpGuiMain:setData(vehicle)
     self.vehicle = vehicle
-    self.driverModeSetting = vehicle.cp.settings.driverMode
-    self.driverModeSetting:validateCurrentValue(vehicle)
     for _,page in pairs(self.pageFunctions.pages) do
         if page.classGui.setVehicle ~= nil then
             page.classGui:setVehicle(vehicle)
         end
     end
+    self.driverModeSetting = vehicle.cp.settings.driverMode
+    self:validateModeButtons()
 end
 
 function CpGuiMain:setGuiMoverValues(target, pos)
@@ -188,7 +191,6 @@ function CpGuiMain:onClickSelectMode(btn,mode)
     local curMode = self.driverModeSetting:get()
     if mode ~= curMode then 
         self.driverModeSetting:set(mode)
-        self.driverModeSetting:validateCurrentValue(self.vehicle)
         self:validatePageButtons()
         self:resetPageToDefault()
     end
@@ -197,14 +199,17 @@ end
 --- TODO: moves this into a setting: DriverModeSetting!
 
 --- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
-function CpGuiMain:validateModeButtons(validModes,currentMode,wasResetToDefault)
+function CpGuiMain:validateModeButtons()
+    local validModes = self.driverModeSetting:getValidModes()
+    local currentMode = self.driverModeSetting:get()
+
     for i = 1,DriverModeSetting.NUM_MODES do
         local btn = self:getModeButton(i)
         btn:setDisabled(not validModes[i])
+        if btn:getActive() and i ~= currentMode then 
+            self:resetPageToDefault()
+        end
         btn:setActive(i == currentMode)
-    end
-    if wasResetToDefault then 
-        self:resetPageToDefault()
     end
     self:validatePageButtons()
 end
@@ -229,4 +234,7 @@ function CpGuiMain:isPageForModeDisabled(page)
     end
 end
 
+function CpGuiMain:raiseDirtyFlag()
+    self.isDirty = true
+end
 

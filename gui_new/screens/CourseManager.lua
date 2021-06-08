@@ -64,6 +64,7 @@ end
 function CpCourseManager:onClose() 
     g_depthOfFieldManager:setBlurState(false)
     courseplay.guiManager:openGui("cp_main")
+    
 end
 
 
@@ -112,7 +113,8 @@ function CpCourseManager:loadXmlSettings(xml, key)
         self.dialogPosition[2] = getXMLFloat(xml, key .. '.courseManager#posY')
     end
 end
-
-
+function CpCourseManager:raiseDirtyFlag()
+    self.isDirty = true
+end
 
 

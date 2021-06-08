@@ -49,19 +49,21 @@ function GuiManager:new(customMt)
 	self.oldDrawFunc = BaseMission.draw
 	self.oldUpdateFunc = Gui.update
 
-	BaseMission.draw = courseplay.appendedFunction(BaseMission.draw, self.draw, self)
-	Gui.update = courseplay.appendedFunction(Gui.update, self.update, self)
+
+	BaseMission.draw = GuiManager.appendedFunction(BaseMission.draw, self.draw, self)
+	Gui.update = GuiManager.appendedFunction(Gui.update, self.update, self)
 
 	return self
 end
 
 --function GuiManager:init()
 --end
-
+--- Extern load function.
 function GuiManager:load()
+
 	self:loadGuiTemplates(courseplay.path .. "gui_new/guiTemplates.xml")
 
-	self.fakeGui = GuiManager.fakeGui:new()
+	self.fakeGui = FakeGui:new()
 	g_gui:loadGui(courseplay.path .. self.fakeGui.guiInformations.guiXml, "cp_fakeGui", self.fakeGui)
 	
 	self:registerUiElements("g_cpIconsOld", courseplay.path .. "img/iconSprite.dds")
@@ -72,41 +74,16 @@ function GuiManager:load()
 	--self:registerInput("cp_main", InputAction.COURSEPLAY_HUD_OPEN, true) 
 end
 
+--- Extern update function.
 function GuiManager:update(dt)
-	--[[
-	if GuiManager.devVersion then
-		if self.devVersionTimeCurrent == nil or self.devVersionTimeCurrent <= 0 then
-			self.mainCpGui.pageFunctions.pages = {}
-			self.mainCpGui.pageFunctions.pagesById = {}
-			for _, fileName in pairs(self.devVersionTemplateFiles) do				
-				self:loadGuiTemplates(fileName)
-			end
-			for name,gui in pairs(self.guis) do		
-				gui.gui:deleteElements()
-				gui.gui:loadFromXML()
-			end
-			if self.activeGui ~= nil then
-				self.guis[self.activeGui].gui:openGui()
-			else
-				for name, open in pairs(self.smallGuis) do
-					if open then
-						self.guis[name].gui:openGui()
-					end
-				end 
-			end
-			if self.activeGuiDialog ~= nil then
-				self.guis[self.activeGuiDialog].gui:openGui()
-			end
-			self.devVersionTimeCurrent = self.devVersionTimeReload
-		else
-			self.devVersionTimeCurrent = self.devVersionTimeCurrent - dt
-		end		
-	end
-	]]--
 	if self.activeGui == nil then
 		for name, open in pairs(self.smallGuis) do
 			if open then
 				self.guis[name].gui:update(dt)
+				if self.isDirty then 
+					self.guis[name].gui:raiseDirtyFlag()
+					self.isDirty = false
+				end
 			end
 		end
 	else
@@ -114,6 +91,10 @@ function GuiManager:update(dt)
 			self:closeGui(self.activeGui)
 		else
 			self.guis[self.activeGui].gui:update(dt)
+			if self.isDirty then 
+				self.guis[self.activeGui].gui:raiseDirtyFlag()
+				self.isDirty = false
+			end
 		end
 	end
 	for _, name in pairs(self.activeGuiDialogs) do
@@ -121,6 +102,7 @@ function GuiManager:update(dt)
 	end
 end
 
+--- Extern mouse event function.
 function GuiManager:mouseEvent(posX, posY, isDown, isUp, button) 
 	if self.activeGuiDialog ~= nil then
 		self.guis[self.activeGuiDialog].gui:mouseEvent(posX, posY, isDown, isUp, button)
@@ -135,6 +117,7 @@ function GuiManager:mouseEvent(posX, posY, isDown, isUp, button)
 	end
 end
 
+--- Extern key event function.
 function GuiManager:keyEvent(unicode, sym, modifier, isDown) 
 	if self.activeGuiDialog ~= nil then
 		self.guis[self.activeGuiDialog].gui:keyEvent(unicode, sym, modifier, isDown)
@@ -156,6 +139,7 @@ function GuiManager:keyEvent(unicode, sym, modifier, isDown)
 	end
 end
 
+--- Extern draw event function.
 function GuiManager:draw()
 	if self.activeGui == nil then
 		if not g_gui:getIsGuiVisible() or g_currentMission == nil then
@@ -173,7 +157,8 @@ function GuiManager:draw()
 	end
 end
 
-function GuiManager:delete() 
+--- Extern delete function.
+function GuiManager:delete()
 	courseplay.guiManager:closeActiveGui()
 	for name,gui in pairs(self.guis) do		
 		gui.gui:deleteElements()
@@ -868,6 +853,7 @@ function GuiManager:handleInputMainGui(rightClick, vehicle)
 	--end
 end
 
+--- Extern enter vehicle function.
 function GuiManager:onEnterVehicle(vehicle)
 	if self.guiStates["cp_main"] then
 		local gui = courseplay.guiManager:openGui("cp_main", true)
@@ -875,6 +861,7 @@ function GuiManager:onEnterVehicle(vehicle)
 	end
 end
 
+--- Extern leave vehicle function.
 function GuiManager:onLeaveVehicle()
 	if self.smallGuis["cp_main"] then
 		courseplay.guiManager:closeGui("cp_main")
@@ -898,16 +885,41 @@ function GuiManager:loadXmlSettings(xml, key)
 	self.courseManagerCpGui:loadXmlSettings(xml, key)
 end
 
+--- Extern request update function.
+function GuiManager:raiseDirtyFlag()
+	self.isDirty = true
+end
+
 function GuiManager.devKeyEvent(unicode, sym, modifier, isDown)
 	if bitAND(modifier, Input.MOD_LCTRL) ~= 0 and isDown and sym == Input.KEY_h then
 		courseplay.guiManager:delete()
 		print(CpManager:loadFile("gui_new/reloadGui.xml"))
-		courseplay.guiManager = nil 
 		courseplay.guiManager = GuiManager:new()
 		courseplay.guiManager:load()
 		if g_currentMission.controlledVehicle then 
 			courseplay.guiManager:onEnterVehicle(g_currentMission.controlledVehicle)
-
 		end
 	end
+end
+
+function GuiManager:executeExternFunction(func,...)
+	local status, err = xpcall(func, function(err) printCallstack(); return err end, self,...)
+
+	if not status then
+		courseplay.info('Gui/Hud Exception: %s', tostring(err))
+		GuiManager.errorWasFound = true
+		return
+	end
+end
+
+function GuiManager.appendedFunction(oldFunc, newFunc, t)
+    if oldFunc ~= nil then
+        return function (s, ...)
+            local val = oldFunc(s, ...)
+			t:executeExternFunction(newFunc,...) 
+			return val
+        end
+    else
+        return newFunc
+    end
 end

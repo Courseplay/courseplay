@@ -39,7 +39,7 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 
 	courseplay:resetTools(vehicle)
 	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
-	vehicle.cp.settings:validateCurrentValues(vehicle)
+	vehicle.cp.settings:validateCurrentValues()
 
 	-- reset tool offset to the preconfigured value if exists
 	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
@@ -47,7 +47,7 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	if vehicle.cp.driver then
 		vehicle.cp.driver:refreshHUD()
 	end
-
+	courseplay.guiManager:executeExternFunction(courseplay.guiManager.raiseDirtyFlag)
 end
 
 --- Set up tool configuration after something is attached or detached

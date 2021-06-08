@@ -6,8 +6,7 @@
 out
 reload/venv
 reload.xml
-gui_new/reload.xml
-Courseplay.code-workspace
+gui_new/reloadGui.xml
 
 # Windows image file caches
 Thumbs.db
