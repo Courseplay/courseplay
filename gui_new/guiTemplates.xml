@@ -17,6 +17,17 @@
 		<uv name="image" value="0 0 1 1" />
 
 		<uv name="icon_cpLogo" value="0 0.845 0.8125 0.15" />
+
+		<uv name="icon_recordingCross" value="76px 148px 32px 32px" />
+		<uv name="icon_recordingDelete" value="148px 328px 32px 32px" />
+		<uv name="icon_recordingPause" value="40px 328px 32px 32px" />
+		<uv name="icon_recordingPlay" value="220px 292px 32px 32px" />
+		<uv name="icon_recordingReverse" value="112px 328px 32px 32px" />
+		<uv name="icon_recordingStop" value="76px 328px 32px 32px" />
+		<uv name="icon_recordingTurn" value="4px 328px 32px 32px" />
+		<uv name="icon_recordingWait" value="40px 148px 32px 32px" />
+		<uv name="icon_recordingUnload" value="4px 399px 32px 32px" />
+
 		<uv name="icon_info" value="440px 290px 150px 75px" />
 		<uv name="icon_closeX" value="580px 365px 150px 75px" /><!--Woher?-->
 		
@@ -74,6 +85,7 @@
 
     </uvs>
 	<templates>
+		<!--Base element-->
 		<template name="cpBase">
 			<value name="imageFilename" value="g_baseUIFilename" />
 			<value name="imageUVs" value="colorBg" />
@@ -91,28 +103,31 @@
 			<value name="textColor_selected" value="text_selected" />
 			<value name="imageSize" value="1024 1024" />
 		</template>
-        
+        <!--Main screen background-->
         <template name="cpMain" anchor="middleCenter" extends="cpBase">
 			<value name="size" value="390px 320px" /><!--Main BG size from mid-->
 			<value name="position" value="700px 0px" />
 			<value name="imageColor" value="gray" />
 		</template>
-
+		<!--Main screen top background-->
         <template name="cpMainBarTop" anchor="middleTop" extends="cpBase">
 			<value name="size" value="390px 25px" /><!--top and bottom black bar size from mid-->
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
+		<!--Main screen mover-->
         <template name="cpMainGuiMover" anchor="leftTop" extends="cpBase">
 			<value name="size" value="350px 25px" /><!--Mover Area lenght from left-->
 			<value name="position" value="0px 0px" />
-		</template>        
+		</template>
+		<!--Main screen top logo-->        
         <template name="cpMainLogo" anchor="leftCenter" extends="cpBase">
 			<value name="size" value="40px 15px" />
 			<value name="position" value="10px 0px" />
 			<value name="imageFilename" value="g_cpIconsOld" />
 			<value name="imageUVs" value="icon_cpLogo" />
 		</template>
+		<!--Main screen top titles--> 
         <template name="cpMainTitle1" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="40px 2px" />
 			<value name="textSize" value="18px" />
@@ -129,12 +144,14 @@
 			<value name="textColor" value="white" />
 			<value name="textBold" value="false" />
 		</template>
+		<!--Main screen top version--> 
         <template name="cpMainVersion" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="270px 2px" /><!--Version Infotext from left-->
 			<value name="textSize" value="10px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
 		</template> 
+		<!--Main screen top close button--> 
 		<template name="cpMainCloseButton" anchor="rightCenter" extends="cpBase">
 			<value name="size" value="20px 20px" />
 			<value name="position" value="-10px 0px" />
@@ -147,34 +164,40 @@
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 		</template>
+		<!--Main screen bottom background--> 
         <template name="cpMainBarBottom" anchor="middleBottom" extends="cpMainBarTop">
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
+		<!--Main screen bottom icon--> 
         <template name="cpMainBarBottomIcon" anchor="leftCenter" extends="cpBase">
 			<value name="size" value="20px 20px" />
 			<value name="position" value="5px 0px" />
 			<value name="imageFilename" value="g_cpIconsOld" />
 			<value name="imageUVs" value="icon_info" />
 		</template>
+		<!--Main screen bottom help text--> 
         <template name="cpMainBarBottomHelptext" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="30px 2px" />
 			<value name="textSize" value="15px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
 		</template>
+		<!--Main screen layout--> 
 		<template name="cpMainLayout" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px -25px" />
 			<value name="size" value="390px 270px" />
 		</template>
+		<!--Main screen page button layout--> 
 		<template name="cpMainLayout1" anchor="middleCenter" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
 			<value name="size" value="40px 250px" />
 		</template>
+		<!--Main screen page layout--> 
 		<template name="cpMainLayout2" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
@@ -182,18 +205,20 @@
 			<value name="size" value="350px 270px" />
 			<value name="margin" value="0px 0px 0px 0px" />
 		</template>
+		<!--Main screen page position--> 
 		<template name="cpMainPagePosition" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="size" value="310px 225px" />
 			<value name="margin" value="0px 5px 0px 5px" />
 		</template>
+		<!--Main screen mode button layout--> 
 		<template name="cpMainLayout3" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px 0px" />
 			<value name="size" value="340px 30px" /><!--Bottom Buttons-->
 		</template>
-
+		<!--Main screen button prefabs--> 
 		<template name="cpMainCategorie" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="size" value="32px 32px" />
@@ -222,7 +247,7 @@
 		</template>
 		<!--Opens CourseManager_GUI-->
 		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
+		<!--	<value name="margin" value="0px 20px 0px 0px" />-->
 		</template>
 		<template name="cpMainCategorie_CourseManager_overlay" extends="cpMainCategorie_CourseManager">
 			<value name="imageUVs" value="icon_castCourseManager" />
@@ -236,7 +261,7 @@
 		</template>
 		<!--Combine Manager-->
 		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton" >
-			<value name="margin" value="0px 12px 0px 0px" />
+		<!--	<value name="margin" value="0px 12px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_DriversSearch_overlay" extends="cpMainCategorie_DriversSearch">
 			<value name="imageUVs" value="icon_castCombineManager" />
@@ -268,7 +293,7 @@
 		</template>
 		<!--Advanced Settings Gui-->
 		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
+		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_Settings_overlay" extends="cpMainCategorie_Settings">
 			<value name="imageUVs" value="icon_castSettings" />
@@ -276,7 +301,7 @@
 		</template>
 		<!--Mode 9 Settings-->
 		<template name="cpMainCategorie_ShovelMode" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
+		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_ShovelMode_overlay" extends="cpMainCategorie_ShovelMode">
 			<value name="imageUVs" value="icon_mode9" />
@@ -284,18 +309,20 @@
 		</template>
 		<!--Mode 10 Settings-->
 		<template name="cpMainCategorie_BunkerSilo" anchor="middleTop" extends="cpMainCategorie" >
-			<value name="margin" value="0px 20px 0px 0px" />
+		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_BunkerSilo_overlay" extends="cpMainCategorie_BunkerSilo">
 			<value name="imageUVs" value="icon_mode10" />
 			<value name="imageUVs_selected" value="icon_mode10" />
 		</template>
 
+		<!--Mode 1 Button-->
 		<template name="cpMainCategorie_mode1" anchor="middleTop" extends="cpMainCategorieActiveButton" />
 		<template name="cpMainCategorie_mode1_overlay" extends="cpMainCategorie_mode1">
 			<value name="imageUVs" value="icon_mode1" />
 			<value name="imageUVs_selected" value="icon_mode1" />
 		</template>
+		<!--Mode 2 Button-->
 		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -303,6 +330,7 @@
 			<value name="imageUVs" value="icon_mode2" />
 			<value name="imageUVs_selected" value="icon_mode2" />
 		</template>
+		<!--Mode 3 Button-->
 		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -310,6 +338,7 @@
 			<value name="imageUVs" value="icon_mode3" />
 			<value name="imageUVs_selected" value="icon_mode3" />
 		</template>
+		<!--Mode 4 Button-->
 		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -317,6 +346,7 @@
 			<value name="imageUVs" value="icon_mode4" />
 			<value name="imageUVs_selected" value="icon_mode4" />
 		</template>
+		<!--Mode 5 Button-->
 		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -324,6 +354,7 @@
 			<value name="imageUVs" value="icon_mode5" />
 			<value name="imageUVs_selected" value="icon_mode5" />
 		</template>
+		<!--Mode 6 Button-->
 		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -331,6 +362,7 @@
 			<value name="imageUVs" value="icon_mode6" />
 			<value name="imageUVs_selected" value="icon_mode6" />
 		</template>
+		<!--Mode 7 Button-->
 		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -338,6 +370,7 @@
 			<value name="imageUVs" value="icon_mode7" />
 			<value name="imageUVs_selected" value="icon_mode7" />
 		</template>
+		<!--Mode 8 Button-->
 		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -345,6 +378,7 @@
 			<value name="imageUVs" value="icon_mode8" />
 			<value name="imageUVs_selected" value="icon_mode8" />
 		</template>
+		<!--Mode 9 Button-->
 		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -352,6 +386,7 @@
 			<value name="imageUVs" value="icon_mode9" />
 			<value name="imageUVs_selected" value="icon_mode9" />
 		</template>
+		<!--Mode 10 Button-->
 		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorieActiveButton" >
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
@@ -359,8 +394,6 @@
 			<value name="imageUVs" value="icon_mode10" />
 			<value name="imageUVs_selected" value="icon_mode10" />
 		</template>
-
-
 
 		<template name="cpMainCategorie_Frontlader" anchor="middleTop" extends="cpMainCategorie" />
 		<template name="cpMainCategorie_Frontlader_overlay" extends="cpMainCategorie_Frontlader">
@@ -445,7 +478,53 @@
 			<value name="isActivable" value="true" />
 			<value name="checkParent" value="true" />
 		</template-->
+		<!--##############################################################################################
+													Page Driving
+		################################################################################################-->
+		<template name="cpPageTitle" anchor="middleTop" extends="cpMainPage">		
+			<value name="position" value="0px -5px" />
+			<value name="textSize" value="18px" />
+			<value name="textAlignment" value="center" />
+			<value name="textColor" value="white" />
+			<value name="textBold" value="true" />
+		</template>
 
+		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpMainPagePosition">	
+			<value name="position" value="10px -16px" />
+			<value name="orientation" value="y" />
+			<value name="alignment" value="top" />
+		</template>
+
+		<template name="cpPageLeftToRightLayout" anchor="leftTop" extends="cpPageTopToBottomLayout">		
+			<value name="orientation" value="x" />
+			<value name="alignment" value="left" />
+			<value name="size" value="340px 10px"/>
+		</template>
+		
+		<template name="cpPageButton" anchor="leftTop" extends="cpMainPagePosition">	
+			<value name="position" value="0px -5px" />
+			<value name="textSize" value="18px" />
+			<value name="textAlignment" value="center" />
+			<value name="textColor" value="white" />
+			<value name="textBold" value="true" />
+			<value name="size" value="50px 10px"/>
+		</template>
+
+		<!--Play button-->
+		<template name="cpPageDrivingStartButton" anchor="middleCenter" extends="cpMainPagePosition" >
+			<value name="position" value="0px 0px" />
+			<value name="margin" value="2px 0px 0px 0px" />
+			<value name="hasOverlay" value="true" />
+			<value name="imageSize" value="256 512" />
+			<value name="size" value="20px 20px"/>
+		</template>
+		<template name="cpPageDrivingStartButton_overlay" extends="cpPageDrivingStartButton">
+			<value name="imageFilename" value="g_cpIconsOld" />
+			<value name="imageUVs" value="icon_recordingStop" />
+			<value name="imageUVs_selected" value="icon_recordingStop" />
+			<value name="imageUVs_disabled" value="icon_recordingStop" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingStop" />
+		</template>
 
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->

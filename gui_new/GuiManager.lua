@@ -903,9 +903,15 @@ function GuiManager.devKeyEvent(unicode, sym, modifier, isDown)
 end
 
 function GuiManager:executeExternFunction(func,...)
+	if GuiManager.errorWasFound then 
+		return
+	end
+
 	local status, err = xpcall(func, function(err) printCallstack(); return err end, self,...)
 
 	if not status then
+		local errText = string.format('Gui/Hud Exception: %s',tostring(err))
+		g_currentMission:addIngameNotification(FSBaseMission.INGAME_NOTIFICATION_CRITICAL, errText)
 		courseplay.info('Gui/Hud Exception: %s', tostring(err))
 		GuiManager.errorWasFound = true
 		return

@@ -2,9 +2,7 @@
 
 <GUI>      
     <GuiElement type="image" template="cpMainPage">
-
-      
-        <GuiElement type="text" template="cpMainTitle2" text="Drivers" /> 
+        <GuiElement type="text" template="cpDrivingPageTitle" text="Drivers" /> 
       
     </GuiElement>
 </GUI>

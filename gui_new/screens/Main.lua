@@ -91,7 +91,7 @@ end
 
 function CpGuiMain:onOpen() 
     self.gui_dialog.position = self.dialogPosition
-    self.pageFunctions:setPageByName(self.lastPageIndex)
+    self:resetPageToDefault()
 end
 
 function CpGuiMain:onClose() 
@@ -183,7 +183,7 @@ function CpGuiMain:onClickOpenPage(btn, site)
 end
 
 function CpGuiMain:resetPageToDefault()
-    self.lastPageIndex = self.pageFunctions:setPageByName(self.driverModeSetting:getDefaultMode())
+    self.lastPageIndex = self.pageFunctions:setPageByName(self.defaultPage)
 end
 
 function CpGuiMain:onClickSelectMode(btn,mode)
@@ -195,8 +195,6 @@ function CpGuiMain:onClickSelectMode(btn,mode)
         self:resetPageToDefault()
     end
 end
-
---- TODO: moves this into a setting: DriverModeSetting!
 
 --- Updates the mode button availability on: opening of the hud or attach/detach of an implement.
 function CpGuiMain:validateModeButtons()
