@@ -1341,8 +1341,14 @@ function CombineAIDriver:startSelfUnload()
 		self.courseAfterPathfinding = nil
 		self.waypointIxAfterPathfinding = nil
 		local targetNode = fillRootNode or bestTrailer.rootNode
+		local trailerRootNode = bestTrailer.rootNode
+		local trailerLength = bestTrailer.sizeLength
+		self:debug('Trailer Length : %d', trailerLength)
+
+		local _, _, dZ = localToLocal(trailerRootNode, targetNode, 0, 0, 0)
+		
 		local offsetX = -self.pipeOffsetX - 0.2
-		local alignLength = 3
+		local alignLength = (trailerLength / 2) + dZ + 3
 		-- arrive near the trailer alignLength meters behind the target, from there, continue straight a bit
 		local offsetZ = -self.pipeOffsetZ - alignLength
 		-- little straight section parallel to the trailer to align better
