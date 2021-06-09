@@ -1345,8 +1345,7 @@ function CombineAIDriver:startSelfUnload()
 		local trailerLength = bestTrailer.sizeLength
 		self:debug('Trailer Length : %d', trailerLength)
 
-		local dX, dY, dZ = localToLocal(trailerRootNode, targetNode, 0, 0, 0)
-		self:debug('ax = %d, ay = %d, az = %d', dX, dY, dZ)
+		local _, _, dZ = localToLocal(trailerRootNode, targetNode, 0, 0, 0)
 		
 		local offsetX = -self.pipeOffsetX - 0.2
 		local alignLength = (trailerLength / 2) + dZ + 3
