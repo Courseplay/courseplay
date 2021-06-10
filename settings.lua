@@ -61,7 +61,7 @@ function courseplay:setAIDriver(vehicle, mode)
 		courseplay.infoVehicle(vehicle, 'Retrying initialization in mode 5')
 		status, result = xpcall(AIDriver, errorHandler, vehicle)
 		vehicle.cp.driver = status and result or nil
-		vehicle.cp.mode = courseplay.MODE_TRANSPORT
+		vehicle.cp.mode = courseplay.MODE_DEFAULT
 	end
 end
 
@@ -1740,6 +1740,7 @@ StartingPointSetting.START_AT_CURRENT_POINT = 3 -- current waypoint
 StartingPointSetting.START_AT_NEXT_POINT    = 4 -- nearest waypoint with approximately same direction as vehicle
 StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the combine (only for CombineUnloadAIDriver)
 StartingPointSetting.START_COLLECTING_BALES = 6 -- start with unloading the combine (only for CombineUnloadAIDriver)
+StartingPointSetting.START_AT_LAST_POINT	= 7 -- last waypoint for all BunkerSiloAIDrivers (is visible as first wp in the hud)
 
 function StartingPointSetting:init(vehicle)
 	local values, texts = self:getValuesForMode(vehicle.cp.mode)
@@ -1776,6 +1777,20 @@ function StartingPointSetting:getValuesForMode(mode)
 			"COURSEPLAY_FIRST_POINT"  ,
 			"COURSEPLAY_NEXT_POINT",
 			"COURSEPLAY_COLLECT_BALES",
+		}
+		--- TODO: find a good solution to this problem.
+	elseif mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY or mode == courseplay.MODE_BUNKERSILO_COMPACTER then 
+		return {
+			StartingPointSetting.START_AT_NEAREST_POINT,
+			StartingPointSetting.START_AT_LAST_POINT, --- this is an hack to have the BunkerSiloAIDriver drive to the last wp and then start normal.
+			StartingPointSetting.START_AT_CURRENT_POINT,
+			StartingPointSetting.START_AT_NEXT_POINT,
+		},
+		{
+			"COURSEPLAY_NEAREST_POINT",
+			"COURSEPLAY_FIRST_POINT"  ,
+			"COURSEPLAY_CURRENT_POINT",
+			"COURSEPLAY_NEXT_POINT",
 		}
 	else
 		return {
@@ -2986,26 +3001,10 @@ end
 ---@class BunkerSpeedSetting : SpeedSetting
 BunkerSpeedSetting = CpObject(SpeedSetting)
 ---@param vehicle table
----@param levelCompactModeSetting LevelCompactModeSetting
-function BunkerSpeedSetting:init(vehicle, levelCompactModeSetting)
-	self.levelCompactModeSetting = levelCompactModeSetting
+function BunkerSpeedSetting:init(vehicle)
 	SpeedSetting.init(self, 'bunkerSpeed','COURSEPLAY_MODE10_MAX_BUNKERSPEED', 'COURSEPLAY_MODE10_MAX_BUNKERSPEED', vehicle,5,20)
 	self:set(10)
 	self.MAX_SPEED_LEVELING = 10
-end
-
-function BunkerSpeedSetting:checkAndSetValidValue(x)
-	local new = SettingList.checkAndSetValidValue(self, x)
-	if self.levelCompactModeSetting:hasLeveler() then
-		if new > self.MAX_SPEED_LEVELING then 
-			return 10
-		end
-	end 
-	return new
-end
-
-function BunkerSpeedSetting:onChange()
-	self.vehicle.cp.speeds.bunkerSpeed = self:get()
 end
 
 function BunkerSpeedSetting:getText()
@@ -3667,10 +3666,10 @@ function MixerWagonToolPositionsSetting:init(vehicle)
 	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
 end
 
----@class ShovelStopAndGoSetting : BooleanSetting
-ShovelStopAndGoSetting = CpObject(BooleanSetting)
-function ShovelStopAndGoSetting:init(vehicle)
-	BooleanSetting.init(self, 'shovelStopAndGo','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
+---@class AlwaysWaitForShovelPositionsSetting : BooleanSetting
+AlwaysWaitForShovelPositionsSetting = CpObject(BooleanSetting)
+function AlwaysWaitForShovelPositionsSetting:init(vehicle)
+	BooleanSetting.init(self, 'alwaysWaitForShovelPositions','COURSEPLAY_SHOVEL_STOP_AND_GO', 'COURSEPLAY_SHOVEL_STOP_AND_GO', vehicle) 
 	self:set(true)
 end
 
@@ -3960,12 +3959,12 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ConvoyMaxDistanceSetting,vehicle) -- do we need this one ?
 	container:addSetting(FrontloaderToolPositionsSetting,vehicle)
 	container:addSetting(AugerPipeToolPositionsSetting,vehicle)
-	container:addSetting(ShovelStopAndGoSetting,vehicle)
+	container:addSetting(AlwaysWaitForShovelPositionsSetting,vehicle)
 	container:addSetting(LevelCompactModeSetting,vehicle)
 	container:addSetting(LevelCompactSearchOnlyAutomatedDriverSetting,vehicle)
 	container:addSetting(LevelCompactSearchRadiusSetting,vehicle)
 	container:addSetting(LevelCompactShieldHeightSetting,vehicle)
-	container:addSetting(BunkerSpeedSetting,vehicle, container.levelCompactMode)
+	container:addSetting(BunkerSpeedSetting,vehicle)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)

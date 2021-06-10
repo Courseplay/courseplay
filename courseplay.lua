@@ -188,7 +188,7 @@ local function setVersionData()
 end;
 
 local function setGlobalData()
-	-- CP MODES
+	-- CP MODES, TODO create a setting for cp.mode !
 	courseplay.MODE_GRAIN_TRANSPORT = 1;
 	courseplay.MODE_COMBI = 2;
 	courseplay.MODE_OVERLOADER = 3;
@@ -200,6 +200,7 @@ local function setGlobalData()
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
+	courseplay.MODE_DEFAULT = courseplay.MODE_TRANSPORT
 	------------------------------------------------------------
 	courseplay.SHOW_COVERS = true
 	courseplay.OPEN_COVERS = false

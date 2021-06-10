@@ -146,7 +146,7 @@ end
 ---Gets the silo selected fillType setting
 ---@return setting SiloSelectedFillTypeMixerWagonAIDriverSetting
 function MixerWagonAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver
+	return self.settings.siloSelectedFillTypeMixerWagonAIDriver
 end
 
 --- If max silo fillLevel is reached, then continue with the main course.
@@ -160,7 +160,7 @@ function MixerWagonAIDriver:isStartDistanceToSiloNeeded()
 end
 
 function MixerWagonAIDriver:getWorkingToolPositionsSetting()
-	return self.vehicle.cp.settings.mixerWagonToolPositions
+	return self.settings.mixerWagonToolPositions
 end
 
 function MixerWagonAIDriver:getBestTarget()

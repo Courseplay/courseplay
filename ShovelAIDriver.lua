@@ -177,7 +177,10 @@ end
 function ShovelAIDriver:driveIntoSilo(dt)
 	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.LOADING) then 
 		--- Waiting until the working position is reached.
-		self:hold()
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- If the shovel is full drive back out of the silo and then drive the unloading course.
 	if self:getIsShovelFull() then 
@@ -229,7 +232,10 @@ end
 --- Driving to the trailer for unloading.
 function ShovelAIDriver:driveToTrailer(dt)
 	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING) then
-		self:hold()
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- Waiting until the driver has reached the correct unloading position.
 	if self:isUnloadingPointReached() then
@@ -240,7 +246,10 @@ end
 --- Driving to the unload trigger for unloading. 
 function ShovelAIDriver:driveToUnloadingTrigger(dt)
 	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING) then
-		self:hold()
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- If an unload trigger was found (dischargeObject) then we drive 2 additional meters,
 	--- to make sure the unloading point is in the bounds of the trigger.	
@@ -515,7 +524,7 @@ function ShovelAIDriver:shovelDebug(...)
 end
 
 function ShovelAIDriver:getWorkingToolPositionsSetting()
-	return self.vehicle.cp.settings.frontloaderToolPositions
+	return self.settings.frontloaderToolPositions
 end
 
 function ShovelAIDriver:getTargetNode()
@@ -604,4 +613,8 @@ end
 
 function ShovelAIDriver:isCollisionDetectionEnabled()
 	return self.shovelState.properties.checkForTrafficConflict and self.lastDistanceToEmptyPoint > self.DISABLE_TRAFFIC_DETECTION_DISTANCE
+end
+
+function ShovelAIDriver:isAlignmentCourseNeeded(course, ix)
+	return AIDriver.isAlignmentCourseNeeded(self,course, ix)
 end
