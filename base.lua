@@ -517,6 +517,8 @@ function courseplay:onUpdate(dt)
 	end
 
 	if self.cp.postInitDone == nil then 
+		--- Reset the current mode, as all implements are now attached.
+		courseplay:setCpMode(self,  self.cp.loadedMode, true);
 		if self.cp.driver then 
 			---Post init function, as not all giants variables are
 			---set correctly at the first courseplay:setAIDriver() call.
@@ -982,7 +984,9 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay.basics';
-		courseplay:setCpMode(self,  Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode), true);
+		--courseplay:setCpMode(self,  Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode), true);
+		--- Save the loaded mode and set it later after all implements are attached.
+		self.cp.loadedMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode)
 		self.cp.waitTime 		  = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#waitTime'), 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
