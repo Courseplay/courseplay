@@ -481,27 +481,37 @@
 		<!--##############################################################################################
 													Page Driving
 		################################################################################################-->
+		<template name="cpPageBaseLayout" anchor="leftTop" extends="cpMainPage">		
+			<value name="position" value="0px 0px" />
+			<value name="orientation" value="y" />
+			<value name="alignment" value="top" />
+			<value name="debugEnabled" value="true" />
+		</template>
+		
 		<template name="cpPageTitle" anchor="middleTop" extends="cpMainPage">		
-			<value name="position" value="0px -5px" />
+			<value name="position" value="0px 0px" />
 			<value name="textSize" value="18px" />
 			<value name="textAlignment" value="center" />
 			<value name="textColor" value="white" />
 			<value name="textBold" value="true" />
 		</template>
 
-		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpMainPagePosition">	
-			<value name="position" value="10px -16px" />
+		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpPageBaseLayout">	
+			<value name="position" value="0px 0px" />
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
+			<value name="margin" value="5px 5px -5px -5px" />
+			<value name="size" value="330px 200px" /><!--Mid screen from center-->
 		</template>
 
 		<template name="cpPageLeftToRightLayout" anchor="leftTop" extends="cpPageTopToBottomLayout">		
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
-			<value name="size" value="340px 10px"/>
+			<value name="margin" value="0px 0px 0px 0px" />
+			<value name="size" value="330px 20px" /><!--Mid screen from center-->
 		</template>
 		
-		<template name="cpPageButton" anchor="leftTop" extends="cpMainPagePosition">	
+		<template name="cpPageButton" anchor="leftTop" extends="cpBase">	
 			<value name="position" value="0px -5px" />
 			<value name="textSize" value="18px" />
 			<value name="textAlignment" value="center" />
@@ -511,9 +521,8 @@
 		</template>
 
 		<!--Play button-->
-		<template name="cpPageDrivingStartButton" anchor="middleCenter" extends="cpMainPagePosition" >
+		<template name="cpPageDrivingStartButton" anchor="middleCenter" extends="cpBase" >
 			<value name="position" value="0px 0px" />
-			<value name="margin" value="2px 0px 0px 0px" />
 			<value name="hasOverlay" value="true" />
 			<value name="imageSize" value="256 512" />
 			<value name="size" value="20px 20px"/>
@@ -521,7 +530,7 @@
 		<template name="cpPageDrivingStartButton_overlay" extends="cpPageDrivingStartButton">
 			<value name="imageFilename" value="g_cpIconsOld" />
 			<value name="imageUVs" value="icon_recordingStop" />
-			<value name="imageUVs_selected" value="icon_recordingStop" />
+			<value name="imageUVs_selected" value="icon_recordingPause" />
 			<value name="imageUVs_disabled" value="icon_recordingStop" />
 			<value name="imageUVs_disabledSelected" value="icon_recordingStop" />
 		</template>

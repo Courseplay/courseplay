@@ -2,19 +2,40 @@
 
 <GUI>      
     <GuiElement type="image" template="cpMainPage">
-        <GuiElement type="text" template="cpPageTitle" text="Drivers" /> 
-        
-        <GuiElement type="flowLayout" template="cpPageTopToBottomLayout"> 
-            <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+        <GuiElement type="flowLayout" template="cpPageBaseLayout"> 
+            <GuiElement type="text" template="cpPageTitle" text="Drivers" /> 
+            
+            <GuiElement type="flowLayout" template="cpPageTopToBottomLayout"> 
+                <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
+                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                </GuiElement>
             </GuiElement>
-            <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-            </GuiElement>
-        </GuiElement>
-
+        </GuiElement> 
         <!--GuiElement type="element" id="level_1" visible="false">
             <GuiElement type="button" template="cpMainPageButton" text="Kursaufzeichnung beginnen" size="180px 15px" position="10px -10px" onClick="onClick_1_start" /> 
             
