@@ -137,6 +137,9 @@
 			<Setup>
 				<Specialization name="spec_weeder"/>
 			</Setup>
+			<Setup>
+				<Specialization name="spec_mulcher"/>
+			</Setup>
 			<!--grass equiment-->
 			<Setup>
 				<Specialization name="spec_mower"/>
