@@ -61,7 +61,7 @@ function courseplay:setAIDriver(vehicle, mode)
 		courseplay.infoVehicle(vehicle, 'Retrying initialization in mode 5')
 		status, result = xpcall(AIDriver, errorHandler, vehicle)
 		vehicle.cp.driver = status and result or nil
-		vehicle.cp.mode = courseplay.MODE_TRANSPORT
+		vehicle.cp.mode = courseplay.MODE_DEFAULT
 	end
 end
 
