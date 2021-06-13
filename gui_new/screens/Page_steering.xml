@@ -7,34 +7,56 @@
             
             <GuiElement type="flowLayout" template="cpPageTopToBottomLayout"> 
                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingStopRecordingButton"/> 
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/>
+                    <GuiElement type="button" template="cpPageDrivingPauseRecordingButton"/> 
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/>
+                    <GuiElement type="button" template="cpPageDrivingWaitPointRecordingButton"/>
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingUnloadPointRecordingButton"/>
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingCrossPointRecordingButton"/>
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingTurnPointRecordingButton"/>
+                    <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                    <GuiElement type="button" template="cpPageDrivingReversePointRecordingButton"/>            
                 </GuiElement>
                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    
                 </GuiElement>
                  <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    
                 </GuiElement>
                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    
                 </GuiElement>
                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                   
                 </GuiElement>
                 <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                    
                 </GuiElement>
                  <GuiElement type="flowLayout" template="cpPageLeftToRightLayout"> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
-                    <GuiElement type="button" template="cpPageDrivingStartButton"/> 
+                   
                 </GuiElement>
             </GuiElement>
+
+            <GuiElement type="flowLayout" template="cpPageDrivingRecordingBtnLayout"> 
+                <GuiElement type="button" template="cpPageDrivingStopRecordingButton"/> 
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/>
+                <GuiElement type="button" template="cpPageDrivingPauseRecordingButton"/> 
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/>
+                <GuiElement type="button" template="cpPageDrivingWaitPointRecordingButton"/>
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                <GuiElement type="button" template="cpPageDrivingUnloadPointRecordingButton"/>
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                <GuiElement type="button" template="cpPageDrivingCrossPointRecordingButton"/>
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                <GuiElement type="button" template="cpPageDrivingTurnPointRecordingButton"/>
+                <GuiElement type="image" template="cpPageDrivingSeparatorRecordingButton"/> 
+                <GuiElement type="button" template="cpPageDrivingReversePointRecordingButton"/>            
+            </GuiElement>
+
         </GuiElement> 
         <!--GuiElement type="element" id="level_1" visible="false">
             <GuiElement type="button" template="cpMainPageButton" text="Kursaufzeichnung beginnen" size="180px 15px" position="10px -10px" onClick="onClick_1_start" /> 

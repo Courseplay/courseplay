@@ -28,6 +28,19 @@
 		<uv name="icon_recordingWait" value="40px 148px 32px 32px" />
 		<uv name="icon_recordingUnload" value="4px 399px 32px 32px" />
 
+		<!--
+			recordingAddSplit  = { 220,360, 252,328 };
+		recordingCross     = {  76,180, 108,148 };
+		recordingDelete    = { 148,360, 180,328 };
+		recordingPause     = {  40,360,  72,328 };
+		recordingPlay      = { 220,324, 252,292 };
+		recordingReverse   = { 112,360, 144,328 };
+		recordingStop      = {  76,360, 108,328 };
+		recordingTurn      = {   4,360,  36,328 };
+		recordingWait      = {  40,180,  72,148 };
+		recordingUnload	   = {   4,431,  36,399 };
+		-->
+
 		<uv name="icon_info" value="440px 290px 150px 75px" />
 		<uv name="icon_closeX" value="580px 365px 150px 75px" /><!--Woher?-->
 		
@@ -481,6 +494,7 @@
 		<!--##############################################################################################
 													Page Driving
 		################################################################################################-->
+		<!--base page content-->
 		<template name="cpPageBaseLayout" anchor="leftTop" extends="cpMainPage">		
 			<value name="position" value="0px 0px" />
 			<value name="orientation" value="y" />
@@ -488,6 +502,7 @@
 			<value name="debugEnabled" value="true" />
 		</template>
 		
+		<!--page title-->
 		<template name="cpPageTitle" anchor="middleTop" extends="cpMainPage">		
 			<value name="position" value="0px 0px" />
 			<value name="textSize" value="18px" />
@@ -496,6 +511,7 @@
 			<value name="textBold" value="true" />
 		</template>
 
+		<!--Layout from top to bottom for lines of content-->
 		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpPageBaseLayout">	
 			<value name="position" value="0px 0px" />
 			<value name="orientation" value="y" />
@@ -504,36 +520,119 @@
 			<value name="size" value="330px 200px" /><!--Mid screen from center-->
 		</template>
 
+		<!--Layout from left to right content in a line-->
 		<template name="cpPageLeftToRightLayout" anchor="leftTop" extends="cpPageTopToBottomLayout">		
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="margin" value="0px 0px 0px 0px" />
 			<value name="size" value="330px 20px" /><!--Mid screen from center-->
 		</template>
-		
-		<template name="cpPageButton" anchor="leftTop" extends="cpBase">	
-			<value name="position" value="0px -5px" />
-			<value name="textSize" value="18px" />
-			<value name="textAlignment" value="center" />
-			<value name="textColor" value="white" />
-			<value name="textBold" value="true" />
-			<value name="size" value="50px 10px"/>
+
+
+		<!--Layout from left to right content in a line-->
+		<template name="cpPageDrivingRecordingBtnLayout" anchor="middleBottom" extends="cpPageBaseLayout">		
+			<value name="position" value="0px 50px" />
+			<value name="orientation" value="x" />
+			<value name="alignment" value="middle" />
+			<value name="margin" value="5px 5px -5px -5px" />
+			<value name="size" value="330px 40px" /><!--Mid screen from center-->
 		</template>
 
-		<!--Play button-->
-		<template name="cpPageDrivingStartButton" anchor="middleCenter" extends="cpBase" >
+		<!--Stop recording button-->
+		<template name="cpPageDrivingStopRecordingButton" anchor="middleCenter" extends="cpBase" >
 			<value name="position" value="0px 0px" />
 			<value name="hasOverlay" value="true" />
 			<value name="imageSize" value="256 512" />
-			<value name="size" value="20px 20px"/>
-		</template>
-		<template name="cpPageDrivingStartButton_overlay" extends="cpPageDrivingStartButton">
+			<value name="size" value="30px 30px"/>
 			<value name="imageFilename" value="g_cpIconsOld" />
+		</template>
+		<template name="cpPageDrivingStopRecordingButton_overlay" extends="cpPageDrivingStopRecordingButton">
 			<value name="imageUVs" value="icon_recordingStop" />
-			<value name="imageUVs_selected" value="icon_recordingPause" />
+			<value name="imageUVs_selected" value="icon_recordingStop" />
 			<value name="imageUVs_disabled" value="icon_recordingStop" />
 			<value name="imageUVs_disabledSelected" value="icon_recordingStop" />
 		</template>
+
+		<!--Pause recording button-->
+		<template name="cpPageDrivingPauseRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingPauseRecordingButton_overlay" extends="cpPageDrivingPauseRecordingButton">
+			<value name="imageUVs" value="icon_recordingPause" />
+			<value name="imageUVs_selected" value="icon_recordingPause" />
+			<value name="imageUVs_disabled" value="icon_recordingPause" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingPause" />
+		</template>
+
+		<!--Wait point recording button-->
+		<template name="cpPageDrivingWaitPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingWaitPointRecordingButton_overlay" extends="cpPageDrivingWaitPointRecordingButton">
+			<value name="imageUVs" value="icon_recordingWait" />
+			<value name="imageUVs_selected" value="icon_recordingWait" />
+			<value name="imageUVs_disabled" value="icon_recordingWait" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingWait" />
+		</template>
+
+		<!--Unload point recording button-->
+		<template name="cpPageDrivingUnloadPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingUnloadPointRecordingButton_overlay" extends="cpPageDrivingUnloadPointRecordingButton">
+			<value name="imageUVs" value="icon_recordingUnload" />
+			<value name="imageUVs_selected" value="icon_recordingUnload" />
+			<value name="imageUVs_disabled" value="icon_recordingUnload" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingUnload" />
+		</template>
+
+		<!--Cross point recording button-->
+		<template name="cpPageDrivingCrossPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingCrossPointRecordingButton_overlay" extends="cpPageDrivingCrossPointRecordingButton">
+			<value name="imageUVs" value="icon_recordingCross" />
+			<value name="imageUVs_selected" value="icon_recordingCross" />
+			<value name="imageUVs_disabled" value="icon_recordingCross" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingCross" />
+		</template>
+
+		<!--Turn point recording button-->
+		<template name="cpPageDrivingTurnPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingTurnPointRecordingButton_overlay" extends="cpPageDrivingTurnPointRecordingButton">
+			<value name="imageUVs" value="icon_recordingTurn" />
+			<value name="imageUVs_selected" value="icon_recordingTurn" />
+			<value name="imageUVs_disabled" value="icon_recordingTurn" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingTurn" />
+		</template>
+
+		<!--Reverse point recording button-->
+		<template name="cpPageDrivingReversePointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		</template>
+		<template name="cpPageDrivingReversePointRecordingButton_overlay" extends="cpPageDrivingReversePointRecordingButton">
+			<value name="imageUVs" value="icon_recordingReverse" />
+			<value name="imageUVs_selected" value="icon_recordingReverse" />
+			<value name="imageUVs_disabled" value="icon_recordingReverse" />
+			<value name="imageUVs_disabledSelected" value="icon_recordingReverse" />
+		</template>
+
+		<!--Separator between recording buttons-->
+		<template name="cpPageDrivingSeparatorRecordingButton" anchor="middleCenter" extends="cpBase" >
+			<value name="imageColor" value="cpOrange" />
+			<value name="size" value="2px 40px" />
+		</template>
+
+
+		<!--
+		<uv name="icon_recordingCross" value="76px 148px 32px 32px" />
+		<uv name="icon_recordingDelete" value="148px 328px 32px 32px" />
+		<uv name="icon_recordingPause" value="40px 328px 32px 32px" />
+		<uv name="icon_recordingPlay" value="220px 292px 32px 32px" />
+		<uv name="icon_recordingReverse" value="112px 328px 32px 32px" />
+		<uv name="icon_recordingStop" value="76px 328px 32px 32px" />
+		<uv name="icon_recordingTurn" value="4px 328px 32px 32px" />
+		<uv name="icon_recordingWait" value="40px 148px 32px 32px" />
+		<uv name="icon_recordingUnload" value="4px 399px 32px 32px" />
+
+		-->
+
 
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->
