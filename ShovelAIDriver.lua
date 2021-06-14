@@ -586,8 +586,10 @@ function ShovelAIDriver:onWaypointPassed(ix)
 	BunkerSiloAIDriver.onWaypointPassed(self,ix)
 end
 
+--- Is Looking for an unload point allowed ?
+--- Only when the driver isn't driving into/out of silo and isn't driving on an alignment course [not self:hasNextCourse()].
 function ShovelAIDriver:getCanUnload()
-	return not self:getIsShovelEmpty() and self:isDrivingUnloadingCourse() and self:isDrivingNormalCourse()
+	return not self:getIsShovelEmpty() and self:isDrivingUnloadingCourse() and self:isDrivingNormalCourse() and not self:hasNextCourse()
 end
 
 function ShovelAIDriver:isTrafficConflictDetectionEnabled()

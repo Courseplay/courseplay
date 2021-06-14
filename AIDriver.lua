@@ -784,6 +784,11 @@ function AIDriver:onLastWaypoint()
 	end
 end
 
+--- Does the driver has a next course after the current course ?
+function AIDriver:hasNextCourse()
+	return self.nextCourse ~= nil
+end
+
 --- End a course and then continue on nextCourse at nextWpIx
 function AIDriver:continueOnNextCourse(nextCourse, nextWpIx)
 	self:startCourse(nextCourse, nextWpIx)
