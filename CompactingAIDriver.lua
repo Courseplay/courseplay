@@ -46,7 +46,7 @@ end
 function CompactingAIDriver:drive(dt)
 
 	--- Gets the search radius.
-	local normalRadius = self.vehicle.cp.settings.levelCompactSearchRadius:get()
+	local normalRadius = self.settings.levelCompactSearchRadius:get()
 	--- Enlarge the searchRadius for waiting at waitpoint to avoid traffic problems
 	local searchRadius = self:isWaitingForUnloaders() and normalRadius + 10 or normalRadius
 	--- Searches for unloaders and restart/hold them in place.
@@ -86,7 +86,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 		local x,y,z = getTranslation(self.relevantWaypointNode.node)
 		DebugUtil.drawDebugCircle(x,y+2,z, r, math.ceil(r/2))
 	end
-	local onlyStopFilledDrivers = self.vehicle.cp.settings.levelCompactSiloTyp:get()
+	local onlyStopFilledDrivers = self.settings.levelCompactSiloTyp:get()
 	for _, vehicle in pairs(g_currentMission.vehicles) do
 		if vehicle ~= self.vehicle then
 			local d = calcDistanceFrom(self.relevantWaypointNode.node, vehicle.rootNode)
@@ -120,7 +120,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					return true
 				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer) ~= nil then 
 					--Player controlled vehicle
-					if self.vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
+					if self.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
 						--Player controlled vehicle is allowed to lookup
 						self:debugSparse("found player driven vehicle : %s",nameNum(vehicle))
 						return true

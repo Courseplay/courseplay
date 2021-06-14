@@ -1569,6 +1569,10 @@ function Course:getStartingWaypointIx(node, startingPoint)
 	if startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
 		return 1
 	end
+	if startingPoint:is(StartingPointSetting.START_AT_LAST_POINT) then 
+		return self:getNumberOfWaypoints()
+	end
+
 	local ixClosest, _, ixClosestRightDirection, _ = self:getNearestWaypoints(node)
 	if startingPoint:is(StartingPointSetting.START_AT_NEAREST_POINT) then
 		return ixClosest

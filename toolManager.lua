@@ -58,7 +58,7 @@ function courseplay:resetTools(vehicle)
 
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 	if not vehicle.cp.workToolAttached and vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER then
-		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
+		courseplay:setCpMode(vehicle, courseplay.MODE_DEFAULT)
 	end
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);

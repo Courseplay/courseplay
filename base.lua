@@ -83,7 +83,7 @@ function courseplay:onLoad(savegame)
 	
 
 	-- CP mode
-	self.cp.mode = courseplay.MODE_TRANSPORT;
+	self.cp.mode = courseplay.MODE_DEFAULT;
 	--courseplay:setNextPrevModeVars(self);
 	self.cp.modeState = 0
 	-- for modes 4 and 6, this the index of the waypoint where the work begins
@@ -396,8 +396,26 @@ function courseplay:onDraw()
 	if self.cp.driver then
 		self.cp.driver:onDraw()
 	end
+	
+	local errorHandler = function(err)
+		printCallstack()
+		courseplay.infoVehicle(vehicle, "Exception, error in draw hud: %s", tostring(err))
+		return err
+	end
 
-	if self:getIsActive() then
+	local status, result = xpcall(courseplay.renderHud, errorHandler, self,isDriving)
+
+	if not status then 
+		self.cp.hudBroken = true
+	end
+
+	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
+		courseplay:drawCourse2D(self, false);
+	end;
+end; --END draw()
+
+function courseplay:renderHud(isDriving)
+	if self:getIsActive() and not self.cp.hudBroken then
 		if self.cp.hud.show then
 			courseplay.hud:setContent(self);
 			courseplay.hud:renderHud(self);
@@ -428,11 +446,7 @@ function courseplay:onDraw()
 
 	--RENDER
 	courseplay:renderInfoText(self);
-
-	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
-		courseplay:drawCourse2D(self, false);
-	end;
-end; --END draw()
+end
 
 function courseplay:showWorkWidth(vehicle)
 	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.settings.toolOffsetZ:get() or 0;
@@ -516,7 +530,9 @@ function courseplay:onUpdate(dt)
 
 	if self.cp.postInitDone == nil then 
 		--- Reset the current mode, as all implements are now attached.
-		courseplay:setCpMode(self,  self.cp.loadedMode, true);
+		--- If the vehicle is new, then cp.loadedMode is nil
+		local mode = self.cp.loadedMode or courseplay.MODE_DEFAULT
+		courseplay:setCpMode(self,  mode, true);
 		if self.cp.driver then 
 			---Post init function, as not all giants variables are
 			---set correctly at the first courseplay:setAIDriver() call.
@@ -979,7 +995,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		local curKey = key .. '.courseplay.basics';
 		--courseplay:setCpMode(self,  Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode), true);
 		--- Save the loaded mode and set it later after all implements are attached.
-		self.cp.loadedMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode)
+		self.cp.loadedMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), courseplay.MODE_DEFAULT)
 		self.cp.waitTime 		  = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#waitTime'), 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);

@@ -86,11 +86,7 @@ function BunkerSiloAIDriver:start(startingPoint)
 	--- On start reset old variables
 	self.bunkerSiloManager = nil 
 	self:deleteBestTarget()
-	if startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
-		self:changeSiloState(self.states.CHECK_SILO)
-	else 
-		self:changeSiloState(self.states.DRIVING_NORMAL_COURSE)
-	end
+	self:changeSiloState(self.states.DRIVING_NORMAL_COURSE)
 	AIDriver.start(self,startingPoint)
 end
 
@@ -261,12 +257,13 @@ end
 ---@param targetColumn number silo map column to create the straight course.
 ---@return course generated course 
 ---@return firstWpIx first waypoint of the course relative to the vehicle position.
-function BunkerSiloAIDriver:getDriveOutOfSiloCourse(targetColumn)
+function BunkerSiloAIDriver:getDriveOutOfSiloCourse(targetColumn,lengthOffset)
 	local driveDirection = self:isDriveDirectionReverse()
 	local numLines = self.bunkerSiloManager:getNumberOfLines()
 	local x,z = self.bunkerSiloManager:getSiloPartPosition(numLines,targetColumn)
 	local dx,dz = self.bunkerSiloManager:getSiloPartPosition(1,targetColumn)
-	local course = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 0, 5, 10, 5, not driveDirection)
+	lengthOffset = lengthOffset or 0
+	local course = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 0, 5, 10 + lengthOffset, 5, not driveDirection)
 	local firstWpIx
 	if driveDirection then
 		firstWpIx = course:getNextFwdWaypointIxFromVehiclePosition(1, self:getDirectionNode(), 5)
@@ -335,7 +332,9 @@ end
 --- Sets up the drive out of silo course.
 function BunkerSiloAIDriver:setupDriveOutOfSiloCourse()
 	self:beforeDriveOutOfSilo()
-	local course,ix = self:getDriveOutOfSiloCourse(self.bestTarget.column)
+	--- Finds the closest column relative to the driver position.
+	local closestColumn = self.bunkerSiloManager:getClosestColumnToNode(self:getDirectionNode(),1)
+	local course,ix = self:getDriveOutOfSiloCourse(closestColumn)
 	self:siloDebug("Starting drive out of silo course at: %d",ix)
 	self:startCourse(course,ix)
 	self:changeSiloState(self.states.DRIVING_OUT_OF_SILO)
@@ -358,24 +357,26 @@ end
 --- Setups a transition course from the normal course to the first drive into silo course,
 --- this should give the driver more room to manoeuver.
 function BunkerSiloAIDriver:setupTransitionCourse()
+	local fistWpIx = 1
 	local course
-	local sx,sz = self.bunkerSiloManager:getSiloPartStartWidthHeightPositions(1,1)
-	local _,_,distToSilo = worldToLocal(self.vehicle.rootNode,sx,0,sz)
-	local _,_,distToTargetNode = localToLocal(self.vehicle.rootNode,self:getTargetNode(),0,0,0)
+	local closestColumn,closestDistance = self.bunkerSiloManager:getClosestColumnToNode(self:getDirectionNode(),1)
 	if self:isDriveDirectionReverse() then
 		course = self:getStraightForwardCourse(5)
 	else 
-		local dist = self.transitionCourseOffset -(distToSilo+distToTargetNode)
-		self:siloDebug("Setup transition course = dist: %.2f, distToSilo: %.2f, distToTargetNode: %.2f",dist,distToSilo,distToTargetNode)
+		local dist = self.transitionCourseOffset - closestDistance
+		self:siloDebug("Setup transition course = dist: %.2f",dist)
 		if dist>0 then
-			course = self:getStraightReverseCourse(dist)
+			local closestColumn = self.bunkerSiloManager:getClosestColumnToNode(self:getDirectionNode(),1)
+			course = self:getDriveOutOfSiloCourse(closestColumn,5)
+
+			fistWpIx = course:getNextRevWaypointIxFromVehiclePosition(1, self:getDirectionNode(), 2)
 		else 
 			self:setupDriveIntoSiloCourse(1)
 			return 
 		end
 	end
-	self:siloDebug("Starting transition course from main course to silo.")
-	self:startCourse(course,1)
+	self:siloDebug("Starting transition course from main course to silo at: %d",fistWpIx)
+	self:startCourse(course,fistWpIx)
 	self:changeSiloState(self.states.DRIVING_NORMAL_COURSE_TO_SILO)
 end
 
@@ -413,7 +414,7 @@ end
 
 
 ---Never use alignment course.
-function BunkerSiloAIDriver:isAlignmentCourseNeeded(ix)
+function BunkerSiloAIDriver:isAlignmentCourseNeeded(course,ix)
 	return false
 end
 
@@ -475,7 +476,7 @@ function BunkerSiloAIDriver:getSpeed()
 end
 
 function BunkerSiloAIDriver:getBunkerSiloSpeed()
-	return self.vehicle.cp.settings.bunkerSpeed:get()
+	return self.settings.bunkerSpeed:get()
 end
 
 function BunkerSiloAIDriver:isStuck()

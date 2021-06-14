@@ -1155,10 +1155,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 				elseif entry.functionToCall == 'baleCollectionField:changeByX' then
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.baleCollectionField:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.baleCollectionField:getText()
-				elseif entry.functionToCall == 'shovelStopAndGo:toggle' then
-					--ShovelStopAndGoSetting
-					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.shovelStopAndGo:getLabel()
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.shovelStopAndGo:getText()
+				elseif entry.functionToCall == 'alwaysWaitForShovelPositions:toggle' then
+					--AlwaysWaitForShovelPositionsSetting
+					local setting = vehicle.cp.settings.alwaysWaitForShovelPositions
+					vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = setting:getText()
 				elseif entry.functionToCall == 'shovelModeAIDriverTriggerHandlerIsActive:toggle' then
 					--ShovelModeAIDriverTriggerHandlerIsActiveSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive:getLabel()
@@ -2285,10 +2286,11 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
-	self:addRowButton(vehicle,vehicle.cp.settings.shovelStopAndGo,'toggle', 9, 5, 1 )
+	self:addRowButton(vehicle,vehicle.cp.settings.alwaysWaitForShovelPositions,'toggle', 9, 5, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive,'toggle', 9, 8, 1 )
 	self:addSettingsRow(vehicle,nil,'changeWorkWidth',9,6,1, 0.1)
 	self:setupCalculateWorkWidthButton(vehicle,9, 6)
+	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 9, 7, 1 )
 end
 
 function courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(vehicle)

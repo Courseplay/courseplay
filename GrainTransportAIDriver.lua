@@ -41,7 +41,7 @@ function GrainTransportAIDriver:start(startingPoint)
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
 end
 
-function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
+function GrainTransportAIDriver:isAlignmentCourseNeeded(course,ix)
 	-- never use alignment course for grain transport mode
 	return false
 end

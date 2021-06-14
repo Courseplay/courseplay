@@ -174,10 +174,12 @@ function AIDriver:init(vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
+
+	self.settings = self.vehicle.cp.settings
 	-- make sure all vehicle settings are valid for this mode
-	if self.vehicle.cp.settings then
+	if self.settings then
 		self:debug('Validating current settings...')
-		self.vehicle.cp.settings:validateCurrentValues()
+		self.settings:validateCurrentValues()
 	end
 	self:setHudContent()
 	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting())
@@ -690,12 +692,12 @@ end
 --- Should we stop at the end of the course (or restart it from the beginning)
 --- In Mode 5 we do what the user wants.
 function AIDriver:shouldStopAtEndOfCourse()
-	return self.vehicle.cp.settings.stopAtEnd:is(true)
+	return self.settings.stopAtEnd:is(true)
 end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	if self.vehicle.cp.settings.autoDriveMode:useForParkVehicle() then
+	if self.settings.autoDriveMode:useForParkVehicle() then
 		-- use AutoDrive to send the vehicle to its parking spot
 		if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
 			self:debug('Let AutoDrive park this vehicle')
@@ -782,6 +784,11 @@ function AIDriver:onLastWaypoint()
 		self:debug('Last waypoint reached, end of course.')
 		self:onEndCourse()
 	end
+end
+
+--- Does the driver has a next course after the current course ?
+function AIDriver:hasNextCourse()
+	return self.nextCourse ~= nil
 end
 
 --- End a course and then continue on nextCourse at nextWpIx
@@ -892,7 +899,7 @@ end
 function AIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
-	if self.vehicle.cp.settings.useRecordingSpeed:is(true) then
+	if self.settings.useRecordingSpeed:is(true) then
 		-- use default street speed if there's no recorded speed.
 		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
@@ -1003,7 +1010,7 @@ end
 
 function AIDriver:drawTemporaryCourse()
 	if not self.course or not self.course:isTemporary() then return end
-	if self.vehicle.cp.settings.enableVisualWaypointsTemporary:is(false) and
+	if self.settings.enableVisualWaypointsTemporary:is(false) and
 			not courseplay.debugChannels[self.debugChannel] then
 		return
 	end
@@ -1081,7 +1088,7 @@ function AIDriver:isCollisionDetectionEnabled()
 end
 
 function AIDriver:areBeaconLightsEnabled()
-	return self.vehicle.cp.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
+	return self.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
 end
 
 function AIDriver:updateLights()
@@ -1552,7 +1559,7 @@ end
 --- pathfinding considers any collision-free path valid, also outside of the field.
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fieldNum)
-	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
+	if self.settings.useRealisticDriving:is(true) then
 		if not self.pathfinder or not self.pathfinder:isActive() then
 			self.courseAfterPathfinding = course
 			self.waypointIxAfterPathfinding = ix
@@ -1669,7 +1676,7 @@ end;
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()
 	-- do not auto stop engine when auto motor start is enabled as it'll try to restart the engine on each update tick.
-	return self.vehicle.cp.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
+	return self.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
@@ -1719,7 +1726,7 @@ function AIDriver:setDriveNow()
 end
 
 function AIDriver:getDriveUnloadNow()
-	return self.vehicle.cp.settings.driveUnloadNow:get()
+	return self.settings.driveUnloadNow:get()
 end
 
 function AIDriver:refreshHUD()
@@ -1867,7 +1874,7 @@ function AIDriver:updateAILowFrequency(superFunc,dt)
 end
 
 function AIDriver:getAllowReversePathfinding()
-	return self.allowReversePathfinding and self.vehicle.cp.settings.allowReverseForPathfindingInTurns:is(true)
+	return self.allowReversePathfinding and self.settings.allowReverseForPathfindingInTurns:is(true)
 end
 
 -- Note that this may temporarily return false even if it is reversing
@@ -2237,7 +2244,7 @@ end
 
 --close all covers
 function AIDriver:closeCovers(object)
-	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
+	if self.settings.automaticCoverHandling:is(false) then
 		return
 	end
 	if object.spec_cover then
