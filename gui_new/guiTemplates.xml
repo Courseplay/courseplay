@@ -492,7 +492,7 @@
 			<value name="checkParent" value="true" />
 		</template-->
 		<!--##############################################################################################
-													Page Driving
+													Page base classes
 		################################################################################################-->
 		<!--base page content-->
 		<template name="cpPageBaseLayout" anchor="leftTop" extends="cpMainPage">		
@@ -517,7 +517,7 @@
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="margin" value="5px 5px -5px -5px" />
-			<value name="size" value="330px 200px" /><!--Mid screen from center-->
+			<value name="size" value="330px 200px" />
 		</template>
 
 		<!--Layout from left to right content in a line-->
@@ -525,9 +525,35 @@
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="margin" value="0px 0px 0px 0px" />
-			<value name="size" value="330px 20px" /><!--Mid screen from center-->
+			<value name="size" value="330px 20px" />
 		</template>
 
+		<!--Base Image page button-->
+		<template name="cpPageBaseButtonImage" anchor="middleCenter" extends="cpBase">		
+			<value name="position" value="0px 0px" />
+			<value name="hasOverlay" value="true" />
+			<value name="imageSize" value="256 512" />
+			<value name="size" value="30px 30px"/>
+			<value name="imageFilename" value="g_cpIconsOld" />
+		</template>
+
+		<!--Base Line text page button-->
+		<template name="cpPageBaseLineTextButton" anchor="leftCenter" extends="cpBase">		
+			<value name="position" value="0px 0px" />
+			<value name="hasOverlay" value="false" />
+			<value name="size" value="165px 20px"/>
+			<value name="hasText" value="true" />
+			<value name="textColor" value="cpOrange" />
+			<value name="debugEnabled" value="true"/>
+		</template>
+        <template name="cpPageBaseLineTextButton_text" anchor="leftCenter" extends="cpPageBaseLineTextButton">		
+			<value name="textSize" value="18px" />
+			<value name="textColor" value="white" />
+			<value name="textColor_selected" value="cpOrange" />
+		</template>
+		<!--##############################################################################################
+													Page Driving
+		################################################################################################-->
 
 		<!--Layout from left to right content in a line-->
 		<template name="cpPageDrivingRecordingBtnLayout" anchor="middleBottom" extends="cpPageBaseLayout">		
@@ -535,16 +561,11 @@
 			<value name="orientation" value="x" />
 			<value name="alignment" value="middle" />
 			<value name="margin" value="5px 5px -5px -5px" />
-			<value name="size" value="330px 40px" /><!--Mid screen from center-->
+			<value name="size" value="330px 40px" />
 		</template>
 
 		<!--Stop recording button-->
-		<template name="cpPageDrivingStopRecordingButton" anchor="middleCenter" extends="cpBase" >
-			<value name="position" value="0px 0px" />
-			<value name="hasOverlay" value="true" />
-			<value name="imageSize" value="256 512" />
-			<value name="size" value="30px 30px"/>
-			<value name="imageFilename" value="g_cpIconsOld" />
+		<template name="cpPageDrivingStopRecordingButton" anchor="middleCenter" extends="cpPageBaseButtonImage" >
 		</template>
 		<template name="cpPageDrivingStopRecordingButton_overlay" extends="cpPageDrivingStopRecordingButton">
 			<value name="imageUVs" value="icon_recordingStop" />
@@ -615,7 +636,7 @@
 
 		<!--Separator between recording buttons-->
 		<template name="cpPageDrivingSeparatorRecordingButton" anchor="middleCenter" extends="cpBase" >
-			<value name="imageColor" value="cpOrange" />
+		<!--<value name="imageColor" value="cpOrange" />-->
 			<value name="size" value="2px 40px" />
 		</template>
 
