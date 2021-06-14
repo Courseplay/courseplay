@@ -63,6 +63,7 @@ function ShovelAIDriver:init(vehicle)
 	self.shovelState = self.states.DRIVING_UNLOADING_COURSE
 	self.shovelDebugChannel = courseplay.DBG_MODE_9
 	self.transitionCourseOffset = 20
+	self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
 function ShovelAIDriver:setHudContent()
@@ -71,14 +72,13 @@ function ShovelAIDriver:setHudContent()
 end
 
 function ShovelAIDriver:start(startingPoint)
-	self.shovel = AIDriverUtil.getImplementWithSpecialization(self.vehicle,Shovel) or self.vehicle
-	self.currentDischargeNode = self.shovel:getCurrentDischargeNode()
-
+	self:findShovelRecursive(self.vehicle)
 	if not self.shovel then 
 		self:error("Error: shovel not found!!")
 		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		return
 	end
+	self.currentDischargeNode = self.shovel:getCurrentDischargeNode()
 	self.targetUnloadingNode = nil
 	self.lastDistanceToEmptyPoint = math.huge
 	self:changeShovelState(self.states.DRIVING_UNLOADING_COURSE)
@@ -86,6 +86,7 @@ function ShovelAIDriver:start(startingPoint)
 	self.oldCanDischargeToGround = self.currentDischargeNode.canDischargeToGround
 	self.currentDischargeNode.canDischargeToGround = false
 
+	--- Not sure what this is for, old code ?
 	local vAI = self.vehicle:getAttachedImplements()
 	for i,_ in pairs(vAI) do
 		local object = vAI[i].object
@@ -108,6 +109,17 @@ function ShovelAIDriver:start(startingPoint)
 		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		return
 	end	
+end
+
+function ShovelAIDriver:findShovelRecursive(object)
+	if SpecializationUtil.hasSpecialization(Shovel, object.specializations) and not self.shovel then 
+		self.shovel = object
+		return
+	end
+	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:findShovelRecursive(impl.object)
+	end
 end
 
 function ShovelAIDriver:stop(msg)
@@ -619,4 +631,8 @@ end
 
 function ShovelAIDriver:isAlignmentCourseNeeded(course, ix)
 	return AIDriver.isAlignmentCourseNeeded(self,course, ix)
+end
+
+function ShovelAIDriver:setLightsMask(vehicle)
+	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
 end
