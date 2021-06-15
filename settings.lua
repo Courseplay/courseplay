@@ -2325,7 +2325,7 @@ end
 ---@class AlwaysSearchFuelSetting : BooleanSetting
 AlwaysSearchFuelSetting = CpObject(BooleanSetting)
 function AlwaysSearchFuelSetting:init(vehicle)
-	BooleanSetting.init(self, 'allwaysSearchFuel', 'COURSEPLAY_FUEL_SEARCH_FOR', 'COURSEPLAY_FUEL_SEARCH_FOR', vehicle, {'COURSEPLAY_FUEL_BELOW_20PCT','COURSEPLAY_FUEL_ALWAYS'})
+	BooleanSetting.init(self, 'alwaysSearchFuel', 'COURSEPLAY_FUEL_SEARCH_FOR', 'COURSEPLAY_FUEL_SEARCH_FOR', vehicle, {'COURSEPLAY_FUEL_BELOW_20PCT','COURSEPLAY_FUEL_ALWAYS'})
 	self:set(false)
 end
 ---@class RealisticDrivingSetting : BooleanSetting
@@ -2560,7 +2560,7 @@ end
 function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(lastFillTypes)
 	local totalData = self:getData()
 	for index,data in ipairs(totalData) do 
-		for _,fillType in pairs(lastFillTypes) do
+		for fillType,_ in pairs(lastFillTypes) do
 			if data.fillType == fillType then
 				self:decrementRunCounter(index)		
 			end
@@ -2842,7 +2842,8 @@ end
 MixerWagonAIDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
 function MixerWagonAIDriver_SiloSelectedFillTypeSetting:init(vehicle)
 	SiloSelectedFillTypeSetting.init(self, vehicle, "MixerWagonAIDriver")
-	self.MAX_FILLTYPES = 3
+	self.MAX_FILLTYPES = 7
+	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
@@ -2866,13 +2867,14 @@ function ShovelModeAIDriverTriggerHandlerIsActive:onChange()
 	BooleanSetting.onChange(self)
 end
 
+--- This setting forces to load different fill types.
 ---@class SeparateFillTypeLoadingSetting : SettingList
 SeparateFillTypeLoadingSetting = CpObject(SettingList)
-SeparateFillTypeLoadingSetting.DEACTIVATED = 0
 function SeparateFillTypeLoadingSetting:init(vehicle)
 	SettingList.init(self, 'separateFillTypeLoading', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', 'COURSEPLAY_LOADING_SEPARATE_FILLTYPES', vehicle,
+		--- Different fill types needed.
 		{ 
-			SeparateFillTypeLoadingSetting.DEACTIVATED,
+			1, 
 			2,
 			3
 		},

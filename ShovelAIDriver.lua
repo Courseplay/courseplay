@@ -44,10 +44,9 @@ function ShovelAIDriver.create(vehicle)
 		return BunkerSiloLoaderAIDriver(vehicle)
 	end
 
-	--- Disabled for now, as the mixer wagon driver needs trigger handler improvements. 
---	if AIDriverUtil.hasImplementWithSpecialization(vehicle, MixerWagon) or vehicle.spec_mixerWagon then
---		return MixerWagonAIDriver(vehicle)
---	end
+	if AIDriverUtil.hasImplementWithSpecialization(vehicle, MixerWagon) or vehicle.spec_mixerWagon then
+		return MixerWagonAIDriver(vehicle)
+	end
 
 	if vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive:is(false) then
 		return ShovelAIDriver(vehicle)

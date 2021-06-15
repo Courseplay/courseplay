@@ -100,16 +100,7 @@ function BunkerSiloAIDriver:drive(dt)
 		self:driveOutOfSilo(dt)
 	elseif self:isCheckingSilo() then
 		---If setup of the course was successful, then start.
-		if self:checkSilo(dt) then
-			if not self:getCanContinueDrivingSiloCourse() then 
-				self:setupMainCourse()
-			elseif self:isStartDistanceToSiloNeeded(self:getBestTarget()) then 
-				self:setupTransitionCourse()
-			else 
-				self:setupDriveIntoSiloCourse(1)
-			end
-		end
-		self:hold()
+		self:setupSiloCourse()
 	elseif self:isWorkFinished() then
 		self:hold()
 		self:setInfoText('WORK_END')
@@ -168,7 +159,7 @@ end
 function BunkerSiloAIDriver:driveOutOfSilo(dt)
 	--- override
 end
-function BunkerSiloAIDriver:checkSilo(dt)
+function BunkerSiloAIDriver:checkSilo()
 	if self.bunkerSiloManager == nil then
 		--- Search for a silo or heap, if allowed.
 		local silo,isHeap = BunkerSiloManagerUtil.getTargetBunkerSiloAtWaypoint(self.vehicle,self.course,1,self:isHeapSearchAllowed())
@@ -317,6 +308,20 @@ end
 function BunkerSiloAIDriver:deleteLastBestTarget()
 	self.lastDrivenColumn = self.bestTarget and self.bestTarget.column
 	self.bestTarget = nil
+end
+
+--- Sets up silo course.
+function BunkerSiloAIDriver:setupSiloCourse()
+	if self:checkSilo() then
+		if not self:getCanContinueDrivingSiloCourse() then 
+			self:setupMainCourse()
+		elseif self:isStartDistanceToSiloNeeded(self:getBestTarget()) then 
+			self:setupTransitionCourse()
+		else 
+			self:setupDriveIntoSiloCourse(1)
+		end
+	end
+	self:hold()
 end
 
 --- Sets up the drive into silo course.

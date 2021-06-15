@@ -713,7 +713,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					elseif string.find(entry.functionToCall, "ShovelModeDriver") then --ShovelModeDriver
 						self:updateSiloSelectedFillTypeList(vehicle,page,6,8,"ShovelModeDriver",line)	
 					elseif string.find(entry.functionToCall, "MixerWagonAIDriver") then --MixerWagonAIDriver
-						self:updateSiloSelectedFillTypeList(vehicle,page,4,6,"MixerWagonAIDriver",line)	
+						self:updateSiloSelectedFillTypeList(vehicle,page,2,8,"MixerWagonAIDriver",line)	
 					end			
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
@@ -778,10 +778,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--SaveFuelOptionSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.saveFuelOption:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.saveFuelOption:getText() 
-				elseif entry.functionToCall == 'allwaysSearchFuel:toggle' then
+				elseif entry.functionToCall == 'alwaysSearchFuel:toggle' then
 					--AlwaysSearchFuelSetting
-					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.allwaysSearchFuel:getLabel()
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.allwaysSearchFuel:getText()
+					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.alwaysSearchFuel:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.alwaysSearchFuel:getText()
 				elseif entry.functionToCall == 'changeLoadUnloadOffsetX' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_LOAD_UNLOAD_OFFSET_X');
 					if vehicle.cp.loadUnloadOffsetX and vehicle.cp.loadUnloadOffsetX ~= 0 then
@@ -2140,7 +2140,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:enablePageButton(vehicle, 7)
 	self:addSettingsRow(vehicle,vehicle.cp.settings.warningLightsMode,'next', 7, 1, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.saveFuelOption,'toggle', 7, 2, 1 )
-	self:addRowButton(vehicle,vehicle.cp.settings.allwaysSearchFuel,'toggle', 7, 3, 1 )
+	self:addRowButton(vehicle,vehicle.cp.settings.alwaysSearchFuel,'toggle', 7, 3, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.automaticCoverHandling,'toggle', 7, 4, 1 )
 	self:addSettingsRow(vehicle,nil,'changeWaitTime', 7, 5, 1 )
 	
@@ -2349,14 +2349,16 @@ function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
 end
 
 function courseplay.hud:setMixerWagonAIDriverContent(vehicle)
+	--page 3 
+	self:enablePageButton(vehicle, 3)
+	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver,'addFilltype', 3, 1, 1 )
+	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver, 3, 2, 8, 1)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.mixerWagonToolPositions,9,1)
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver,'addFilltype', 9, 3, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver, 9, 4, 6, 1)
 	self:addSettingsRow(vehicle,nil,'changeWorkWidth',9,7,1, 0.1)
 	self:setupCalculateWorkWidthButton(vehicle,9, 7)
-	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 10, 8, 1 )
+	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 9, 8, 1 )
 end
 
 function courseplay.hud:setBunkerSiloLoaderAIDriverContent(vehicle)
