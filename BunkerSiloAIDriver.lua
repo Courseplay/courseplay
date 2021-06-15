@@ -336,7 +336,7 @@ function BunkerSiloAIDriver:setupDriveOutOfSiloCourse()
 	local closestColumn = self.bunkerSiloManager:getClosestColumnToNode(self:getDirectionNode(),1)
 	local course,ix = self:getDriveOutOfSiloCourse(closestColumn)
 	self:siloDebug("Starting drive out of silo course at: %d",ix)
-	self:startCourse(course,ix)
+	self:startCourse(course,course:getNumberOfWaypoints())
 	self:changeSiloState(self.states.DRIVING_OUT_OF_SILO)
 end
 

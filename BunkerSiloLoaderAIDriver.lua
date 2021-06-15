@@ -28,7 +28,7 @@ function BunkerSiloLoaderAIDriver:init(vehicle)
 	self.dischargeObject = AIDriverUtil.getImplementWithSpecialization(self.vehicle,Dischargeable) or self.vehicle
 	self.dischargeSpec = self.dischargeObject.spec_dischargeable
 	self.currentDischargeNode = self.dischargeObject:getCurrentDischargeNode()
-
+	self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
 function BunkerSiloLoaderAIDriver:setHudContent()

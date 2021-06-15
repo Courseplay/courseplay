@@ -30,6 +30,7 @@ function CompactingAIDriver:init(vehicle)
 	self:initStates(CompactingAIDriver.myStates)
 	self.debugChannel = 10
 	self.compactingState = self.states.NOTHING 
+	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
 end
 
 function CompactingAIDriver:setHudContent()

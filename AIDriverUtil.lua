@@ -290,6 +290,8 @@ function AIDriverUtil.isAllFolded(object)
 	return true
 end
 
+--- These functions only find directly attached implements/trailer to the vehicle.
+--- Implements of others for example a shovel attached to a front loader are not detected.
 function AIDriverUtil.hasAIImplementWithSpecialization(vehicle, specialization)
 	return AIDriverUtil.getAIImplementWithSpecialization(vehicle, specialization) ~= nil
 end
