@@ -3273,7 +3273,7 @@ end
 
 ---@class WorkingToolPositionsSetting : Setting
 ---@param totalPositionsAmount number of possible postions
----@param validSpecs allowed Specializations of objects that get saved, nil = every object
+---@param validSpecs table Specializations of objects that get saved, nil = every object
 WorkingToolPositionsSetting = CpObject(Setting)
 WorkingToolPositionsSetting.NetworkTypes = {}
 WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
@@ -3291,7 +3291,7 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	self.MIN_ROT_SPEED = 0.1
 	self.MAX_TRANS_SPEED = 0.7
 	self.MIN_TRANS_SPEED = 0.2
-	--- Store all instances of this setting in ab global table
+	--- Store all instances of this setting in a global table,
 	--- for direct access to update their manual tool positions.
 	table.insert(WorkingToolPositionsSetting.Settings,self)
 end
@@ -3308,7 +3308,8 @@ function WorkingToolPositionsSetting:getTexts()
 	return texts
 end
 
---save or delete tool position x
+--- Saves or clears an tool position.
+---@param x number position index to save at.
 function WorkingToolPositionsSetting:setOrClearPostion(x,noEventSend) 
 	if self.hasPosition[x] then 
 		self.hasPosition[x] = nil
@@ -3328,7 +3329,9 @@ function WorkingToolPositionsSetting:setOrClearPostion(x,noEventSend)
 end
 
 
---save tool postions for all valid objects recursive
+--- Saves all tool positions recursively.
+---@param object table vehicle or implement
+---@param posX number position index to save at.
 function WorkingToolPositionsSetting:savePosition(object,posX)
 	local spec = object.spec_cylindered
 	if spec and self:isValidSpec(object) then 
@@ -3351,6 +3354,9 @@ function WorkingToolPositionsSetting:savePosition(object,posX)
 	end
 end
 
+--- Clears all tool positions recursively.
+---@param object table vehicle or implement
+---@param posX number position index to clear at.
 function WorkingToolPositionsSetting:clearPosition(object,posX)
 	local spec = object.spec_cylindered
 	if spec and spec.cpWorkingToolPos then 
@@ -3363,7 +3369,8 @@ function WorkingToolPositionsSetting:clearPosition(object,posX)
 	end
 end
 
--- play position manually
+--- Moves a tool position manually.
+---@param posX number position index to move.
 function WorkingToolPositionsSetting:playPosition(x)
 	if g_server then
 		if self.hasPosition[x] then
@@ -3374,10 +3381,16 @@ function WorkingToolPositionsSetting:playPosition(x)
 	end
 end
 
---called every frame to update positions 
---also gets called in base.lua for player manual postitions
+--- Called every frame to update tool positions.
+--- 1) Gets called by drivers to update the tool position.
+--- 2) Gets called from WorkingToolPositionsSetting.updateManualToolPositions(), 
+---	   to update manual tool positions.
+---@param dt number
+---@param posX number position index to move.
 function WorkingToolPositionsSetting:updatePositions(dt,posX)
 	callback = {}
+	callback.isDirty = false
+	callback.diff = 0
 	local nextPosX = self.hasPosition[posX] and posX or self.playTestPostion and self.hasPosition[self.playTestPostion] and self.playTestPostion
 	if nextPosX == nil then 
 		return
@@ -3386,30 +3399,31 @@ function WorkingToolPositionsSetting:updatePositions(dt,posX)
 	if not callback.isDirty then
 		self.playTestPostion = nil
 	end
-	return not callback.isDirty
+	return not callback.isDirty,callback.diff
 end
 
 --- Updates all manual tool positions if necessary.
+---@param dt number
 function WorkingToolPositionsSetting.updateManualToolPositions(dt)
 	for _,setting in pairs(WorkingToolPositionsSetting.Settings) do 
 		setting:updatePositions(dt)
 	end
 end
 
---update tool postions for all valid objects recursive to position "pos"
+--- Updates all tools for the given tool position.
+---@param object table vehicle or implement
+---@param dt number
+---@param posX number position index to move.
+---@param callback table was any tool moved and also returns the larget difference still left to move.
 function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callback)
 	local spec = object.spec_cylindered 
 	if spec and spec.cpWorkingToolPos and spec.cpWorkingToolPos[posX] and self:isValidSpec(object) then 
-		local isDirty
 		for toolIndex, tool in ipairs(spec.movingTools) do
-			if self.checkToolRotation(object,tool,toolIndex,posX,dt,self) then
-				isDirty = true
-			end
-			if self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) then
-				isDirty = true
-			end		
-			if isDirty then 
+			local isRotating,rotDiff = self.checkToolRotation(object,tool,toolIndex,posX,dt,self) 
+			local isMoving,moveDiff = self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) 			
+			if isRotating or isMoving then 
 				callback.isDirty = true
+				callback.diff = math.max(rotDiff,moveDiff,callback.diff)
 			end
 		end
 	end
@@ -3418,11 +3432,16 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 	end
 end
 
---use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,dt,setting)
-	local spec = self.spec_cylindered
+--- Updates rotation for a tool along an axis.
+---@param object table vehicle or implement
+---@param tool table part of object.movingTools
+---@param posX number position index to move.
+---@param dt number
+---@param setting table
+function WorkingToolPositionsSetting.checkToolRotation(object,tool,toolIndex,posX,dt,setting)
+	local spec = object.spec_cylindered
 	if tool.rotSpeed == nil then
-		return
+		return false,0
 	end
 	
 	local curRot = { getRotation(tool.node) }
@@ -3436,21 +3455,26 @@ function WorkingToolPositionsSetting.checkToolRotation(self,tool,toolIndex,posX,
 		end
 	else 
 		tool.move = 0
-		return false
+		return false,0
 	end
 	tool.move = rotSpeed
 	if tool.move ~= tool.moveToSend then
 		tool.moveToSend = tool.move
-		self:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
+		object:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
 	end
-    return true
+    return true,math.abs(cpDiff)*2*math.pi
 end
 
---use tool.move as if we are a player using mouse/axis ..
-function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,posX,dt,setting)	
-	local spec = self.spec_cylindered
+--- Updates translation for a tool along an axis.
+---@param object table vehicle or implement
+---@param tool table part of object.movingTools
+---@param posX number position index to move.
+---@param dt number
+---@param setting table
+function WorkingToolPositionsSetting.checkToolTranslation(object,tool,toolIndex,posX,dt,setting)	
+	local spec = object.spec_cylindered
 	if tool.transSpeed == nil then
-		return
+		return false,0
 	end
 	
 	local curTrans = { getTranslation(tool.node) }
@@ -3464,16 +3488,18 @@ function WorkingToolPositionsSetting.checkToolTranslation(self,tool,toolIndex,po
 		end
 	else 
 		tool.move = 0
-		return false
+		return false,0
 	end
 	tool.move = transSpeed
 	if tool.move ~= tool.moveToSend then
 		tool.moveToSend = tool.move
-		self:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
+		object:raiseDirtyFlags(spec.cylinderedInputDirtyFlag)
 	end
-    return true
+    return true,math.abs(cpDiff)
 end
 
+--- Checks if the vehicle or implements has a valid spec.
+---@param object table vehicle or implement
 function WorkingToolPositionsSetting:isValidSpec(object)
 	if self.validSpecs == nil then 
 		return true
@@ -3485,6 +3511,7 @@ function WorkingToolPositionsSetting:isValidSpec(object)
 	end	
 end
 
+--- Are all tool positions set ?
 function WorkingToolPositionsSetting:hasValidToolPositions()
 	return #self.hasPosition == self.totalPositions
 end
@@ -3610,7 +3637,7 @@ function WorkingToolPositionsSetting:onLoad(savegame)
 end
 Cylindered.onLoad = Utils.appendedFunction(Cylindered.onLoad,WorkingToolPositionsSetting.onLoad)
 
----Disabled cylinder control of frontloaders, moveable pipes and so on..., while CP is driving.
+--- Disabled cylinder control of frontloaders, moveable pipes and so on..., while CP is driving.
 function WorkingToolPositionsSetting.actionEventInputCylindered(object,superFunc, actionName, inputValue, callbackState, isAnalog, isMouse)
 	local rootVehicle = object:getRootVehicle()
 	if not rootVehicle:getIsCourseplayDriving() then 
