@@ -211,7 +211,8 @@ function ShovelAIDriver:driveUnloadingCourse(dt)
 end
 
 --- Is the unloading point reached for unloading in a trailer.
-function ShovelAIDriver:isUnloadingPointReached(dt)
+---@param positionDistLeft number moving distance left of shovel position
+function ShovelAIDriver:isUnloadingPointReached(positionDistLeft)
 	if self.targetUnloadingNode then
 		local directionNode = self:getDirectionNode()
 		local shovelNode = self:getTargetNode()
@@ -232,8 +233,10 @@ function ShovelAIDriver:isUnloadingPointReached(dt)
 			DebugUtil.drawDebugNode(self:getDirectionNode(), 'driverNode')
 		end
 
-		self:shovelDebug("distanceToTrailer: %.2f",distance)
-		self:setSpeed(MathUtil.clamp(distance*2,1,self:getRecordedSpeed()))
+		self:shovelDebug("distanceToTrailer: %.2f, positionDistLeft: %.2f",distance,positionDistLeft)
+		--- Slow down the driver to reach the trailer with the position already reached.
+		local speed = MathUtil.clamp(2*(distance-positionDistLeft),0.5,self:getRecordedSpeed())
+		self:setSpeed(speed)
 		
 		if distance < 1.2 then 
 			return true
@@ -243,14 +246,15 @@ end
 
 --- Driving to the trailer for unloading.
 function ShovelAIDriver:driveToTrailer(dt)
-	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING) then
+	local positionOkay,positionDistLeft = self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING)
+	if not positionOkay then
 		if self.settings.alwaysWaitForShovelPositions:get() then
 			--- Only wait for the shovel position, if the setting is true.
 			self:hold()
 		end
 	end
 	--- Waiting until the driver has reached the correct unloading position.
-	if self:isUnloadingPointReached() then
+	if self:isUnloadingPointReached(positionDistLeft) then
 		self:changeShovelState(self.states.UNLOADING_AT_TRAILER)
 	end
 end

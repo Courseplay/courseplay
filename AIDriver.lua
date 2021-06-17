@@ -2280,7 +2280,10 @@ end
 ---@return boolean working tool positions reached
 function AIDriver:isWorkingToolPositionReached(dt,positionIx)
 	local setting = self:getWorkingToolPositionsSetting()
-	return setting and setting:updatePositions(dt,positionIx) or setting == nil
+	if setting then 
+		return setting:updatePositions(dt,positionIx)
+	end
+	return true
 end
 
 function AIDriver:getWorkingToolPositionsSetting()
