@@ -120,7 +120,11 @@ function WorkWidthSetting:init(vehicle)
 	SettingList.init(self, 'workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle)
 	self.value = FloatSetting('workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle, 0)
 	self.minWidth, self.maxWidth = 1, 50
-	self:setToDefault()
+	-- do not attempt to send an event from the constructor as at that point, the vehicle is not completely ready
+	-- and parentName is not set.
+	-- TODO: move creating the course gen (or others too?) settings to onPostLoad() (instead of onLoad())
+	-- TODO: add parentName to the constructor of the settings instead of the explicit setter.
+	self:setToDefault(true)
 	self:refresh()
 end
 
@@ -176,10 +180,10 @@ function WorkWidthSetting:setFromGuiElement()
 	end
 end
 
-function WorkWidthSetting:setToDefault()
+function WorkWidthSetting:setToDefault(noEventSend)
 	local autoWidth = courseplay:getWorkWidth(self.vehicle)
 	if autoWidth > 0 then
-		self:set(courseplay:getWorkWidth(self.vehicle))
+		self:set(courseplay:getWorkWidth(self.vehicle), noEventSend)
 	end
 end
 

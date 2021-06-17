@@ -636,7 +636,3 @@ end
 function ShovelAIDriver:isAlignmentCourseNeeded(course, ix)
 	return AIDriver.isAlignmentCourseNeeded(self,course, ix)
 end
-
-function ShovelAIDriver:setLightsMask(vehicle)
-	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
-end

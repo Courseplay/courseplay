@@ -733,7 +733,6 @@ function courseplay:changeRowAngle( vehicle, changeBy )
 end
 
 function courseplay:setMultiTools(vehicle, set)
-	vehicle:setCpVar('multiTools', set, courseplay.isClient)
 	if vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0 then
 		courseplay:changeLaneNumber(vehicle, 1)
 	else
