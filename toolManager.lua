@@ -194,16 +194,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 		if isAllowedOkay and isDisallowedOkay then
 			vehicle.cp.hasMachinetoFill = true;
 		end;
-	-- MODE 6: FIELDWORK
-	elseif vehicle.cp.mode == 6 then
-		if isAllowedOkay and isDisallowedOkay then
-			if courseplay:isBaleLoader(workTool) then
-				vehicle.cp.hasBaleLoader = true;
-				if vehicle.cp.lastValidTipDistance == nil then
-					vehicle.cp.lastValidTipDistance = 0
-				end;
-			end;
-		end;
 	end
 	--belongs to mode3 but should be considered even if the mode is not set correctely
 	if workTool.cp.isAugerWagon then

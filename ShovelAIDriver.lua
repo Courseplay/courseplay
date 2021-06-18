@@ -168,7 +168,7 @@ function ShovelAIDriver:drive(dt)
 	if self:isDrivingUnloadingCourse() then 
 		self:driveUnloadingCourse(dt)
 	elseif self:isWaitingForTrailer() then 
-		self:hold()
+		self:holdWithFuelSave()
 	elseif self:isDrivingToTrailer() then 
 		self:driveToTrailer(dt)
 	elseif self:isDrivingToUnloadingTrigger() then 

@@ -157,7 +157,7 @@ function UnloadableFieldworkAIDriver:updateOffset()
 
 	if self.course:hasUnloadPointAround(currentWaypointIx, 6, 3) then
 		-- around unload points
-		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+		self.ppc:setOffset(self.settings.loadUnloadOffsetX:get(), self.settings.loadUnloadOffsetZ:get())
 	else
 		self.ppc:setOffset(0, 0)
 	end

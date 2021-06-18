@@ -33,6 +33,22 @@ function CompactingAIDriver:init(vehicle)
 	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
 end
 
+function CompactingAIDriver:onDraw()
+	AIDriver.onDraw(self)
+	--- TODO: this needs improvements, as currently vehicle.Waypoints is needed.
+	if self.vehicle.Waypoints and self.vehicle.cp.canDrive then 
+		local searchRadiusSetting = self.settings.levelCompactSearchRadius
+		searchRadiusSetting:update()
+		if searchRadiusSetting:isShowRadiusActive() then 
+			local lastIx = #self.vehicle.Waypoints
+			local wps = self.vehicle.Waypoints
+			local x,y,z = wps[lastIx].cx,wps[lastIx].cy,wps[lastIx].cz
+			local r = searchRadiusSetting:get()
+			cpDebug:drawCircle(x, y+3, z,r,math.ceil(r/2), 1, 1, 1)
+		end	
+	end
+end
+
 function CompactingAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
 	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)

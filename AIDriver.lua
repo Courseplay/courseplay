@@ -135,7 +135,8 @@ AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
 	RUNNING = {},
 	STOPPED = {},
-	DONE = {}
+	STOPPED_AT_WAIT_POINT = {}, -- Is the driver stopped at an waypoint.
+	FINISHED = {} -- Driver has finished it's course/job.
 }
 
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
@@ -357,12 +358,19 @@ function AIDriver:stop(msgReference)
 	self.state = self.states.STOPPED
 end
 
+function AIDriver:stopAtWaitPoint()
+	self:setInfoText("WAIT_POINT")
+	self.state = self.states.STOPPED_AT_WAIT_POINT
+end
+
+
 --- Stop the driver when the work is done. Could just dismiss at this point,
 --- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
-function AIDriver:setDone(msgReference)
+function AIDriver:setWorkFinished(msgReference)
 	self:deleteCollisionDetector()
+	self.triggerHandler:onStop()
 	self:setInfoText(msgReference)
-	self.state = self.states.DONE
+	self.state = self.states.FINISHED
 end
 
 function AIDriver:continue()
@@ -468,8 +476,15 @@ function AIDriver:drive(dt)
 
 	if self.state == self.states.STOPPED or self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() then
 		self:hold()
+	end
+	if self.state == self.states.FINISHED then
+		self:holdWithFuelSave()
+	end
+	if self:isWaitingAtWaitPoint() then 
+		self:holdWithFuelSave()
 		self:continueIfWaitTimeIsOver()
 	end
+
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
 end
@@ -481,7 +496,7 @@ function AIDriver:driveCourse(dt)
 
 	-- stop for fuel if needed
 	if not self:isFuelLevelOk() then
-		self:hold()
+		self:holdWithFuelSave()
 	end
 
 	if not self:getIsEngineReady() then
@@ -716,9 +731,7 @@ function AIDriver:onEndCourse()
 end
 
 function AIDriver:onEndCourseFinished()
-	if self.state ~= self.states.STOPPED then
-		self:stop('END_POINT')
-	end
+	self:setWorkFinished('END_POINT')
 end
 
 function AIDriver:getDirectionToGoalPoint()
@@ -766,8 +779,8 @@ function AIDriver:onWaypointPassed(ix)
 	elseif self:isStoppingAtWaitPointAllowed() and self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button or the timer elapses
-		self:debug('Waiting point reached, wait time %d s', self.vehicle.cp.waitTime)
-		self:stop('WAIT_POINT')		
+		self:debug('Waiting point reached, wait time %d s', self.settings.waitTime:get())
+		self:stopAtWaitPoint()		
 		-- show continue button
 		self:refreshHUD()
 	end
@@ -801,9 +814,11 @@ end
 --- When stopped at a wait point, check if the waiting time is over
 -- and continue when needed
 function AIDriver:continueIfWaitTimeIsOver()
+	--- Wait time in secondes.
+	local waitTime = self.settings.waitTime:get()
 	if self:isAutoContinueAtWaitPointEnabled() then
-		if (self.vehicle.timer - self.lastMoveCommandTime) > self.vehicle.cp.waitTime * 1000 then
-			self:debug('Waiting time of %d s is over, continuing', self.vehicle.cp.waitTime)
+		if (self.vehicle.timer - self.lastMoveCommandTime) > waitTime * 1000 then
+			self:debug('Waiting time of %d s is over, continuing', waitTime)
 			self:continue()
 		end
 	end
@@ -814,11 +829,11 @@ end
 --- those modes have to override this.
 -- TODO: consider deriving a TransportAIDriver class for mode 5 if there are mode 5 only behaviors.
 function AIDriver:isAutoContinueAtWaitPointEnabled()
-	return self.vehicle.cp.waitTime > 0
+	return self:isStoppingAtWaitPointAllowed() and self.settings.waitTime:get() > 0
 end
 
-function AIDriver:isWaiting()
-	return self.state == self.states.STOPPED
+function AIDriver:isWaitingAtWaitPoint()
+	return self.state == self.states.STOPPED_AT_WAIT_POINT
 end
 
 function AIDriver:hasTipTrigger()
@@ -841,7 +856,7 @@ end
 function AIDriver:getWorkSpeed()
 	-- use the speed limit supplied by Giants for fieldwork
 	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-	return math.min(self.vehicle.cp.speeds.field, speedLimit)
+	return math.min(self:getFieldSpeed(), speedLimit)
 end
 
 function AIDriver:resetLastMoveCommandTime()
@@ -881,6 +896,11 @@ function AIDriver:hold()
 	self:resetLastMoveCommandTime()
 end
 
+--- Anyone wants to temporarily stop driving for whatever reason, call this
+function AIDriver:holdWithFuelSave()
+	self.allowedToDrive = false
+	self:setSpeed(0)
+end
 --- Function used by the driver to get the speed it is supposed to drive at
 --
 function AIDriver:getSpeed()
@@ -950,7 +970,7 @@ end
 ---@param course Course
 function AIDriver:isAlignmentCourseNeeded(course, ix)
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
-	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
+	return d > self.vehicle.cp.turnDiameter
 end
 
 function AIDriver:startTurn(ix)
@@ -1249,7 +1269,7 @@ end
 
 function AIDriver:checkForHeapBehindMe(tipper)
 	local dischargeNode = tipper:getCurrentDischargeNode().node
-	local offset = -self.vehicle.cp.loadUnloadOffsetZ
+	local offset = -self.settings.loadUnloadOffsetZ:get()
 	offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
 	local startX,startY,startZ = localToWorld(dischargeNode,0,0,offset) ;
 	local tempHeightX,tempHeightY,tempHeightZ = localToWorld(dischargeNode,0,0,offset+0.5) 
@@ -1450,7 +1470,7 @@ function AIDriver:updateOffset()
 	end
 
 	if useOffset then
-		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+		self.ppc:setOffset(self.settings.loadUnloadOffsetX:get(), self.settings.loadUnloadOffsetZ:get())
 	else
 		self.ppc:setOffset(0, 0)
 	end
@@ -1718,9 +1738,8 @@ function AIDriver:setDriveUnloadNow(driveUnloadNow)
 end
 
 function AIDriver:setDriveNow()
-	if self:isWaiting() then 
+	if self:isWaitingAtWaitPoint() then 
 		self:continue()
-		self.vehicle.cp.wait = false
 	end
 	self.triggerHandler:onDriveNow()
 end
@@ -1853,7 +1872,7 @@ end
 
 --- By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances
 function AIDriver:shouldPayWages()
-	return true
+	return self.state ~= self.states.FINISHED
 end
 
 function AIDriver:getWagesPercentageAmount()
@@ -2219,7 +2238,7 @@ function AIDriver:notAllowedToLoadNextFillType()
 end
 
 function AIDriver:getCanShowDriveOnButton()
-	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaiting()
+	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaitingAtWaitPoint()
 end
 
 --if validFillType ~= nil, then only open the first valid fillUnit for this fillType,

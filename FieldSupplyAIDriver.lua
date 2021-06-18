@@ -80,10 +80,9 @@ function FieldSupplyAIDriver:drive(dt)
 	-- update current waypoint/goal point
 	if self.supplyState == self.states.ON_REFILL_COURSE  then
 		FillableFieldworkAIDriver.driveUnloadOrRefill(self)
-		AIDriver.drive(self, dt)
 		self.unloadingText = nil
 	elseif self.supplyState == self.states.WAITING_FOR_GETTING_UNLOADED then
-		self:stopAndWait(dt)
+		self:holdWithFuelSave()
 		self:updateInfoText()
 		if self.pipe then
 			self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
@@ -98,6 +97,7 @@ function FieldSupplyAIDriver:drive(dt)
 			self.triggerHandler:resetLoadingState()
 		end
 	end
+	AIDriver.drive(self, dt)
 end
 
 function FieldSupplyAIDriver:enableFillTypeLoading(isInWaitPointRange)
@@ -112,18 +112,12 @@ function FieldSupplyAIDriver:continue()
 end
 
 function FieldSupplyAIDriver:onWaypointPassed(ix)
-	self:debug('onWaypointPassed %d', ix)
-	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
-	-- or stop.
-	if ix == self.course:getNumberOfWaypoints() then
-		self:onLastWaypoint()
-	elseif self.course:isWaitAt(ix) then
-		-- show continue button
-		self.state = self.states.STOPPED
+	if self.course:isWaitAt(ix) then 
 		self:changeSupplyState(self.states.WAITING_FOR_GETTING_UNLOADED)
 		self:setInfoText('REACHED_OVERLOADING_POINT')
 		self:refreshHUD()
 	end
+	AIDriver.onWaypointPassed(self,ix)
 end
 
 function FieldSupplyAIDriver:changeSupplyState(newState)
@@ -159,11 +153,6 @@ function FieldSupplyAIDriver:needsFillTypeLoading()
 	end
 end
 
---TODO: figure out the usage of this one ??
-function FieldSupplyAIDriver:stopAndWait(dt)
-	AIVehicleUtil.driveInDirection(self.vehicle, dt, self.vehicle.cp.steeringAngle, 1, 0.5, 10, false, fwd, 0, 1, 0, 1)
-end
-
 function FieldSupplyAIDriver:findPipe()
     local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
     if implementWithPipe then
@@ -182,10 +171,5 @@ function FieldSupplyAIDriver:getSiloSelectedFillTypeSetting()
 end
 
 function FieldSupplyAIDriver:getCanShowDriveOnButton()
-	return AIDriver.getCanShowDriveOnButton(self)
+	return AIDriver.getCanShowDriveOnButton(self) or self.refillState == self.states.WAITING_FOR_GETTING_UNLOADED
 end
-
---- Don't pay worker double when AutoDrive is driving 
-function FieldSupplyAIDriver:shouldPayWages()
-	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
-end 
