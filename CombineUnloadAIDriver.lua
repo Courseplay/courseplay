@@ -111,6 +111,7 @@ CombineUnloadAIDriver.myStates = {
 		{isUnloadingChopper = true, isHandlingChopperTurn = true, enableProximitySpeedControl = true},
 	MOVING_OUT_OF_WAY = {isUnloadingChopper = true},
 	WAITING_FOR_MANEUVERING_COMBINE = {},
+	ON_UNLOAD_WITH_AUTODRIVE = {},
 }
 
 --- Constructor
@@ -218,6 +219,9 @@ function CombineUnloadAIDriver:drive(dt)
 		local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 		self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 		self:driveOnField(dt)
+	elseif self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE then
+		-- AutoDrive is driving, don't call AIDriver.drive()
+		return
 	end
 end
 
@@ -534,7 +538,7 @@ function CombineUnloadAIDriver:driveBehindChopper()
 end
 
 function CombineUnloadAIDriver:onEndCourse()
-	if self.state == self.states.ON_UNLOAD_COURSE then
+	if self.state == self.states.ON_UNLOAD_COURSE or self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE then
 		self:setNewState(self.states.ON_FIELD)
 		self:startWaitingForCombine()
 		self:setDriveUnloadNow(false)
@@ -1071,9 +1075,16 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
-	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
-	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
 	self:closeCovers(self.vehicle)
+	if self.vehicle.spec_autodrive and self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+		-- directly hand over to AD as in other modes
+		self.state = self.states.ON_UNLOAD_WITH_AUTODRIVE
+		self:debug('passing the control to AutoDrive to run the unload course.')
+		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, CombineUnloadAIDriver.onEndCourse, nil);
+	else
+		self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
+		self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -2201,6 +2212,10 @@ function CombineUnloadAIDriver:findOtherUnloaderAroundCombine(combine, combineOf
 			end
 		end
 	end
+end
+
+function CombineUnloadAIDriver:isAutoDriveDriving()
+	return self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE
 end
 
 

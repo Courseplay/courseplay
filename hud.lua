@@ -2235,7 +2235,8 @@ end
 
 function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombinesSetting)
 	self:debug(vehicle,"setCombineUnloadAIDriverContent")
-
+	-- page 2
+	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'changeByX', 1, 3, 1 )
 	-- page 3
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRow(vehicle,nil,'changeTurnDiameter', 3, 1, 1 )
