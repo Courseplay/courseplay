@@ -500,3 +500,7 @@ function BunkerSiloAIDriver:doesNotMove()
 	-- does not move if we are less than 1km/h
 	return AIDriverUtil.isStopped(self.vehicle) and self.bestTarget.line > self.firstLine+1
 end
+
+function BunkerSiloAIDriver:setLightsMask(vehicle)
+	vehicle:setLightsTypesMask(courseplay.lights.HEADLIGHT_FULL)
+end

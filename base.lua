@@ -321,7 +321,6 @@ function courseplay:onLoad(savegame)
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
 	---@type SettingsContainer
-
 	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
 
 	courseplay.signs:updateWaypointSigns(self);
@@ -531,8 +530,10 @@ function courseplay:onUpdate(dt)
 	if self.cp.postInitDone == nil then 
 		--- Reset the current mode, as all implements are now attached.
 		--- If the vehicle is new, then cp.loadedMode is nil
-		local mode = self.cp.loadedMode or courseplay.MODE_DEFAULT
-		courseplay:setCpMode(self,  mode, true);
+		if g_server then 
+			local mode = self.cp.loadedMode or self.cp.mode
+			courseplay:setCpMode(self,  mode, true)
+		end
 		if self.cp.driver then 
 			---Post init function, as not all giants variables are
 			---set correctly at the first courseplay:setAIDriver() call.
