@@ -10,7 +10,7 @@
 		<color name="cpOrange" value="1 0.7921 0 1" />
 
 
-    </colors>
+	</colors>
 	<!--All uvs, old cp ones without "px"-->
 	<uvs>
 		<uv name="colorBg" value="10px 1010px 4px 4px" />
@@ -42,61 +42,105 @@
 		-->
 
 		<uv name="icon_info" value="440px 290px 150px 75px" />
-		<uv name="icon_closeX" value="580px 365px 150px 75px" /><!--Woher?-->
-		
-		<uv name="icon_castDrivers" value="0px 0px 128px 128px" /><!--A1-->
-		<uv name="icon_castSteering" value="128px 0px 128px 128px" /><!--B1-->
-		<uv name="icon_castCourseManager" value="256px 0px 128px 128px" /><!--C1-->
-		<uv name="icon_castFillSettings" value="384px 0px 128px 128px" /><!--D1-->
-		<uv name="icon_castCombineManager" value="512px 0px 128px 128px" /><!--E1-->
-		<uv name="icon_castSpeed" value="640px 0px 128px 128px" /><!--F1-->
-		<uv name="icon_castSettings" value="768px 0px 128px 128px" /><!--G1-->
-		<uv name="icon_castSettingsVehicle" value="896px 0px 128px 128px" /><!--H1-->
+		<uv name="icon_closeX" value="580px 365px 150px 75px" />
+		<!--Woher?-->
 
-		<uv name="icon_castSettingsField" value="0px 128px 128px 128px" /><!--A2-->
-		<uv name="icon_castFrontloader" value="128px 128px 128px 128px" /><!--B2-->
-		<uv name="icon_castSilo" value="256px 128px 128px 128px" /><!--C2-->
-		<uv name="icon_castShovelLoad" value="384px 128px 128px 128px" /><!--D2-->
-		<uv name="icon_castShovelTransport" value="512px 128px 128px 128px" /><!--E2-->
-		<uv name="icon_castShovelPreUnload" value="640px 128px 128px 128px" /><!--F2-->
-		<uv name="icon_castShovelUnload" value="768px 128px 128px 128px" /><!--G2-->
-		<uv name="icon_castFoldAtEnd" value="896px 128px 128px 128px" /><!--H2-->
+		<uv name="icon_castDrivers" value="0px 0px 128px 128px" />
+		<!--A1-->
+		<uv name="icon_castSteering" value="128px 0px 128px 128px" />
+		<!--B1-->
+		<uv name="icon_castCourseManager" value="256px 0px 128px 128px" />
+		<!--C1-->
+		<uv name="icon_castFillSettings" value="384px 0px 128px 128px" />
+		<!--D1-->
+		<uv name="icon_castCombineManager" value="512px 0px 128px 128px" />
+		<!--E1-->
+		<uv name="icon_castSpeed" value="640px 0px 128px 128px" />
+		<!--F1-->
+		<uv name="icon_castSettings" value="768px 0px 128px 128px" />
+		<!--G1-->
+		<uv name="icon_castSettingsVehicle" value="896px 0px 128px 128px" />
+		<!--H1-->
 
-		<uv name="icon_castSelfUnload" value="0px 256px 128px 128px" /><!--A3-->
-		<uv name="icon_castPipeAlwaysUnfold" value="128px 256px 128px 128px" /><!--B3-->
-		<uv name="icon_castSettingFertilizer" value="256px 256px 128px 128px" /><!--C3-->
-		<uv name="icon_castRidgeMarkers" value="384px 256px 128px 128px" /><!--D3-->
-		<uv name="icon_castStrawDischarge" value="512px 256px 128px 128px" /><!--E3-->
-		<uv name="icon_castStrawDischargeMid" value="640px 256px 128px 128px" /><!--F3-->
-		<uv name="icon_castUnloadFirstHeadlandOn" value="768px 256px 128px 128px" /><!--G3-->
-		<uv name="icon_castUnloadFirstHeadlandOff" value="896px 256px 128px 128px" /><!--H3-->
-		
-		<uv name="icon_mode1" value="0px 384px 128px 128px" /><!--A4-->
-		<uv name="icon_mode2" value="128px 384px 128px 128px" /><!--B4-->
-		<uv name="icon_mode3" value="256px 384px 128px 128px" /><!--C4-->
-		<uv name="icon_mode4" value="512px 384px 128px 128px" /><!--E4-->
-		<uv name="icon_mode5" value="640px 384px 128px 128px" /><!--F4-->
-		<uv name="icon_mode6" value="768px 384px 128px 128px" /><!--G4-->
-		<uv name="icon_mode7" value="896px 384px 128px 128px" /><!--H4-->
-		<uv name="icon_mode8" value="384px 384px 128px 128px" /><!--D4-->
+		<uv name="icon_castSettingsField" value="0px 128px 128px 128px" />
+		<!--A2-->
+		<uv name="icon_castFrontloader" value="128px 128px 128px 128px" />
+		<!--B2-->
+		<uv name="icon_castSilo" value="256px 128px 128px 128px" />
+		<!--C2-->
+		<uv name="icon_castShovelLoad" value="384px 128px 128px 128px" />
+		<!--D2-->
+		<uv name="icon_castShovelTransport" value="512px 128px 128px 128px" />
+		<!--E2-->
+		<uv name="icon_castShovelPreUnload" value="640px 128px 128px 128px" />
+		<!--F2-->
+		<uv name="icon_castShovelUnload" value="768px 128px 128px 128px" />
+		<!--G2-->
+		<uv name="icon_castFoldAtEnd" value="896px 128px 128px 128px" />
+		<!--H2-->
 
-		<uv name="icon_mode9" value="128px 128px 128px 128px" /><!--B2-->
-		<uv name="icon_mode10" value="256px 128px 128px 128px" /><!--C2-->
-		
-		<uv name="icon_plus" value="0px 512px 128px 128px" /><!--A5-->
-		<uv name="icon_minus" value="128px 512px 128px 128px" /><!--B5-->
-		<uv name="icon_X" value="256px 512px 128px 128px" /><!--C5-->
-		<uv name="icon_left" value="384px 512px 128px 128px" /><!--D5-->
-		<uv name="icon_right" value="512px 512px 128px 128px" /><!--E5-->
-		<uv name="icon_up" value="640px 512px 128px 128px" /><!--F5-->
-		<uv name="icon_down" value="768px 512px 128px 128px" /><!--G5-->
-		<uv name="icon_delete" value="896px 512px 128px 128px" /><!--H5-->
+		<uv name="icon_castSelfUnload" value="0px 256px 128px 128px" />
+		<!--A3-->
+		<uv name="icon_castPipeAlwaysUnfold" value="128px 256px 128px 128px" />
+		<!--B3-->
+		<uv name="icon_castSettingFertilizer" value="256px 256px 128px 128px" />
+		<!--C3-->
+		<uv name="icon_castRidgeMarkers" value="384px 256px 128px 128px" />
+		<!--D3-->
+		<uv name="icon_castStrawDischarge" value="512px 256px 128px 128px" />
+		<!--E3-->
+		<uv name="icon_castStrawDischargeMid" value="640px 256px 128px 128px" />
+		<!--F3-->
+		<uv name="icon_castUnloadFirstHeadlandOn" value="768px 256px 128px 128px" />
+		<!--G3-->
+		<uv name="icon_castUnloadFirstHeadlandOff" value="896px 256px 128px 128px" />
+		<!--H3-->
 
-		<uv name="icon_trailer" value="0px 640px 128px 128px" /><!--A6-->
+		<uv name="icon_mode1" value="0px 384px 128px 128px" />
+		<!--A4-->
+		<uv name="icon_mode2" value="128px 384px 128px 128px" />
+		<!--B4-->
+		<uv name="icon_mode3" value="256px 384px 128px 128px" />
+		<!--C4-->
+		<uv name="icon_mode4" value="512px 384px 128px 128px" />
+		<!--E4-->
+		<uv name="icon_mode5" value="640px 384px 128px 128px" />
+		<!--F4-->
+		<uv name="icon_mode6" value="768px 384px 128px 128px" />
+		<!--G4-->
+		<uv name="icon_mode7" value="896px 384px 128px 128px" />
+		<!--H4-->
+		<uv name="icon_mode8" value="384px 384px 128px 128px" />
+		<!--D4-->
+
+		<uv name="icon_mode9" value="128px 128px 128px 128px" />
+		<!--B2-->
+		<uv name="icon_mode10" value="256px 128px 128px 128px" />
+		<!--C2-->
+
+		<uv name="icon_plus" value="0px 512px 128px 128px" />
+		<!--A5-->
+		<uv name="icon_minus" value="128px 512px 128px 128px" />
+		<!--B5-->
+		<uv name="icon_X" value="256px 512px 128px 128px" />
+		<!--C5-->
+		<uv name="icon_left" value="384px 512px 128px 128px" />
+		<!--D5-->
+		<uv name="icon_right" value="512px 512px 128px 128px" />
+		<!--E5-->
+		<uv name="icon_up" value="640px 512px 128px 128px" />
+		<!--F5-->
+		<uv name="icon_down" value="768px 512px 128px 128px" />
+		<!--G5-->
+		<uv name="icon_delete" value="896px 512px 128px 128px" />
+		<!--H5-->
+
+		<uv name="icon_trailer" value="0px 640px 128px 128px" />
+		<!--A6-->
 
 		<uv name="icon_accept" value="335px 730px 50px 50px" />
 
-    </uvs>
+	</uvs>
 	<templates>
 		<!--Base element-->
 		<template name="cpBase">
@@ -116,55 +160,59 @@
 			<value name="textColor_selected" value="text_selected" />
 			<value name="imageSize" value="1024 1024" />
 		</template>
-        <!--Main screen background-->
-        <template name="cpMain" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="390px 320px" /><!--Main BG size from mid-->
+		<!--Main screen background-->
+		<template name="cpMain" anchor="middleCenter" extends="cpBase">
+			<value name="size" value="390px 320px" />
+			<!--Main BG size from mid-->
 			<value name="position" value="700px 0px" />
 			<value name="imageColor" value="gray" />
 		</template>
 		<!--Main screen top background-->
-        <template name="cpMainBarTop" anchor="middleTop" extends="cpBase">
-			<value name="size" value="390px 25px" /><!--top and bottom black bar size from mid-->
+		<template name="cpMainBarTop" anchor="middleTop" extends="cpBase">
+			<value name="size" value="390px 25px" />
+			<!--top and bottom black bar size from mid-->
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
 		<!--Main screen mover-->
-        <template name="cpMainGuiMover" anchor="leftTop" extends="cpBase">
-			<value name="size" value="350px 25px" /><!--Mover Area lenght from left-->
+		<template name="cpMainGuiMover" anchor="leftTop" extends="cpBase">
+			<value name="size" value="350px 25px" />
+			<!--Mover Area lenght from left-->
 			<value name="position" value="0px 0px" />
 		</template>
-		<!--Main screen top logo-->        
-        <template name="cpMainLogo" anchor="leftCenter" extends="cpBase">
+		<!--Main screen top logo-->
+		<template name="cpMainLogo" anchor="leftCenter" extends="cpBase">
 			<value name="size" value="40px 15px" />
 			<value name="position" value="10px 0px" />
 			<value name="imageFilename" value="g_cpIconsOld" />
 			<value name="imageUVs" value="icon_cpLogo" />
 		</template>
-		<!--Main screen top titles--> 
-        <template name="cpMainTitle1" anchor="leftCenter" extends="cpBase">
+		<!--Main screen top titles-->
+		<template name="cpMainTitle1" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="40px 2px" />
 			<value name="textSize" value="18px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
 			<value name="textBold" value="true" />
 		</template>
-        <template name="cpMainTitle2" anchor="leftCenter" extends="cpMainTitle1">
+		<template name="cpMainTitle2" anchor="leftCenter" extends="cpMainTitle1">
 			<value name="position" value="112px 2px" />
 			<value name="textColor" value="cpOrange" />
 		</template>
-        <template name="cpMainTitle3" anchor="leftCenter" extends="cpMainTitle1">
+		<template name="cpMainTitle3" anchor="leftCenter" extends="cpMainTitle1">
 			<value name="position" value="180px 2px" />
 			<value name="textColor" value="white" />
 			<value name="textBold" value="false" />
 		</template>
-		<!--Main screen top version--> 
-        <template name="cpMainVersion" anchor="leftCenter" extends="cpBase">
-			<value name="position" value="270px 2px" /><!--Version Infotext from left-->
+		<!--Main screen top version-->
+		<template name="cpMainVersion" anchor="leftCenter" extends="cpBase">
+			<value name="position" value="270px 2px" />
+			<!--Version Infotext from left-->
 			<value name="textSize" value="10px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
-		</template> 
-		<!--Main screen top close button--> 
+		</template>
+		<!--Main screen top close button-->
 		<template name="cpMainCloseButton" anchor="rightCenter" extends="cpBase">
 			<value name="size" value="20px 20px" />
 			<value name="position" value="-10px 0px" />
@@ -177,40 +225,40 @@
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 		</template>
-		<!--Main screen bottom background--> 
-        <template name="cpMainBarBottom" anchor="middleBottom" extends="cpMainBarTop">
+		<!--Main screen bottom background-->
+		<template name="cpMainBarBottom" anchor="middleBottom" extends="cpMainBarTop">
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
-		<!--Main screen bottom icon--> 
-        <template name="cpMainBarBottomIcon" anchor="leftCenter" extends="cpBase">
+		<!--Main screen bottom icon-->
+		<template name="cpMainBarBottomIcon" anchor="leftCenter" extends="cpBase">
 			<value name="size" value="20px 20px" />
 			<value name="position" value="5px 0px" />
 			<value name="imageFilename" value="g_cpIconsOld" />
 			<value name="imageUVs" value="icon_info" />
 		</template>
-		<!--Main screen bottom help text--> 
-        <template name="cpMainBarBottomHelptext" anchor="leftCenter" extends="cpBase">
+		<!--Main screen bottom help text-->
+		<template name="cpMainBarBottomHelptext" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="30px 2px" />
 			<value name="textSize" value="15px" />
 			<value name="textAlignment" value="left" />
 			<value name="textColor" value="white" />
 		</template>
-		<!--Main screen layout--> 
+		<!--Main screen layout-->
 		<template name="cpMainLayout" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px -25px" />
 			<value name="size" value="390px 270px" />
 		</template>
-		<!--Main screen page button layout--> 
+		<!--Main screen page button layout-->
 		<template name="cpMainLayout1" anchor="middleCenter" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="position" value="0px 0px" />
 			<value name="size" value="40px 250px" />
 		</template>
-		<!--Main screen page layout--> 
+		<!--Main screen page layout-->
 		<template name="cpMainLayout2" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
@@ -218,20 +266,21 @@
 			<value name="size" value="350px 270px" />
 			<value name="margin" value="0px 0px 0px 0px" />
 		</template>
-		<!--Main screen page position--> 
+		<!--Main screen page position-->
 		<template name="cpMainPagePosition" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="size" value="310px 225px" />
 			<value name="margin" value="0px 5px 0px 5px" />
 		</template>
-		<!--Main screen mode button layout--> 
+		<!--Main screen mode button layout-->
 		<template name="cpMainLayout3" anchor="middleTop" extends="cpBase">
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="position" value="0px 0px" />
-			<value name="size" value="340px 30px" /><!--Bottom Buttons-->
+			<value name="size" value="340px 30px" />
+			<!--Bottom Buttons-->
 		</template>
-		<!--Main screen button prefabs--> 
+		<!--Main screen button prefabs-->
 		<template name="cpMainCategorie" anchor="middleTop" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="size" value="32px 32px" />
@@ -259,8 +308,8 @@
 			<value name="imageUVs_selected" value="icon_castSteering" />
 		</template>
 		<!--Opens CourseManager_GUI-->
-		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie" >
-		<!--	<value name="margin" value="0px 20px 0px 0px" />-->
+		<template name="cpMainCategorie_CourseManager" anchor="middleTop" extends="cpMainCategorie">
+			<!--	<value name="margin" value="0px 20px 0px 0px" />-->
 		</template>
 		<template name="cpMainCategorie_CourseManager_overlay" extends="cpMainCategorie_CourseManager">
 			<value name="imageUVs" value="icon_castCourseManager" />
@@ -273,8 +322,8 @@
 			<value name="imageUVs_selected" value="icon_castDrivers" />
 		</template>
 		<!--Combine Manager-->
-		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton" >
-		<!--	<value name="margin" value="0px 12px 0px 0px" /> -->
+		<template name="cpMainCategorie_DriversSearch" anchor="middleTop" extends="cpMainCategorieActiveButton">
+			<!--	<value name="margin" value="0px 12px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_DriversSearch_overlay" extends="cpMainCategorie_DriversSearch">
 			<value name="imageUVs" value="icon_castCombineManager" />
@@ -305,24 +354,24 @@
 			<value name="imageUVs_selected" value="icon_castSettingsField" />
 		</template>
 		<!--Advanced Settings Gui-->
-		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie" >
-		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
+		<template name="cpMainCategorie_Settings" anchor="middleTop" extends="cpMainCategorie">
+			<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_Settings_overlay" extends="cpMainCategorie_Settings">
 			<value name="imageUVs" value="icon_castSettings" />
 			<value name="imageUVs_selected" value="icon_castSettings" />
 		</template>
 		<!--Mode 9 Settings-->
-		<template name="cpMainCategorie_ShovelMode" anchor="middleTop" extends="cpMainCategorie" >
-		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
+		<template name="cpMainCategorie_ShovelMode" anchor="middleTop" extends="cpMainCategorie">
+			<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_ShovelMode_overlay" extends="cpMainCategorie_ShovelMode">
 			<value name="imageUVs" value="icon_mode9" />
 			<value name="imageUVs_selected" value="icon_mode9" />
 		</template>
 		<!--Mode 10 Settings-->
-		<template name="cpMainCategorie_BunkerSilo" anchor="middleTop" extends="cpMainCategorie" >
-		<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
+		<template name="cpMainCategorie_BunkerSilo" anchor="middleTop" extends="cpMainCategorie">
+			<!--	<value name="margin" value="0px 20px 0px 0px" /> -->
 		</template>
 		<template name="cpMainCategorie_BunkerSilo_overlay" extends="cpMainCategorie_BunkerSilo">
 			<value name="imageUVs" value="icon_mode10" />
@@ -336,7 +385,7 @@
 			<value name="imageUVs_selected" value="icon_mode1" />
 		</template>
 		<!--Mode 2 Button-->
-		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode2" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode2_overlay" extends="cpMainCategorie_mode2">
@@ -344,7 +393,7 @@
 			<value name="imageUVs_selected" value="icon_mode2" />
 		</template>
 		<!--Mode 3 Button-->
-		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode3" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode3_overlay" extends="cpMainCategorie_mode3">
@@ -352,7 +401,7 @@
 			<value name="imageUVs_selected" value="icon_mode3" />
 		</template>
 		<!--Mode 4 Button-->
-		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode4" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode4_overlay" extends="cpMainCategorie_mode4">
@@ -360,7 +409,7 @@
 			<value name="imageUVs_selected" value="icon_mode4" />
 		</template>
 		<!--Mode 5 Button-->
-		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode5" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode5_overlay" extends="cpMainCategorie_mode5">
@@ -368,7 +417,7 @@
 			<value name="imageUVs_selected" value="icon_mode5" />
 		</template>
 		<!--Mode 6 Button-->
-		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode6" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode6_overlay" extends="cpMainCategorie_mode6">
@@ -376,7 +425,7 @@
 			<value name="imageUVs_selected" value="icon_mode6" />
 		</template>
 		<!--Mode 7 Button-->
-		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode7" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode7_overlay" extends="cpMainCategorie_mode7">
@@ -384,7 +433,7 @@
 			<value name="imageUVs_selected" value="icon_mode7" />
 		</template>
 		<!--Mode 8 Button-->
-		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode8" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode8_overlay" extends="cpMainCategorie_mode8">
@@ -392,7 +441,7 @@
 			<value name="imageUVs_selected" value="icon_mode8" />
 		</template>
 		<!--Mode 9 Button-->
-		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode9" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode9_overlay" extends="cpMainCategorie_mode9">
@@ -400,7 +449,7 @@
 			<value name="imageUVs_selected" value="icon_mode9" />
 		</template>
 		<!--Mode 10 Button-->
-		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorieActiveButton" >
+		<template name="cpMainCategorie_mode10" anchor="middleTop" extends="cpMainCategorieActiveButton">
 			<value name="margin" value="2px 0px 0px 0px" />
 		</template>
 		<template name="cpMainCategorie_mode10_overlay" extends="cpMainCategorie_mode10">
@@ -422,61 +471,62 @@
 		</template>
 
 
-        <template name="cpMainPage" anchor="middleCenter" extends="cpBase">
-			<value name="size" value="340px 225px" /><!--Mid screen from center-->
+		<template name="cpMainPage" anchor="middleCenter" extends="cpBase">
+			<value name="size" value="340px 225px" />
+			<!--Mid screen from center-->
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="grayLight" />
 		</template>
-	
-        <template name="cpMainPageButton" anchor="leftTop" extends="cpBase">
+
+		<template name="cpMainPageButton" anchor="leftTop" extends="cpBase">
 			<value name="textColor" value="cpOrange" />
 			<value name="hasText" value="true" />
 		</template>
-        <template name="cpMainPageButton_text" anchor="leftTop" extends="cpMainPageButton">		
+		<template name="cpMainPageButton_text" anchor="leftTop" extends="cpMainPageButton">
 			<value name="textSize" value="12px" />
 			<value name="textColor" value="white" />
 			<value name="textColor_selected" value="cpOrange" />
 		</template>
-        <template name="cpMainPageText" anchor="leftTop" extends="cpMainPageButton">		
+		<template name="cpMainPageText" anchor="leftTop" extends="cpMainPageButton">
 			<value name="textSize" value="12px" />
 			<value name="textColor" value="white" />
 			<value name="textColor_selected" value="cpOrange" />
 		</template>
-        <template name="cpMainPageTextCenter" anchor="middleTop" extends="cpMainPageText">
+		<template name="cpMainPageTextCenter" anchor="middleTop" extends="cpMainPageText">
 			<value name="textAlignment" value="center" />
 		</template>
 
-        <template name="cpMainPageButtonLeft" anchor="leftTop" extends="cpBase">
+		<template name="cpMainPageButtonLeft" anchor="leftTop" extends="cpBase">
 			<value name="imageFilename" value="g_cpIcons" />
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 			<value name="hasOverlay" value="true" />
 		</template>
-        <template name="cpMainPageButtonLeft_overlay" anchor="leftTop" extends="cpMainPageButtonLeft">		
+		<template name="cpMainPageButtonLeft_overlay" anchor="leftTop" extends="cpMainPageButtonLeft">
 			<value name="imageUVs" value="icon_left" />
 			<value name="imageUVs_selected" value="icon_left" />
 		</template>
-        <template name="cpMainPageButtonRight" anchor="leftTop" extends="cpBase">
+		<template name="cpMainPageButtonRight" anchor="leftTop" extends="cpBase">
 			<value name="imageFilename" value="g_cpIcons" />
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 			<value name="hasOverlay" value="true" />
 		</template>
-        <template name="cpMainPageButtonRight_overlay" anchor="leftTop" extends="cpMainPageButtonRight">		
+		<template name="cpMainPageButtonRight_overlay" anchor="leftTop" extends="cpMainPageButtonRight">
 			<value name="imageUVs" value="icon_right" />
 			<value name="imageUVs_selected" value="icon_right" />
 		</template>
-        <template name="cpMainPageButtonAccept" anchor="leftTop" extends="cpBase">
+		<template name="cpMainPageButtonAccept" anchor="leftTop" extends="cpBase">
 			<value name="imageFilename" value="g_baseUIFilename" />
 			<value name="imageColor" value="white" />
 			<value name="imageColor_selected" value="cpOrange" />
 			<value name="hasOverlay" value="true" />
 		</template>
-        <template name="cpMainPageButtonAccept_overlay" anchor="leftTop" extends="cpMainPageButtonAccept">		
+		<template name="cpMainPageButtonAccept_overlay" anchor="leftTop" extends="cpMainPageButtonAccept">
 			<value name="imageUVs" value="icon_accept" />
 			<value name="imageUVs_selected" value="icon_accept" />
 		</template>
-        <template name="cpMainPageSeperator" anchor="middleTop" extends="cpBase">
+		<template name="cpMainPageSeperator" anchor="middleTop" extends="cpBase">
 			<value name="imageColor" value="cpOrange" />
 			<value name="size" value="280px 1px" />
 		</template>
@@ -495,15 +545,15 @@
 													Page base classes
 		################################################################################################-->
 		<!--base page content-->
-		<template name="cpPageBaseLayout" anchor="leftTop" extends="cpMainPage">		
+		<template name="cpPageBaseLayout" anchor="leftTop" extends="cpMainPage">
 			<value name="position" value="0px 0px" />
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
 			<value name="debugEnabled" value="true" />
 		</template>
-		
+
 		<!--page title-->
-		<template name="cpPageTitle" anchor="middleTop" extends="cpMainPage">		
+		<template name="cpPageTitle" anchor="middleTop" extends="cpMainPage">
 			<value name="position" value="0px 0px" />
 			<value name="textSize" value="18px" />
 			<value name="textAlignment" value="center" />
@@ -512,7 +562,7 @@
 		</template>
 
 		<!--Layout from top to bottom for lines of content-->
-		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpPageBaseLayout">	
+		<template name="cpPageTopToBottomLayout" anchor="leftTop" extends="cpPageBaseLayout">
 			<value name="position" value="0px 0px" />
 			<value name="orientation" value="y" />
 			<value name="alignment" value="top" />
@@ -521,7 +571,7 @@
 		</template>
 
 		<!--Layout from left to right content in a line-->
-		<template name="cpPageLeftToRightLayout" anchor="leftTop" extends="cpPageTopToBottomLayout">		
+		<template name="cpPageLeftToRightLayout" anchor="leftTop" extends="cpPageTopToBottomLayout">
 			<value name="orientation" value="x" />
 			<value name="alignment" value="left" />
 			<value name="margin" value="0px 0px 0px 0px" />
@@ -529,7 +579,7 @@
 		</template>
 
 		<!--Base Image page button-->
-		<template name="cpPageBaseButtonImage" anchor="middleCenter" extends="cpBase">		
+		<template name="cpPageBaseButtonImage" anchor="middleCenter" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="hasOverlay" value="true" />
 			<value name="imageSize" value="256 512" />
@@ -538,7 +588,7 @@
 		</template>
 
 		<!--Base Line text page button-->
-		<template name="cpPageBaseLineTextButton" anchor="leftCenter" extends="cpBase">		
+		<template name="cpPageBaseLineTextButton" anchor="leftCenter" extends="cpBase">
 			<value name="position" value="0px 0px" />
 			<value name="hasOverlay" value="false" />
 			<value name="size" value="165px 20px"/>
@@ -546,7 +596,7 @@
 			<value name="textColor" value="cpOrange" />
 			<value name="debugEnabled" value="true"/>
 		</template>
-        <template name="cpPageBaseLineTextButton_text" anchor="leftCenter" extends="cpPageBaseLineTextButton">		
+		<template name="cpPageBaseLineTextButton_text" anchor="leftCenter" extends="cpPageBaseLineTextButton">
 			<value name="textSize" value="18px" />
 			<value name="textColor" value="white" />
 			<value name="textColor_selected" value="cpOrange" />
@@ -556,7 +606,7 @@
 		################################################################################################-->
 
 		<!--Layout from left to right content in a line-->
-		<template name="cpPageDrivingRecordingBtnLayout" anchor="middleBottom" extends="cpPageBaseLayout">		
+		<template name="cpPageDrivingRecordingBtnLayout" anchor="middleBottom" extends="cpPageBaseLayout">
 			<value name="position" value="0px 50px" />
 			<value name="orientation" value="x" />
 			<value name="alignment" value="middle" />
@@ -565,7 +615,7 @@
 		</template>
 
 		<!--Stop recording button-->
-		<template name="cpPageDrivingStopRecordingButton" anchor="middleCenter" extends="cpPageBaseButtonImage" >
+		<template name="cpPageDrivingStopRecordingButton" anchor="middleCenter" extends="cpPageBaseButtonImage">
 		</template>
 		<template name="cpPageDrivingStopRecordingButton_overlay" extends="cpPageDrivingStopRecordingButton">
 			<value name="imageUVs" value="icon_recordingStop" />
@@ -575,7 +625,7 @@
 		</template>
 
 		<!--Pause recording button-->
-		<template name="cpPageDrivingPauseRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingPauseRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingPauseRecordingButton_overlay" extends="cpPageDrivingPauseRecordingButton">
 			<value name="imageUVs" value="icon_recordingPause" />
@@ -585,7 +635,7 @@
 		</template>
 
 		<!--Wait point recording button-->
-		<template name="cpPageDrivingWaitPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingWaitPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingWaitPointRecordingButton_overlay" extends="cpPageDrivingWaitPointRecordingButton">
 			<value name="imageUVs" value="icon_recordingWait" />
@@ -595,7 +645,7 @@
 		</template>
 
 		<!--Unload point recording button-->
-		<template name="cpPageDrivingUnloadPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingUnloadPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingUnloadPointRecordingButton_overlay" extends="cpPageDrivingUnloadPointRecordingButton">
 			<value name="imageUVs" value="icon_recordingUnload" />
@@ -605,7 +655,7 @@
 		</template>
 
 		<!--Cross point recording button-->
-		<template name="cpPageDrivingCrossPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingCrossPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingCrossPointRecordingButton_overlay" extends="cpPageDrivingCrossPointRecordingButton">
 			<value name="imageUVs" value="icon_recordingCross" />
@@ -615,7 +665,7 @@
 		</template>
 
 		<!--Turn point recording button-->
-		<template name="cpPageDrivingTurnPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingTurnPointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingTurnPointRecordingButton_overlay" extends="cpPageDrivingTurnPointRecordingButton">
 			<value name="imageUVs" value="icon_recordingTurn" />
@@ -625,7 +675,7 @@
 		</template>
 
 		<!--Reverse point recording button-->
-		<template name="cpPageDrivingReversePointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton" >
+		<template name="cpPageDrivingReversePointRecordingButton" anchor="middleCenter" extends="cpPageDrivingStopRecordingButton">
 		</template>
 		<template name="cpPageDrivingReversePointRecordingButton_overlay" extends="cpPageDrivingReversePointRecordingButton">
 			<value name="imageUVs" value="icon_recordingReverse" />
@@ -635,8 +685,8 @@
 		</template>
 
 		<!--Separator between recording buttons-->
-		<template name="cpPageDrivingSeparatorRecordingButton" anchor="middleCenter" extends="cpBase" >
-		<!--<value name="imageColor" value="cpOrange" />-->
+		<template name="cpPageDrivingSeparatorRecordingButton" anchor="middleCenter" extends="cpBase">
+			<!--<value name="imageColor" value="cpOrange" />-->
 			<value name="size" value="2px 40px" />
 		</template>
 
@@ -658,41 +708,122 @@
 		<!--############################################################################################################################################################-->
 		<!--###########################################################################CourseManager####################################################################-->
 		<!--############################################################################################################################################################-->
-		<!--Manager--><!--change position doesn't work everywhere, Manager position get saved in XML, PDA not yet-->
-        <template name="cpCmMain" anchor="middleCenter" extends="cpBase">
+		<!--Manager-->		<!--change position doesn't work everywhere, Manager position get saved in XML, PDA not yet-->
+		<!--Base screen-->
+		<template name="cpCmMain" anchor="middleCenter" extends="cpBase">
 			<value name="size" value="700px 800px" />
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="gray" />
+			<value name="debugEnabled" value="true" />
 		</template>
+		<!--Top bar-->
 		<template name="cpCmMainBarTop" anchor="middleTop" extends="cpMainBarTop">
 			<value name="size" value="700px 25px" />
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
 		</template>
-        <template name="cpCmMainGuiMover" anchor="leftTop" extends="cpMainGuiMover">
+		<!--Screen mover element-->
+		<template name="cpCmMainGuiMover" anchor="leftTop" extends="cpMainGuiMover">
 			<value name="size" value="670px 25px" />
 			<value name="position" value="0px 0px" />
-		</template>      
-        <template name="cpCmMainBarBottom" anchor="middleBottom" extends="cpCmMainBarTop">
+		</template>
+		<!--Bottom bar-->
+		<template name="cpCmMainBarBottom" anchor="middleBottom" extends="cpCmMainBarTop">
 			<value name="position" value="0px 0px" />
 			<value name="imageColor" value="black" />
-		</template> 
+		</template>
+		<!--Main layout top to bottom-->
+		<template name="cpCmLayoutTopToBottom" anchor="leftTop" extends="cpCmMain">
+			<value name="position" value="0px -25px" />
+			<value name="size" value="700px 750px" />
+			<value name="orientation" value="y" />
+			<value name="alignment" value="top" />
+		</template>
+		<!--Sub main layout top to bottom -->
+		<template name="cpCmSubLayoutTopToBottom" anchor="leftTop" extends="cpCmLayoutTopToBottom">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="700px 375px" />
+			<value name="orientation" value="y" />
+			<value name="alignment" value="top" />
+		</template>
+
+		<!--Courses/setups title -->
+		<template name="cpCmSubTitle" anchor="middleCenter" extends="cpCmMain">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="700px 25px" />
+			<value name="textSize" value="18px" />
+			<value name="textAlignment" value="center" />
+			<value name="textColor" value="white" />
+			<value name="textBold" value="true" />
+		</template>
+
+		<!--Course Layout -->
+		<template name="cpCmCourseLayout" anchor="rightTop" extends="cpCmSubLayoutTopToBottom">
+			<value name="position" value="-5px 0px" />
+			<value name="size" value="690px 20px" />
+			<value name="orientation" value="x" />
+			<value name="alignment" value="right" />
+		</template>
+
+		<!--Course Name-->
+		<template name="cpCmCourseName" anchor="leftTop" extends="cpCmCourseLayout">
+			<value name="position" value="5px 0px" />
+			<value name="size" value="95px 20px" />
+			<value name="textSize" value="14px" />
+			<value name="autoSize" value="true" />
+			<value name="textAlignment" value="left" />
+			<value name="textColor" value="white" />
+			<value name="textBold" value="true" />
+		</template>
+
+		<!--Course Button-->
+		<template name="cpCmCourseButton" anchor="middleCenter" extends="cpCmCourseLayout">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="20px 20px" />
+			<value name="hasOverlay" value="true" />
+			<value name="imageSize" value="1024 1024" />
+			<value name="imageFilename" value="g_cpIcons" />
+			<value name="imageColor" value="white" />
+		</template>
+
+		<!--Course Button Separator-->
+		<template name="cpCmCourseButtonSeparator" anchor="RightCenter" extends="cpCmCourseLayout">
+			<value name="position" value="0px 0px" />
+			<value name="size" value="3px 20px" />
+		</template>
+
+		<!--Course Button Plus-->
+		<template name="cpCmCourseButtonPlus" anchor="middleCenter" extends="cpCmCourseButton">
+		</template>
+		<template name="cpCmCourseButtonPlus_overlay" anchor="middleCenter" extends="cpCmCourseButtonPlus">
+			<value name="imageUVs" value="icon_plus" />
+			<value name="imageUVs_selected" value="icon_plus" />
+		</template>
+
+		<!--Course Button Minus-->
+		<template name="cpCmCourseButtonMinus" anchor="middleCenter" extends="cpCmCourseButton">
+		</template>
+		<template name="cpCmCourseButtonMinus_overlay" anchor="middleCenter" extends="cpCmCourseButtonMinus">
+			<value name="imageUVs" value="icon_minus" />
+			<value name="imageUVs_selected" value="icon_minus" />
+		</template>
+
 		<!--PDA-->
 		<template name="cpCmPda" anchor="middleCenter" extends="cpBase">
 			<value name="size" value="800px 800px" />
 			<value name="position" value="0px 0px" />
-			<value name="zoomMode" value="full" />		
-			<value name="minSize" value="800px 800px" />				
-			<value name="maxSize" value="5000px 5000px" />	
+			<value name="zoomMode" value="full" />
+			<value name="minSize" value="800px 800px" />
+			<value name="maxSize" value="5000px 5000px" />
 		</template>
-		<template name="cpCmPda_overlay" anchor="middleCenter" extends="cpCmPda">		
-			<value name="imageFilename" value="pda" />	
-			<value name="imageUVs" value="0px 0px 1024px 1024px" />	
-			<value name="debugEnabled" value="true" />		
+		<template name="cpCmPda_overlay" anchor="middleCenter" extends="cpCmPda">
+			<value name="imageFilename" value="pda" />
+			<value name="imageUVs" value="0px 0px 1024px 1024px" />
+			<value name="debugEnabled" value="true" />
 		</template>
-        <template name="cpCmPdaGuiMover" anchor="middleCenter" extends="cpCmPda">
+		<template name="cpCmPdaGuiMover" anchor="middleCenter" extends="cpCmPda">
 			<value name="position" value="0px 0px" />
-		</template>     
+		</template>
 
 
 	</templates>

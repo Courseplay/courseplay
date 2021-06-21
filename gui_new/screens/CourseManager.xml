@@ -14,29 +14,50 @@ CoursePlay - Gui - CourseManager
 
 -->
 
-<GUI>  
+<GUI>
 
-  <GuiElement type="ingameMap" template="cpCmPda" id="gui_ingameMap">
-        <!--GuiElement type="guiMover" template="cpCmPdaGuiMover" id="gui_ingameMapMover" target="gui_ingameMap" /--> 
-
-
-  </GuiElement>    
-
-  <GuiElement type="image" template="cpCmMain" id="gui_dialog">  
-    <GuiElement type="image" template="cpCmMainBarTop">  
-        <GuiElement type="guiMover" template="cpCmMainGuiMover" target="gui_dialog" /> 
-        <GuiElement type="image" template="cpMainLogo" /> 
-        <GuiElement type="text" template="cpMainTitle1" text="COURSE" /> 
-        <GuiElement type="text" template="cpMainTitle2" text="PLAY" /> 
-        <GuiElement type="text" template="cpMainTitle3" text=" Kursmanager" /> 
-        <GuiElement type="button" template="cpMainCloseButton" onClick="onClose" /> 
-    </GuiElement>    
+	<GuiElement type="ingameMap" template="cpCmPda" id="gui_ingameMap">
+		<!--GuiElement type="guiMover" template="cpCmPdaGuiMover" id="gui_ingameMapMover" target="gui_ingameMap" /-->
 
 
-    
-    <GuiElement type="image" template="cpCmMainBarBottom">      
-        <GuiElement type="image" template="cpMainBarBottomIcon" />  
-        <GuiElement type="text" template="cpMainBarBottomHelptext" text="Hilfetext" /> 
-    </GuiElement>
-  </GuiElement>
+	</GuiElement>
+	<!--Base screen-->
+	<GuiElement type="image" template="cpCmMain" id="gui_dialog">
+		<!--Top bar-->
+		<GuiElement type="image" template="cpCmMainBarTop">
+			<GuiElement type="guiMover" template="cpCmMainGuiMover" target="gui_dialog" />
+			<GuiElement type="image" template="cpMainLogo" />
+			<GuiElement type="text" template="cpMainTitle1" text="COURSE" />
+			<GuiElement type="text" template="cpMainTitle2" text="PLAY" />
+			<GuiElement type="text" template="cpMainTitle3" text=" Kursmanager" />
+			<GuiElement type="button" template="cpMainCloseButton" onClick="onClose" />
+		</GuiElement>
+		<!--Base content-->
+		<GuiElement type="flowLayout" template="cpCmLayoutTopToBottom">
+			<!--Course content-->
+			<GuiElement type="flowLayout" template="cpCmSubLayoutTopToBottom">
+				<GuiElement type="text" template="cpCmSubTitle" text="Courses" />
+
+				<GuiElement type="empty">
+					<GuiElement type="text" template="cpCmCourseName" text="Single Courses" />
+					<GuiElement type="flowLayout" template="cpCmCourseLayout">
+						<GuiElement type="button" template="cpCmCourseButtonPlus"/>
+						<GuiElement type="image" template="cpCmCourseButtonSeparator"/>
+						<GuiElement type="button" template="cpCmCourseButtonMinus"/>
+					</GuiElement>
+				</GuiElement>
+			</GuiElement>
+			<!--Driver setup-->
+			<GuiElement type="flowLayout" template="cpCmSubLayoutTopToBottom">
+				<GuiElement type="text" template="cpCmSubTitle" text="Setups" />
+
+			</GuiElement>
+
+		</GuiElement>
+
+		<GuiElement type="image" template="cpCmMainBarBottom">
+			<GuiElement type="image" template="cpMainBarBottomIcon" />
+			<GuiElement type="text" template="cpMainBarBottomHelptext" text="Hilfetext" />
+		</GuiElement>
+	</GuiElement>
 </GUI>
