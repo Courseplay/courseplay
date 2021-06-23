@@ -1254,7 +1254,10 @@ end
 function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFarmId)
 	local spec = vehicle.spec_aiVehicle
     if not vehicle:getIsCourseplayDriving() then
-        --giants code from AIVehicle:startAIVehicle()
+        --- Reset the course editor on start.
+		courseEditor:reset()
+		
+		--giants code from AIVehicle:startAIVehicle()
 		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER,vehicle,'Started cp driver, farmID: %s, helperIndex: %s', tostring(startedFarmId),tostring(helperIndex))
 		if helperIndex ~= nil then
             spec.currentHelper = g_helperManager:getHelperByIndex(helperIndex)
