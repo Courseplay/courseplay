@@ -524,7 +524,7 @@ end
 
 function CombineUnloadAIDriver:driveBesideChopper()
 	local targetNode = self:getTrailersTargetNode()
-	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.setting.combineOffsetX:get()))
+	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.settings.combineOffsetX:get()))
 	self:releaseAutoAimNode()
 	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5)
 	self:setSpeed(math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))))
@@ -532,7 +532,7 @@ end
 
 
 function CombineUnloadAIDriver:driveBehindChopper()
-	self:renderText(0, 0.05, "%s: driveBehindChopper offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.setting.combineOffsetX:get()))
+	self:renderText(0, 0.05, "%s: driveBehindChopper offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.settings.combineOffsetX:get()))
 	self:fixAutoAimNode()
 	--get required Speed
 	self:setSpeed(self:getSpeedBehindChopper())
@@ -790,8 +790,8 @@ function CombineUnloadAIDriver:setSavedCombineOffset(newOffset)
 end
 
 function CombineUnloadAIDriver:getSavedCombineOffset()
-	if self.setting.combineOffsetX:get() then
-		return self.setting.combineOffsetX:get()
+	if self.settings.combineOffsetX:get() then
+		return self.settings.combineOffsetX:get()
 	end
 	-- else???? this does not make any sense, this is still just a nil ...
 end
