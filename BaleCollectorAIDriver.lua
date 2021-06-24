@@ -114,7 +114,7 @@ function BaleCollectorAIDriver:collectNextBale()
 			self:changeToUnloadOrRefill()
 			self:startCourseWithPathfinding(self.unloadRefillCourse, 1)
 		else
-			self:stop('WORK_END')
+			self:onEndCourseFinished()
 		end
 	end
 end
@@ -429,4 +429,12 @@ function BaleCollectorAIDriver:getFillLevel()
 			return info.fillLevel
 		end
 	end
+end
+
+function BaleCollectorAIDriver:isAutoContinueAtWaitPointEnabled()
+	return true
+end
+
+function BaleCollectorAIDriver:isStoppingAtWaitPointAllowed()
+	return true
 end

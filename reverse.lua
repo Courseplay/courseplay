@@ -346,9 +346,6 @@ function courseplay:getNextFwdPoint(vehicle, isTurning)
     -- be well ahead of the turnEnd point in case of long implements. Instead we just assume 10 waypoints is
     -- long enough.
 		for i = vehicle.cp.waypointIndex, math.min( vehicle.cp.waypointIndex + 10, vehicle.cp.numWaypoints ) do
-			if vehicle.cp.abortWork and vehicle.cp.abortWork == i then
-				vehicle.cp.abortWork = nil;
-			end;
 			local waypointToCheck = vehicle.Waypoints[i]
 			if not waypointToCheck.rev and not waypointToCheck.turnEnd then
 				local wpX, wpZ = waypointToCheck.cx, waypointToCheck.cz;

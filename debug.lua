@@ -787,6 +787,30 @@ function cpDebug:drawLineRGB(posXa, posYa, posZa, r, g, b, posXb, posYb, posZb)
 	self:addDrawItem("Line", posXa, posYa, posZa, colorDelta*r, colorDelta*g, colorDelta*b, posXb, posYb, posZb);
 end
 
+--- Draw a circle around a point with radius, color with 0-1 float color
+--- @param	posX	number From point x (world location)
+--- @param	posY	number From point y (world location)
+--- @param	posZ	number From point z (world location)
+--- @param	radius	number Radius 
+--- @param	steps	number Steps 
+--- @param	r		number Line color Red (0..1)
+--- @param	g		number Line color Green (0..1)
+--- @param	b		number Line color Blue (0..1)
+function cpDebug:drawCircle(posX, posY, posZ,radius,steps, r, g, b)
+	steps = steps or 3
+	for i=1,steps do
+        local a1 = ((i-1)/steps)*2*math.pi
+        local a2 = ((i)/steps)*2*math.pi
+        local c = math.cos(a1) * radius
+        local s = math.sin(a1) * radius
+        local x1, y1, z1 = posX+c, posY, posZ+s
+        local c = math.cos(a2) * radius
+        local s = math.sin(a2) * radius
+        local x2, y2, z2 = posX+c, posY, posZ+s
+		self:addDrawItem("Line",x1,y1,z1, r, g, b, x2,y2,z2);
+    end
+end
+
 --- Draw a point with 0-1 float color
 -- @param	posX	(float)	From point x (world location)
 -- @param	posY	(float)	From point y (world location)

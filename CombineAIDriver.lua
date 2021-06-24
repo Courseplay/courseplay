@@ -439,9 +439,9 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 			end
 		end
 	elseif self.fieldworkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD then
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkUnloadOrRefillState == self.states.DRIVING_TO_SELF_UNLOAD_AFTER_FIELDWORK_ENDED then
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	elseif self.fieldworkUnloadOrRefillState == self.states.SELF_UNLOADING then
 		self:setSpeed(0)
 		if self:unloadFinished() then
@@ -460,7 +460,7 @@ function CombineAIDriver:driveFieldworkUnloadOrRefill()
 			UnloadableFieldworkAIDriver.onEndCourse(self)
 		end
 	elseif self.fieldworkUnloadOrRefillState == self.states.RETURNING_FROM_SELF_UNLOAD then
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	else
 		UnloadableFieldworkAIDriver.driveFieldworkUnloadOrRefill(self)
 	end
@@ -942,9 +942,17 @@ function CombineAIDriver:createPocketCourse()
 end
 
 --- Disable auto stop for choppers as when we stop the engine they'll also raise implements and the way we restart them
---- won't lower the header. So for now, just don't let them to stop the engine
+--- won't lower the header. So for now, just don't let them to stop the engine.
+--- Also make sure when a trailer under the pipe, then the engine needs to start so unloading can begin for combines.
 function CombineAIDriver:isEngineAutoStopEnabled()
-	return not self:isChopper() and AIDriver.isEngineAutoStopEnabled(self)
+	if not self:isChopper() then 
+		if not self:isFillableTrailerUnderPipe() then 
+			return AIDriver.isEngineAutoStopEnabled(self)
+		else 
+			--- Make sure once a trailer is under the pipe, the combine gets turned on if needed.
+			self:startEngineIfNeeded()
+		end
+	end
 end
 
 --- Compatibility function for turn.lua to check if the vehicle should stop during a turn (for example while it

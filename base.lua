@@ -39,10 +39,6 @@ function courseplay:onLoad(savegame)
 
 	self.cp.speedDebugLine = "no speed info"
 
-	--turn maneuver
-	self.cp.waitForTurnTime = 0.00   --float
-
-	self.cp.combineOffsetAutoMode = true
 	self.cp.isDriving = false;
 	
 	self.cp.waypointIndex = 1;
@@ -51,7 +47,6 @@ function courseplay:onLoad(savegame)
 	self.timer = 0.00
 	self.cp.timers = {}; 
 	self.cp.driveSlowTimer = 0;
-	self.cp.positionWithCombine = nil;
 
 	-- RECORDING
 	self.cp.isRecording = false;
@@ -63,7 +58,6 @@ function courseplay:onLoad(savegame)
 	self.cp.numWaitPoints = 0;
 	self.cp.unloadPoints = {};
 	self.cp.numUnloadPoints = 0;
-	self.cp.waitTime = 0;
 	self.cp.crossingPoints = {};
 	self.cp.numCrossingPoints = 0;
 
@@ -85,16 +79,11 @@ function courseplay:onLoad(savegame)
 	-- CP mode
 	self.cp.mode = courseplay.MODE_DEFAULT;
 	--courseplay:setNextPrevModeVars(self);
-	self.cp.modeState = 0
 	-- for modes 4 and 6, this the index of the waypoint where the work begins
 	self.cp.startWork = nil
 	-- for modes 4 and 6, this the index of the waypoint where the work ends
 	self.cp.stopWork = nil
-	self.cp.abortWork = nil
-	self.cp.abortWorkExtraMoveBack = 0;
-	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.wait = true;
-	self.cp.waitTimer = nil;
+	
 	self.cp.canSwitchMode = false;
 	self.cp.slippingStage = 0;
 	self.cp.saveFuel = false;
@@ -122,9 +111,6 @@ function courseplay:onLoad(savegame)
 	self.cp.turnTargets = {};
 	self.cp.curTurnIndex = 1;
 
-	-- alignment course data
-	self.cp.alignment = { enabled = true }
-
 	-- speed limits
 	self.cp.speeds = {
 		reverse =  6;
@@ -142,8 +128,6 @@ function courseplay:onLoad(savegame)
 		minStreet = 3;
 		max = self:getCruiseControlMaxSpeed() or 60;
 	};
-
-	self.cp.orgRpm = nil;
 
 	-- data basis for the Course list
 	self.cp.reloadCourseItems = true
@@ -195,8 +179,6 @@ function courseplay:onLoad(savegame)
 	self.findSpecialTriggerCallback = courseplay.findSpecialTriggerCallback;
 	self.findFuelTriggerCallback = courseplay.findFuelTriggerCallback;
 	self.cp.hasRunRaycastThisLoop = {};
-	self.findBlockingObjectCallbackLeft = courseplay.findBlockingObjectCallbackLeft;
-	self.findBlockingObjectCallbackRight = courseplay.findBlockingObjectCallbackRight;
 	self.findVehicleHeights = courseplay.findVehicleHeights; 
 	
 	self.cp.fillTriggers = {}
@@ -240,19 +222,11 @@ function courseplay:onLoad(savegame)
 	self.cp.workTools = {};
 	self.cp.numWorkTools = 0;
 	self.cp.workToolAttached = false;
-	self.cp.prevTrailerDistance = 100.00;
 	self.cp.totalFillLevel = nil;
 	self.cp.totalCapacity = nil;
 	self.cp.totalFillLevelPercent = 0;
-	self.cp.prevFillLevelPct = nil;
 	self.cp.tipRefOffset = 0;
 
-	self.cp.offset = nil --self = combine [flt]
-	self.cp.combineOffset = 0.0
-	self.cp.tipperOffset = 0.0
-
-	self.cp.forcedSide = nil
-	
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
 	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
 	self.cp.turnDiameterAuto = self.cp.vehicleTurnRadius * 2;
@@ -262,15 +236,9 @@ function courseplay:onLoad(savegame)
 	--Offset
 	self.cp.laneOffset = 0;
 	self.cp.totalOffsetX = 0;
-	self.cp.loadUnloadOffsetX = 0;
-	self.cp.loadUnloadOffsetZ = 0;
 	self.cp.skipOffsetX = false;
 
 	self.cp.workWidth = 3
-
-	--old code ??
-	self.cp.searchCombineAutomatically = true;
-	self.cp.selectedCombineNumber = 0
 
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
@@ -280,10 +248,6 @@ function courseplay:onLoad(savegame)
 	self.cp.laneNumber = 0;
 
 	--Course generation	
-	self.cp.startingDirection = 0;
-	self.cp.rowDirectionDeg = 0
-	self.cp.hasStartingDirection = false;
-
 	self.cp.hasGeneratedCourse = false;
 
 	self.cp.fieldEdge = {
@@ -997,7 +961,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		--courseplay:setCpMode(self,  Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode), true);
 		--- Save the loaded mode and set it later after all implements are attached.
 		self.cp.loadedMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), courseplay.MODE_DEFAULT)
-		self.cp.waitTime 		  = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#waitTime'), 0);
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
@@ -1006,44 +969,27 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		curKey = key .. '.courseplay.HUD';
 		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
 		
-		-- MODE 2
-		curKey = key .. '.courseplay.combi';
-		self.cp.tipperOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#tipperOffset'),			 0);
-		self.cp.combineOffset 		  = Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#combineOffset'),		 0);
-		self.cp.combineOffsetAutoMode = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#combineOffsetAutoMode'), true);
+
 		
 		curKey = key .. '.courseplay.driving';
 		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
 		self.cp.turnDiameterAutoMode  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnDiameterAutoMode'),	 true);
-		self.cp.alignment.enabled 	  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#alignment'),	 		 true);
 	
 	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
 		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
-		self.cp.abortWork							= Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#abortWork'),				0);
 		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
-		self.cp.lastValidTipDistance				= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#lastValidTipDistance'),	0);
-		if self.cp.abortWork == 0 then
-			self.cp.abortWork = nil;
-		end;
 		if self.cp.manualWorkWidth ~= 0 then
 			self.cp.workWidth = self.cp.manualWorkWidth
 		else
 			self.cp.manualWorkWidth = nil
 		end;	
-		if self.cp.lastValidTipDistance == 0 then
-			self.cp.lastValidTipDistance = nil;
-		end;
 		
 		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
 		offsetData = StringUtil.splitString(';', offsetData);
 		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
 
-		if not offsetData[5] then offsetData[5] = 0; end;
-		courseplay:changeLoadUnloadOffsetX(self, nil, tonumber(offsetData[5]));
-		if not offsetData[6] then offsetData[6] = 0; end;
-		courseplay:changeLoadUnloadOffsetZ(self, nil, tonumber(offsetData[6]));
 		if offsetData[7] ~= nil then self.cp.laneNumber = tonumber(offsetData[7]) end;
 
 		
@@ -1080,30 +1026,22 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	else
 		setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
 	end
-	setXMLInt(xmlFile, newKey..".basics #waitTime", self.cp.waitTime)
 
 	--HUD
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
 
 	
-	--combineMode
-	setXMLString(xmlFile, newKey..".combi #tipperOffset", string.format("%.1f",self.cp.tipperOffset))
-	setXMLString(xmlFile, newKey..".combi #combineOffset", string.format("%.1f",self.cp.combineOffset))
-	setXMLString(xmlFile, newKey..".combi #combineOffsetAutoMode", tostring(self.cp.combineOffsetAutoMode))
 	
 	--driving settings
 	setXMLInt(xmlFile, newKey..".driving #turnDiameter", self.cp.turnDiameter)
 	setXMLBool(xmlFile, newKey..".driving #turnDiameterAutoMode", self.cp.turnDiameterAutoMode)
-	setXMLString(xmlFile, newKey..".driving #alignment", tostring(self.cp.alignment.enabled))
 	
 	--field work settings
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, 0, 0, 0, self.cp.loadUnloadOffsetX, self.cp.loadUnloadOffsetZ, self.cp.laneNumber);
+	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, 0, 0, 0, 0, 0, self.cp.laneNumber);
 	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
 	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
-	setXMLInt(xmlFile, newKey..".fieldWork #abortWork", Utils.getNoNil(self.cp.abortWork, 0))
 	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
-	setXMLString(xmlFile, newKey..".fieldWork #lastValidTipDistance", string.format("%.1f",Utils.getNoNil(self.cp.lastValidTipDistance,0)))
 
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)

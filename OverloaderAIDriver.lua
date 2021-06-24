@@ -101,15 +101,16 @@ end
 function OverloaderAIDriver:driveUnloadCourse(dt)
     if self.unloadCourseState == self.states.ENROUTE then
     elseif self.unloadCourseState == self.states.WAITING_FOR_TRAILER then
-        self:hold()
+        self:holdWithFuelSave()
         if self:isTrailerUnderPipe(true) then
             self:debug('Trailer is here, opening pipe')
             if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
             self.unloadCourseState = self.states.WAITING_FOR_OVERLOAD_TO_START
+             --- If the driver was in fuel save make sure it gets started again for overloading.
+            self:startEngineIfNeeded()
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
         self:setSpeed(0)
-
 		--can discharge and not pipe is moving 
 		if self.pipe.currentState == self.pipe.targetState then
             self:debug('Overloading started')
@@ -211,4 +212,8 @@ end
 --- Is around the overload point?
 function OverloaderAIDriver:isNearOverloadPoint()
 	return self.nearOverloadPoint
+end
+
+function OverloaderAIDriver:isStoppingAtWaitPointAllowed()
+	return false
 end

@@ -69,10 +69,6 @@ function courseplay:setDriveNow(vehicle)
 	vehicle.cp.driver:setDriveNow()
 end
 
-function courseplay:toggleOppositeTurnMode(vehicle)
-	vehicle.cp.oppositeTurnMode = not vehicle.cp.oppositeTurnMode
-end
-
 ---This function gets only called locally like an actionEvent,
 ---For reference: giants AIVehicle.actionEventToggleAIState() 
 function courseplay:startStop(vehicle)
@@ -99,19 +95,6 @@ function courseplay:startStopCourseplayer(combine)
 	end
 end;
 
-function courseplay:setVehicleWait(vehicle, active)
-	vehicle.cp.wait = active;
-end;
-
-function courseplay:cancelWait(vehicle)
-	if vehicle.cp.driver then
-		vehicle.cp.driver:continue()
-	end
-	if vehicle.cp.wait then
-		courseplay:setVehicleWait(vehicle, false);
-	end;
-end;
-
 function courseplay:setDriveUnloadNow(vehicle, bool)
 	if vehicle then
 		vehicle.cp.settings.driveUnloadNow:set(bool)
@@ -122,51 +105,12 @@ end
 function courseplay:sendCourseplayerHome(combine)
 	courseplay:setDriveUnloadNow(g_combineUnloadManager:getUnloaderByNumber(1, combine), true);
 end
-
-
-
-function courseplay:switchCourseplayerSide(combine)
-	if courseplay:isChopper(combine) then
-		local tractor = combine.courseplayers[1];
-		if tractor == nil then
-			return;
-		end;
-
-		if combine.cp.forcedSide == nil then
-			combine.cp.forcedSide = "left";
-		elseif combine.cp.forcedSide == "left" then
-			combine.cp.forcedSide = "right";
-		else
-			combine.cp.forcedSide = nil;
-		end;
-	end;
-end;
-
 function courseplay:setHudPage(vehicle, pageNum)
 	vehicle.cp.hud.hudPageButtons[vehicle.cp.hud.currentPage]:setActive(false)
 	vehicle.cp.hud.currentPage = pageNum;
 	vehicle.cp.hud.hudPageButtons[pageNum]:setActive(true)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
-
-function courseplay:changeCombineOffset(vehicle, changeBy)
-	local previousOffset = vehicle.cp.combineOffset;
-
-	vehicle.cp.combineOffsetAutoMode = false;
-	vehicle.cp.combineOffset = courseplay:round(vehicle.cp.combineOffset, 1) + changeBy*0.1;
-	if abs(vehicle.cp.combineOffset) < 0.1 then
-		vehicle.cp.combineOffset = 0.0;
-		vehicle.cp.combineOffsetAutoMode = true;
-	end;
-
-end
-
-function courseplay:changeTipperOffset(vehicle, changeBy)
-	vehicle.cp.tipperOffset = courseplay:round(vehicle.cp.tipperOffset, 1) + changeBy*0.1;
-	if abs(vehicle.cp.tipperOffset) < 0.1 then
-		vehicle.cp.tipperOffset = 0;
-	end;
-end
 
 function courseplay:changeLaneOffset(vehicle, changeBy, force)
 	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy*0.1);
@@ -210,6 +154,7 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 
 end;
 
+--- These three tool offset function should be handled by the setting.
 function courseplay:changeToolOffsetX(vehicle, changeBy)
 	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1)
 	vehicle.cp.totalOffsetX = vehicle.cp.settings.toolOffsetX:get();
@@ -225,20 +170,6 @@ function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
 	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1)
 	-- show new setting for a few seconds on the screen
 	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-end;
-
-function courseplay:changeLoadUnloadOffsetX(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetX = force or (courseplay:round(vehicle.cp.loadUnloadOffsetX, 1) + changeBy*0.1);
-	if abs(vehicle.cp.loadUnloadOffsetX) < 0.1 then
-		vehicle.cp.loadUnloadOffsetX = 0;
-	end;
-end;
-
-function courseplay:changeLoadUnloadOffsetZ(vehicle, changeBy, force)
-	vehicle.cp.loadUnloadOffsetZ = force or (courseplay:round(vehicle.cp.loadUnloadOffsetZ, 1) + changeBy*0.1);
-	if abs(vehicle.cp.loadUnloadOffsetZ) < 0.1 then
-		vehicle.cp.loadUnloadOffsetZ = 0;
-	end;
 end;
 
 function courseplay:calculateWorkWidth(vehicle, noDraw)
@@ -320,15 +251,6 @@ function courseplay:changeTurnDiameter(vehicle, changeBy)
 	end;
 end
 
-
-function courseplay:changeWaitTime(vehicle, changeBy)
-	vehicle.cp.waitTime = math.max(0, vehicle.cp.waitTime + changeBy);
-end;
-
-function courseplay:getCanHaveWaitTime(vehicle)
-	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 5 or (vehicle.cp.mode == 6 and not vehicle.cp.hasBaleLoader) or vehicle.cp.mode == 8;
-end;
-
 --legancy Code in toolManager still using it!
 function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
 	local speed = force or (vehicle.cp.speeds.reverse + changeBy);
@@ -342,17 +264,6 @@ function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage
 	end;
 end
 
-function courseplay:toggleAlignmentWaypoint( vehicle )
-	vehicle.cp.alignment.enabled = not vehicle.cp.alignment.enabled
-end
-
---Do we want to use this one again ?
-function courseplay:toggleSearchCombineMode(vehicle)
-	vehicle.cp.searchCombineAutomatically = not vehicle.cp.searchCombineAutomatically;
-	if not vehicle.cp.searchCombineAutomatically then
-		vehicle.cp.settings.searchCombineOnField:set(0)
-	end;
-end;
 
 function courseplay:selectAssignedCombine(vehicle, changeBy)
 	vehicle.cp.settings.selectedCombineToUnload:refresh()
@@ -726,12 +637,6 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
-function courseplay:changeRowAngle( vehicle, changeBy )
-	if vehicle.cp.startingDirection == courseGenerator.ROW_DIRECTION_MANUAL then
-		vehicle.cp.rowDirectionDeg = ( vehicle.cp.rowDirectionDeg + changeBy ) % 360
-	end 
-end
-
 function courseplay:setMultiTools(vehicle, set)
 	if vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0 then
 		courseplay:changeLaneNumber(vehicle, 1)
@@ -982,19 +887,11 @@ function courseplay:toggleFindFirstWaypoint(vehicle)
 	--courseplay.buttons:setActiveEnabled(vehicle, 'findFirstWaypoint');
 end;
 
-function courseplay:canUseWeightStation(vehicle)
-	return vehicle.cp.mode == 1 or vehicle.cp.mode == 2 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6 or vehicle.cp.mode == 8;
-end;
-
 function courseplay:setSlippingStage(vehicle, stage)
 	if vehicle.cp.slippingStage ~= stage then
 		courseplay:debug(('%s: setSlippingStage(..., %d)'):format(nameNum(vehicle), stage), courseplay.DBG_AI_DRIVER);
 		vehicle.cp.slippingStage = stage;
 	end;
-end;
-
-function courseplay:getIsEngineReady(vehicle)
-	return (vehicle.spec_motorized.isMotorStarted or vehicle.cp.saveFuel) and (vehicle.spec_motorized.motorStartTime == nil or vehicle.spec_motorized.motorStartTime < g_currentMission.time);
 end;
 
 ----------------------------------------------------------------------------------------------------
@@ -1161,6 +1058,7 @@ FloatSetting = CpObject(Setting)
 --- @param label string text ID in translations used as a label for this setting on the GUI
 --- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
 --- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
+--- @param value number default value
 function FloatSetting:init(name, label, toolTip, vehicle, value)
 	Setting.init(self, name, label, toolTip, vehicle, value)
 end
@@ -1187,6 +1085,9 @@ function FloatSetting:onReadStream(stream)
 	end
 end
 
+function FloatSetting:changeByX(x)
+	self:set(self:get()+x)
+end
 
 ---@class IntSetting
 IntSetting = CpObject(Setting)
@@ -1194,10 +1095,11 @@ IntSetting = CpObject(Setting)
 --- @param label string text ID in translations used as a label for this setting on the GUI
 --- @param toolTip string text ID in translations used as a tooltip for this setting on the GUI
 --- @param vehicle table vehicle, needed for vehicle specific settings for multiplayer syncs
---- @param MIN int min allowed value
---- @param MAX int max allowed value
-function IntSetting:init(name, label, toolTip, vehicle,MIN,MAX)
-	Setting.init(self, name, label, toolTip, vehicle)
+--- @param MIN number min allowed value
+--- @param MAX number max allowed value
+--- @param value number default value
+function IntSetting:init(name, label, toolTip, vehicle,MIN,MAX,value)
+	Setting.init(self, name, label, toolTip, vehicle,value)
 	self.MAX = MAX
 	self.MIN = MIN
 end
@@ -1931,6 +1833,7 @@ end
 OffsetSetting = CpObject(FloatSetting)
 function OffsetSetting:init(name, label, toolTip, vehicle, value)
 	FloatSetting.init(self, name, label, toolTip, vehicle, value)
+	self.disabledText = "..."
 end
 
 -- increment/decrement offset
@@ -1941,6 +1844,39 @@ function OffsetSetting:changeBy(changeBy)
 	end
 end
 
+--- Currently all hud settings use changeByX() or toggle() should consolidate this. 
+--- Also apply the change rate of 0.1 here, so the courseplay:..() function are not needed anymore.
+function OffsetSetting:changeByX(changeBy)
+	self:changeBy(changeBy*0.1)
+end
+
+function OffsetSetting:getTextX()
+	if self.value ~= 0 then
+		return ('%.1f%s (%s)'):format(
+				abs(self.value),
+				courseplay:loc('COURSEPLAY_UNIT_METER'),
+				courseplay:loc(self.value > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'))
+	else
+		return self.disabledText
+	end
+end
+
+function OffsetSetting:getTextZ()
+	if self.value ~= 0 then
+		return ('%.1f%s (%s)'):format(
+				abs(self.value),
+				courseplay:loc('COURSEPLAY_UNIT_METER'),
+				courseplay:loc(self.value > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'))
+	else
+		return self.disabledText
+	end
+end
+
+--- TODO: Consider combing the left/right and front/back offset settings into one.
+--- 	  Find a better naming convention, then offsetX or offsetZ. 
+
+--- Left/Right offset for tools.
+--- Right side is positive and left side is negative.
 ---@class ToolOffsetXSetting : OffsetSetting
 ToolOffsetXSetting = CpObject(OffsetSetting)
 function ToolOffsetXSetting:init(vehicle)
@@ -1954,31 +1890,68 @@ function ToolOffsetXSetting:setToConfiguredValue()
 end
 
 function ToolOffsetXSetting:getText()
-	if self.value ~= 0 then
-		return ('%.1f%s (%s)'):format(
-				abs(self.value),
-				courseplay:loc('COURSEPLAY_UNIT_METER'),
-				courseplay:loc(self.value > 0 and 'COURSEPLAY_RIGHT' or 'COURSEPLAY_LEFT'))
-	else
-		return '---'
-	end
+	return self:getTextX()
 end
 
+--- Front/Back offset for tools.
 ---@class ToolOffsetZSetting : OffsetSetting
+--- Front is positive and back is negative.
 ToolOffsetZSetting = CpObject(OffsetSetting)
 function ToolOffsetZSetting:init(vehicle)
 	OffsetSetting.init(self, 'toolOffsetZ', 'COURSEPLAY_TOOL_OFFSET_Z', 'COURSEPLAY_TOOL_OFFSET_Z', vehicle, 0)
 end
 
 function ToolOffsetZSetting:getText()
-	if self.value ~= 0 then
-		return ('%.1f%s (%s)'):format(
-				abs(self.value),
-				courseplay:loc('COURSEPLAY_UNIT_METER'),
-				courseplay:loc(self.value > 0 and 'COURSEPLAY_FRONT' or 'COURSEPLAY_BACK'))
-	else
-		return '---'
-	end
+	return self:getTextZ()
+end
+
+--- Left/Right offset for loading/unloading at trigger.
+--- Right side is positive and left side is negative.
+---@class LoadUnloadOffsetXSetting : OffsetSetting
+LoadUnloadOffsetXSetting = CpObject(OffsetSetting)
+function LoadUnloadOffsetXSetting:init(vehicle)
+	OffsetSetting.init(self, 'loadUnloadOffsetX', 'COURSEPLAY_LOAD_UNLOAD_OFFSET_X', 'COURSEPLAY_LOAD_UNLOAD_OFFSET_X', vehicle, 0)
+end
+function LoadUnloadOffsetXSetting:getText()
+	return self:getTextX()
+end
+
+--- Front/Back offset for loading/unloading at trigger.
+--- Front is positive and back is negative.
+---@class LoadUnloadOffsetZSetting : OffsetSetting
+LoadUnloadOffsetZSetting = CpObject(OffsetSetting)
+function LoadUnloadOffsetZSetting:init(vehicle)
+	OffsetSetting.init(self, 'loadUnloadOffsetZ', 'COURSEPLAY_LOAD_UNLOAD_OFFSET_Z', 'COURSEPLAY_LOAD_UNLOAD_OFFSET_Z', vehicle, 0)
+end
+
+function LoadUnloadOffsetZSetting:getText()
+	return self:getTextZ()
+end
+
+--- Left/Right offset for unloading at a combine.
+--- Right side is positive and left side is negative.
+---@class CombineOffsetXSetting : OffsetSetting
+CombineOffsetXSetting = CpObject(OffsetSetting)
+function CombineOffsetXSetting:init(vehicle)
+	OffsetSetting.init(self, 'combineOffsetX', 'COURSEPLAY_COMBINE_OFFSET_HORIZONTAL', 'COURSEPLAY_COMBINE_OFFSET_HORIZONTAL', vehicle, 0)
+	self.disabledText = courseplay:loc("COURSEPLAY_AUTOMATIC")
+end
+
+function CombineOffsetXSetting:getText()
+	return self:getTextX()
+end
+
+--- Front/Back offset for unloading at a combine.
+--- Front is positive and back is negative.
+---@class CombineOffsetZSetting : OffsetSetting
+CombineOffsetZSetting = CpObject(OffsetSetting)
+function CombineOffsetZSetting:init(vehicle)
+	OffsetSetting.init(self, 'combineOffsetZ', 'COURSEPLAY_COMBINE_OFFSET_VERTICAL', 'COURSEPLAY_COMBINE_OFFSET_VERTICAL', vehicle, 0)
+	self.disabledText = courseplay:loc("COURSEPLAY_AUTOMATIC")
+end
+
+function CombineOffsetZSetting:getText()
+	return self:getTextZ()
 end
 
 --- Setting to select a field
@@ -3721,7 +3694,6 @@ function LevelCompactModeSetting:init(vehicle)
 		)
 end
 
----SettingList.checkAndSetValidValue(self, new)
 function LevelCompactModeSetting:checkAndSetValidValue(x)
 	local new = SettingList.checkAndSetValidValue(self, x)
 	if self:hasLeveler() then
@@ -3753,7 +3725,31 @@ LevelCompactSearchRadiusSetting = CpObject(IntSetting)
 function LevelCompactSearchRadiusSetting:init(vehicle)
 	IntSetting.init(self, 'levelCompactSearchRadius', 'COURSEPLAY_MODE10_SEARCHRADIUS', 'COURSEPLAY_MODE10_SEARCHRADIUS', vehicle,10,200)
 	self:set(50)
+	self.hasChanged = false
 end
+
+--- Creates a small timer to show the radius change.
+function LevelCompactSearchRadiusSetting:onChange()
+	courseplay:setCustomTimer(self.vehicle, "showSearchRadius", 5)
+	self.hasChanged = true
+end
+
+--- Checks if the timer is active and is finished.
+function LevelCompactSearchRadiusSetting:update()
+	if not self:isShowRadiusActive() then 
+		return
+	end
+	
+	if courseplay:timerIsThrough(self.vehicle, "showSearchRadius") then 
+		courseplay:resetCustomTimer(self.vehicle, "showSearchRadius", true)
+		self.hasChanged = false
+	end
+end
+
+function LevelCompactSearchRadiusSetting:isShowRadiusActive()
+	return self.hasChanged
+end
+
 
 function LevelCompactSearchRadiusSetting:getText()
 	return ('%d%s'):format(self:get(), courseplay:loc('COURSEPLAY_UNIT_METER'))
@@ -3806,6 +3802,42 @@ end
 
 function LevelCompactShieldHeightSetting:isDisabled()
 	return self.vehicle.cp.settings.levelCompactMode:get() == LevelCompactModeSetting.COMPACTING
+end
+
+--- The wait time setting can be incremented by 15 seconds up to max: 60min.
+---
+---@class WaitTimeSetting
+WaitTimeSetting = CpObject(IntSetting)
+function WaitTimeSetting:init(vehicle)
+	local max = 3600 --- 60 min
+	IntSetting.init(self,"waitTime","COURSEPLAY_WAITING_TIME","COURSEPLAY_WAITING_TIME",vehicle,0,max)
+	self:set(0)
+	--- Allways increments/decrements the setting by 15 sec
+	self.scale = 15
+end
+
+function WaitTimeSetting:isDisabled()
+	return not self.vehicle.cp.driver:isStoppingAtWaitPointAllowed()
+end
+
+function WaitTimeSetting:getText()
+	local totalSeconds = self:get()
+	local minutes, seconds = math.floor(totalSeconds/60), totalSeconds % 60;
+	if minutes>0 then 
+		if seconds > 0 then 
+			return courseplay:loc('COURSEPLAY_MINUTES'):format(minutes)..','..courseplay:loc('COURSEPLAY_SECONDS'):format(seconds)
+		end
+		return courseplay:loc('COURSEPLAY_MINUTES'):format(minutes)
+	elseif seconds > 0 then 
+		return courseplay:loc('COURSEPLAY_SECONDS'):format(seconds)
+	end
+	return '---' 
+end
+
+function WaitTimeSetting:changeByX(x)
+	--- For 1-60 sec increment by 1 sec, else increment by the scale*sec
+	x = self:get()>=60 and x*self.scale or x
+	IntSetting.changeByX(self,x)
 end
 
 --[[
@@ -3996,6 +4028,11 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(LevelCompactSiloTypSetting,vehicle)
 	container:addSetting(ToolOffsetXSetting, vehicle)
 	container:addSetting(ToolOffsetZSetting, vehicle)
+	container:addSetting(LoadUnloadOffsetXSetting, vehicle)
+	container:addSetting(LoadUnloadOffsetZSetting, vehicle)
+	container:addSetting(CombineOffsetXSetting, vehicle)
+	container:addSetting(CombineOffsetZSetting, vehicle)
+	container:addSetting(WaitTimeSetting, vehicle)
 	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	return container

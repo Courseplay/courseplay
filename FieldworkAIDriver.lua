@@ -179,9 +179,6 @@ function FieldworkAIDriver:start(startingPoint)
 	self:beforeStart()
 	-- time to lower all implements
 	self:findLoweringDurationMs()
-	-- always enable alignment with first waypoint, this is needed to properly start/continue fieldwork
-	self.alignmentEnabled = self.vehicle.cp.alignment.enabled
-	self.vehicle.cp.alignment.enabled = true
 	-- any offset imposed by the driver itself (tight turns, end of course, etc.), additional to any
 	-- tool offsets
 	self.aiDriverOffsetX = 0
@@ -305,8 +302,6 @@ function FieldworkAIDriver:stop(msgReference)
 	end
 
 	AIDriver.stop(self, msgReference)
-	-- Restore alignment settings. TODO: remove this setting from the HUD and always enable it
-	self.vehicle.cp.alignment.enabled = self.alignmentEnabled
 end
 
 function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
@@ -508,7 +503,7 @@ end
 function FieldworkAIDriver:driveUnloadOrRefill(dt)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload course fields (on alignment/temporary)
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	else
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
@@ -641,7 +636,6 @@ function FieldworkAIDriver:shouldDriverBeReleased()
 end
 
 function FieldworkAIDriver:onWaypointPassed(ix)
-	self:debug('onWaypointPassed %d', ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		if self.fieldworkState == self.states.WORKING then
 			-- check for transition to connecting track, make sure we've been on it for a few waypoints already
@@ -669,11 +663,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			end
 		end
 	end
-	--- Check if we are at the last waypoint and should we continue with first waypoint of the course
-	-- or stop.
-	if ix == self.course:getNumberOfWaypoints() then
-		self:onLastWaypoint()
-	end
+	AIDriver.onWaypointPassed(self,ix)
 end
 
 function FieldworkAIDriver:onWaypointChange(ix)
@@ -1103,6 +1093,11 @@ function FieldworkAIDriver:isAutoContinueAtWaitPointEnabled()
 	return false
 end
 
+function FieldworkAIDriver:isStoppingAtWaitPointAllowed()
+	return false
+end
+
+
 -- instantiate generic turn course, derived classes may override
 function FieldworkAIDriver:createTurnCourse()
 	return CourseTurn(self.vehicle, self, self.turnContext, self.fieldworkCourse)
@@ -1459,7 +1454,7 @@ end
 
 --- Don't pay worker double when AutoDrive is driving
 function FieldworkAIDriver:shouldPayWages()
-	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE and self.state ~= self.states.STOPPED
+	return self.state ~= self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE and self.state ~= self.states.FINISHED
 end
 
 function FieldworkAIDriver:onBlocked()
@@ -1498,4 +1493,3 @@ end
 function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
 	AIDriverUtil.getAllFillLevels(object, fillLevelInfo, self)
 end
-

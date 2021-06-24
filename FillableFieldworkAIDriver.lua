@@ -74,7 +74,7 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	self:enableFillTypeLoading(isNearWaitPoint)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
 		-- should be reworked and be similar to mode 1 loading at start 
 		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)

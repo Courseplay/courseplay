@@ -60,7 +60,6 @@ BunkerSiloAIDriver.myStates = {
 	DRIVING_INTO_SILO = {},
 	DRIVING_OUT_OF_SILO ={},
 	CHECK_SILO = {},
-	WORK_FINISHED = {},
 	SILO_IS_EMPTY = {}
 }
 
@@ -102,7 +101,7 @@ function BunkerSiloAIDriver:drive(dt)
 		---If setup of the course was successful, then start.
 		self:setupSiloCourse()
 	elseif self:isWorkFinished() then
-		self:hold()
+	--	self:hold()
 		self:setInfoText('WORK_END')
 	elseif self:isSiloEmpty() then
 		self:hold()
@@ -130,7 +129,7 @@ function BunkerSiloAIDriver:isDrivingNormalCourse()
 end
 
 function BunkerSiloAIDriver:isWorkFinished()
-	return self.siloState == self.states.WORK_FINISHED
+	return self.siloState == self.states.FINISHED
 end
 
 function BunkerSiloAIDriver:isSiloEmpty()
@@ -184,7 +183,7 @@ function BunkerSiloAIDriver:checkSilo()
 	else 
 		self.bunkerSiloManager = nil
 		self:debug("silo map setup is not valid")
-		self:changeSiloState(self.states.WORK_FINISHED)
+		self:changeSiloState(self.states.FINISHED)
 	end
 end
 
