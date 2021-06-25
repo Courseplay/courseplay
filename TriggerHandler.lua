@@ -203,7 +203,7 @@ function TriggerHandler:changeLoadingState(newState)
 end
 
 function TriggerHandler:updateLoadingTriggers()
-	if self.validFillTypeLoading or self:needsFuel() then
+	if self.validFillTypeLoading or self:isAllowedToLoadFuel() then
 		self:activateLoadingTriggerWhenAvailable()
 	end
 	if self:isLoading() or self:isLoadingFuel() then
@@ -457,7 +457,7 @@ end
 
 function TriggerHandler:disableFillTypeLoading()
 	self.validFillTypeLoading = false
-	if self.siloSelectedFillTypeSetting:isRunCounterActive() then 
+	if self.siloSelectedFillTypeSetting and self.siloSelectedFillTypeSetting:isRunCounterActive() then 
 		self.siloSelectedFillTypeSetting:decrementRunCounterByFillType(self.lastLoadedFillTypes)
 		self.driver:refreshHUD()
 	end	
@@ -1241,6 +1241,11 @@ function TriggerHandler:onUpdateTickFillUnit(dt, isActiveForInput, isActiveForIn
 						loadingCallback[indexCallback].fillUnitIndex = fillUnitIndex
 						loadingCallback[indexCallback].currentTrigger = trigger
 						indexCallback = indexCallback +1				
+					end
+					if self.spec_treePlanter then 
+						self:setFillUnitIsFilling(true,nil,trigger)
+						triggerHandler:setLoadingState(self,fillUnitIndex,fillType)
+						return
 					end
 				end
 			end

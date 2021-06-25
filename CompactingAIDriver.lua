@@ -135,7 +135,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					end
 					self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
 					return true
-				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer) ~= nil then 
+				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and (AIDriverUtil.hasImplementWithSpecialization(vehicle, Trailer) or vehicle.spec_trailer) then 
 					--Player controlled vehicle
 					if self.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
 						--Player controlled vehicle is allowed to lookup

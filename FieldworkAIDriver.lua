@@ -471,6 +471,9 @@ function FieldworkAIDriver:stopAndChangeToUnload()
 			self:foldImplements()
 			self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
 			self:debug('passing the control to AutoDrive to run the unload/refill course.')
+			--- Make sure trigger handler is disabled, while autodrive is driving.
+			self.triggerHandler:disableFillTypeLoading()
+			self.triggerHandler:disableFuelLoading()
 			self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, FieldworkAIDriver.onEndCourse, nil);
 		else
 			-- otherwise we'll 
@@ -493,7 +496,9 @@ function FieldworkAIDriver:stopAndRefuel()
 		self:stopWork()
 		self:foldImplements()
 		self.state = self.states.ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE
+		--- Make sure the trigger handler is deactivated, while autodrive is driving.
 		self.triggerHandler:disableFuelLoading()
+		self.triggerHandler:disableFillTypeLoading()
 		self:debug('passing the control to AutoDrive to run the fuel refill course.')
 		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, -2, self, FieldworkAIDriver.onEndCourse, nil);
 	end
