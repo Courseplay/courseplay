@@ -75,8 +75,8 @@ function courseplay.button:new(vehicle, hudPage, img, functionToCall, parameter,
 		self:setSpecialButtonUVs();
 	end;
 
-	if vehicle.isCourseplayManager then
-		table.insert(vehicle[hudPage].buttons, self);
+	if not vehicle.cp then
+		table.insert(vehicle.buttons, self);
 	else
 		table.insert(vehicle.cp.buttons[hudPage], self);
 	end;
@@ -238,8 +238,9 @@ function courseplay.button:handleMouseClick(vehicle)
 		if self.functionToCall == "showSaveCourseForm" then
 			vehicle.cp.imWriting = true
 		end
+		--- Global info text button was pressed, switch to vehicle.
 		if self.functionToCall == "goToVehicle" then
-			courseplay:executeFunction(vehicle, "goToVehicle", parameter)
+			g_globalInfoTextHandler:goToVehicle(parameter)
 		else
 			courseplay:debug(string.format("%s: MOUSE_BUTTON_ClICKED: %s(%s)", nameNum(vehicle), tostring(self.functionToCall), tostring(parameter)), courseplay.DBG_HUD);
 			self:handleInput(vehicle,parameter)

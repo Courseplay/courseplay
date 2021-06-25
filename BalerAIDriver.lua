@@ -120,7 +120,7 @@ function BalerAIDriver:handleBaler()
 			self:setSpeed(0)
 			--baler needs refilling of some sort (net,...)
 			if self.balerSpec.unloadingState == Baler.UNLOADING_CLOSED then 
-				CpManager:setGlobalInfoText(self.vehicle, 'NEEDS_REFILLING');
+				self:setInfoText('NEEDS_REFILLING')
 			end
 		end
 	end

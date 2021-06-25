@@ -69,11 +69,8 @@ function courseplay:onLoad(savegame)
 	self.cp.infoText = nil; -- info text in tractor
 	self.cp.toolTip = nil;
 
-	-- global info text - also displayed when not in vehicle
-	self.cp.hasSetGlobalInfoTextThisLoop = {};
-	self.cp.activeGlobalInfoTexts = {};
-	self.cp.numActiveGlobalInfoTexts = 0;
-
+	--- Adds the vehicle to the global info texts handler
+	g_globalInfoTextHandler:addVehicle(self)
 	
 
 	-- CP mode
@@ -268,24 +265,24 @@ function courseplay:onLoad(savegame)
 
 	self.cp.mouseCursorActive = false;
 
-	-- 2D course
-	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
 	-- 2D pda map background -- TODO: MP?
 	if g_currentMission.hud.ingameMap and g_currentMission.hud.ingameMap.mapOverlay and g_currentMission.hud.ingameMap.mapOverlay.filename then
 		self.cp.course2dPdaMapOverlay = Overlay:new(g_currentMission.hud.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
 		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
 	end;
 
-	-- HUD
-	courseplay.hud:setupVehicleHud(self);
-
-	courseplay:validateCanSwitchMode(self);
 
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
+
+	-- HUD
+	courseplay.hud:setupVehicleHud(self);
+
+	courseplay:validateCanSwitchMode(self);
+
 
 	courseplay.signs:updateWaypointSigns(self);
 	
@@ -303,8 +300,6 @@ function courseplay:onLeaveVehicle()
 		courseplay:setMouseCursor(self, false);
     	courseEditor:reset()
 	end
-	---Update mouse action event texts
-	CpManager:updateMouseInputText()
 	--hide visual i3D waypoint signs when not in vehicle
 	courseplay.signs:setSignsVisibility(self, true);
 end
@@ -319,8 +314,6 @@ function courseplay:onEnterVehicle()
 	if self.cp.mouseCursorActive then
 		courseplay:setMouseCursor(self, true);
 	end;
-	---Update mouse action event texts
-	CpManager:updateMouseInputText()
 	--show visual i3D waypoint signs only when in vehicle
 	courseplay.signs:setSignsVisibility(self);
 end
@@ -372,7 +365,7 @@ function courseplay:onDraw()
 		self.cp.hudBroken = true
 	end
 
-	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
+	if self.cp.settings.courseDrawMode:isCourseMapVisible() then
 		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()
@@ -507,7 +500,7 @@ function courseplay:onUpdate(dt)
 	end
 
 
-	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
+	if self.cp.settings.courseDrawMode:isCourseVisible() then
 		courseplay:drawWaypointsLines(self);
 	end;
 
@@ -518,17 +511,11 @@ function courseplay:onUpdate(dt)
 
 	-- we are in drive mode and single player /MP server
 	if self.cp.isDriving and g_server ~= nil then
-		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
-			self.cp.hasSetGlobalInfoTextThisLoop[refIdx] = false;
-		end;
-
+		
 		local status, err = xpcall(self.cp.driver.update, function(err) printCallstack(); return err end, self.cp.driver, dt)
 
-		for refIdx,_ in pairs(self.cp.activeGlobalInfoTexts) do
-			if not self.cp.hasSetGlobalInfoTextThisLoop[refIdx] then
-				CpManager:setGlobalInfoText(self, refIdx, true); --force remove
-			end;
-		end;
+		--- Resets all global info texts that were not called in this update loop.
+		g_globalInfoTextHandler:resetInactiveInfoTextsForVehicle(self)
 
 		if not status then
 			courseplay.infoVehicle(self, 'Exception, stopping Courseplay driver, %s', tostring(err))
@@ -605,13 +592,10 @@ end;
 
 function courseplay:onPreDelete()
 	---Delete map hotspot and all global info texts leftovers.
-	CpMapHotSpot.deleteMapHotSpot(self)
+	CpMapHotSpot.deleteMapHotSpot(self)	
 	if g_server ~= nil then
-		for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
-			if self.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-				CpManager:setGlobalInfoText(self, refIdx, true)
-			end
-		end
+		--- Removes this vehicle form the global info texts handler.
+		g_globalInfoTextHandler:removeVehicle(self)
 	end
 end
 
@@ -1318,11 +1302,7 @@ function courseplay.onStopCpAIDriver(vehicle, reason, noEventSend)
 
 		--remove any global info texts
 		if g_server ~= nil then
-			for refIdx,_ in pairs(CpManager.globalInfoText.msgReference) do
-				if vehicle.cp.activeGlobalInfoTexts[refIdx] ~= nil then
-					CpManager:setGlobalInfoText(vehicle, refIdx, true);
-				end;
-			end;
+			g_globalInfoTextHandler:resetAllInfoTextsForVehicle(vehicle)
 		end
 
 		--remove from activeCoursePlayers

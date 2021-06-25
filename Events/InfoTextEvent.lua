@@ -44,9 +44,12 @@ end
 function InfoTextEvent:run(connection) -- wir fuehren das empfangene event aus
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"run infoText event")
 	if self.vehicle then 
-		CpManager:setGlobalInfoText(self.vehicle, self.refIdx, self.forceRemove)
+		if self.forceRemove then 
+			g_globalInfoTextHandler:resetInfoText(self.vehicle,self.refIdx)
+		else 
+			g_globalInfoTextHandler:setInfoText(self.vehicle,self.refIdx)
+		end
 	end
-	
 end
 
 function InfoTextEvent.sendEvent(vehicle,refIdx,forceRemove)
