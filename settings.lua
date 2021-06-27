@@ -154,23 +154,12 @@ function courseplay:changeLaneNumber(vehicle, changeBy, reset)
 
 end;
 
---- These three tool offset function should be handled by the setting.
-function courseplay:changeToolOffsetX(vehicle, changeBy)
-	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1)
-	vehicle.cp.totalOffsetX = vehicle.cp.settings.toolOffsetX:get();
-	-- show new setting for a few seconds on the screen
-	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-end
 
 function courseplay:setAutoToolOffsetX(vehicle)
-	vehicle.cp.settings.toolOffsetX:setToConfiguredValue(vehicle)
+	if g_server then
+		vehicle.cp.settings.toolOffsetX:setToConfiguredValue(vehicle)
+	end
 end
-
-function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
-	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1)
-	-- show new setting for a few seconds on the screen
-	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-end;
 
 function courseplay:calculateWorkWidth(vehicle, noDraw)
 	
@@ -748,7 +737,7 @@ function courseplay:createFieldEdgeButtons(vehicle)
 end;
 
 function courseplay:setFieldEdgePath(vehicle, changeDir, force)
-	vehicle.cp.courseGeneratorSettings.selectedField:changeByX(changeDir)
+	vehicle.cp.courseGeneratorSettings.selectedField:changeByX(changeDir,true)
 
 	--courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
 	if vehicle.cp.fieldEdge.customField.show then
@@ -856,11 +845,6 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 			end;
 		end;
 	end;
-end;
-
-function courseplay:changeDrawCourseMode(vehicle, changeBy)
-	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, courseplay.COURSE_2D_DISPLAY_BOTH, courseplay.COURSE_2D_DISPLAY_OFF);
-	vehicle.cp.hud.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
 end;
 
 function courseplay:setEngineState(vehicle, on)
@@ -1052,6 +1036,15 @@ function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
 	---override
 end
 
+function Setting:setFromHud(x)
+	self:changeByX(x)
+	self:onChangeSetByHud()
+end
+
+function Setting:onChangeSetByHud()
+
+end
+
 ---@class FloatSetting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
@@ -1085,8 +1078,22 @@ function FloatSetting:onReadStream(stream)
 	end
 end
 
-function FloatSetting:changeByX(x)
-	self:set(self:get()+x)
+function FloatSetting:changeByX(x,noEventSend)
+	self:set(self:get()+x,noEventSend)
+end
+
+function FloatSetting:set(value,noEventSend)
+	if noEventSend == nil or noEventSend == false then
+		if self.syncValue then
+			--TODO: create a float event
+			self:sendEvent(value)
+		end
+	end
+	Setting.set(self,value)
+end
+
+function FloatSetting:sendEvent(value)
+	FloatSettingEvent.sendEvent(self.vehicle,self.parentName, self.name, value)
 end
 
 ---@class IntSetting
@@ -1126,8 +1133,8 @@ function IntSetting:onReadStream(stream)
 	end
 end
 
-function IntSetting:changeByX(x)
-	self:set(self:get()+x)
+function IntSetting:changeByX(x,noEventSend)
+	self:set(self:get()+x,noEventSend)
 end
 
 function IntSetting:set(value,noEventSend)
@@ -1837,17 +1844,18 @@ function OffsetSetting:init(name, label, toolTip, vehicle, value)
 end
 
 -- increment/decrement offset
-function OffsetSetting:changeBy(changeBy)
-	self.value = courseplay:round(self.value, 1) + changeBy
-	if abs(self.value) < 0.1 then
-		self.value = 0
+function OffsetSetting:changeBy(changeBy,noEventSend)	
+	local value = courseplay:round(self.value, 1) + changeBy
+	if abs(value) < 0.1 then
+		value = 0
 	end
+	self:set(value,noEventSend)
 end
 
 --- Currently all hud settings use changeByX() or toggle() should consolidate this. 
 --- Also apply the change rate of 0.1 here, so the courseplay:..() function are not needed anymore.
-function OffsetSetting:changeByX(changeBy)
-	self:changeBy(changeBy*0.1)
+function OffsetSetting:changeByX(changeBy,noEventSend)
+	self:changeBy(changeBy*0.1,noEventSend)
 end
 
 function OffsetSetting:getTextX()
@@ -1893,6 +1901,12 @@ function ToolOffsetXSetting:getText()
 	return self:getTextX()
 end
 
+function ToolOffsetXSetting:onChangeSetByHud()
+	self.vehicle.cp.totalOffsetX = self:get();
+	-- show new setting for a few seconds on the screen
+	courseplay:setCustomTimer(self.vehicle, 'showWorkWidth', 2);
+end
+
 --- Front/Back offset for tools.
 ---@class ToolOffsetZSetting : OffsetSetting
 --- Front is positive and back is negative.
@@ -1903,6 +1917,11 @@ end
 
 function ToolOffsetZSetting:getText()
 	return self:getTextZ()
+end
+
+function ToolOffsetZSetting:onChangeSetByHud()
+	-- show new setting for a few seconds on the screen
+	courseplay:setCustomTimer(self.vehicle, 'showWorkWidth', 2);
 end
 
 --- Left/Right offset for loading/unloading at trigger.
@@ -3806,7 +3825,7 @@ end
 
 --- The wait time setting can be incremented by 15 seconds up to max: 60min.
 ---
----@class WaitTimeSetting
+---@class WaitTimeSetting : IntSetting
 WaitTimeSetting = CpObject(IntSetting)
 function WaitTimeSetting:init(vehicle)
 	local max = 3600 --- 60 min
@@ -3838,6 +3857,47 @@ function WaitTimeSetting:changeByX(x)
 	--- For 1-60 sec increment by 1 sec, else increment by the scale*sec
 	x = self:get()>=60 and x*self.scale or x
 	IntSetting.changeByX(self,x)
+end
+
+--- @class CourseDrawModeSetting : SettingList
+CourseDrawModeSetting = CpObject(SettingList)
+-- 2D/debug lines display options
+CourseDrawModeSetting.COURSE_2D_DISPLAY_OFF	 = 0;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_2DONLY	 = 1;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_DBGONLY = 2;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_BOTH	 = 3;
+function CourseDrawModeSetting:init(vehicle)
+	local values = {
+		self.COURSE_2D_DISPLAY_OFF,
+		self.COURSE_2D_DISPLAY_2DONLY,
+		self.COURSE_2D_DISPLAY_DBGONLY,
+		self.COURSE_2D_DISPLAY_BOTH
+	}
+	local texts = {
+		"",
+		"2D",
+		"\nDBG",
+		"2D\nDBG"
+	}
+	SettingList.init(self,"courseDrawMode","","",vehicle,values,texts)
+	self:set(self.COURSE_2D_DISPLAY_OFF)
+	self.syncValue = false
+end
+
+function CourseDrawModeSetting:isDeactivated()
+	return self:get() == self.COURSE_2D_DISPLAY_OFF
+end
+
+function CourseDrawModeSetting:isCourseMapVisible()
+	return self:get() == self.COURSE_2D_DISPLAY_2DONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+end
+
+function CourseDrawModeSetting:isCourseVisible()
+	return self:get() == self.COURSE_2D_DISPLAY_DBGONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+end
+
+function CourseDrawModeSetting:onChangeSetByHud()
+	self.vehicle.cp.driver:refreshHUD()
 end
 
 --[[
@@ -3904,7 +3964,7 @@ end
 
 function SettingsContainer:onReadStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self.validateSetting(setting) and setting.syncValue then 
 			setting:onReadStream(stream)
 		end
 	end
@@ -3912,7 +3972,7 @@ end
 
 function SettingsContainer:onWriteStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self.validateSetting(setting) and setting.syncValue then 
 			setting:onWriteStream(stream)
 		end
 	end
@@ -4035,6 +4095,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(WaitTimeSetting, vehicle)
 	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
+	container:addSetting(CourseDrawModeSetting,vehicle)
 	return container
 end
 

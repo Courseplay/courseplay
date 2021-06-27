@@ -304,6 +304,11 @@ function FieldworkAIDriver:stop(msgReference)
 	AIDriver.stop(self, msgReference)
 end
 
+function FieldworkAIDriver:setWorkFinished(msgReference)
+	self:stopWork()
+	AIDriver.setWorkFinished(self, msgReference)
+end
+
 function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 	if self.vehicle.cp.settings.convoyActive:is(true) then 
 		streamWriteInt32(streamId,self.convoyCurrentDistance)

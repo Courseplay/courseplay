@@ -561,17 +561,10 @@ function courseplay.hud:renderHud(vehicle)
 		vehicle.cp.hud.crossingPointsIcon:render();
 	end;
 	
-	
+	local courseDrawModeSetting = vehicle.cp.settings.courseDrawMode
 	-- 2D/DEBUG LINE BUTTON MODE
-	if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
-		local txt;
-		if vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY then
-			txt = '2D';
-		elseif vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY then
-			txt = '\nDBG';
-		else
-			txt = '2D\nDBG';
-		end;
+	if not courseDrawModeSetting:isDeactivated() then
+		local txt = courseDrawModeSetting:getText()
 		courseplay:setFontSettings('white', true);
 		renderText(vehicle.cp.hud.changeDrawCourseModeButton.x + vehicle.cp.hud.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
 		courseplay:setFontSettings('white', false);
@@ -894,11 +887,11 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						vehicle.cp.hud.content.pages[page][line][2].text = '---';
 					end;
-				elseif entry.functionToCall == 'changeToolOffsetX' then
+				elseif entry.functionToCall == 'toolOffsetX:setFromHud' then
 					--Tool horizontal offset
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.toolOffsetX:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetX:getText()
-				elseif entry.functionToCall == 'changeToolOffsetZ' then
+				elseif entry.functionToCall == 'toolOffsetZ:setFromHud' then
 					--Tool vertical offset
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.toolOffsetZ:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.toolOffsetZ:getText()
@@ -1215,7 +1208,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	else
 		self:showShowWaypointsButtons(vehicle, false)
 	end
-		
+	vehicle.cp.hud.changeDrawCourseModeButton:setActive(not vehicle.cp.settings.courseDrawMode:isDeactivated())	
 	-- make sure AutoDrive mode has all options currently available for the vehicle
 	vehicle.cp.settings.autoDriveMode:update()
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
@@ -1376,7 +1369,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 	vehicle.cp.hud.clearCurrentCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
-	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
+	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'setFromHud', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true):setSetting(vehicle.cp.settings.courseDrawMode)
 	self:setupCpModeButtons(vehicle)
 	self:setupRecordingButtons(vehicle)
 	self:setupCoursePageButtons(vehicle,2)
@@ -2132,9 +2125,9 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:addRowButton(vehicle,vehicle.cp.settings.symmetricLaneChange,'toggle', 8, 2, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.turnOnField,'toggle', 8, 3, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.useRealisticDriving,'toggle', 8, 4, 1 )
-	self:addSettingsRowWithArrows(vehicle,nil,'changeToolOffsetX', 8, 5, 1 )
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.toolOffsetX,'setFromHud', 8, 5, 1 )
 	self:setupSetAutoToolOffsetXButton(vehicle,8,5)
-	self:addSettingsRowWithArrows(vehicle,nil,'changeToolOffsetZ', 8, 6, 1 )
+	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.toolOffsetZ,'setFromHud', 8, 6, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.oppositeTurnMode,'toggle', 8, 7, 1 )
 
 	self:setReloadPageOrder(vehicle, -1, true)

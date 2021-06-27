@@ -268,24 +268,23 @@ function courseplay:onLoad(savegame)
 
 	self.cp.mouseCursorActive = false;
 
-	-- 2D course
-	self.cp.drawCourseMode = courseplay.COURSE_2D_DISPLAY_OFF;
+
 	-- 2D pda map background -- TODO: MP?
 	if g_currentMission.hud.ingameMap and g_currentMission.hud.ingameMap.mapOverlay and g_currentMission.hud.ingameMap.mapOverlay.filename then
 		self.cp.course2dPdaMapOverlay = Overlay:new(g_currentMission.hud.ingameMap.mapOverlay.filename, 0, 0, 1, 1);
 		self.cp.course2dPdaMapOverlay:setColor(1, 1, 1, CpManager.course2dPdaMapOpacity);
 	end;
 
-	-- HUD
-	courseplay.hud:setupVehicleHud(self);
-
-	courseplay:validateCanSwitchMode(self);
-
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
+
+	-- HUD
+	courseplay.hud:setupVehicleHud(self);
+
+	courseplay:validateCanSwitchMode(self);
 
 	courseplay.signs:updateWaypointSigns(self);
 	
@@ -371,8 +370,7 @@ function courseplay:onDraw()
 	if not status then 
 		self.cp.hudBroken = true
 	end
-
-	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
+	if self.cp.settings.courseDrawMode:isCourseMapVisible() then
 		courseplay:drawCourse2D(self, false);
 	end;
 end; --END draw()
@@ -507,7 +505,7 @@ function courseplay:onUpdate(dt)
 	end
 
 
-	if self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH then
+	if self.cp.settings.courseDrawMode:isCourseVisible() then
 		courseplay:drawWaypointsLines(self);
 	end;
 
@@ -793,8 +791,7 @@ function courseplay:onReadStream(streamId, connection)
 	end
 
 	--Make sure every vehicle has same AIDriver as the Server
-	courseplay:setAIDriver(self, self.cp.mode)
-
+	courseplay:setCpMode(self, self.cp.mode)
 
 	self.cp.driver:onReadStream(streamId)
 	
@@ -864,11 +861,10 @@ end
 
 function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 	 if connection:getIsServer() then
-		if self.cp.driver ~= nil then 
-			self.cp.driver:readUpdateStream(streamId, timestamp, connection)
-		end 
 		--only sync while cp is drivin!
 		if streamReadBool(streamId) then
+			self.cp.driver:readUpdateStream(streamId, timestamp, connection)
+			
 			if streamReadBool(streamId) then 
 				self.cp.waypointIndex = streamReadInt32(streamId)
 			else 
@@ -902,10 +898,9 @@ end
 
 function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
 	 if not connection:getIsServer() then
-		if self.cp.driver ~= nil then 
-			self.cp.driver:writeUpdateStream(streamId, connection, dirtyMask)
-		end 
 		if streamWriteBool(streamId, self:getIsCourseplayDriving() or false) then
+			self.cp.driver:writeUpdateStream(streamId, connection, dirtyMask)
+			
 			if self.cp.waypointIndex then
 				streamWriteBool(streamId,true)
 				streamWriteInt32(streamId,self.cp.waypointIndex)

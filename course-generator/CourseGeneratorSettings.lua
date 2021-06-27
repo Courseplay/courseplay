@@ -188,7 +188,7 @@ function WorkWidthSetting:setToDefault(noEventSend)
 end
 
 function WorkWidthSetting:set(value, noEventSend)
-	self.value:set(value, noEventSend)
+	self.value:set(value, true)
 	if not noEventSend then
 		self:sendEvent()
 	end

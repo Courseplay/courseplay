@@ -908,3 +908,27 @@ function cpDebug:deleteDrawItem(itemNode)
 	unlink(itemNode);
 	delete(itemNode);
 end
+
+
+function executeExternFunction(self,superFunc,...)
+	
+	local errorHandler = function(err)
+		printCallstack()
+		return err
+	end
+
+	local status, result = xpcall(superFunc,errorHandler,self,...)
+
+	if not status then
+		print('NetworkUtil : '.. tostring(result))
+	else 
+		return result
+	end
+end
+
+for i,func in pairs(NetworkUtil) do 
+	if type(func) == "function" then 
+		print(string.format("Add listener to: NetworkUtil = i: %s, func: %s",tostring(i),tostring(func)))
+		NetworkUtil[i] = Utils.overwrittenFunction(NetworkUtil[i],executeExternFunction)
+	end
+end

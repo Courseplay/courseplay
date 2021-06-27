@@ -1725,7 +1725,7 @@ end
 --- without restarting the game.
 function AIDriver:onDraw()
 	if CpManager.isDeveloper and self.course and
-		(self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH)  then
+		self.settings.courseDrawMode:isCourseVisible() then
 		self.course:draw()
 	end
 	if CpManager.isDeveloper and self.pathfinder then
