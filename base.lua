@@ -726,24 +726,11 @@ function courseplay:setVehicleWaypoints(vehicle, waypoints)
 	end
 end;
 
-function executeExternFunction(self,superFunc,...)
-	
-	local errorHandler = function(err)
-		printCallstack()
-		return err
-	end
-
-	local status, result = xpcall(superFunc,errorHandler,self,...)
-
-	if not status then
-		print('onReadStream : '.. tostring(result))
-	else 
-		return result
-	end
-end
 
 function courseplay:onReadStream(streamId, connection)
-	courseplay:debug("id: "..tostring(self.id).."  base: readStream", courseplay.DBG_MULTIPLAYER)
+	courseplay.debugChannels[courseplay.DBG_MULTIPLAYER] = true
+
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream start (id: %s)",self.id)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		local value = courseplay.streamDebugRead(streamId, variable.dataFormat)
@@ -755,13 +742,14 @@ function courseplay:onReadStream(streamId, connection)
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
 
 	self.cp.mode = streamReadInt32(streamId)
-	print(self.cp.mode)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onReadStream(streamId)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onReadStream(streamId)
 -------------------	
+
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream finished settings")
 
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
@@ -814,11 +802,13 @@ function courseplay:onReadStream(streamId, connection)
 
 	self.cp.driver:onReadStream(streamId)
 	
-	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", courseplay.DBG_MULTIPLAYER)
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream stop (id: %s)",self.id)
 end
-courseplay.onReadStream = Utils.overwrittenFunction(courseplay.onReadStream,executeExternFunction)
+
 function courseplay:onWriteStream(streamId, connection)
-	courseplay:debug("id: "..tostring(self).."  base: write stream", courseplay.DBG_MULTIPLAYER)
+	courseplay.debugChannels[courseplay.DBG_MULTIPLAYER] = true
+	
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream start (id: %s)",self.id)
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
@@ -832,6 +822,8 @@ function courseplay:onWriteStream(streamId, connection)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onWriteStream(streamId)
 -------------
+	
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream finished settings")
 
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
@@ -875,7 +867,7 @@ function courseplay:onWriteStream(streamId, connection)
 
 	self.cp.driver:onWriteStream(streamId)
 	
-	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", courseplay.DBG_MULTIPLAYER)
+	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream stop (id: %s)",self.id)
 end
 
 --TODO figure out how dirtyFlags work ??
