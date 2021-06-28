@@ -726,6 +726,22 @@ function courseplay:setVehicleWaypoints(vehicle, waypoints)
 	end
 end;
 
+function executeExternFunction(self,superFunc,...)
+	
+	local errorHandler = function(err)
+		printCallstack()
+		return err
+	end
+
+	local status, result = xpcall(superFunc,errorHandler,self,...)
+
+	if not status then
+		print('onReadStream : '.. tostring(result))
+	else 
+		return result
+	end
+end
+
 function courseplay:onReadStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream", courseplay.DBG_MULTIPLAYER)
 		
@@ -800,7 +816,7 @@ function courseplay:onReadStream(streamId, connection)
 	
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", courseplay.DBG_MULTIPLAYER)
 end
-
+courseplay.onReadStream = Utils.overwrittenFunction(courseplay.onReadStream,executeExternFunction)
 function courseplay:onWriteStream(streamId, connection)
 	courseplay:debug("id: "..tostring(self).."  base: write stream", courseplay.DBG_MULTIPLAYER)
 		
