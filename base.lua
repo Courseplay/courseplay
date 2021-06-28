@@ -737,6 +737,9 @@ function courseplay:onReadStream(streamId, connection)
 		courseplay:setVarValueFromString(self, variable.name, value)
 	end
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: read courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
+
+	self.cp.mode = streamReadInt32(streamId)
+	print(self.cp.mode)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onReadStream(streamId)
@@ -805,6 +808,8 @@ function courseplay:onWriteStream(streamId, connection)
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
+
+	streamDebugInt32(streamId,self.cp.mode)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onWriteStream(streamId)

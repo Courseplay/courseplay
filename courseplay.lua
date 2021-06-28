@@ -253,7 +253,7 @@ local function setGlobalData()
 
 	courseplay.multiplayerSyncTable = {
 
-	[1]={name='self.cp.mode',dataFormat='Int'},
+--	[1]={name='self.cp.mode',dataFormat='Int'},
 	[2]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
 	[3]={name='self.cp.canDrive',dataFormat='Bool'},
 	[4]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
