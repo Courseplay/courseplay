@@ -728,9 +728,8 @@ end;
 
 
 function courseplay:onReadStream(streamId, connection)
-	courseplay.debugChannels[courseplay.DBG_MULTIPLAYER] = true
 
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream start (id: %s)",self.id)
+	print("OnReadStream start, id: "..tostring(self.id))
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		local value = courseplay.streamDebugRead(streamId, variable.dataFormat)
@@ -745,11 +744,12 @@ function courseplay:onReadStream(streamId, connection)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onReadStream(streamId)
+	print("OnReadStream finished settings, id: "..tostring(self.id))	
+
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onReadStream(streamId)
 -------------------	
-
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream finished settings")
+	print("OnReadStream finished courseGeneratorSettings, id: "..tostring(self.id))	
 
 	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
 	if copyCourseFromDriverId then
@@ -802,13 +802,12 @@ function courseplay:onReadStream(streamId, connection)
 
 	self.cp.driver:onReadStream(streamId)
 	
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnReadStream stop (id: %s)",self.id)
+	print("OnReadStream stop, id: "..tostring(self.id))
 end
 
 function courseplay:onWriteStream(streamId, connection)
-	courseplay.debugChannels[courseplay.DBG_MULTIPLAYER] = true
 	
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream start (id: %s)",self.id)
+	print("OnWriteStream start, id: "..tostring(self.id))
 		
 	for _,variable in ipairs(courseplay.multiplayerSyncTable)do
 		courseplay.streamDebugWrite(streamId, variable.dataFormat, courseplay:getVarValueFromString(self,variable.name),variable.name)
@@ -819,11 +818,13 @@ function courseplay:onWriteStream(streamId, connection)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onWriteStream(streamId)
+	print("OnWriteStream finished settings, id: "..tostring(self.id))
+
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onWriteStream(streamId)
 -------------
 	
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream finished settings")
+	print("OnWriteStream finished courseGeneratorSettings, id: "..tostring(self.id))
 
 	local copyCourseFromDriverID;
 	if self.cp.copyCourseFromDriver ~= nil then
@@ -867,7 +868,7 @@ function courseplay:onWriteStream(streamId, connection)
 
 	self.cp.driver:onWriteStream(streamId)
 	
-	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self,"OnWriteStream stop (id: %s)",self.id)
+	print("OnWriteStream stop, id: "..tostring(self.id))
 end
 
 --TODO figure out how dirtyFlags work ??
