@@ -800,7 +800,7 @@ function courseplay:onReadStream(streamId, connection)
 	--Make sure every vehicle has same AIDriver as the Server
 	courseplay:setCpMode(self, self.cp.mode)
 
-	self.cp.driver:onReadStream(streamId)
+--	self.cp.driver:onReadStream(streamId)
 	
 	print("OnReadStream stop, id: "..tostring(self.id))
 end
@@ -866,7 +866,7 @@ function courseplay:onWriteStream(streamId, connection)
 		streamWriteBool(streamId,false)
 	end
 
-	self.cp.driver:onWriteStream(streamId)
+--	self.cp.driver:onWriteStream(streamId)
 	
 	print("OnWriteStream stop, id: "..tostring(self.id))
 end
