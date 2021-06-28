@@ -2,6 +2,8 @@ local abs, cos, sin, min, max, deg = math.abs, math.cos, math.sin, math.min, mat
 local _;
 -- ##### MANAGING TOOLS ##### --
 function courseplay:attachImplement(implement)
+	if not g_server then return end
+
 	local rootVehicle = implement:getRootVehicle()
 	if rootVehicle and SpecializationUtil.hasSpecialization(courseplay, rootVehicle.specializations) and
 		rootVehicle.hasCourseplaySpec then
@@ -15,6 +17,8 @@ end
 AttacherJoints.attachImplement = Utils.appendedFunction(AttacherJoints.attachImplement, courseplay.attachImplement);
 
 function courseplay:detachImplement(implementIndex)
+	if not g_server then return end
+
 	local spec = self.spec_attacherJoints
 	local implement = spec.attachedImplements[implementIndex]
 	if implement then
