@@ -809,7 +809,7 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 	courseplay:debug("id: "..tostring(self).."  base: write courseplay.multiplayerSyncTable end", courseplay.DBG_MULTIPLAYER)
 
-	streamDebugInt32(streamId,self.cp.mode)
+	streamWriteInt32(streamId,self.cp.mode)
 -------------------
 	-- SettingsContainer:
 	self.cp.settings:onWriteStream(streamId)
