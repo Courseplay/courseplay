@@ -1193,9 +1193,11 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
 				local foundHeap = self:checkForHeapBehindMe(tipper)
+				local fillLevel = self:getHeapSizeBehindMe(tipper)
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
-				if (foundHeap or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+				--check the heap is at least a specific size and not just a mote, so that the tipper can add to the pile a little bit instead of being so far forward
+				if ((foundHeap and fillLevel > 2000) or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
 					stopForTipping = true
 					readyToDischarge = true
 				end
@@ -1215,8 +1217,8 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 					self.pullForward = false
 				end
 
-				self:debugSparse('foundHeap(%s) z(%s) readyToDischarge(%s) isTipping(%s) pullForward(%s)',
-						tostring(foundHeap), tostring(z), tostring(readyToDischarge), tostring(isTipping), tostring(self.pullForward))
+				self:debugSparse('foundHeap(%s) heapSize(%s) z(%s) readyToDischarge(%s) isTipping(%s) pullForward(%s)',
+						tostring(foundHeap), tostring(fillLevel), tostring(z), tostring(readyToDischarge), tostring(isTipping), tostring(self.pullForward))
 
 				--ready with tipping, go forward on the course
 				if tipper.cp.fillLevel == 0 then
@@ -1278,6 +1280,15 @@ function AIDriver:checkForHeapBehindMe(tipper)
 	if fillType == tipper.cp.fillType then
 		return true;
 	end
+end
+
+function AIDriver:getHeapSizeBehindMe(tipper)
+	local dischargeNode = tipper:getCurrentDischargeNode().node
+	local offset = -self.settings.loadUnloadOffsetZ:get()
+	offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
+	local startX,_,startZ = localToWorld(dischargeNode,0,0,offset)
+	fillLevel = DensityMapHeightUtil.getFillLevelAtArea(tipper.cp.fillType,startX,startZ,startX,startZ+1,startX+1,startZ)	--should represent an area of 1m^2 starting at the discharge node
+	return fillLevel
 end
 
 --only bga, else triggerHandler handles discharge!

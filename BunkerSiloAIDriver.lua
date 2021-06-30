@@ -231,7 +231,7 @@ function BunkerSiloAIDriver:getDriveIntoSiloCourse(targetColumn)
 	local driveDirection = self:isDriveDirectionReverse()
 	local numLines = self.bunkerSiloManager:getNumberOfLines()
 	local x,z = self.bunkerSiloManager:getSiloPartPosition(1,targetColumn)
-	local dx,dz = self.bunkerSiloManager:getSiloPartPosition(numLines,targetColumn)
+	local dx,dz = self.bunkerSiloManager:getSiloPartPosition(numLines - 1,targetColumn)		--stop a little bit shy of the end to prevent pushing chaff out of open-end bunker
 	local startOffset = -5
 	local course = Course.createFromTwoWorldPositions(self.vehicle, x, z, dx, dz, 0, startOffset, 0, 5, driveDirection)
 	local firstWpIx
