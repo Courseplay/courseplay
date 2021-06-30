@@ -188,7 +188,7 @@ local function setVersionData()
 end;
 
 local function setGlobalData()
-	-- CP MODES
+	-- CP MODES, TODO create a setting for cp.mode !
 	courseplay.MODE_GRAIN_TRANSPORT = 1;
 	courseplay.MODE_COMBI = 2;
 	courseplay.MODE_OVERLOADER = 3;
@@ -200,6 +200,7 @@ local function setGlobalData()
 	courseplay.MODE_SHOVEL_FILL_AND_EMPTY = 9;
 	courseplay.MODE_BUNKERSILO_COMPACTER = 10;
 	courseplay.NUM_MODES = 10;
+	courseplay.MODE_DEFAULT = courseplay.MODE_TRANSPORT
 	------------------------------------------------------------
 	courseplay.SHOW_COVERS = true
 	courseplay.OPEN_COVERS = false
@@ -258,36 +259,23 @@ local function setGlobalData()
 	[1]={name='self.cp.mode',dataFormat='Int'},
 	[2]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
 	[3]={name='self.cp.canDrive',dataFormat='Bool'},
-	[4]={name='self.cp.combineOffsetAutoMode',dataFormat='Bool'},
-	[5]={name='self.cp.combineOffset',dataFormat='Float'},
 	[6]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
 	[7]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
 	[8]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
 	[9]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
 	[10]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
 	[11]={name='self.cp.globalInfoTextLevel',dataFormat='Int'},
-	[12]={name='self.cp.hasBaleLoader',dataFormat='Bool'},
-	[13]={name='self.cp.hasStartingDirection',dataFormat='Bool'},
-    [14]={name='self.cp.hasUnloadingRefillingCourse	',dataFormat='Bool'},
 	[15]={name='self.cp.isDriving',dataFormat='Bool'},
 	[26]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[27]={name='self.cp.tipperOffset',dataFormat='Float'},
-	[28]={name='self.cp.tipperHasCover',dataFormat='Bool'},
 	[29]={name='self.cp.workWidth',dataFormat='Float'},
 	[20]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
 	[21]={name='self.cp.turnDiameter',dataFormat='Float'},
 	[22]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
 	[23]={name='self.cp.laneOffset',dataFormat='Float'},
-	[24]={name='self.cp.loadUnloadOffsetX',dataFormat='Float'},
-	[25]={name='self.cp.loadUnloadOffsetZ',dataFormat='Float'},
 	[36]={name='self.cp.hud.currentPage',dataFormat='Int'},
 	[37]={name='self.cp.waypointIndex',dataFormat='Int'},
 	[38]={name='self.cp.isRecording',dataFormat='Bool'},
 	[39]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
-	[30]={name='self.cp.searchCombineAutomatically',dataFormat='Bool'},
-	[31]={name='self.cp.waitTime',dataFormat='Int'},
-	[32]={name='self.cp.alignment.enabled',dataFormat='Bool'},
-	[33]={name='self.cp.hasSowingMachine',dataFormat='Bool'},
 	}
 	
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()

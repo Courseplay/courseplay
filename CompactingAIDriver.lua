@@ -30,6 +30,23 @@ function CompactingAIDriver:init(vehicle)
 	self:initStates(CompactingAIDriver.myStates)
 	self.debugChannel = 10
 	self.compactingState = self.states.NOTHING 
+	self.mode = courseplay.MODE_BUNKERSILO_COMPACTER
+end
+
+function CompactingAIDriver:onDraw()
+	AIDriver.onDraw(self)
+	--- TODO: this needs improvements, as currently vehicle.Waypoints is needed.
+	if self.vehicle.Waypoints and self.vehicle.cp.canDrive then 
+		local searchRadiusSetting = self.settings.levelCompactSearchRadius
+		searchRadiusSetting:update()
+		if searchRadiusSetting:isShowRadiusActive() then 
+			local lastIx = #self.vehicle.Waypoints
+			local wps = self.vehicle.Waypoints
+			local x,y,z = wps[lastIx].cx,wps[lastIx].cy,wps[lastIx].cz
+			local r = searchRadiusSetting:get()
+			cpDebug:drawCircle(x, y+3, z,r,math.ceil(r/2), 1, 1, 1)
+		end	
+	end
 end
 
 function CompactingAIDriver:setHudContent()
@@ -46,7 +63,7 @@ end
 function CompactingAIDriver:drive(dt)
 
 	--- Gets the search radius.
-	local normalRadius = self.vehicle.cp.settings.levelCompactSearchRadius:get()
+	local normalRadius = self.settings.levelCompactSearchRadius:get()
 	--- Enlarge the searchRadius for waiting at waitpoint to avoid traffic problems
 	local searchRadius = self:isWaitingForUnloaders() and normalRadius + 10 or normalRadius
 	--- Searches for unloaders and restart/hold them in place.
@@ -86,7 +103,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 		local x,y,z = getTranslation(self.relevantWaypointNode.node)
 		DebugUtil.drawDebugCircle(x,y+2,z, r, math.ceil(r/2))
 	end
-	local onlyStopFilledDrivers = self.vehicle.cp.settings.levelCompactSiloTyp:get()
+	local onlyStopFilledDrivers = self.settings.levelCompactSiloTyp:get()
 	for _, vehicle in pairs(g_currentMission.vehicles) do
 		if vehicle ~= self.vehicle then
 			local d = calcDistanceFrom(self.relevantWaypointNode.node, vehicle.rootNode)
@@ -118,9 +135,9 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					end
 					self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
 					return true
-				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and AIDriverUtil.getImplementWithSpecialization(vehicle, Trailer) ~= nil then 
+				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and (AIDriverUtil.hasImplementWithSpecialization(vehicle, Trailer) or vehicle.spec_trailer) then 
 					--Player controlled vehicle
-					if self.vehicle.cp.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
+					if self.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
 						--Player controlled vehicle is allowed to lookup
 						self:debugSparse("found player driven vehicle : %s",nameNum(vehicle))
 						return true

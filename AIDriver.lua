@@ -135,7 +135,8 @@ AIDriver.myStates = {
 	TEMPORARY = {}, -- Temporary course, dynamically generated, for example alignment or fruit avoidance
 	RUNNING = {},
 	STOPPED = {},
-	DONE = {}
+	STOPPED_AT_WAIT_POINT = {}, -- Is the driver stopped at an waypoint.
+	FINISHED = {} -- Driver has finished it's course/job.
 }
 
 --- Create a new driver (usage: aiDriver = AIDriver(vehicle)
@@ -174,10 +175,12 @@ function AIDriver:init(vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
+
+	self.settings = self.vehicle.cp.settings
 	-- make sure all vehicle settings are valid for this mode
-	if self.vehicle.cp.settings then
+	if self.settings then
 		self:debug('Validating current settings...')
-		self.vehicle.cp.settings:validateCurrentValues()
+		self.settings:validateCurrentValues()
 	end
 	self:setHudContent()
 	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting())
@@ -355,12 +358,19 @@ function AIDriver:stop(msgReference)
 	self.state = self.states.STOPPED
 end
 
+function AIDriver:stopAtWaitPoint()
+	self:setInfoText("WAIT_POINT")
+	self.state = self.states.STOPPED_AT_WAIT_POINT
+end
+
+
 --- Stop the driver when the work is done. Could just dismiss at this point,
 --- the only reason we are still active is that we are displaying the info text while waiting to be dismissed
-function AIDriver:setDone(msgReference)
+function AIDriver:setWorkFinished(msgReference)
 	self:deleteCollisionDetector()
+	self.triggerHandler:onStop()
 	self:setInfoText(msgReference)
-	self.state = self.states.DONE
+	self.state = self.states.FINISHED
 end
 
 function AIDriver:continue()
@@ -466,8 +476,15 @@ function AIDriver:drive(dt)
 
 	if self.state == self.states.STOPPED or self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() then
 		self:hold()
+	end
+	if self.state == self.states.FINISHED then
+		self:holdWithFuelSave()
+	end
+	if self:isWaitingAtWaitPoint() then 
+		self:holdWithFuelSave()
 		self:continueIfWaitTimeIsOver()
 	end
+
 	self:driveCourse(dt)
 	self:drawTemporaryCourse()
 end
@@ -479,7 +496,7 @@ function AIDriver:driveCourse(dt)
 
 	-- stop for fuel if needed
 	if not self:isFuelLevelOk() then
-		self:hold()
+		self:holdWithFuelSave()
 	end
 
 	if not self:getIsEngineReady() then
@@ -690,12 +707,12 @@ end
 --- Should we stop at the end of the course (or restart it from the beginning)
 --- In Mode 5 we do what the user wants.
 function AIDriver:shouldStopAtEndOfCourse()
-	return self.vehicle.cp.settings.stopAtEnd:is(true)
+	return self.settings.stopAtEnd:is(true)
 end
 
 --- Course ended
 function AIDriver:onEndCourse()
-	if self.vehicle.cp.settings.autoDriveMode:useForParkVehicle() then
+	if self.settings.autoDriveMode:useForParkVehicle() then
 		-- use AutoDrive to send the vehicle to its parking spot
 		if self.vehicle.spec_autodrive and self.vehicle.spec_autodrive.GetParkDestination then
 			self:debug('Let AutoDrive park this vehicle')
@@ -714,9 +731,7 @@ function AIDriver:onEndCourse()
 end
 
 function AIDriver:onEndCourseFinished()
-	if self.state ~= self.states.STOPPED then
-		self:stop('END_POINT')
-	end
+	self:setWorkFinished('END_POINT')
 end
 
 function AIDriver:getDirectionToGoalPoint()
@@ -764,8 +779,8 @@ function AIDriver:onWaypointPassed(ix)
 	elseif self:isStoppingAtWaitPointAllowed() and self.course:isWaitAt(ix) then
 		-- default behaviour for mode 5 (transport), if a waypoint with the wait attribute is
 		-- passed stop until the user presses the continue button or the timer elapses
-		self:debug('Waiting point reached, wait time %d s', self.vehicle.cp.waitTime)
-		self:stop('WAIT_POINT')		
+		self:debug('Waiting point reached, wait time %d s', self.settings.waitTime:get())
+		self:stopAtWaitPoint()		
 		-- show continue button
 		self:refreshHUD()
 	end
@@ -784,6 +799,11 @@ function AIDriver:onLastWaypoint()
 	end
 end
 
+--- Does the driver has a next course after the current course ?
+function AIDriver:hasNextCourse()
+	return self.nextCourse ~= nil
+end
+
 --- End a course and then continue on nextCourse at nextWpIx
 function AIDriver:continueOnNextCourse(nextCourse, nextWpIx)
 	self:startCourse(nextCourse, nextWpIx)
@@ -794,9 +814,11 @@ end
 --- When stopped at a wait point, check if the waiting time is over
 -- and continue when needed
 function AIDriver:continueIfWaitTimeIsOver()
+	--- Wait time in secondes.
+	local waitTime = self.settings.waitTime:get()
 	if self:isAutoContinueAtWaitPointEnabled() then
-		if (self.vehicle.timer - self.lastMoveCommandTime) > self.vehicle.cp.waitTime * 1000 then
-			self:debug('Waiting time of %d s is over, continuing', self.vehicle.cp.waitTime)
+		if (self.vehicle.timer - self.lastMoveCommandTime) > waitTime * 1000 then
+			self:debug('Waiting time of %d s is over, continuing', waitTime)
 			self:continue()
 		end
 	end
@@ -807,11 +829,11 @@ end
 --- those modes have to override this.
 -- TODO: consider deriving a TransportAIDriver class for mode 5 if there are mode 5 only behaviors.
 function AIDriver:isAutoContinueAtWaitPointEnabled()
-	return self.vehicle.cp.waitTime > 0
+	return self:isStoppingAtWaitPointAllowed() and self.settings.waitTime:get() > 0
 end
 
-function AIDriver:isWaiting()
-	return self.state == self.states.STOPPED
+function AIDriver:isWaitingAtWaitPoint()
+	return self.state == self.states.STOPPED_AT_WAIT_POINT
 end
 
 function AIDriver:hasTipTrigger()
@@ -834,7 +856,7 @@ end
 function AIDriver:getWorkSpeed()
 	-- use the speed limit supplied by Giants for fieldwork
 	local speedLimit = self.vehicle:getSpeedLimit() or math.huge
-	return math.min(self.vehicle.cp.speeds.field, speedLimit)
+	return math.min(self:getFieldSpeed(), speedLimit)
 end
 
 function AIDriver:resetLastMoveCommandTime()
@@ -874,6 +896,11 @@ function AIDriver:hold()
 	self:resetLastMoveCommandTime()
 end
 
+--- Anyone wants to temporarily stop driving for whatever reason, call this
+function AIDriver:holdWithFuelSave()
+	self.allowedToDrive = false
+	self:setSpeed(0)
+end
 --- Function used by the driver to get the speed it is supposed to drive at
 --
 function AIDriver:getSpeed()
@@ -892,7 +919,7 @@ end
 function AIDriver:getRecordedSpeed()
 	-- default is the street speed (reduced in corners)
 	local speed = self:getDefaultStreetSpeed(self.ppc:getCurrentWaypointIx()) or self.vehicle.cp.speeds.street
-	if self.vehicle.cp.settings.useRecordingSpeed:is(true) then
+	if self.settings.useRecordingSpeed:is(true) then
 		-- use default street speed if there's no recorded speed.
 		speed = math.min(self.course:getAverageSpeed(self.ppc:getCurrentWaypointIx(), 4) or speed, speed)
 	end
@@ -943,7 +970,7 @@ end
 ---@param course Course
 function AIDriver:isAlignmentCourseNeeded(course, ix)
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
-	return d > self.vehicle.cp.turnDiameter and self.vehicle.cp.alignment.enabled
+	return d > self.vehicle.cp.turnDiameter
 end
 
 function AIDriver:startTurn(ix)
@@ -1003,7 +1030,7 @@ end
 
 function AIDriver:drawTemporaryCourse()
 	if not self.course or not self.course:isTemporary() then return end
-	if self.vehicle.cp.settings.enableVisualWaypointsTemporary:is(false) and
+	if self.settings.enableVisualWaypointsTemporary:is(false) and
 			not courseplay.debugChannels[self.debugChannel] then
 		return
 	end
@@ -1081,7 +1108,7 @@ function AIDriver:isCollisionDetectionEnabled()
 end
 
 function AIDriver:areBeaconLightsEnabled()
-	return self.vehicle.cp.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
+	return self.settings.warningLightsMode:get() > WarningLightsModeSetting.WARNING_LIGHTS_NEVER
 end
 
 function AIDriver:updateLights()
@@ -1242,7 +1269,7 @@ end
 
 function AIDriver:checkForHeapBehindMe(tipper)
 	local dischargeNode = tipper:getCurrentDischargeNode().node
-	local offset = -self.vehicle.cp.loadUnloadOffsetZ
+	local offset = -self.settings.loadUnloadOffsetZ:get()
 	offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
 	local startX,startY,startZ = localToWorld(dischargeNode,0,0,offset) ;
 	local tempHeightX,tempHeightY,tempHeightZ = localToWorld(dischargeNode,0,0,offset+0.5) 
@@ -1443,7 +1470,7 @@ function AIDriver:updateOffset()
 	end
 
 	if useOffset then
-		self.ppc:setOffset(self.vehicle.cp.loadUnloadOffsetX, self.vehicle.cp.loadUnloadOffsetZ)
+		self.ppc:setOffset(self.settings.loadUnloadOffsetX:get(), self.settings.loadUnloadOffsetZ:get())
 	else
 		self.ppc:setOffset(0, 0)
 	end
@@ -1552,7 +1579,7 @@ end
 --- pathfinding considers any collision-free path valid, also outside of the field.
 ---@return boolean true when a pathfinding successfully started
 function AIDriver:driveToPointWithPathfinding(waypoint, zOffset, course, ix, fieldNum)
-	if self.vehicle.cp.settings.useRealisticDriving:is(true) then
+	if self.settings.useRealisticDriving:is(true) then
 		if not self.pathfinder or not self.pathfinder:isActive() then
 			self.courseAfterPathfinding = course
 			self.waypointIxAfterPathfinding = ix
@@ -1669,7 +1696,7 @@ end;
 --- Is auto stop engine enabled?
 function AIDriver:isEngineAutoStopEnabled()
 	-- do not auto stop engine when auto motor start is enabled as it'll try to restart the engine on each update tick.
-	return self.vehicle.cp.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
+	return self.settings.saveFuelOption:is(true) and not g_currentMission.missionInfo.automaticMotorStartEnabled
 end
 
 --- Check the engine state and stop if we have the fuel save option and been stopped too long
@@ -1711,15 +1738,14 @@ function AIDriver:setDriveUnloadNow(driveUnloadNow)
 end
 
 function AIDriver:setDriveNow()
-	if self:isWaiting() then 
+	if self:isWaitingAtWaitPoint() then 
 		self:continue()
-		self.vehicle.cp.wait = false
 	end
 	self.triggerHandler:onDriveNow()
 end
 
 function AIDriver:getDriveUnloadNow()
-	return self.vehicle.cp.settings.driveUnloadNow:get()
+	return self.settings.driveUnloadNow:get()
 end
 
 function AIDriver:refreshHUD()
@@ -1846,7 +1872,7 @@ end
 
 --- By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances
 function AIDriver:shouldPayWages()
-	return true
+	return self.state ~= self.states.FINISHED
 end
 
 function AIDriver:getWagesPercentageAmount()
@@ -1867,7 +1893,7 @@ function AIDriver:updateAILowFrequency(superFunc,dt)
 end
 
 function AIDriver:getAllowReversePathfinding()
-	return self.allowReversePathfinding and self.vehicle.cp.settings.allowReverseForPathfindingInTurns:is(true)
+	return self.allowReversePathfinding and self.settings.allowReverseForPathfindingInTurns:is(true)
 end
 
 -- Note that this may temporarily return false even if it is reversing
@@ -2212,7 +2238,7 @@ function AIDriver:notAllowedToLoadNextFillType()
 end
 
 function AIDriver:getCanShowDriveOnButton()
-	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaiting()
+	return self.triggerHandler:isLoading() or self.triggerHandler:isUnloading() or self:isWaitingAtWaitPoint()
 end
 
 --if validFillType ~= nil, then only open the first valid fillUnit for this fillType,
@@ -2237,7 +2263,7 @@ end
 
 --close all covers
 function AIDriver:closeCovers(object)
-	if self.vehicle.cp.settings.automaticCoverHandling:is(false) then
+	if self.settings.automaticCoverHandling:is(false) then
 		return
 	end
 	if object.spec_cover then
@@ -2273,7 +2299,10 @@ end
 ---@return boolean working tool positions reached
 function AIDriver:isWorkingToolPositionReached(dt,positionIx)
 	local setting = self:getWorkingToolPositionsSetting()
-	return setting and setting:updatePositions(dt,positionIx) or setting == nil
+	if setting then 
+		return setting:updatePositions(dt,positionIx)
+	end
+	return true
 end
 
 function AIDriver:getWorkingToolPositionsSetting()

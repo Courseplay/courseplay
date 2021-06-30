@@ -13,12 +13,11 @@ end
 function WorkWidthSettingEvent:new(vehicle, parentName, name, value)
 	courseplay:debugFormat(courseplay.DBG_MULTIPLAYER,
 		"WorkWidthSettingEvent:new(%s, %s, %s, %.1f)",nameNum(vehicle), name, parentName, value)
-	self.vehicle = nil
-	self.vehicle = vehicle;
+	self.vehicle = vehicle
 	self.parentName = parentName
 	self.name = name
-	self.value = value;
-	return self;
+	self.value = value
+	return self
 end
 
 -- deserialize received event

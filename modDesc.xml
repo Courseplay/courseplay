@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="53">
-	<version>6.4.0.0</version>
+	<version>6.4.0.3</version>
 	<author><![CDATA[Courseplay.devTeam]]></author>
 	<title>
 		<en>CoursePlay</en>
@@ -35,7 +35,7 @@ IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest Aut
 		<de>
 <![CDATA[Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
 
-IMPORTANT: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die neueste Version von AutoDrive von GitHub laden!(Version 1.1.1.0 oder höher)]]>
+WICHTIG: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die neueste Version von AutoDrive von GitHub laden!(Version 1.1.1.0 oder höher)]]>
 		</de>
 		<fr>
 <![CDATA[Courseplay est un mod pour Farming Simulator 19. Il ajoute au jeu une nouvelle IA pour les ouvriers, permettant de gérer vos chantiers d’une toute nouvelle manière !

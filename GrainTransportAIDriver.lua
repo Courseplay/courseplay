@@ -41,7 +41,7 @@ function GrainTransportAIDriver:start(startingPoint)
 	self.firstWaypointNode:setToWaypoint(self.course, 1, true)
 end
 
-function GrainTransportAIDriver:isAlignmentCourseNeeded(ix)
+function GrainTransportAIDriver:isAlignmentCourseNeeded(course,ix)
 	-- never use alignment course for grain transport mode
 	return false
 end
@@ -85,10 +85,10 @@ function GrainTransportAIDriver:drive(dt)
 				if d < self.nextClosestExactFillRootNodeDistance then 
 					self.nextClosestExactFillRootNodeDistance = d
 				else 
-					self:hold()
+					self:holdWithFuelSave()
 				end
 			else
-				self:hold()
+				self:holdWithFuelSave()
 			end
 		else
 			self:clearInfoText('REACHED_OVERLOADING_POINT')
@@ -244,9 +244,11 @@ function GrainTransportAIDriver:continue()
 end
 
 function GrainTransportAIDriver:setDriveNow()
-	self.driveNow = true
-	self.readyToLoadManualAtStart = false
-	self.nextClosestExactFillRootNode = nil
+	if not self:isWaitingAtWaitPoint() then
+		self.driveNow = true
+		self.readyToLoadManualAtStart = false
+		self.nextClosestExactFillRootNode = nil
+	end
 	AIDriver.setDriveNow(self)
 end
 

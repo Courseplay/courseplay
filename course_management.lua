@@ -333,7 +333,6 @@ function courseplay:copyCourse(vehicle)
 		vehicle:setIsCourseplayDriving(false);
 		vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
 		vehicle:setCpVar('canDrive',true,courseplay.isClient);
-		vehicle.cp.abortWork = nil;
 
 		if src.cp.settings.searchCombineOnField:get() >0 then
 			vehicle.cp.settings.searchCombineOnField:set(src.cp.settings.searchCombineOnField:get())
@@ -372,11 +371,6 @@ end;
 -- clears current course -- just setting variables
 function courseplay:clearCurrentLoadedCourse(vehicle)
 	
-	--variables to be reset when deleting the current course
-	if vehicle.cp.lastValidTipDistance ~= nil then
-		vehicle.cp.lastValidTipDistance = nil
-	end
-	
 	if vehicle.cp.settings.searchCombineOnField:get() > 0 then
 		vehicle.cp.settings.searchCombineOnField:set(0);
 	end
@@ -391,7 +385,6 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.recordingTimer = 1;
 	vehicle.Waypoints = {}
 	vehicle:setCpVar('canDrive',false,courseplay.isClient);
-	vehicle.cp.abortWork = nil
 	courseplay:resetTipTrigger(vehicle);
 	vehicle.cp.lastMergedWP = 1;
 	vehicle.cp.numCourses = 0;

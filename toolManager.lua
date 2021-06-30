@@ -58,7 +58,7 @@ function courseplay:resetTools(vehicle)
 
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
 	if not vehicle.cp.workToolAttached and vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER then
-		courseplay:setCpMode(vehicle, courseplay.MODE_TRANSPORT)
+		courseplay:setCpMode(vehicle, courseplay.MODE_DEFAULT)
 	end
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
@@ -193,16 +193,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	if vehicle.cp.mode == 4 then
 		if isAllowedOkay and isDisallowedOkay then
 			vehicle.cp.hasMachinetoFill = true;
-		end;
-	-- MODE 6: FIELDWORK
-	elseif vehicle.cp.mode == 6 then
-		if isAllowedOkay and isDisallowedOkay then
-			if courseplay:isBaleLoader(workTool) then
-				vehicle.cp.hasBaleLoader = true;
-				if vehicle.cp.lastValidTipDistance == nil then
-					vehicle.cp.lastValidTipDistance = 0
-				end;
-			end;
 		end;
 	end
 	--belongs to mode3 but should be considered even if the mode is not set correctely

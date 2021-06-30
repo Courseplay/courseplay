@@ -111,6 +111,7 @@ CombineUnloadAIDriver.myStates = {
 		{isUnloadingChopper = true, isHandlingChopperTurn = true, enableProximitySpeedControl = true},
 	MOVING_OUT_OF_WAY = {isUnloadingChopper = true},
 	WAITING_FOR_MANEUVERING_COMBINE = {},
+	ON_UNLOAD_WITH_AUTODRIVE = {},
 }
 
 --- Constructor
@@ -218,6 +219,9 @@ function CombineUnloadAIDriver:drive(dt)
 		local renderOffset = self.vehicle.cp.coursePlayerNum * 0.03
 		self:renderText(0, 0.1 + renderOffset, "%s: self.onFieldState :%s", nameNum(self.vehicle), self.onFieldState.name)
 		self:driveOnField(dt)
+	elseif self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE then
+		-- AutoDrive is driving, don't call AIDriver.drive()
+		return
 	end
 end
 
@@ -342,8 +346,9 @@ function CombineUnloadAIDriver:driveOnField(dt)
 				end
 			end
 		end
-		self:hold()
-
+		--- This should re enable fuel save, when the driver is waiting for combines to call.
+		--	self:hold()
+		self:holdWithFuelSave()
 	elseif self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		-- just wait for the pathfinder to finish
 		self:setSpeed(0)
@@ -454,7 +459,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 		end
 
 	elseif self.onFieldState == self.states.MOVE_BACK_FROM_REVERSING_CHOPPER then
-		self:renderText(0, 0, "drive straight reverse :offset local :%s saved:%s", tostring(self.combineOffset), tostring(self.vehicle.cp.combineOffset))
+		self:renderText(0, 0, "drive straight reverse :offset local :%s saved:%s", tostring(self.combineOffset), tostring(self.settings.combineOffsetX:get()))
 
 		local d = self:getDistanceFromCombine()
 		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
@@ -519,7 +524,7 @@ end
 
 function CombineUnloadAIDriver:driveBesideChopper()
 	local targetNode = self:getTrailersTargetNode()
-	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
+	self:renderText(0, 0.02,"%s: driveBesideChopper:offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.settings.combineOffsetX:get()))
 	self:releaseAutoAimNode()
 	local _, _, dz = localToLocal(targetNode, self:getCombineRootNode(), 0, 0, 5)
 	self:setSpeed(math.max(0, (self.combineToUnload.lastSpeedReal * 3600) + (MathUtil.clamp(-dz, -10, 15))))
@@ -527,14 +532,14 @@ end
 
 
 function CombineUnloadAIDriver:driveBehindChopper()
-	self:renderText(0, 0.05, "%s: driveBehindChopper offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.vehicle.cp.combineOffset))
+	self:renderText(0, 0.05, "%s: driveBehindChopper offset local :%s saved:%s",nameNum(self.vehicle),tostring(self.combineOffset),tostring(self.settings.combineOffsetX:get()))
 	self:fixAutoAimNode()
 	--get required Speed
 	self:setSpeed(self:getSpeedBehindChopper())
 end
 
 function CombineUnloadAIDriver:onEndCourse()
-	if self.state == self.states.ON_UNLOAD_COURSE then
+	if self.state == self.states.ON_UNLOAD_COURSE or self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE then
 		self:setNewState(self.states.ON_FIELD)
 		self:startWaitingForCombine()
 		self:setDriveUnloadNow(false)
@@ -579,7 +584,7 @@ end
 
 function CombineUnloadAIDriver:setFieldSpeed()
 	if self.course then
-		self:setSpeed(self.vehicle.cp.speeds.field)
+		self:setSpeed(self:getFieldSpeed())
 	end
 end
 
@@ -716,7 +721,7 @@ end
 function CombineUnloadAIDriver:getSpeedBehindTractor(tractorToFollow)
 	local targetDistance = 35
 	local diff =  courseplay:distanceToObject(self.vehicle, tractorToFollow) - targetDistance
-	return math.min(self.vehicle.cp.speeds.field,(tractorToFollow.lastSpeedReal*3600) +(MathUtil.clamp( diff,-10,25)))
+	return math.min(self:getFieldSpeed(),(tractorToFollow.lastSpeedReal*3600) +(MathUtil.clamp( diff,-10,25)))
 end
 
 
@@ -736,7 +741,7 @@ end
 ---@return number, number x and z offset of the pipe's end from the combine's root node in the Giants coordinate system
 ---(x > 0 left, z > 0 forward) corrected with the manual offset settings
 function CombineUnloadAIDriver:getPipeOffset(combine)
-	return combine.cp.driver:getPipeOffset(-self.vehicle.cp.combineOffset, self.vehicle.cp.tipperOffset)
+	return combine.cp.driver:getPipeOffset(-self.settings.combineOffsetX:get(), self.settings.combineOffsetZ:get())
 end
 
 function CombineUnloadAIDriver:getChopperOffset(combine)
@@ -775,8 +780,8 @@ function CombineUnloadAIDriver:getChopperOffset(combine)
 end
 
 function CombineUnloadAIDriver:setSavedCombineOffset(newOffset)
-	if self.vehicle.cp.combineOffsetAutoMode then
-		self.vehicle.cp.combineOffset = newOffset
+	if self.settings.combineOffsetX:get() == 0 then
+		self.settings.combineOffsetX:set(newOffset)
 		self:refreshHUD()
 		return newOffset
 	else
@@ -785,8 +790,8 @@ function CombineUnloadAIDriver:setSavedCombineOffset(newOffset)
 end
 
 function CombineUnloadAIDriver:getSavedCombineOffset()
-	if self.vehicle.cp.combineOffset then
-		return self.vehicle.cp.combineOffset
+	if self.settings.combineOffsetX:get() then
+		return self.settings.combineOffsetX:get()
 	end
 	-- else???? this does not make any sense, this is still just a nil ...
 end
@@ -1071,9 +1076,16 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startUnloadCourse()
 	self:debug('Changing to unload course.')
-	self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
-	self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
 	self:closeCovers(self.vehicle)
+	if self.vehicle.spec_autodrive and self.vehicle.cp.settings.autoDriveMode:useForUnloadOrRefill() then
+		-- directly hand over to AD as in other modes
+		self.state = self.states.ON_UNLOAD_WITH_AUTODRIVE
+		self:debug('passing the control to AutoDrive to run the unload course.')
+		self.vehicle.spec_autodrive:StartDrivingWithPathFinder(self.vehicle, self.vehicle.ad.mapMarkerSelected, self.vehicle.ad.mapMarkerSelected_Unload, self, CombineUnloadAIDriver.onEndCourse, nil);
+	else
+		self:startCourseWithPathfinding(self.unloadCourse, 1, 0, 0, true)
+		self:setNewOnFieldState(self.states.DRIVE_TO_UNLOAD_COURSE)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -2057,7 +2069,7 @@ function CombineUnloadAIDriver:followChopperThroughTurn()
 		-- follow course, make sure we are keeping distance from the chopper
 		-- TODO: or just rely on the proximity sensor here?
 		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
-		local speed = combineSpeed + MathUtil.clamp(d - self.minDistanceFromWideTurnChopper, -combineSpeed, self.vehicle.cp.speeds.field)
+		local speed = combineSpeed + MathUtil.clamp(d - self.minDistanceFromWideTurnChopper, -combineSpeed, self:getFieldSpeed())
 		self:setSpeed(speed)
 		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
 	else
@@ -2201,6 +2213,10 @@ function CombineUnloadAIDriver:findOtherUnloaderAroundCombine(combine, combineOf
 			end
 		end
 	end
+end
+
+function CombineUnloadAIDriver:isAutoDriveDriving()
+	return self.state == self.states.ON_UNLOAD_WITH_AUTODRIVE
 end
 
 

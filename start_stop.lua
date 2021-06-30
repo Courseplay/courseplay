@@ -64,16 +64,10 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d",
 		nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), courseplay.DBG_COURSES);
 
-	-- set waitTime to 0 if necessary
-	if not courseplay:getCanHaveWaitTime(self) and self.cp.waitTime > 0 then
-		courseplay:changeWaitTime(self, -self.cp.waitTime);
-	end;
-
 	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 and self.cp.mode ~= 8 then
 		courseplay:setDriveUnloadNow(self, true);
 	elseif self.cp.mode == 4 or self.cp.mode == 6 then
 		courseplay:setDriveUnloadNow(self, false);
-		self.cp.hasUnloadingRefillingCourse = self.cp.numWaypoints > self.cp.stopWork + 7;
 	elseif self.cp.mode == 8 then
 		courseplay:setDriveUnloadNow(self, false);
 	end
@@ -137,7 +131,6 @@ function courseplay:stop(self)
 
 		
 	self.cp.settings.forcedToStop:set(false)
-	self.cp.waitingForTrailerToUnload = false
 	
 	---Is this one still used as cp.isTurning isn't getting set to true ??
 	self.cp.isTurning = nil;
@@ -155,18 +148,12 @@ function courseplay:stop(self)
 	
 	self.cp.curSpeed = 0;
 
-	self.spec_motorized.motor.maxRpmOverride = nil;
 	self.cp.startWork = nil
 	self.cp.stopWork = nil
-	self.cp.hasFinishedWork = nil
-	self.cp.turnTimeRecorded = nil;	
-	self.cp.hasUnloadingRefillingCourse = false;
-	self.cp.prevFillLevelPct = nil;
 	courseplay:setSlippingStage(self, 0);
 	courseplay:resetCustomTimer(self, 'slippingStage1');
 	courseplay:resetCustomTimer(self, 'slippingStage2');
 
-	self.cp.hasBaleLoader = false;
 	
 	if self.cp.manualWorkWidth ~= nil then
 		courseplay:changeWorkWidth(self, nil, self.cp.manualWorkWidth, true)

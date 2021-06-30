@@ -44,10 +44,9 @@ function ShovelAIDriver.create(vehicle)
 		return BunkerSiloLoaderAIDriver(vehicle)
 	end
 
-	--- Disabled for now, as the mixer wagon driver needs trigger handler improvements. 
---	if AIDriverUtil.hasImplementWithSpecialization(vehicle, MixerWagon) or vehicle.spec_mixerWagon then
---		return MixerWagonAIDriver(vehicle)
---	end
+	if AIDriverUtil.hasImplementWithSpecialization(vehicle, MixerWagon) or vehicle.spec_mixerWagon then
+		return MixerWagonAIDriver(vehicle)
+	end
 
 	if vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive:is(false) then
 		return ShovelAIDriver(vehicle)
@@ -63,6 +62,7 @@ function ShovelAIDriver:init(vehicle)
 	self.shovelState = self.states.DRIVING_UNLOADING_COURSE
 	self.shovelDebugChannel = courseplay.DBG_MODE_9
 	self.transitionCourseOffset = 20
+	self.mode = courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
 function ShovelAIDriver:setHudContent()
@@ -71,14 +71,13 @@ function ShovelAIDriver:setHudContent()
 end
 
 function ShovelAIDriver:start(startingPoint)
-	self.shovel = AIDriverUtil.getImplementWithSpecialization(self.vehicle,Shovel) or self.vehicle
-	self.currentDischargeNode = self.shovel:getCurrentDischargeNode()
-
+	self:findShovelRecursive(self.vehicle)
 	if not self.shovel then 
 		self:error("Error: shovel not found!!")
 		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		return
 	end
+	self.currentDischargeNode = self.shovel:getCurrentDischargeNode()
 	self.targetUnloadingNode = nil
 	self.lastDistanceToEmptyPoint = math.huge
 	self:changeShovelState(self.states.DRIVING_UNLOADING_COURSE)
@@ -86,6 +85,7 @@ function ShovelAIDriver:start(startingPoint)
 	self.oldCanDischargeToGround = self.currentDischargeNode.canDischargeToGround
 	self.currentDischargeNode.canDischargeToGround = false
 
+	--- Not sure what this is for, old code ?
 	local vAI = self.vehicle:getAttachedImplements()
 	for i,_ in pairs(vAI) do
 		local object = vAI[i].object
@@ -108,6 +108,17 @@ function ShovelAIDriver:start(startingPoint)
 		courseplay.onStopCpAIDriver(self.vehicle,AIVehicle.STOP_REASON_UNKOWN)
 		return
 	end	
+end
+
+function ShovelAIDriver:findShovelRecursive(object)
+	if SpecializationUtil.hasSpecialization(Shovel, object.specializations) and not self.shovel then 
+		self.shovel = object
+		return
+	end
+	
+	for _,impl in pairs(object:getAttachedImplements()) do
+		self:findShovelRecursive(impl.object)
+	end
 end
 
 function ShovelAIDriver:stop(msg)
@@ -157,7 +168,7 @@ function ShovelAIDriver:drive(dt)
 	if self:isDrivingUnloadingCourse() then 
 		self:driveUnloadingCourse(dt)
 	elseif self:isWaitingForTrailer() then 
-		self:hold()
+		self:holdWithFuelSave()
 	elseif self:isDrivingToTrailer() then 
 		self:driveToTrailer(dt)
 	elseif self:isDrivingToUnloadingTrigger() then 
@@ -177,7 +188,10 @@ end
 function ShovelAIDriver:driveIntoSilo(dt)
 	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.LOADING) then 
 		--- Waiting until the working position is reached.
-		self:hold()
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- If the shovel is full drive back out of the silo and then drive the unloading course.
 	if self:getIsShovelFull() then 
@@ -196,7 +210,8 @@ function ShovelAIDriver:driveUnloadingCourse(dt)
 end
 
 --- Is the unloading point reached for unloading in a trailer.
-function ShovelAIDriver:isUnloadingPointReached(dt)
+---@param positionDistLeft number moving distance left of shovel position
+function ShovelAIDriver:isUnloadingPointReached(positionDistLeft)
 	if self.targetUnloadingNode then
 		local directionNode = self:getDirectionNode()
 		local shovelNode = self:getTargetNode()
@@ -217,8 +232,10 @@ function ShovelAIDriver:isUnloadingPointReached(dt)
 			DebugUtil.drawDebugNode(self:getDirectionNode(), 'driverNode')
 		end
 
-		self:shovelDebug("distanceToTrailer: %.2f",distance)
-		self:setSpeed(MathUtil.clamp(distance*2,1,self:getRecordedSpeed()))
+		self:shovelDebug("distanceToTrailer: %.2f, positionDistLeft: %.2f",distance,positionDistLeft)
+		--- Slow down the driver to reach the trailer with the position already reached.
+		local speed = MathUtil.clamp(2*(distance-positionDistLeft),0.5,self:getRecordedSpeed())
+		self:setSpeed(speed)
 		
 		if distance < 1.2 then 
 			return true
@@ -228,11 +245,15 @@ end
 
 --- Driving to the trailer for unloading.
 function ShovelAIDriver:driveToTrailer(dt)
-	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING) then
-		self:hold()
+	local positionOkay,positionDistLeft = self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING)
+	if not positionOkay then
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- Waiting until the driver has reached the correct unloading position.
-	if self:isUnloadingPointReached() then
+	if self:isUnloadingPointReached(positionDistLeft) then
 		self:changeShovelState(self.states.UNLOADING_AT_TRAILER)
 	end
 end
@@ -240,7 +261,10 @@ end
 --- Driving to the unload trigger for unloading. 
 function ShovelAIDriver:driveToUnloadingTrigger(dt)
 	if not self:isWorkingToolPositionReached(dt,self.WORKING_TOOL_POSITIONS.PRE_UNLOADING) then
-		self:hold()
+		if self.settings.alwaysWaitForShovelPositions:get() then
+			--- Only wait for the shovel position, if the setting is true.
+			self:hold()
+		end
 	end
 	--- If an unload trigger was found (dischargeObject) then we drive 2 additional meters,
 	--- to make sure the unloading point is in the bounds of the trigger.	
@@ -515,7 +539,7 @@ function ShovelAIDriver:shovelDebug(...)
 end
 
 function ShovelAIDriver:getWorkingToolPositionsSetting()
-	return self.vehicle.cp.settings.frontloaderToolPositions
+	return self.settings.frontloaderToolPositions
 end
 
 function ShovelAIDriver:getTargetNode()
@@ -586,8 +610,10 @@ function ShovelAIDriver:onWaypointPassed(ix)
 	BunkerSiloAIDriver.onWaypointPassed(self,ix)
 end
 
+--- Is Looking for an unload point allowed ?
+--- Only when the driver isn't driving into/out of silo and isn't driving on an alignment course [not self:hasNextCourse()].
 function ShovelAIDriver:getCanUnload()
-	return not self:getIsShovelEmpty() and self:isDrivingUnloadingCourse() and self:isDrivingNormalCourse()
+	return not self:getIsShovelEmpty() and self:isDrivingUnloadingCourse() and self:isDrivingNormalCourse() and not self:hasNextCourse()
 end
 
 function ShovelAIDriver:isTrafficConflictDetectionEnabled()
@@ -604,4 +630,8 @@ end
 
 function ShovelAIDriver:isCollisionDetectionEnabled()
 	return self.shovelState.properties.checkForTrafficConflict and self.lastDistanceToEmptyPoint > self.DISABLE_TRAFFIC_DETECTION_DISTANCE
+end
+
+function ShovelAIDriver:isAlignmentCourseNeeded(course, ix)
+	return AIDriver.isAlignmentCourseNeeded(self,course, ix)
 end

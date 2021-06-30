@@ -659,6 +659,28 @@ function BunkerSiloManager:updateTarget(bestTarget)
 	end		
 end
 
+--- Gets the closest colum to a node relative to silo line.
+---@param node number node to check the distance from.
+---@param line number silo part line 
+---@return number closestColumn
+---@return number closestDistance
+function BunkerSiloManager:getClosestColumnToNode(node,line)
+	local numLines,numColumns = self:getNumberOfLinesAndColumns()
+	line = math.min(line,numLines)
+	local x,_,z = localToWorld(node,0,0,0)
+	local closestColumn = 1
+	local closestDist = math.huge
+	for column = 1, numColumns do
+		local dx,dz = self:getSiloPartCenterPosition(line,column)
+		local dist = MathUtil.vector2Length(x - dx, z - dz)
+		if dist < closestDist then 
+			closestColumn = column
+			closestDist = dist
+		end
+	end
+	return closestColumn,closestDist
+end
+
 ---drawing the routing of the driver 
 ---@param table bestTarget targeted part
 ---@param table for driving out of the silo
@@ -932,3 +954,5 @@ function BunkerSiloManagerUtil.getFirstAndLastWaypointIxInSilo(vehicle,course,st
 	end
 	return firstIx,lastIx
 end
+
+

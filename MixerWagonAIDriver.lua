@@ -134,6 +134,11 @@ function MixerWagonAIDriver:getCapacity()
 	return self.mixerWagon:getFillUnitCapacity(1)
 end
 
+---Is completely empty ?
+function MixerWagonAIDriver:getIsEmpty()
+	return self.mixerWagon:getFillUnitFillLevel(1)/self:getCapacity() <= 0.01
+end
+
 ---Is all cleared in front ?
 ---@return boolean is allowed to move
 function MixerWagonAIDriver:isAllowedToMove()
@@ -146,7 +151,7 @@ end
 ---Gets the silo selected fillType setting
 ---@return setting SiloSelectedFillTypeMixerWagonAIDriverSetting
 function MixerWagonAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver
+	return self.settings.siloSelectedFillTypeMixerWagonAIDriver
 end
 
 --- If max silo fillLevel is reached, then continue with the main course.
@@ -160,9 +165,30 @@ function MixerWagonAIDriver:isStartDistanceToSiloNeeded()
 end
 
 function MixerWagonAIDriver:getWorkingToolPositionsSetting()
-	return self.vehicle.cp.settings.mixerWagonToolPositions
+	return self.settings.mixerWagonToolPositions
 end
 
 function MixerWagonAIDriver:getBestTarget()
 	return self.bunkerSiloManager:getBestTargetFillUnitFillUp()
+end
+
+function MixerWagonAIDriver:onWaypointPassed(ix)
+	if self:isDrivingNormalCourse() then 
+		if self.course:switchingToReverseAt(ix) then 
+			--- Search for a bunker silos after the first silo.
+			self:setupSiloCourse()
+		end
+	end
+	BunkerSiloAIDriver.onWaypointPassed(self,ix)
+end
+
+function MixerWagonAIDriver:onEndCourse()
+	if self:isDrivingNormalCourse() then 
+		if not self:getIsEmpty() then 
+			--- The mixer wagon was not completely emptied, so stop work.
+			self:changeSiloState(self.states.WORK_FINISHED)
+			return
+		end
+	end
+	BunkerSiloAIDriver.onEndCourse(self)
 end
