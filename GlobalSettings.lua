@@ -100,7 +100,8 @@ end
 
 function AutoRepairSetting:onUpdateTick(dt, isActive, isActiveForInput, isSelected)
 	local rootVehicle = self:getRootVehicle()
-	if courseplay:isAIDriverActive(rootVehicle) then 
+	local isOwned = rootVehicle.propertyState ~= Vehicle.PROPERTY_STATE_MISSION
+	if courseplay:isAIDriverActive(rootVehicle) and isOwned then 
 		if courseplay.globalSettings.autoRepair:isAutoRepairActive() then 
 			local repairStatus = (1 - self:getWearTotalAmount())*100
 			if repairStatus < courseplay.globalSettings.autoRepair:get() then 
