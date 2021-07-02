@@ -1192,8 +1192,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				local _,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 
-				local foundHeap = self:checkForHeapBehindMe(tipper)
-				local fillLevel = self:getHeapSizeBehindMe(tipper)
+				local foundHeap, fillLevel = self:checkForHeapBehindMe(tipper)
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 				--check the heap is at least a specific size and not just a mote, so that the tipper can add to the pile a little bit instead of being so far forward
@@ -1270,25 +1269,18 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 end
 
 function AIDriver:checkForHeapBehindMe(tipper)
-	local dischargeNode = tipper:getCurrentDischargeNode().node
-	local offset = -self.settings.loadUnloadOffsetZ:get()
-	offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
-	local startX,startY,startZ = localToWorld(dischargeNode,0,0,offset) ;
-	local tempHeightX,tempHeightY,tempHeightZ = localToWorld(dischargeNode,0,0,offset+0.5) 
-	local searchWidth = 1	
-	local fillType = DensityMapHeightUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
-	if fillType == tipper.cp.fillType then
-		return true;
-	end
-end
-
-function AIDriver:getHeapSizeBehindMe(tipper)
-	local dischargeNode = tipper:getCurrentDischargeNode().node
-	local offset = -self.settings.loadUnloadOffsetZ:get()
-	offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
-	local startX,_,startZ = localToWorld(dischargeNode,0,0,offset)
-	fillLevel = DensityMapHeightUtil.getFillLevelAtArea(tipper.cp.fillType,startX,startZ,startX,startZ+1,startX+1,startZ)	--should represent an area of 1m^2 starting at the discharge node
-	return fillLevel
+    local dischargeNode = tipper:getCurrentDischargeNode().node
+    local offset = -self.settings.loadUnloadOffsetZ:get()
+    offset = courseplay:isNodeTurnedWrongWay(self.vehicle,dischargeNode)and -offset or offset
+    local startX,startY,startZ = localToWorld(dischargeNode,0,0,offset) ;
+    local tempHeightX,tempHeightY,tempHeightZ = localToWorld(dischargeNode,0,0,offset+0.5) 
+    local searchWidth = 1    
+    local fillType = DensityMapHeightUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
+    if fillType == tipper.cp.fillType then
+        local fillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType,startX,startZ,startX,startZ+1,startX+1,startZ)    --should represent an area of 1m^2 starting at the discharge node
+        return true,fillLevel
+    end
+    return false,0
 end
 
 --only bga, else triggerHandler handles discharge!
