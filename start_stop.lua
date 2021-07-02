@@ -120,10 +120,7 @@ function courseplay:stop(self)
 		courseplay:setEngineState(self, true);
 		self.cp.saveFuel = false;
 	end
-	if courseplay:getCustomTimerExists(self,'fuelSaveTimer')  then
-		--print("reset existing timer")
-		courseplay:resetCustomTimer(self,'fuelSaveTimer',true)
-	end
+
 
 	if self.cp.directionNodeToTurnNodeLength ~= nil then
 		self.cp.directionNodeToTurnNodeLength = nil

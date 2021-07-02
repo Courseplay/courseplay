@@ -124,7 +124,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 	-- ##################################################
 	-- 2D COURSE WINDOW: DRAG + DROP MOVE
-	if vehicle.cp.course2dDrawData and (vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY or vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH) then
+	if vehicle.cp.course2dDrawData and vehicle.cp.settings.courseDrawMode:isCourseVisible() then
 		local plot = CpManager.course2dPlotField;
 		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle:getIsEntered() and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
 			CpManager.course2dDragDropMouseDown = { posX, posY };
@@ -162,11 +162,7 @@ end
 function courseplay:executeFunction(self, func, value, page)
 	courseplay:debug("executeFunction: function: " .. func .. " value: " .. tostring(value) .. " page: " .. tostring(page), courseplay.DBG_MULTIPLAYER)
 	--legancy code
-	if func == "setMPGlobalInfoText" then
-		CpManager:setGlobalInfoText(self, value, page)
-		courseplay:debug("					setting infoText: "..value..", force remove: "..tostring(page),courseplay.DBG_MULTIPLAYER)
-		return
-	elseif StringUtil.startsWith(func,"self") or StringUtil.startsWith(func,"courseplay") then
+	if StringUtil.startsWith(func,"self") or StringUtil.startsWith(func,"courseplay") then
 		courseplay:debug("					setting value",courseplay.DBG_MULTIPLAYER)
 		courseplay:setVarValueFromString(self, func, value)
 		--courseplay:debug("					"..tostring(func)..": "..tostring(value),courseplay.DBG_MULTIPLAYER)

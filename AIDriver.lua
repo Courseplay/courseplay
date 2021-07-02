@@ -416,14 +416,15 @@ end
 -- This has to be called in each update cycle to show messages
 function AIDriver:updateInfoText()
 	for msg, _ in pairs(self.activeMsgReferences) do
-		CpManager:setGlobalInfoText(self.vehicle, msg)
+		g_globalInfoTextHandler:setInfoText(self.vehicle, msg)
 	end
 end
 
 --- Displays an one time ingame warning. 
 ---@param msgReference string this can be a global info text or just a translation text.
 function AIDriver:displayWarning(msgReference)
-	local msg = CpManager.globalInfoText.msgReference[msgReference] or msgReference
+	local infoTexts = g_globalInfoTextHandler:getInfoTexts()
+	local msg = infoTexts[msgReference] and infoTexts[msgReference].text or msgReference
 	local text = string.format("%s: %s",nameNum(self.vehicle),courseplay:loc(msg))
 	g_currentMission:addIngameNotification(FSBaseMission.INGAME_NOTIFICATION_CRITICAL, text)
 end
@@ -1725,7 +1726,7 @@ end
 --- without restarting the game.
 function AIDriver:onDraw()
 	if CpManager.isDeveloper and self.course and
-		(self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY or self.vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_BOTH)  then
+	self.settings.courseDrawMode:isCourseVisible()  then
 		self.course:draw()
 	end
 	if CpManager.isDeveloper and self.pathfinder then
@@ -2189,13 +2190,13 @@ end
 function AIDriver:isFuelLevelOk()
 	local currentFuelPercentage = self:getFuelLevelPercentage()
 	if currentFuelPercentage < 5 then
-		CpManager:setGlobalInfoText(self.vehicle, 'FUEL_MUST');
+		self:setInfoText('FUEL_MUST')
 		return false
 	elseif currentFuelPercentage < 20 then
-		CpManager:setGlobalInfoText(self.vehicle, 'FUEL_SHOULD');
+		self:setInfoText('FUEL_SHOULD')
 	elseif currentFuelPercentage < 99.99 then
-	--	CpManager:setGlobalInfoText(vehicle, 'FUEL_IS');
-	end;
+	--	self:setInfoText('FUEL_IS')
+	end
 	return true
 end
 

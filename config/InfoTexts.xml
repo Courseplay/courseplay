@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<!-- 
+	All global info texts need to be placed here.
+	 
+	name: The name for the info text to call it in the lua scripts.
+	level: Is the priority of the info text, where -2 is the hightest priority.
+	text: The button text shown.
+-->
+
+<InfoTexts>
+	<!--Global info texts-->
+	<InfoText name="BGA_IS_FULL"  							level="-1" text="COURSEPLAY_BGA_IS_FULL"/>
+	<InfoText name="DAMAGE_IS"  							level="0"  text="COURSEPLAY_DAMAGE_IS_BEING_REPAIRED"/>
+	<InfoText name="DAMAGE_MUST"  							level="-2" text="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED"/>
+	<InfoText name="DAMAGE_SHOULD"  						level="-1" text="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED"/>
+	<InfoText name="END_POINT"  							level="0"  text="COURSEPLAY_REACHED_END_POINT"/>
+	<InfoText name="END_POINT_MODE_1"  						level="0"  text="COURSEPLAY_REACHED_END_POINT_MODE_1"/>
+	<InfoText name="END_POINT_MODE_8"  						level="0"  text="COURSEPLAY_REACHED_END_POINT_MODE_8"/>
+	<InfoText name="FARM_SILO_NO_FILLTYPE"  				level="-2" text="COURSEPLAY_FARM_SILO_NO_FILLTYPE"/>
+	<InfoText name="FARM_SILO_IS_EMPTY"  					level="0"  text="COURSEPLAY_FARM_SILO_IS_EMPTY"/>
+	<InfoText name="FARM_SILO_IS_FULL"  					level="0"  text="COURSEPLAY_FARM_SILO_IS_FULL"/>
+	<InfoText name="FUEL_IS"  								level="0"  text="COURSEPLAY_IS_BEING_REFUELED"/>
+	<InfoText name="FUEL_MUST"  							level="-2" text="COURSEPLAY_MUST_BE_REFUELED"/>
+	<InfoText name="FUEL_SHOULD"  							level="-1" text="COURSEPLAY_SHOULD_BE_REFUELED"/>
+	<InfoText name="HOSE_MISSING"  							level="-2" text="COURSEPLAY_HOSEMISSING"/>
+	<InfoText name="NEEDS_REFILLING"  						level="-1" text="COURSEPLAY_NEEDS_REFILLING"/>
+	<InfoText name="NEEDS_UNLOADING"  						level="-1" text="COURSEPLAY_NEEDS_UNLOADING"/>
+	<InfoText name="OVERLOADING_POINT"  					level="0"  text="COURSEPLAY_REACHED_OVERLOADING_POINT"/>
+	<InfoText name="PICKUP_JAMMED"  						level="-2" text="COURSEPLAY_PICKUP_JAMMED"/>
+	<InfoText name="SLIPPING_1"  							level="-1" text="COURSEPLAY_SLIPPING_WARNING"/>
+	<InfoText name="SLIPPING_2"  							level="-2" text="COURSEPLAY_SLIPPING_WARNING"/>
+	<InfoText name="TRAFFIC"  								level="-1" text="COURSEPLAY_IS_IN_TRAFFIC"/>
+	<InfoText name="SLOWING_DOWN_FOR_TRAFFIC"  				level="0"  text="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC"/>
+	<InfoText name="UNLOADING_BALE"  						level="0"  text="COURSEPLAY_UNLOADING_BALES"/>
+	<InfoText name="WAIT_POINT"  							level="0"  text="COURSEPLAY_REACHED_WAITING_POINT"/>
+	<InfoText name="WATER"	  								level="-2" text="COURSEPLAY_WATER_WARNING"/>
+	<InfoText name="WEATHER"  								level="0"  text="COURSEPLAY_WEATHER_WARNING"/>
+	<InfoText name="WEIGHING_VEHICLE"  						level="0"  text="COURSEPLAY_IS_BEING_WEIGHED"/>
+	<InfoText name="WORK_END"  								level="1"  text="COURSEPLAY_WORK_END"/>
+	<InfoText name="REACHED_OVERLOADING_POINT"  			level="0"  text="COURSEPLAY_REACHED_OVERLOADING_POINT"/>
+	<InfoText name="NO_SELECTED_FILLTYPE"  					level="0"  text="COURSEPLAY_NO_SELECTED_FILLTYPE"/>
+	<InfoText name="REACHED_REFILLING_POINT"  				level="0"  text="COURSEPLAY_REACHED_REFILL_POINT"/>
+	<InfoText name="WRONG_FILLTYPE_FOR_TRIGGER"  			level="0"  text="COURSEPLAY_WRONG_FILLTYPE_FOR_TRIGGER"/>
+	<InfoText name="RUNCOUNTER_ERROR_FOR_TRIGGER"  			level="0"  text="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"/>
+	<InfoText name="WAITING_FOR_UNLOADERS"  				level="0"  text="COURSEPLAY_WAITING_FOR_UNLOADERS"/>
+	<InfoText name="WAITING_FOR_LEVELCOMPACTAIDRIVER"  		level="0"  text="COURSEPLAY_WAITING_FOR_LEVELCOMPACTAIDRIVER"/>
+	<InfoText name="NO_FIELD_SELECTED"  					level="-1" text="COURSEPLAY_NO_FIELD_SELECTED"/>
+
+	<!--Hud info texts-->
+	<!--
+	<InfoText name="COURSEPLAY_LOADING_AMOUNT" 				level="0"	text="COURSEPLAY_LOADING_AMOUNT"/>
+	<InfoText name="COURSEPLAY_UNLOADING_AMOUNT" 			level="0"	text="COURSEPLAY_UNLOADING_AMOUNT"/>
+	<InfoText name="COURSEPLAY_SHOVEL_POSITIONS_MISSING" 	level="0"	text="COURSEPLAY_SHOVEL_POSITIONS_MISSING"/>
+	<InfoText name="COURSEPLAY_TIPTRIGGER_REACHED" 			level="0"	text="COURSEPLAY_TIPTRIGGER_REACHED"/>
+	<InfoText name="COURSEPLAY_MODE10_NOSILO"				level="0"	text="COURSEPLAY_MODE10_NOSILO"/>
+	<InfoText name="COURSEPLAY_WAITING_FOR_FILL_LEVEL"		level="0"	text="COURSEPLAY_WAITING_FOR_FILL_LEVEL"/>
+	<InfoText name="COURSEPLAY_NO_COMBINE_IN_REACH"			level="0"	text="COURSEPLAY_NO_COMBINE_IN_REACH"/>
+	<InfoText name="COURSEPLAY_DRIVE_TO_COMBINE"			level="0"	text="COURSEPLAY_DRIVE_TO_COMBINE"/>
+	<InfoText name="COURSEPLAY_FOLLOWING_TRACTOR"			level="0"	text="COURSEPLAY_FOLLOWING_TRACTOR"/>
+	<InfoText name="COURSEPLAY_DISTANCE"					level="0"	text="COURSEPLAY_DISTANCE"/>
+	<InfoText name="COURSEPLAY_MANUAL_LOADING"				level="0"	text="COURSEPLAY_MANUAL_LOADING"/>
+	-->
+</InfoTexts>

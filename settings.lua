@@ -722,13 +722,7 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
 end;
 
-function courseplay:goToVehicle(curVehicle, targetVehicle)
-	-- print(string.format("%s: goToVehicle(): targetVehicle=%q", nameNum(curVehicle), nameNum(targetVehicle)));
-	g_client:getServerConnection():sendEvent(VehicleEnterRequestEvent:new(targetVehicle, g_currentMission.missionInfo.playerStyle, g_currentMission.player.farmId));
-	g_currentMission.isPlayerFrozen = false;
-	CpManager.playerOnFootMouseEnabled = false;
-	g_inputBinding:setShowMouseCursor(targetVehicle.cp.mouseCursorActive);
-end;
+
 
 --FIELD EDGE PATHS
 function courseplay:createFieldEdgeButtons(vehicle)
@@ -3806,7 +3800,7 @@ end
 
 --- The wait time setting can be incremented by 15 seconds up to max: 60min.
 ---
----@class WaitTimeSetting
+---@class WaitTimeSetting : IntSetting
 WaitTimeSetting = CpObject(IntSetting)
 function WaitTimeSetting:init(vehicle)
 	local max = 3600 --- 60 min
@@ -3838,6 +3832,43 @@ function WaitTimeSetting:changeByX(x)
 	--- For 1-60 sec increment by 1 sec, else increment by the scale*sec
 	x = self:get()>=60 and x*self.scale or x
 	IntSetting.changeByX(self,x)
+end
+
+--- @class CourseDrawModeSetting : SettingList
+CourseDrawModeSetting = CpObject(SettingList)
+-- 2D/debug lines display options
+CourseDrawModeSetting.COURSE_2D_DISPLAY_OFF	 = 0;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_2DONLY	 = 1;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_DBGONLY = 2;
+CourseDrawModeSetting.COURSE_2D_DISPLAY_BOTH	 = 3;
+function CourseDrawModeSetting:init(vehicle)
+	local values = {
+		self.COURSE_2D_DISPLAY_OFF,
+		self.COURSE_2D_DISPLAY_2DONLY,
+		self.COURSE_2D_DISPLAY_DBGONLY,
+		self.COURSE_2D_DISPLAY_BOTH
+	}
+	local texts = {
+		"",
+		"2D",
+		"\nDBG",
+		"2D\nDBG"
+	}
+	SettingList.init(self,"courseDrawMode","","",vehicle,values,texts)
+	self:set(self.COURSE_2D_DISPLAY_OFF)
+	self.syncValue = false
+end
+
+function CourseDrawModeSetting:isDeactivated()
+	return self:get() == self.COURSE_2D_DISPLAY_OFF
+end
+
+function CourseDrawModeSetting:isCourseMapVisible()
+	return self:get() == self.COURSE_2D_DISPLAY_2DONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+end
+
+function CourseDrawModeSetting:isCourseVisible()
+	return self:get() == self.COURSE_2D_DISPLAY_DBGONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
 end
 
 --[[
@@ -4035,6 +4066,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(WaitTimeSetting, vehicle)
 	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
+	container:addSetting(CourseDrawModeSetting,vehicle)
 	return container
 end
 

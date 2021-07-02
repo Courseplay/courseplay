@@ -738,7 +738,7 @@ function TriggerHandler:onActivateObject(superFunc,vehicle)
 									return
 								else
 									triggerHandler:setFuelLoadingState()
-									CpManager:setGlobalInfoText(vehicle, 'FARM_SILO_IS_EMPTY')
+									g_globalInfoTextHandler:setInfoText(vehicle, 'FARM_SILO_IS_EMPTY')
 									courseplay.debugFormat(courseplay.DBG_LOAD_UNLOAD, 'No Diesel at this trigger.')
 								end
 							else
@@ -791,7 +791,7 @@ function TriggerHandler:handleLoadingCallback(trigger,object,fillUnitIndex,loadi
 		-- min FillLevel not reached to start filling
 		elseif callbackData.callback == TriggerHandler.CALLBACK.MIN_NOT_REACHED then
 			self:setLoadingState()
-			CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+			g_globalInfoTextHandler:setInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
 			self:debugSparse(object, 'LoadingTrigger: minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(fillType).title)
 			return 
 		--min is reached so continue..
@@ -805,14 +805,14 @@ function TriggerHandler:handleLoadingCallback(trigger,object,fillUnitIndex,loadi
 	--runCounter = 0
 	if lastCallbackData and lastCallbackData.callback ==  TriggerHandler.CALLBACK.RUN_COUNTER_NOT_REACHED then 
 		self:setLoadingState()
-		CpManager:setGlobalInfoText(self.vehicle, 'RUNCOUNTER_ERROR_FOR_TRIGGER');
+		g_globalInfoTextHandler:setInfoText(self.vehicle, 'RUNCOUNTER_ERROR_FOR_TRIGGER');
 		self:debugSparse(object, 'last runCounter=0, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title)
 		return
 	end
 	if lastCallbackData and (lastCallbackData.callback == TriggerHandler.CALLBACK.SKIP_LOADING or lastCallbackData.callback == TriggerHandler.CALLBACK.SEPARATE_FILLTYPE_NOT_ALLOWED) then
 		--not enough fillTypes loaded!!
 		self:setLoadingState()
-		CpManager:setGlobalInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
+		g_globalInfoTextHandler:setInfoText(self.vehicle, 'FARM_SILO_IS_EMPTY');
 		self:debugSparse(object, 'last FillType  minLevel not reached, fillType: '..g_fillTypeManager:getFillTypeByIndex(lastCallbackData.data.fillType).title)
 		return
 	end
@@ -1179,7 +1179,7 @@ function TriggerHandler:onUpdateDischargeable(dt, isActiveForInput, isActiveForI
 			spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
 		end
 		if currentDischargeNode.dischargeFailedReason and currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
-			CpManager:setGlobalInfoText(rootVehicle, 'FARM_SILO_IS_FULL') -- not working for now, might have to double check
+			g_globalInfoTextHandler:setInfoText(rootVehicle, 'FARM_SILO_IS_FULL') -- not working for now, might have to double check
 		end
 		if currentDischargeNode.dischargeObject then
 			if triggerHandler.objectsInTrigger[self] == nil then

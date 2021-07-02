@@ -563,15 +563,9 @@ function courseplay.hud:renderHud(vehicle)
 	
 	
 	-- 2D/DEBUG LINE BUTTON MODE
-	if vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF then
-		local txt;
-		if vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_2DONLY then
-			txt = '2D';
-		elseif vehicle.cp.drawCourseMode == courseplay.COURSE_2D_DISPLAY_DBGONLY then
-			txt = '\nDBG';
-		else
-			txt = '2D\nDBG';
-		end;
+	local courseDrawModeSetting = vehicle.cp.settings.courseDrawMode
+	if not courseDrawModeSetting:isDeactivated() then
+		local txt = courseDrawModeSetting:getText()
 		courseplay:setFontSettings('white', true);
 		renderText(vehicle.cp.hud.changeDrawCourseModeButton.x + vehicle.cp.hud.changeDrawCourseModeButton.width * 0.5, self.topIconsY + self.fontSizes.version * 1.25, self.fontSizes.version, txt);
 		courseplay:setFontSettings('white', false);
@@ -1215,7 +1209,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	else
 		self:showShowWaypointsButtons(vehicle, false)
 	end
-		
+	vehicle.cp.hud.changeDrawCourseModeButton:setActive(not vehicle.cp.settings.courseDrawMode:isDeactivated())	
 	-- make sure AutoDrive mode has all options currently available for the vehicle
 	vehicle.cp.settings.autoDriveMode:update()
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
@@ -1376,7 +1370,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 
 	vehicle.cp.hud.saveCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'save' }, 'showSaveCourseForm', 'course', topIconsX[3], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE'));
 	vehicle.cp.hud.clearCurrentCourseButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'courseClear' }, 'clearCurrentLoadedCourse', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CLEAR_COURSE'));
-	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeDrawCourseMode', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true);
+	vehicle.cp.hud.changeDrawCourseModeButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'eye' }, 'changeByX', 1, self.col1posX, self.topIconsY, wMiddle, hMiddle, nil, -1, false, false, true):setSetting(vehicle.cp.settings.courseDrawMode)
 	self:setupCpModeButtons(vehicle)
 	self:setupRecordingButtons(vehicle)
 	self:setupCoursePageButtons(vehicle,2)
