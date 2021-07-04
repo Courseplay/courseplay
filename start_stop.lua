@@ -116,7 +116,6 @@ function courseplay:stop(self)
 	---Is this one still used as cp.isTurning isn't getting set to true ??
 	self.cp.isTurning = nil;
 	courseplay:clearTurnTargets(self);
-	self.cp.fillTrigger = nil;
 	self.cp.hasMachineToFill = false;
 
 	-- resetting variables
