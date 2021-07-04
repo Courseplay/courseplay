@@ -279,7 +279,7 @@
 		<text name="COURSEPLAY_FIRST_POINT" 								text="ersten Wegpunkt" />
 		<text name="COURSEPLAY_CURRENT_POINT" 								text="aktuellen Wegpunkt" />
 		<text name="COURSEPLAY_NEXT_POINT" 							 		text="nächsten passenden Wegpunkt" />
-		<text name="COURSEPLAY_UNLOAD" 										text="Unloading" />
+		<text name="COURSEPLAY_UNLOAD" 										text="Abtanken" />
 		<text name="COURSEPLAY_COLLECT_BALES" 								text="Sammel oder wickel Ballen" />
 		<text name="COURSEPLAY_FIELD_EDGE_PATH" 							text="Feldrandkurs" />
 		<text name="COURSEPLAY_FIELD" 										text="Feld" />

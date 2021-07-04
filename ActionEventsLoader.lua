@@ -365,17 +365,11 @@ function ActionEventCallbacks.actionEventOpenCloseHud(vehicle, actionName, input
 end
 
 function ActionEventCallbacks.actionEventNextDriverMode(vehicle, actionName, inputValue, callbackState, isAnalog)
-	local newMode = SettingsUtil.getNextCpMode(vehicle)
-	if newMode ~= vehicle.cp.mode then 
-		vehicle:setCourseplayFunc('setCpMode', newMode);
-	end
+	vehicle.cp.settings.driverMode:setNext()
 end
 
 function ActionEventCallbacks.actionEventPreviousDriverMode(vehicle, actionName, inputValue, callbackState, isAnalog)
-	local newMode = SettingsUtil.getPrevCpMode(vehicle)
-	if newMode ~= vehicle.cp.mode then 
-		vehicle:setCourseplayFunc('setCpMode', newMode);
-	end
+	vehicle.cp.settings.driverMode:setPrevious()
 end
 
 function ActionEventCallbacks.actionEventNextHudPage(vehicle, actionName, inputValue, callbackState, isAnalog)

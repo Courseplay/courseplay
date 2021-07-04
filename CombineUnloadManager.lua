@@ -149,6 +149,7 @@ function CombineUnloadManager:addUnloaderToCombine(unloader,combine,noEventSend)
 		if not noEventSend then
 			UnloaderEvents:sendAddUnloaderToCombine(unloader,combine)
 		end
+		combine.cp.driver:refreshHUD()
 	else
 		self:debug('%s is already assigned to combine %s as	number %d', nameNum(unloader), nameNum(combine), #self.combines[combine].unloaders)
 	end
@@ -194,9 +195,10 @@ function CombineUnloadManager:giveMeACombineToUnload(unloader)
 	self:debug('Combine with most fill level is %s', nameNum(combine))
 	local bestUnloader
 	if combine ~= nil and combine.cp.driver:getFieldworkCourse() then
-		if combine.cp.settings.combineWantsCourseplayer:is(true) then
+		if combine.cp.settings.requestUnloader:is(true) then
 			self:addUnloaderToCombine(unloader,combine)
-			combine.cp.settings.combineWantsCourseplayer:set(false)
+			combine.cp.settings.requestUnloader:set(false)
+			combine.cp.driver:refreshHUD()
 			return combine
 		end
 		local num = self:getUnloadersNumber(unloader, combine)
@@ -260,7 +262,7 @@ function CombineUnloadManager:getCombineWithMostFillLevel(unloader)
 		self:debug('For unloader %s: %s (fill level %.1f, ready to unload: %s) has %d unloaders, this unloader is # %d',
 				nameNum(unloader), nameNum(combine), fillLevelPct, tostring(combineReadyToUnload), numUnloaders, unloaderIndex or -1)
 		if data and data.isCombine and (numUnloaders == 0 or unloaderIndex == 1) and combineReadyToUnload then
-			if combine.cp.settings.combineWantsCourseplayer:is(true) then
+			if combine.cp.settings.requestUnloader:is(true) then
 				return combine
 			end
 			if mostFillLevel < fillLevelPct then

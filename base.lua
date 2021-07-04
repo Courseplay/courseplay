@@ -72,9 +72,6 @@ function courseplay:onLoad(savegame)
 	--- Adds the vehicle to the global info texts handler
 	g_globalInfoTextHandler:addVehicle(self)
 	
-
-	-- CP mode
-	self.cp.mode = courseplay.MODE_DEFAULT;
 	--courseplay:setNextPrevModeVars(self);
 	-- for modes 4 and 6, this the index of the waypoint where the work begins
 	self.cp.startWork = nil
@@ -286,7 +283,7 @@ function courseplay:onLoad(savegame)
 
 	courseplay.signs:updateWaypointSigns(self);
 	
-	courseplay:setAIDriver(self, self.cp.mode)
+	self.cp.settings.driverMode:setAIDriver()
 end;
 
 function courseplay:onPostLoad(savegame)
@@ -334,7 +331,7 @@ function courseplay:onDraw()
 	local isDriving = self:getIsCourseplayDriving();
 
 	--WORKWIDTH DISPLAY
-	if self.cp.mode ~= 7 and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
+	if self.cp.settings.driverMode:get() ~= courseplay.MODE_BALE_COLLECTOR and self.cp.timers.showWorkWidth and self.cp.timers.showWorkWidth > 0 then
 		if courseplay:timerIsThrough(self, 'showWorkWidth') then -- stop showing, reset timer
 			courseplay:resetCustomTimer(self, 'showWorkWidth');
 		else -- timer running, show
@@ -488,8 +485,7 @@ function courseplay:onUpdate(dt)
 		--- Reset the current mode, as all implements are now attached.
 		--- If the vehicle is new, then cp.loadedMode is nil
 		if g_server then 
-			local mode = self.cp.loadedMode or self.cp.mode
-			courseplay:setCpMode(self,  mode, true)
+			self.cp.settings.driverMode:postInit()
 		end
 		if self.cp.driver then 
 			---Post init function, as not all giants variables are
@@ -777,8 +773,6 @@ function courseplay:onReadStream(streamId, connection)
 	end
 
 	--Make sure every vehicle has same AIDriver as the Server
-	courseplay:setAIDriver(self, self.cp.mode)
-
 
 	self.cp.driver:onReadStream(streamId)
 	
@@ -942,9 +936,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	if not resetVehicles and g_server ~= nil then
 		-- COURSEPLAY
 		local curKey = key .. '.courseplay.basics';
-		--courseplay:setCpMode(self,  Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), self.cp.mode), true);
-		--- Save the loaded mode and set it later after all implements are attached.
-		self.cp.loadedMode = Utils.getNoNil(getXMLInt(xmlFile, curKey .. '#aiMode'), courseplay.MODE_DEFAULT)
+
 		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true);
@@ -1002,7 +994,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 
 	
 	--CP basics
-	setXMLInt(xmlFile, newKey..".basics #aiMode", self.cp.mode)
 	if #self.cp.loadedCourses == 0 and self.cp.currentCourseId ~= 0 then
 		-- this is the case when a course has been generated and than saved, it is not in loadedCourses (should probably
 		-- fix it there), so make sure it is in the savegame
@@ -1183,6 +1174,17 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
         else
             spec.currentHelper = g_helperManager:getRandomHelper()
         end
+		--- Add new helpers, if we run out of giants helpers available.
+		--- TODO: Figure out if this needs tweaks for multiplayer.
+		while(spec.currentHelper == nil) do
+			--- Default helpers are index 1-10
+			local index = math.random(1,10)
+			local source = g_helperManager:getHelperByIndex(index)
+			local name = "C"..tostring(math.random(1,100))
+
+			spec.currentHelper = g_helperManager:addHelper(name, name, source.filename)
+		end
+
         g_helperManager:useHelper(spec.currentHelper)
 		---Make sure the farmId is never: 0 == spectator farm id,
 		---which could be the case when autodrive starts a CP driver.
@@ -1337,7 +1339,8 @@ function CpMapHotSpot.createMapHotSpot(vehicle,text)
 	local rawUvs = courseplay.hud:getModeUvs() 
 	local uvsSize = courseplay.hud:getIconSpriteSize()
 	local imagePath = courseplay.hud:getIconSpritePath()
-	local uvs = courseplay.utils:getUvs(rawUvs[vehicle.cp.mode], uvsSize.x,uvsSize.y)
+	local mode = vehicle.cp.settings.driverMode:get()
+	local uvs = courseplay.utils:getUvs(rawUvs[mode], uvsSize.x,uvsSize.y)
 
 	local hotspotX, _, hotspotZ = getWorldTranslation(vehicle.rootNode)
 	local _, textSize = getNormalizedScreenValues(0, 9)

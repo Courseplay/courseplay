@@ -564,7 +564,6 @@ function FieldworkAIDriver:changeToFieldwork()
 	self.state = self.states.ON_FIELDWORK_COURSE
 	self.fieldworkState = self.states.WAITING_FOR_LOWER
 	self:startWork()
-	self:setDriveUnloadNow(false);
 	self:refreshHUD();
 end
 

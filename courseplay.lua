@@ -189,7 +189,6 @@ local function setVersionData()
 end;
 
 local function setGlobalData()
-	-- CP MODES, TODO create a setting for cp.mode !
 	courseplay.MODE_GRAIN_TRANSPORT = 1;
 	courseplay.MODE_COMBI = 2;
 	courseplay.MODE_OVERLOADER = 3;
@@ -251,25 +250,24 @@ local function setGlobalData()
 
 	courseplay.multiplayerSyncTable = {
 
-	[1]={name='self.cp.mode',dataFormat='Int'},
-	[2]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
-	[3]={name='self.cp.canDrive',dataFormat='Bool'},
-	[4]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
-	[5]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
-	[6]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
-	[7]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
-	[8]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
-	[9]={name='self.cp.isDriving',dataFormat='Bool'},
-	[10]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[11]={name='self.cp.workWidth',dataFormat='Float'},
-	[12]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
-	[13]={name='self.cp.turnDiameter',dataFormat='Float'},
-	[14]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
-	[15]={name='self.cp.laneOffset',dataFormat='Float'},
-	[16]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[17]={name='self.cp.waypointIndex',dataFormat='Int'},
-	[18]={name='self.cp.isRecording',dataFormat='Bool'},
-	[19]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
+	[1]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
+	[2]={name='self.cp.canDrive',dataFormat='Bool'},
+	[3]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
+	[4]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
+	[5]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
+	[6]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
+	[7]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
+	[8]={name='self.cp.isDriving',dataFormat='Bool'},
+	[9]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
+	[10]={name='self.cp.workWidth',dataFormat='Float'},
+	[11]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
+	[12]={name='self.cp.turnDiameter',dataFormat='Float'},
+	[13]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
+	[14]={name='self.cp.laneOffset',dataFormat='Float'},
+	[15]={name='self.cp.hud.currentPage',dataFormat='Int'},
+	[16]={name='self.cp.waypointIndex',dataFormat='Int'},
+	[17]={name='self.cp.isRecording',dataFormat='Bool'},
+	[18]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
 	}
 	
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()
