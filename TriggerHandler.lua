@@ -429,10 +429,14 @@ end
 --scanning for LoadingTriggers and FillTriggers(checkFillTriggers)
 function TriggerHandler:activateLoadingTriggerWhenAvailable()
 	for key, object in pairs(g_currentMission.activatableObjects) do
-		if object:getIsActivatable(self.vehicle) then
+		if object:getIsActivatable(self.vehicle) and self:isObjectALoadingTrigger(object) then
 			self:activateTriggerForVehicle(object, self.vehicle)
 		end
     end
+end
+
+function TriggerHandler:isObjectALoadingTrigger(object)
+	return object.source and (object.source.getAllFillLevels or object.source.getAllProvidedFillLevels)
 end
 
 function TriggerHandler:enableFillTypeLoading()

@@ -389,10 +389,8 @@ end
 -- set the content cyclic
 function courseplay.hud:setContent(vehicle)
 	-- self = courseplay.hud
-	-- BOTTOM GLOBAL INFO
-	-- mode icon
-	vehicle.cp.hud.content.bottomInfo.showModeIcon = vehicle.cp.mode > 0 and vehicle.cp.mode <= courseplay.NUM_MODES;
 
+	
 	-- course name
 	if vehicle.cp.currentCourseName ~= nil then
 		vehicle.cp.hud.content.bottomInfo.courseNameText = vehicle.cp.currentCourseName;
@@ -581,9 +579,7 @@ end;
 
 function courseplay.hud:renderHudBottomInfo(vehicle)	
 	courseplay:setFontSettings('white', false, 'left');
-	if vehicle.cp.hud.content.bottomInfo.showModeIcon then
-		vehicle.cp.hud.currentModeIcon:render();
-	end;
+	vehicle.cp.hud.currentModeIcon:render();
 	
 	if vehicle.cp.hud.content.bottomInfo.courseNameText ~= nil then
 		renderText(self.bottomInfo.courseNameX, self.bottomInfo.textPosY, self.fontSizes.bottomInfo, vehicle.cp.hud.content.bottomInfo.courseNameText);
@@ -1210,6 +1206,8 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		self:showShowWaypointsButtons(vehicle, false)
 	end
 	vehicle.cp.hud.changeDrawCourseModeButton:setActive(not vehicle.cp.settings.courseDrawMode:isDeactivated())	
+	local mode = vehicle.cp.settings.driverMode:get()
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[mode], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);	
 	-- make sure AutoDrive mode has all options currently available for the vehicle
 	vehicle.cp.settings.autoDriveMode:update()
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
@@ -1383,7 +1381,8 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	local sizeX,sizeY = self.iconSpriteSize.x, self.iconSpriteSize.y;
 	-- current mode icon
 	vehicle.cp.hud.currentModeIcon = Overlay:new( self.iconSpritePath, bi.modeIconX, bi.iconPosY, w, h);
-	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, bi.modeUVsPx[vehicle.cp.mode], sizeX, sizeY);
+	local mode = vehicle.cp.settings.driverMode:get()
+	courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, bi.modeUVsPx[mode], sizeX, sizeY);
 
 	-- waypoint icon
 	vehicle.cp.hud.currentWaypointIcon = Overlay:new( self.iconSpritePath, bi.waypointIconX, bi.iconPosY, w, h);
@@ -1407,15 +1406,15 @@ end;
 
 --setup functions
 function courseplay.hud:setupCpModeButtons(vehicle)
-	-- setCpMode buttons
 	local totalWidth = (courseplay.NUM_MODES * self.buttonSize.big.w) + ((courseplay.NUM_MODES - 1) * self.buttonSize.big.margin);
 	local baseX = self.baseCenterPosX - totalWidth/2;
 	local y = self.linesButtonPosY[8] + self:pxToNormal(2, 'y');
+	local driverModeSetting = vehicle.cp.settings.driverMode
 	for i=1, courseplay.NUM_MODES do
 		local posX = baseX + ((i - 1) * (self.buttonSize.big.w + self.buttonSize.big.margin));
 		local toolTip = courseplay:loc(('COURSEPLAY_MODE_%d'):format(i));
-		local button = courseplay.button:new(vehicle, 'global', 'iconSprite.png', 'setCpMode', i, posX, y, self.buttonSize.big.w, self.buttonSize.big.h, nil, nil, false, false, false, toolTip);
-		button:setActive(i == vehicle.cp.mode)
+		local button = courseplay.button:new(vehicle, 'global', 'iconSprite.png', 'set', i, posX, y, self.buttonSize.big.w, self.buttonSize.big.h, nil, nil, false, false, false, toolTip):setSetting(driverModeSetting);
+		button:setActive(i == driverModeSetting:get())
 	end;
 end
 
@@ -1841,12 +1840,15 @@ end
 
 -- Hud content functions
 function courseplay.hud:showCpModeButtons(vehicle, show)
+	local driverModeSetting = vehicle.cp.settings.driverMode
+	local validDriverModes = driverModeSetting:getValidModes()
 	for _,button in pairs(vehicle.cp.buttons.global) do
 		local fn, cpModeToCheck = button.functionToCall, button.parameter;
-		if fn == 'setCpMode'then
+		local setting = button.settingCall
+		if setting == driverModeSetting then
 			button:setShow(show);
-			button:setDisabled(not courseplay:getIsToolCombiValidForCpMode(vehicle,cpModeToCheck))
-			button:setActive(cpModeToCheck == vehicle.cp.mode)
+			button:setDisabled(not validDriverModes[cpModeToCheck])
+			button:setActive(cpModeToCheck == driverModeSetting:get())
 		end
 	end
 end
@@ -2042,7 +2044,7 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:addRowButton(vehicle,vehicle.cp.settings.startingPoint,'next', 1, 2, 2 )
 	self:addRowButton(vehicle,nil,'setDriveNow', 1, 2, 3 )
 	---only enable this button in mode 5 
-	if vehicle.cp.mode == courseplay.MODE_TRANSPORT then
+	if vehicle.cp.settings.driverMode:get() == courseplay.MODE_TRANSPORT then
 		self:addRowButton(vehicle,vehicle.cp.settings.stopAtEnd,'toggle', 1, 3, 1 )
 	end
 	self:addSettingsRowWithArrows(vehicle,nil,'switchDriverCopy', 1, 3, 2 )
