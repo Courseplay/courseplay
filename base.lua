@@ -1183,6 +1183,17 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
         else
             spec.currentHelper = g_helperManager:getRandomHelper()
         end
+		--- Add new helpers, if we run out of giants helpers available.
+		--- TODO: Figure out if this needs tweaks for multiplayer.
+		while(spec.currentHelper == nil) do
+			--- Default helpers are index 1-10
+			local index = math.random(1,10)
+			local source = g_helperManager.indexToHelper[index]
+			local name = "C"..tostring(math.random(1,100))
+
+			spec.currentHelper = g_helperManager:addHelper(name, name, source.filename)
+		end
+
         g_helperManager:useHelper(spec.currentHelper)
 		---Make sure the farmId is never: 0 == spectator farm id,
 		---which could be the case when autodrive starts a CP driver.
