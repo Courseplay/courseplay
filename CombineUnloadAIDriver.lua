@@ -2066,13 +2066,6 @@ function CombineUnloadAIDriver:followChopperThroughTurn()
 		if self.course:getCurrentWaypointIx() > self.combineToUnload.cp.driver.course:getCurrentWaypointIx() then
 			self:hold()
 		end
-		-- follow course, make sure we are keeping distance from the chopper
-		-- TODO: or just rely on the proximity sensor here?
-		local combineSpeed = (self.combineToUnload.lastSpeedReal * 3600)
-		local speed = combineSpeed + MathUtil.clamp(d - (self.minDistanceFromWideTurnChopper - self.settings.combineOffsetZ:get()),
-			-combineSpeed, self:getFieldSpeed())
-		self:setSpeed(speed)
-		self:renderText(0, 0.7, 'd = %.1f, speed = %.1f', d, speed)
 	else
 		self:debug('chopper is ending/ended turn, return to follow mode')
 		self.followCourse:setOffset(0, 0)
