@@ -1329,7 +1329,7 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
-					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode))
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.setting.driverMode:get()))
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 				end

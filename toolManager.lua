@@ -38,7 +38,7 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	vehicle.cpTrafficCollisionIgnoreList = {}
 
 	courseplay:resetTools(vehicle)
-	courseplay:setAIDriver(vehicle, vehicle.cp.mode)
+	
 	vehicle.cp.settings:validateCurrentValues()
 
 	-- reset tool offset to the preconfigured value if exists
@@ -57,9 +57,6 @@ function courseplay:resetTools(vehicle)
 	vehicle.cp.hasAugerWagon = false;
 
 	vehicle.cp.workToolAttached = courseplay:updateWorkTools(vehicle, vehicle);
-	if not vehicle.cp.workToolAttached and vehicle.cp.mode ~= courseplay.MODE_BUNKERSILO_COMPACTER then
-		courseplay:setCpMode(vehicle, courseplay.MODE_DEFAULT)
-	end
 
 	courseplay.hud:setReloadPageOrder(vehicle, -1, true);
 
@@ -149,16 +146,11 @@ end;
 
 -- UPDATE WORKTOOL DATA
 function courseplay:updateWorkTools(vehicle, workTool, isImplement)
-
-	-- temporary band aid until we figure out what exactly is causing this
-	if not vehicle.cp.mode then
-		vehicle.cp.mode = courseplay.MODE_TRANSPORT
-		courseplay.infoVehicle(vehicle, ' no CP mode set, worktool %s, forcing mode 5', nameNum(workTool))
-	end
+	local mode = vehicle.cp.settings.driverMode:get()
 
 	if not isImplement then
 		courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 3);
-		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool), vehicle.cp.mode), courseplay.DBG_IMPLEMENTS);
+		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=false) (mode=%d)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool), mode), courseplay.DBG_IMPLEMENTS);
 	else
 		courseplay.debugLine(courseplay.DBG_IMPLEMENTS);
 		courseplay:debug(('%s: updateWorkTools(%s, %q, isImplement=true)'):format(nameNum(vehicle),tostring(vehicle.name), nameNum(workTool)), courseplay.DBG_IMPLEMENTS);
@@ -170,13 +162,13 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end;
 
 	courseplay:setNameVariable(workTool);
-	courseplay:setOwnFillLevelsAndCapacities(workTool,vehicle.cp.mode)
+	courseplay:setOwnFillLevelsAndCapacities(workTool)
 	local hasWorkTool = false;
 	local hasWaterTrailer = false
 
-	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(vehicle.cp.mode,workTool)
+	local isAllowedOkay,isDisallowedOkay = CpManager.validModeSetupHandler:isModeValid(mode,workTool)
 	if isAllowedOkay and isDisallowedOkay then
-		if vehicle.cp.mode == 5 then
+		if mode == 5 then
 			-- For reversing purpose ?? still needed ?
 			if isImplement then
 				hasWorkTool = true;
@@ -190,7 +182,7 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 
 
 	-- MODE 4: FERTILIZER AND SEEDING
-	if vehicle.cp.mode == 4 then
+	if mode == 4 then
 		if isAllowedOkay and isDisallowedOkay then
 			vehicle.cp.hasMachinetoFill = true;
 		end;
@@ -391,9 +383,9 @@ function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
 
 	vehicle.cp.turnDiameterAuto = vehicle.cp.vehicleTurnRadius * 2;
 	courseplay:debug(('%s: Set turnDiameterAuto to %.2fm (2 x vehicleTurnRadius)'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), courseplay.DBG_IMPLEMENTS);
-
+	local mode = vehicle.cp.settings.driverMode:get()
 	-- Check if we have worktools and if we are in a valid mode
-	if hasWorkTool and (vehicle.cp.mode == 2 or vehicle.cp.mode == 3 or vehicle.cp.mode == 4 or vehicle.cp.mode == 6) then
+	if hasWorkTool and (mode == 2 or mode == 3 or mode == 4 or mode == 6) then
 		courseplay:debug(('%s: getHighestToolTurnDiameter(%s)'):format(nameNum(vehicle), vehicle.name), courseplay.DBG_IMPLEMENTS);
 
 		local toolTurnDiameter = AIDriverUtil.getTurningRadius(vehicle) * 2
@@ -538,7 +530,7 @@ function courseplay:getIsToolValidForCpMode(object, mode, callback)
 end
 
 function courseplay:updateFillLevelsAndCapacities(vehicle)
-	courseplay:setOwnFillLevelsAndCapacities(vehicle,vehicle.cp.mode)
+	courseplay:setOwnFillLevelsAndCapacities(vehicle)
 	vehicle.cp.totalFillLevel = vehicle.cp.fillLevel;
 	vehicle.cp.totalCapacity = vehicle.cp.capacity;
 	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
@@ -548,7 +540,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalCapacity)))
 	if vehicle.cp.workTools ~= nil then
 		for _,tool in pairs(vehicle.cp.workTools) do
-			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool,vehicle.cp.mode)
+			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool)
 			if hasMoreFillUnits and tool ~= vehicle then
 				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
 				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
@@ -561,7 +553,7 @@ function courseplay:updateFillLevelsAndCapacities(vehicle)
 	--print(string.format("End of function: vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.cp.totalFillLevel)))
 end
 
-function courseplay:setOwnFillLevelsAndCapacities(workTool,mode)
+function courseplay:setOwnFillLevelsAndCapacities(workTool)
 	local fillLevel, capacity = 0,0
 	local fillLevelPercent = 0;
 	local fillType = 0;
