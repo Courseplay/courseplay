@@ -110,10 +110,6 @@ function State3D:octileDistance(other)
 end
 
 function State3D:equals(other, deltaPos, deltaTheta)
-    local d = self:distance(other)
-    if d < 2*deltaPos then
-        --print(d, self.t, other.t, self.t - other.t, self:getCost())
-    end
     return math.abs(self.x - other.x ) < deltaPos and
             math.abs(self.y - other.y ) < deltaPos and
             (math.abs(self.t - other.t) < deltaTheta or

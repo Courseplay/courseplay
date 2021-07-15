@@ -301,16 +301,18 @@ HybridAStar.SimpleMotionPrimitives = CpObject(HybridAStar.MotionPrimitives)
 function HybridAStar.SimpleMotionPrimitives:init(gridSize, allowReverse)
 	-- motion primitive table:
 	self.primitives = {}
+	self.gridSize = gridSize
 	local d = gridSize
-	local dSqrt2 = math.sqrt(2) * d
+	self.dDiagonal = math.sqrt(2) * d
+	local dDiagonal = self.dDiagonal
 	table.insert(self.primitives, {dx =  d, dy =  0, dt = 0, d = d, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
-	table.insert(self.primitives, {dx =  d, dy =  d, dt = 1 * math.pi / 4, d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
+	table.insert(self.primitives, {dx =  d, dy =  d, dt = 1 * math.pi / 4, d = dDiagonal, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 	table.insert(self.primitives, {dx =  0, dy =  d, dt = 2 * math.pi / 4, d = d, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
-	table.insert(self.primitives, {dx = -d, dy =  d, dt = 3 * math.pi / 4 , d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
+	table.insert(self.primitives, {dx = -d, dy =  d, dt = 3 * math.pi / 4 , d = dDiagonal, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 	table.insert(self.primitives, {dx = -d, dy =  0, dt = 4 * math.pi / 4, d = d, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
-	table.insert(self.primitives, {dx = -d, dy = -d, dt = 6 * math.pi / 4, d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
+	table.insert(self.primitives, {dx = -d, dy = -d, dt = 6 * math.pi / 4, d = dDiagonal, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 	table.insert(self.primitives, {dx =  0, dy = -d, dt = 6 * math.pi / 4, d = d, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
-	table.insert(self.primitives, {dx =  d, dy = -d, dt = 7 * math.pi / 4, d = dSqrt2, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
+	table.insert(self.primitives, {dx =  d, dy = -d, dt = 7 * math.pi / 4, d = dDiagonal, gear = HybridAStar.Gear.Forward, steer = HybridAStar.Steer.Straight, type = HybridAStar.MotionPrimitiveTypes.NA})
 end
 
 ---@class HybridAStar.NodeList
@@ -448,7 +450,9 @@ end
 function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints, hitchLength)
 	self:debug('Start pathfinding between %s and %s', tostring(start), tostring(goal))
 	self.constraints = constraints
-	-- a motion primitive is straight or a few degree turn to the right or left
+	-- a motion primitive is straight or a few degree turn to the right or left for the hybrid A*, but we also
+	-- use it for the plain A* (where they are just pointing to the eight neighbors) and for the jump point search
+	-- where it is the pruned set of A* directions
 	local hybridMotionPrimitives = self:getMotionPrimitives(turnRadius, allowReverse)
 	-- create the open list for the nodes as a binary heap where
 	-- the node with the lowest total cost is at the top
@@ -485,7 +489,6 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 		end
 		self:debug('Length of analytic solution is %.1f', analyticSolutionLength)
 	end
-
 	start:updateH(goal, analyticSolutionLength)
 	self.distanceToGoal = start.h
 	start:insert(openList)
@@ -497,7 +500,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 		-- pop lowest cost node from queue
 		---@type State3D
 		local pred = State3D.pop(openList)
-		--self:debug('pop %s', tostring(pred))
+		self:debug('pop %s', tostring(pred))
 
 		if pred:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
 			-- done!
@@ -532,9 +535,9 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 				end
 			end
 			-- create the successor nodes
-			for _, primitive in ipairs(hybridMotionPrimitives:getPrimitives(pred)) do
+			for _, primitive in ipairs(hybridMotionPrimitives:getPrimitives(pred, constraints)) do
 				---@type State3D
-				local succ = hybridMotionPrimitives:createSuccessor(pred, primitive, hitchLength)
+				local succ = hybridMotionPrimitives:createSuccessor(pred, primitive, hitchLength, constraints, goal)
 				if succ:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
 					succ.pred = succ.pred
 					self:debug('Successor at the goal (%d).', self.iterations)
@@ -680,6 +683,7 @@ end
 --- We'll run 3 pathfindings: one A * between start and goal (phase 1), then trim the ends of the result in hybridRange
 --- Now run a hybrid A * from the start to the beginning of the trimmed A * path (phase 2), then another hybrid A * from the
 --- end of the trimmed A * to the goal (phase 3).
+---@class HybridAStarWithAStarInTheMiddle : PathfinderInterface
 HybridAStarWithAStarInTheMiddle = CpObject(PathfinderInterface)
 
 ---@param hybridRange number range in meters around start/goal to use hybrid A *
@@ -862,6 +866,17 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 		end
 	end
 	return false
+end
+
+---@class HybridAStarWithJpsInTheMiddle : PathfinderInterface
+HybridAStarWithJpsInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
+
+function HybridAStarWithJpsInTheMiddle:init(hybridRange, yieldAfter, maxIterations, mustBeAccurate)
+	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, maxIterations, mustBeAccurate)
+end
+
+function HybridAStarWithJpsInTheMiddle:getAStar()
+	return JumpPointSearch(self.yieldAfter)
 end
 
 
