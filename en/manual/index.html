@@ -584,6 +584,7 @@
 			</h2>
 				<p class="info">This side is accessible from General Settings Page.</p>
 				<ul>
+				<!--Vehicle Settings-->
 				<p><h4>Vehicle Settings</h4></p>
 					<li>
 						<h3>Use AI turn maneuvers</h3>
@@ -619,7 +620,8 @@
 						<h3>Keep current steering</h3>
 						<p>Keeps the current steeringmode, that is set for the vehicle.</p>
 					</li>
-					<p><h4>Global Settings</h4></p>
+				<!--Global Settings-->
+				<p><h4>Global Settings</h4></p>
 
 					<li>
 						<h3>Load course at startup</h3>
@@ -815,16 +817,7 @@
 			<p class="info">This Mode got 3 different modes: filling up, leveling and compacting.</p>
 			<ul>
 				<li>
-					<h3>Filling up</h3>
-					<p>Is used to push all the chaff to the end on the Bunker. Only available when attached a shield.</p>
-				</li>
-				<li>
-					<h3>Leveling</h3>
-					<p>This mode can be used with a shield to get the chaff into an even high or spreading it with Tools like the Fliegl Duo.</p>
-				</li>
-				<li>
-					<h3>Compacting</h3>
-					<p>This mode can be used with no tools attached, weights, or silo roller.</p>
+					<h3>With Version 6.4.0.X, the mode will be automatically selected by the used tool.</h3>
 				</li>
 				<li>
 					<h3>Automatically stop for</h3>
@@ -833,6 +826,7 @@
 				<li>
 					<h3>Detect unloaders in range of</h3>
 					<p>Set the range of where to detect other vehicles, the detection is a circle, which center is the stop point of the Drivers course.</p>
+					<p>The range will be shown when you change the value.</p>
 				</li>
 				<li>
 					<h3>Blade width</h3>
@@ -968,13 +962,14 @@
 
 		<!-- ### DRIVEMODE7 ### -->
 		<article class="manualSection" id="driveMode7">
-			<h2><span class="icon-mode7single"></span> Bale Collector</h2>
+			<h2><span class="icon-mode7single"></span> Bale Collector/Wrapper</h2>
 			<p>The old function of this mode got completely replaced by a simple option called 'self unload' which is use for Harvester and Combine (not Choppers), that can load the harvested fill type and is on the field or within 20 m of the field edge.</p>
 			<p>The Combine will automatically find its way to the trailer. Just set up a Fieldwork Course and activate the 'self unload' setting.</p>
 
-			<h4>The new Mode is for automatic Bale Collecting.</h4>
+			<h4>The new Mode is for automatic Bale Collecting and Wrapping.</h4>
 			<p>This mode requiers a course that starts from the field to a place where you want to unload the stack of Bales in reverse (unload here Waypoint at the end of the reverse path) and back to the field.</p>
 			<p>On the first page, you have to choose the Field, where you want to load the bales.</p>
+			<p>For Wrapping, as the internal structure of CP always need a course to be started, just do a smal start stop course and just start the driver.</p>
 		</article>
 
 		<!-- ### DRIVEMODE8 ### -->
@@ -993,31 +988,25 @@
 				<img src="../../res/img/manual_mode9_en.jpg" class="infoImg">
 				<figcaption>All points and directions in the fill and empty shovel mode</figcaption>
 			</figure>
-			<p>How to record the course:</p>
+			<p>How to record the course (NEW with Version 6.4.0.X):</p>
 			<ol>
 				<li>
-					<p>Start in front of the silo, and drive forwards.</p>
+					<p>Start in front of the silo, and drive just inside of the Bunker (only one waypoint will be needed there).</p>
 				</li>
 				<li>
-					<p>At the point where the shovel should start loading, set waiting point #1. This point indicates the start of the filling area. During the driving of the course, the shovel will be set to the loading position</p>
-				</li>
-				<li>
-					<p>At the end of the silo, set another waiting point (#2). This point indicates the end of the filling area and will move the shovel to the transport position.</p>
-				</li>
-				<li>
-					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back out of the silo (and a bit further). Try to drive as straight as possible.</p>
+					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back out of the silo (and a bit further).</p>
 				</li>
 				<li>
 					<p>Set the direction to <span class="emphasize2">forwards</span>, and drive to the trigger or trailer that you want to fill. The last 3 or 4 waypoints of that section should be as straight as possible.</p>
 				</li>
 				<li>
-					<p>At the point where the shovel should unload, set waiting point #3.</p>
+					<p>About one Vehicle length before the trailer, stop your vehicle, place a waitpoint and set the direction to <span class="emphasize2">reverse</span>.</p>
 				</li>
 				<li>
-					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back as straight as possible.</p>
+					<p>Drive back as straight as possible, set the direction to <span class="emphasize2">forwards</span> and drive back to right before the starting point. </p>
 				</li>
 				<li>
-					<p>Set the direction to <span class="emphasize2">forwards</span> and drive back to right before the starting point.</p>
+					<p>Stop the Recording and your course is done.</p>
 				</li>
 			</ol><br />
 			<p>Before starting the driver, make sure you've set the necessary <a href="#hud_shovelSettings" class="internal"><span class="icon-page9 inline"></span>shovel positions</a>.</p>
@@ -1028,30 +1017,7 @@
 			<p>A second way of using Mode9 will be loading something out of the trigger.</p>
 			<p>For this, you got to turn on '' and create a slightly different course.</p>
 			<p>In addition, a new option will appear on the shovel page to add a fill type, that you want to load.</p>
-			<p>The course should be recorded like this:</p>
-			<ol>
-				<li>
-					<p>The course will start in front of the trigger where you want to unload a fill type.</p>
-				</li>
-				<li>
-					<p>Drive straight towards the trigger, so you have at least one additional waypoint in front of the trigger after the startpoint.</p>
-				</li>
-				<li>
-					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back from the trigger (and a bit further).</p>
-				</li>
-				<li>
-					<p>Set the direction to <span class="emphasize2">forwards</span>, and drive to the trigger or trailer that you want to fill. The last 3 or 4 waypoints of that section should be as straight as possible.</p>
-				</li>
-				<li>
-					<p>At the point where the shovel should unload, set a waiting point.</p>
-				</li>
-				<li>
-					<p>Set the direction to <span class="emphasize2">reverse</span>, and reverse back.</p>
-				</li>
-				<li>
-					<p>Set the direction to <span class="emphasize2">forwards</span> and drive back to right before the starting point.</p>
-				</li>
-			</ol>
+			<p>With Version 6.4.0.X, the course looks just like the normal Mode9 course, but after start, instead of driving into the silo, make sure your shovel in transportposition drives through the loading trigger.</p>
 		</article>
 
 		<!-- ### DRIVEMODE10 ### -->
@@ -1068,7 +1034,7 @@
 					<p>compacting</p>
 				</li>
 			</p>
-			<p>The course for all 3 options, is the same.</p>
+			<p>The course for all 3 options, is the same. With 6.4.0.X the mode will be automatically selected with the attached tool.</p>
 			<p>You attach your tool at the back of your tractor and drive into the bunker. Stay within the first meter of the bunker, the tool points towards the inside of the bunker.</p>
 			<p>Start recording the course. The first Waypoint should be inside of the bunker. Drive straight out of the bunker to a save place where you driver can wait for other drivers to unload into the bunker. Place a wait point there and switch to reverse driveing. Then drive in reverse in front of the Bunker and stop the record. That's all.</p>
 			<p>For the option to build up, you should use a shield, that option is best used in a wedge silo.</p>
@@ -1121,7 +1087,7 @@
 					<p><h3>Working width:</h3></p>
 					<p>Work tool working width should be already set here</p>
 					<p>If this is not the case, the yellow button on the right will set the work tool width to the work width setting</p>
-					<p>Some tools send the correct working width, in this case, use the arrows or mouse wheel to adjust the correct working width manualy</p>
+					<p>Some tools do not send the correct working width, in this case, use the arrows or mouse wheel to adjust to the correct working width manualy</p>
 				</li>
 				<li>
 					<p><h3>Headland:</h3></p>
