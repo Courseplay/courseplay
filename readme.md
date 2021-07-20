@@ -16,7 +16,7 @@ Wir haben eine Courseplay-Website mit allen möglichen Informationen, Anleitunge
 
 Go check out the **[Courseplay Homepage][CP Website Link]**
 
-[CP Website Link]: http://courseplay.github.com/courseplay/
+[CP Website Link]: https://courseplay.github.io/courseplay/
 ___
 
 ## Developer version 
