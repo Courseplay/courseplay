@@ -538,59 +538,64 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 			for _, primitive in ipairs(hybridMotionPrimitives:getPrimitives(pred, constraints)) do
 				---@type State3D
 				local succ = hybridMotionPrimitives:createSuccessor(pred, primitive, hitchLength, constraints, goal)
-				if succ:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
-					succ.pred = succ.pred
-					self:debug('Successor at the goal (%d).', self.iterations)
-					self:rollUpPath(succ, goal)
-					constraints:showStatistics()
-					return true, self.path
-				end
-				local existingSuccNode = self.nodes:get(succ)
-				if not existingSuccNode or (existingSuccNode and not existingSuccNode:isClosed()) then
-					-- ignore invalidity of a node in the first few iterations: this is due to the fact that sometimes
-					-- we end up being in overlap with another vehicle when we start the pathfinding and all we need is
-					-- an iteration or two to bring us out of that position
-					if self.ignoreValidityAtStart and self.iterations < 3 or constraints:isValidNode(succ) then
-						succ:updateG(primitive, constraints:getNodePenalty(succ))
-						local analyticSolutionCost = 0
-						if self.analyticSolverEnabled then
-							local analyticSolution = self.analyticSolver:solve(succ, goal, turnRadius, allowReverse)
-							analyticSolutionCost = analyticSolution:getLength(turnRadius)
-							succ:updateH(goal, analyticSolutionCost)
-						else
-							succ:updateH(goal, 0, succ:distance(goal) * 1.5)
-						end
-
-						--self:debug('     %s', tostring(succ))
-						if existingSuccNode then
-							--self:debug('   existing node %s', tostring(existingSuccNode))
-							-- there is already a node at this (discretized) position
-							-- add a small number before comparing to adjust for floating point calculation differences
-							if existingSuccNode:getCost() + 0.001 >= succ:getCost() then
-								--self:debug('%.6f replacing %s with %s', succ:getCost() - existingSuccNode:getCost(),  tostring(existingSuccNode), tostring(succ))
-								if openList:valueByPayload(existingSuccNode) then
-									-- existing node is on open list already, remove it here, will replace with
-									existingSuccNode:remove(openList)
-								end
-								-- add (update) to the state space
-								self.nodes:add(succ)
-								-- add to open list
-								succ:insert(openList)
+				if succ then
+					if succ:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
+						succ.pred = succ.pred
+						self:debug('Successor at the goal (%d).', self.iterations)
+						self:rollUpPath(succ, goal)
+						constraints:showStatistics()
+						return true, self.path
+					end
+					local existingSuccNode = self.nodes:get(succ)
+					if not existingSuccNode or (existingSuccNode and not existingSuccNode:isClosed()) then
+						-- ignore invalidity of a node in the first few iterations: this is due to the fact that sometimes
+						-- we end up being in overlap with another vehicle when we start the pathfinding and all we need is
+						-- an iteration or two to bring us out of that position
+						if self.ignoreValidityAtStart and self.iterations < 3 or constraints:isValidNode(succ) then
+							succ:updateG(primitive, constraints:getNodePenalty(succ))
+							local analyticSolutionCost = 0
+							if self.analyticSolverEnabled then
+								local analyticSolution = self.analyticSolver:solve(succ, goal, turnRadius, allowReverse)
+								analyticSolutionCost = analyticSolution:getLength(turnRadius)
+								succ:updateH(goal, analyticSolutionCost)
 							else
-								--self:debug('insert existing node back %s (iteration %d), diff %s', tostring(succ), self.iterations, tostring(succ:getCost() - existingSuccNode:getCost()))
+								succ:updateH(goal, 0, succ:distance(goal) * 1.0)
+							end
+
+							--self:debug('     %s', tostring(succ))
+							if existingSuccNode then
+								--self:debug('   existing node %s', tostring(existingSuccNode))
+								-- there is already a node at this (discretized) position
+								-- add a small number before comparing to adjust for floating point calculation differences
+								if existingSuccNode:getCost() + 0.001 >= succ:getCost() then
+									--self:debug('%.6f replacing %s with %s', succ:getCost() - existingSuccNode:getCost(),  tostring(existingSuccNode), tostring(succ))
+									if openList:valueByPayload(existingSuccNode) then
+										-- existing node is on open list already, remove it here, will replace with
+										existingSuccNode:remove(openList)
+									end
+									-- add (update) to the state space
+									self.nodes:add(succ)
+									-- add to open list
+									self:debug('push %d %s', openList:size(), tostring(succ))
+
+									succ:insert(openList)
+								else
+									--self:debug('insert existing node back %s (iteration %d), diff %s', tostring(succ), self.iterations, tostring(succ:getCost() - existingSuccNode:getCost()))
+								end
+							else
+								-- successor cell does not yet exist
+								self.nodes:add(succ)
+								-- put it on the open list as well
+								self:debug('push %d %s', openList:size(), tostring(succ))
+								succ:insert(openList)
 							end
 						else
-							-- successor cell does not yet exist
-							self.nodes:add(succ)
-							-- put it on the open list as well
-							succ:insert(openList)
-						end
-					else
-						--self:debug('Invalid node %s (iteration %d)', tostring(succ), self.iterations)
-						succ:close()
-					end -- valid node
-				end
-			end
+							--self:debug('Invalid node %s (iteration %d)', tostring(succ), self.iterations)
+							succ:close()
+						end -- valid node
+					end
+				end -- succ exists
+			end -- for all primitives
 			-- node as been expanded, close it to prevent expansion again
 			--self:debug(tostring(pred))
 			pred:close()
@@ -619,7 +624,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 end
 
 function HybridAStar:isPathValid(path)
-	if not path or #path < 2 then return false end
+	if not path or #path < 1 then return false end
 	for i, n in ipairs(path) do
 		if not self.constraints:isValidAnalyticSolutionNode(n, true) then
 			return false
@@ -665,9 +670,9 @@ function AStar:init(yieldAfter, maxIterations)
 	-- this needs to be small enough that no vehicle fit between the grid points (and remain undetected)
 	self.deltaPos = 3
 	self.deltaPosGoal = self.deltaPos
-	self.deltaThetaDeg = 181
+	self.deltaThetaDeg = 185
 	self.deltaThetaGoal = math.rad(self.deltaThetaDeg)
-	self.maxDeltaTheta = math.pi
+	self.maxDeltaTheta = self.deltaThetaGoal
 	self.originalDeltaThetaGoal = self.deltaThetaGoal
 	self.analyticSolverEnabled = false
 	self.ignoreValidityAtStart = false

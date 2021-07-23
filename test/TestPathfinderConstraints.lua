@@ -1,8 +1,6 @@
 ---@class TestPathfinderConstraints : PathfinderConstraintInterface
 TestPathfinderConstraints = CpObject(PathfinderConstraintInterface)
 
-print(TestPathfinderConstraints)
-
 function TestPathfinderConstraints:init(obstacles, fruit)
 	self:resetConstraints()
 	self.obstacles = obstacles

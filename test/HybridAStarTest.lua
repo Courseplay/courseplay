@@ -1,6 +1,5 @@
 --require('mobdebug').start()
-
-package.cpath = package.cpath .. ';C:/Users/nyovape1/AppData/Local/JetBrains/Toolbox/apps/IDEA-U/ch-0/211.6693.111.plugins/EmmyLua/classes/debugger/emmy/windows/x64/?.dll'
+package.cpath = package.cpath .. ';C:/Users/nyovape1/AppData/Local/JetBrains/Toolbox/apps/IDEA-U/ch-0/211.7628.21.plugins/EmmyLua/classes/debugger/emmy/windows/x64/?.dll'
 local dbg = require('emmy_core')
 --dbg.tcpListen('localhost', 9966)
 dbg.tcpConnect('localhost', 9966)
@@ -12,6 +11,7 @@ package.path = package.path .. ";../course-generator/?.lua"
 require("CpObject")
 require('mock-GiantsEngine')
 require('mock-Courseplay')
+require("courseGenerator")
 require("State3D")
 require("HybridAStar")
 require("JumpPoint")
@@ -27,38 +27,16 @@ courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseG
 courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
 
 local obstacles = {
-	{
-		x1 = 113,
-		y1 = 5,
-		x2 = 115,
-		y2 = 15
-	},
-
-	{
-		x1 = 100,
-		y1 = 15,
-		x2 = 115,
-		y2 = 17
-	}
+	{ x1 = 13, y1 = 100, x2 = 403, y2 = 120 },
+	{ x1 = -10, y1 = 5, x2 = -60, y2 = 10 },
+}
+local fruit = {
+	--{ x1 = 25, y1 = 5, x2 = 110, y2 = 25 },
+	{ x1 = 80, y1 = 25, x2 = 325, y2 = 40 }
 }
 
-local mp = HybridAStar.JpsMotionPrimitives(3, 3, math.pi)
-local constraints = TestPathfinderConstraints(obstacles)
-local goal = State3D(120, 10, 0, 0)
-
-local node = State3D(0, 0, 0)
-local primitives = mp:getPrimitives(node, constraints)
-for _, p in pairs(primitives) do
-	local succ = mp:createSuccessor(node, p, 10, constraints, goal)
-	print(tostring(succ))
-	local next_primitives = mp:getPrimitives(succ, constraints)
-	for _, p2 in pairs(next_primitives) do
-		local succ2 = mp:createSuccessor(succ, p2, 10, goal)
-		print('\t' .. tostring(succ2))
-	end
-end
-
-
+local mp = HybridAStar.JpsMotionPrimitives(3, 3, math.pi * 2)
+local constraints = TestPathfinderConstraints(obstacles, fruit)
 local turnRadius = 5
 local startHeading = 0 --math.pi
 
@@ -67,12 +45,29 @@ local origin = {x = -width / 4, y = -height / 2}
 local xOffset, yOffset = width / scale / 4, height / scale / 2
 
 local start = State3D(0, 0, startHeading, 0)
-local goal = State3D(120, 10, 0, 0)
-local dubinsPath = {}
-local pathFinder = HybridAStarWithJpsInTheMiddle(200, 100000)
-local done, path
+local goal = State3D(11.42, 5.39, 0, 0)
+local pathfinder = JumpPointSearch(200, 100000)
+local done, path, goalNodeInvalid
 
-local vehicleData ={name = 'name', turnRadius = turnRadius, dFront = 3, dRear = 3, dLeft = 1.5, dRight = 1.5}
-done, path = pathFinder:start(start, goal, vehicleData.turnRadius, true, constraints, 10)
+done, path, goalNodeInvalid = pathfinder:findPath(start, goal, turnRadius, false, constraints, 10)
 
-print(done, path)
+if path then
+	State3D.printPath(path)
+else
+	print('No path found!')
+end
+
+
+--local node = State3D(0, 0, 0)
+--local primitives = mp:getPrimitives(node, constraints)
+--for _, p in pairs(primitives) do
+--	local succ = mp:createSuccessor(node, p, 10, constraints, goal)
+----	print(tostring(succ))
+--	local next_primitives = mp:getPrimitives(succ, constraints)
+--	for _, p2 in pairs(next_primitives) do
+--		local succ2 = mp:createSuccessor(succ, p2, 10, constraints, goal)
+----		print('\t' .. tostring(succ2))
+--	end
+--end
+
+
