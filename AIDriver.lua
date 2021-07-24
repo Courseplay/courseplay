@@ -1329,7 +1329,7 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
-					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.vehicle.cp.mode))
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.settings.driverMode:get()))
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 				end
@@ -1736,10 +1736,6 @@ function AIDriver:onDraw()
 		PathfinderUtil.showNodes(self.pathfinder)
 	end
 end
---TODO: do we want to continue using this setter/getter for driveUnloadNow??
-function AIDriver:setDriveUnloadNow(driveUnloadNow)
-	courseplay:setDriveUnloadNow(self.vehicle, driveUnloadNow or false)
-end
 
 function AIDriver:setDriveNow()
 	if self:isWaitingAtWaitPoint() then 
@@ -1748,9 +1744,6 @@ function AIDriver:setDriveNow()
 	self.triggerHandler:onDriveNow()
 end
 
-function AIDriver:getDriveUnloadNow()
-	return self.settings.driveUnloadNow:get()
-end
 
 function AIDriver:refreshHUD()
 	courseplay.hud:setReloadPageOrder(self.vehicle, self.vehicle.cp.hud.currentPage, true);

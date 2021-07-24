@@ -11,15 +11,6 @@ function courseplay:openCloseHud(vehicle, open)
 	end;
 end;
 
-function courseplay:setCpMode(vehicle, modeNum)
-	if vehicle.cp.mode ~= modeNum then
-		vehicle.cp.mode = modeNum;
-		courseplay.utils:setOverlayUVsPx(vehicle.cp.hud.currentModeIcon, courseplay.hud.bottomInfo.modeUVsPx[modeNum], courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y);
-		courseplay.infoVehicle(vehicle, 'Setting mode %d', modeNum)
-		courseplay:setAIDriver(vehicle, modeNum)
-	end;
-end;
-
 function courseplay:setAIDriver(vehicle, mode)
 
 	local errorHandler = function(err)
@@ -59,9 +50,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	else
 		-- give it another try as a fallback level
 		courseplay.infoVehicle(vehicle, 'Retrying initialization in mode 5')
-		status, result = xpcall(AIDriver, errorHandler, vehicle)
-		vehicle.cp.driver = status and result or nil
-		vehicle.cp.mode = courseplay.MODE_DEFAULT
+		self.cp.settings.driverMode:resetToDefault()
 	end
 end
 
@@ -88,22 +77,18 @@ function courseplay:startStop(vehicle)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
-function courseplay:startStopCourseplayer(combine)
+function courseplay:startStopUnloader(combine)
 	local tractor = g_combineUnloadManager:getUnloaderByNumber(1, combine)
 	if tractor then	
 		tractor.cp.settings.forcedToStop:toggle()
 	end
 end;
 
-function courseplay:setDriveUnloadNow(vehicle, bool)
-	if vehicle then
-		vehicle.cp.settings.driveUnloadNow:set(bool)
-		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);		
+function courseplay:sendUnloaderHome(combine)
+	local unloader = g_combineUnloadManager:getUnloaderByNumber(1, combine)
+	if unloader then 
+		unloader.cp.driver:setDriveUnloadNow(true)
 	end
-end
-
-function courseplay:sendCourseplayerHome(combine)
-	courseplay:setDriveUnloadNow(g_combineUnloadManager:getUnloaderByNumber(1, combine), true);
 end
 function courseplay:setHudPage(vehicle, pageNum)
 	vehicle.cp.hud.hudPageButtons[vehicle.cp.hud.currentPage]:setActive(false)
@@ -1320,7 +1305,7 @@ function SettingList:loadFromXml(xml, parentKey)
 	-- remember the value loaded from XML for those settings which aren't up to date when loading,
 	-- for example the field numbers
 	self.valueFromXml = getXMLInt(xml, self:getKey(parentKey))
-	if self.valueFromXml then
+	if self.valueFromXml then 
 		self:set(self.valueFromXml,true)
 	end
 end
@@ -1551,7 +1536,113 @@ function IntSettingScientific:getFixedValue()
 	return self:get()*self.POWER
 end
 
+---@class DriverModeSetting : SettingList
+DriverModeSetting = CpObject(SettingList)
+DriverModeSetting.GRAIN_TRANSPORT = 1
+DriverModeSetting.COMBINE_UNLOAD = 2
+DriverModeSetting.OVERLOAD = 3
+DriverModeSetting.FILLABLE_FIELDWORK = 4
+DriverModeSetting.TRANSPORT = 5
+DriverModeSetting.FIELDWORK = 6
+DriverModeSetting.BALE_COLLECTOR = 7
+DriverModeSetting.FIELD_SUPPLY = 8
+DriverModeSetting.SHOVEL = 9
+DriverModeSetting.BUNKER_SILO = 10
+DriverModeSetting.NUM_MODES = 10
 
+DriverModeSetting.defaultMode = DriverModeSetting.TRANSPORT
+
+function DriverModeSetting:init(vehicle)
+	local values = {}
+	local texts = {}
+	for i=1,self.NUM_MODES do 
+		values[i] = i
+		texts[i] = i
+	end
+	SettingList.init(self,"driverMode","driverMode","driverMode",vehicle,values,texts)
+	self.current = self.defaultMode
+end
+
+function DriverModeSetting:loadFromXml(xml, parentKey)
+	-- remember the value loaded from XML for those settings which aren't up to date when loading,
+	-- for example the field numbers
+	self.valueFromXml = getXMLInt(xml, self:getKey(parentKey))
+end
+
+function DriverModeSetting:postInit()
+	if self.valueFromXml then
+		self:set(self.valueFromXml,true)
+	end
+end
+
+function DriverModeSetting:validateCurrentValue()
+	self.validModes = {}
+	local wasResetToDefault = false
+	for i=1,self.NUM_MODES do 
+		local valid = courseplay:getIsToolCombiValidForCpMode(self.vehicle,i)
+		self.validModes[i] = valid or false
+		if self:get() == i and not valid then 
+			self:resetToDefault()
+			wasResetToDefault = true
+		end
+	end
+end
+
+function DriverModeSetting:onChange()
+	self:setAIDriver()
+	self.vehicle.cp.driver:refreshHUD()
+end
+
+function DriverModeSetting:setAIDriver()
+	courseplay.infoVehicle(self.vehicle, 'Setting mode %d', self:get())
+	courseplay:setAIDriver(self.vehicle, self:get())
+end
+
+function DriverModeSetting:resetToDefault()
+	self:set(self.defaultMode)
+end
+
+function DriverModeSetting:getDefaultMode()
+	return self.defaultMode
+end
+
+function DriverModeSetting:getValidModes()
+	return self.validModes
+end
+
+function DriverModeSetting:checkAndSetValidValue(new)
+	if courseplay:getIsToolCombiValidForCpMode(self.vehicle,new) then 
+		return SettingList.checkAndSetValidValue(self,new)
+	else 
+		return self.defaultMode
+	end
+end
+
+function DriverModeSetting:isDisabled()
+	return not self.vehicle.cp.canSwitchMode or self.vehicle:getIsCourseplayDriving() 
+end
+
+--- Set the next value
+function DriverModeSetting:setNext()
+	if not self:isDisabled() then
+		local targetMode = self.current
+		repeat
+			targetMode = SettingList.checkAndSetValidValue(self, targetMode + 1)
+		until courseplay:getIsToolCombiValidForCpMode(self.vehicle, self.values[targetMode])
+		self:setToIx(targetMode)
+	end
+end
+
+--- Set the previous value
+function DriverModeSetting:setPrevious()
+	if not self:isDisabled() then
+		local targetMode = self.current
+		repeat
+			targetMode = SettingList.checkAndSetValidValue(self, targetMode - 1)
+		until courseplay:getIsToolCombiValidForCpMode(self.vehicle, self.values[targetMode])
+		self:setToIx(targetMode)
+	end
+end
 
 --- AutoDrive mode setting
 ---@class AutoDriveModeSetting : SettingList
@@ -1637,8 +1728,9 @@ StartingPointSetting.START_WITH_UNLOAD      = 5 -- start with unloading the comb
 StartingPointSetting.START_COLLECTING_BALES = 6 -- start with unloading the combine (only for CombineUnloadAIDriver)
 StartingPointSetting.START_AT_LAST_POINT	= 7 -- last waypoint for all BunkerSiloAIDrivers (is visible as first wp in the hud)
 
-function StartingPointSetting:init(vehicle)
-	local values, texts = self:getValuesForMode(vehicle.cp.mode)
+function StartingPointSetting:init(vehicle, driverModeSetting)
+	self.driverModeSetting = driverModeSetting
+	local values, texts = self:getValuesForMode(driverModeSetting:get())
 	SettingList.init(self, 'startingPoint',
 		'COURSEPLAY_START_AT_POINT', 'COURSEPLAY_START_AT_POINT', vehicle, values, texts)
 end
@@ -1705,7 +1797,7 @@ end
 
 function StartingPointSetting:checkAndSetValidValue(new)
 	-- make sure we always have a valid set for the current mode
-	self.values, self.texts = self:getValuesForMode(self.vehicle.cp.mode)
+	self.values, self.texts = self:getValuesForMode(self.driverModeSetting:get())
 	return SettingList.checkAndSetValidValue(self, new)
 end
 
@@ -1793,7 +1885,8 @@ ReturnToFirstPointSetting.DEACTIVATED = 0
 ReturnToFirstPointSetting.RETURN_TO_START = 1
 ReturnToFirstPointSetting.RELEASE_DRIVER = 2
 ReturnToFirstPointSetting.RETURN_TO_START_AND_RELEASE_DRIVER = 3
-function ReturnToFirstPointSetting:init(vehicle)
+function ReturnToFirstPointSetting:init(vehicle, driverModeSetting)
+	self.driverModeSetting = driverModeSetting
 	SettingList.init(self, 'returnToFirstPoint', 'COURSEPLAY_RETURN_TO_FIRST_POINT',
 		'COURSEPLAY_RETURN_TO_FIRST_POINT', vehicle,
 		{
@@ -1811,7 +1904,7 @@ function ReturnToFirstPointSetting:init(vehicle)
 end
 
 function ReturnToFirstPointSetting:isDisabled()
-	return not self.vehicle.cp.canDrive or self.vehicle.cp.mode == courseplay.MODE_BALE_COLLECTOR
+	return not self.vehicle.cp.canDrive or self.driverModeSetting:get() == courseplay.MODE_BALE_COLLECTOR
 end
 
 function ReturnToFirstPointSetting:isReturnToStartActive()
@@ -2227,13 +2320,14 @@ end
 
 ---@class StopAtEndSetting : BooleanSetting
 StopAtEndSetting = CpObject(BooleanSetting)
-function StopAtEndSetting:init(vehicle)
+function StopAtEndSetting:init(vehicle, driverModeSetting)
+	self.driverModeSetting = driverModeSetting
 	BooleanSetting.init(self, 'stopAtEnd', 'COURSEPLAY_STOP_AT_LAST_POINT', 'COURSEPLAY_STOP_AT_LAST_POINT', vehicle)
 	self:set(true)
 end
 
 function StopAtEndSetting:isDisabled()
-	return not self.vehicle.cp.canDrive or not self.vehicle.cp.mode == courseplay.MODE_TRANSPORT
+	return not self.vehicle.cp.canDrive or not self.driverModeSetting:get() == courseplay.MODE_TRANSPORT
 end
 
 ---@class AutomaticCoverHandlingSetting : BooleanSetting
@@ -2309,10 +2403,10 @@ function DriveUnloadNowSetting:init(vehicle)
 	self:set(false)
 end
 
----@class CombineWantsCourseplayerSetting : BooleanSetting
-CombineWantsCourseplayerSetting = CpObject(BooleanSetting)
-function CombineWantsCourseplayerSetting:init(vehicle)
-	BooleanSetting.init(self, 'combineWantsCourseplayer', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
+---@class RequestUnloaderSetting : BooleanSetting
+RequestUnloaderSetting = CpObject(BooleanSetting)
+function RequestUnloaderSetting:init(vehicle)
+	BooleanSetting.init(self, 'requestUnloader', 'COURSEPLAY_DRIVER', 'COURSEPLAY_DRIVER', vehicle, {'COURSEPLAY_REQUEST_UNLOADING_DRIVER','COURSEPLAY_UNLOADING_DRIVER_REQUESTED'})
 	self:set(false)
 end
 
@@ -2815,20 +2909,21 @@ end
 
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
 ShovelModeAIDriverTriggerHandlerIsActive = CpObject(BooleanSetting)
-function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle)
+function ShovelModeAIDriverTriggerHandlerIsActive:init(vehicle, driverModeSetting)
+	self.driverModeSetting = driverModeSetting
 	BooleanSetting.init(self, 'shovelModeAIDriverTriggerHandlerIsActive','COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE', 'COURSEPLAY_SHOVEL_TRIGGERHANDLER_IS_ACTIVE', vehicle) 
 	self:set(false)
 end
 
 function ShovelModeAIDriverTriggerHandlerIsActive:isDisabled()
-	if self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY then 
+	if self.driverModeSetting:get() ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY then 
 		return true
 	end
 	return false
 end
 
 function ShovelModeAIDriverTriggerHandlerIsActive:onChange()
-	if self.vehicle.cp.mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
+	if self.driverModeSetting:get() == courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 		courseplay:setAIDriver(self.vehicle, courseplay.MODE_SHOVEL_FILL_AND_EMPTY)
 	end	
 	BooleanSetting.onChange(self)
@@ -3616,7 +3711,8 @@ Cylindered.actionEventInput = Utils.overwrittenFunction(Cylindered.actionEventIn
 
 ---@class FrontloaderToolPositionsSetting : WorkingToolPositionsSetting
 FrontloaderToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
-function FrontloaderToolPositionsSetting:init(vehicle)
+function FrontloaderToolPositionsSetting:init(vehicle, driverModeSetting)
+	self.driverModeSetting = driverModeSetting
 	local label = "front"
 	local toolTip = "front"
 	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4)
@@ -3635,7 +3731,7 @@ function FrontloaderToolPositionsSetting:isPlayingPositionDisabled(x)
 end
 
 function FrontloaderToolPositionsSetting:isDisabled()
-	return self.vehicle.cp.mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
+	return self.driverModeSetting:get() ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
 ---@class AugerPipeToolPositionsSetting : WorkingToolPositionsSetting
@@ -3993,9 +4089,10 @@ end
 function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	---@type SettingsContainer
 	local container = SettingsContainer("settings")
+	container:addSetting(DriverModeSetting, vehicle)
 	container:addSetting(SearchCombineOnFieldSetting, vehicle)
 	container:addSetting(SelectedCombineToUnloadSetting)
-	container:addSetting(ReturnToFirstPointSetting, vehicle)
+	container:addSetting(ReturnToFirstPointSetting, vehicle,container.driverMode)
 	container:addSetting(UseAITurnsSetting, vehicle)
 	container:addSetting(UsePathfindingInTurnsSetting, vehicle)
 	container:addSetting(AllowReverseForPathfindingInTurnsSetting, vehicle)
@@ -4003,7 +4100,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ImplementLowerTimeSetting, vehicle)
 	container:addSetting(AutoDriveModeSetting, vehicle)
 	container:addSetting(SelfUnloadSetting, vehicle)
-	container:addSetting(StartingPointSetting, vehicle)
+	container:addSetting(StartingPointSetting, vehicle,container.driverMode)
 	container:addSetting(SymmetricLaneChangeSetting, vehicle)
 	container:addSetting(PipeAlwaysUnfoldSetting, vehicle)
 	container:addSetting(RidgeMarkersAutomatic, vehicle)
@@ -4014,7 +4111,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(SowingMachineFertilizerEnabled, vehicle)
 	container:addSetting(EnableOpenHudWithMouseVehicle, vehicle)
 	container:addSetting(EnableVisualWaypointsTemporary, vehicle)
-	container:addSetting(StopAtEndSetting, vehicle)
+	container:addSetting(StopAtEndSetting, vehicle,container.driverMode)
 	container:addSetting(AutomaticCoverHandlingSetting, vehicle)
 	container:addSetting(BaleCollectionFieldSetting, vehicle)
 	container:addSetting(DriverPriorityUseFillLevelSetting, vehicle)
@@ -4024,13 +4121,13 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(AlwaysSearchFuelSetting, vehicle)
 	container:addSetting(RealisticDrivingSetting, vehicle)
 	container:addSetting(DriveUnloadNowSetting, vehicle)
-	container:addSetting(CombineWantsCourseplayerSetting, vehicle)
+	container:addSetting(RequestUnloaderSetting, vehicle)
 	container:addSetting(TurnOnFieldSetting, vehicle)
 	container:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, vehicle)
-	container:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, vehicle)
+	container:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, vehicle,container.driverMode)
 	container:addSetting(DriveOnAtFillLevelSetting, vehicle)
 	container:addSetting(MoveOnAtFillLevelSetting, vehicle)
 	container:addSetting(RefillUntilPctSetting, vehicle)
@@ -4048,7 +4145,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ConvoyActiveSetting,vehicle)
 	container:addSetting(ConvoyMinDistanceSetting,vehicle)
 	container:addSetting(ConvoyMaxDistanceSetting,vehicle) -- do we need this one ?
-	container:addSetting(FrontloaderToolPositionsSetting,vehicle)
+	container:addSetting(FrontloaderToolPositionsSetting,vehicle,container.driverMode)
 	container:addSetting(AugerPipeToolPositionsSetting,vehicle)
 	container:addSetting(AlwaysWaitForShovelPositionsSetting,vehicle)
 	container:addSetting(LevelCompactModeSetting,vehicle)
@@ -4070,36 +4167,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	return container
 end
 
----TODO: create a setting for these:
-SettingsUtil = {}
 
-function SettingsUtil.getNextCpMode(vehicle)
-	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
-		for i=1,courseplay.NUM_MODES do 
-			local targetMode = vehicle.cp.mode + i
-			if targetMode > courseplay.NUM_MODES then 
-				targetMode = targetMode - courseplay.NUM_MODES
-			end
-			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
-				return targetMode
-			end
-		end
-	end
-end
-
-function SettingsUtil.getPrevCpMode(vehicle)
-	if vehicle.cp.canSwitchMode and not vehicle:getIsCourseplayDriving() then	
-		for i=1,courseplay.NUM_MODES do 
-			local targetMode = vehicle.cp.mode - i
-			if targetMode < 1 then 
-				targetMode = courseplay.NUM_MODES + targetMode
-			end
-			if courseplay:getIsToolCombiValidForCpMode(vehicle,targetMode) then 
-				return targetMode
-			end
-		end
-	end
-end
 
 
 

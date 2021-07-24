@@ -91,6 +91,10 @@ end;
 
 function courseplay.button:setSetting(setting)
 	self.settingCall = setting
+
+	--- ugly hack to allow the drive mode button overlays, 
+	--- as the settingCall only gets passed after the button was created
+	self:setSpecialButtonUVs()
 	return self;
 end;
 
@@ -108,7 +112,7 @@ function courseplay.button:setSpecialButtonUVs()
 	local prm = self.parameter;
 	local txtSizeX, txtSizeY = courseplay.hud.iconSpriteSize.x, courseplay.hud.iconSpriteSize.y;
 
-	if fn == 'setCpMode' then
+	if self.settingCall and self.settingCall == self.vehicle.cp.settings.driverMode then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.modeButtonsUVsPx[prm], txtSizeX, txtSizeY);
 
 	elseif fn == 'setHudPage' then

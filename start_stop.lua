@@ -49,8 +49,10 @@ function courseplay:start(self)
 	self.cp.waitPoints = {};
 	self.cp.unloadPoints = {};
 
+	local mode = self.cp.settings.driverMode:get()
+
 	-- modes 4/6 without start and stop point, set them at start and end, for only-on-field-courses
-	if (self.cp.mode == 4 or self.cp.mode == 6) then
+	if (mode == courseplay.MODE_SEED_FERTILIZE or mode == courseplay.MODE_FIELDWORK) then
 		if numWaitPoints == 0 or self.cp.startWork == nil then
 			self.cp.startWork = 1;
 		end;
@@ -64,24 +66,6 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d",
 		nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), courseplay.DBG_COURSES);
 
-	if self.cp.waypointIndex > 2 and self.cp.mode ~= 4 and self.cp.mode ~= 6 and self.cp.mode ~= 8 then
-		courseplay:setDriveUnloadNow(self, true);
-	elseif self.cp.mode == 4 or self.cp.mode == 6 then
-		courseplay:setDriveUnloadNow(self, false);
-	elseif self.cp.mode == 8 then
-		courseplay:setDriveUnloadNow(self, false);
-	end
-
-	if self.cp.settings.startingPoint:is(StartingPointSetting.START_AT_FIRST_POINT) then
-		if self.cp.mode == 2 or self.cp.mode == 3 then
-			-- TODO: really? 3?
-			courseplay:setWaypointIndex(self, 3);
-			courseplay:setDriveUnloadNow(self, true);
-		else
-			courseplay:setWaypointIndex(self, 1);
-		end
-	end;
-
 	courseplay:updateAllTriggers();
 
 	---Do we need to set distanceCheck==true at the beginning of courseplay:start() and set now set it to false 50 lines later ??
@@ -93,10 +77,10 @@ function courseplay:start(self)
 
 	-- and another ugly hack here as when settings.lua setAIDriver() is called the bale loader does not seem to be
 	-- attached and I don't have the motivation do dig through the legacy code to find out why
-	if self.cp.mode == courseplay.MODE_FIELDWORK then
+	if mode == courseplay.MODE_FIELDWORK then
 		self.cp.driver:delete()
 		self.cp.driver = UnloadableFieldworkAIDriver.create(self)
-	elseif self.cp.mode == courseplay.MODE_BUNKERSILO_COMPACTER then 
+	elseif mode == courseplay.MODE_BUNKERSILO_COMPACTER then 
 		--- Not sure if this is needed, might have to check if the AIDriver gets reevaluated after an implement gets attached.
 		self.cp.driver:delete()
 		self.cp.driver = BunkerSiloAIDriver.create(self)

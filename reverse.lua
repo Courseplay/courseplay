@@ -40,8 +40,13 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			end;
 		end;
 	end;
+	
+	local mode = vehicle.cp.settings.driverMode:get()
+
 	local debugActive = courseplay.debugChannels[courseplay.DBG_REVERSE];
-	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or vehicle.cp.mode == 9;
+	local isNotValid = vehicle.cp.numWorkTools == 0 or workTool == nil or workTool.cp.isPivot == nil or not workTool.cp.frontNode or mode == courseplay.MODE_SHOVEL_FILL_AND_EMPTY;
+	
+	
 	if isNotValid then
 		-- Simple reversing, no trailer to back up, so set the direction and get out of here, no need for
 		-- all the sophisticated reversing	
@@ -51,7 +56,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 				local _, vehicleY, _ = getWorldTranslation(vehicle.cp.directionNode);
 				lx, lz = AIVehicleUtil.getDriveDirection(vehicle.cp.directionNode, newTarget.revPosX, vehicleY, newTarget.revPosZ);
 			end;
-		elseif vehicle.cp.mode ~= 9 then
+		elseif mode ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY then
 			-- Start: Fixes issue #525
 			local tx, ty, tz = localToWorld(vehicle.cp.directionNode, 0, 1, -3);
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, -0,1, lz);
@@ -286,7 +291,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	end;
 
-	if (vehicle.cp.mode == courseplay.MODE_GRAIN_TRANSPORT or vehicle.cp.mode == courseplay.MODE_COMBI or vehicle.cp.mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and (vehicle.cp.totalFillLevel ~= nil and vehicle.cp.totalFillLevel > 0) then
+	if (mode == courseplay.MODE_GRAIN_TRANSPORT or mode == courseplay.MODE_COMBI or mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and (vehicle.cp.totalFillLevel ~= nil and vehicle.cp.totalFillLevel > 0) then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, -0.1, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;

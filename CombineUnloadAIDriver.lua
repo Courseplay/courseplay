@@ -171,7 +171,8 @@ function CombineUnloadAIDriver:start(startingPoint)
 
 	self.unloadCourse = Course(self.vehicle, self.vehicle.Waypoints)
 	self.ppc:setNormalLookaheadDistance()
-
+	self:setDriveUnloadNow(false)
+	
 	if startingPoint:is(StartingPointSetting.START_WITH_UNLOAD) then
 		if CpManager.isDeveloper then
 			-- automatically select closest combine
@@ -180,7 +181,6 @@ function CombineUnloadAIDriver:start(startingPoint)
 		self:info('Start unloading, waiting for a combine to call')
 		self:setNewState(self.states.ON_FIELD)
 		self:disableCollisionDetection()
-		self:setDriveUnloadNow(false)
 		self:startWaitingForCombine()
 	else
 		-- just to have a course set up in any case for PPC to work with until we find a combine/path
@@ -893,6 +893,15 @@ end
 
 function CombineUnloadAIDriver:shouldDriveOn()
 	return self:getFillLevelPercent() > self:getDriveOnThreshold()
+end
+
+function CombineUnloadAIDriver:getDriveUnloadNow()
+	return self.settings.driveUnloadNow:get()
+end
+
+function CombineUnloadAIDriver:setDriveUnloadNow(driveUnloadNow)
+	self.settings.driveUnloadNow:set(driveUnloadNow)
+	self:refreshHUD()
 end
 
 function CombineUnloadAIDriver:getCombinesFillLevelPercent()
