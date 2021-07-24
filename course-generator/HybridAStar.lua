@@ -500,7 +500,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 		-- pop lowest cost node from queue
 		---@type State3D
 		local pred = State3D.pop(openList)
-		self:debug('pop %s', tostring(pred))
+		--self:debug('pop %s', tostring(pred))
 
 		if pred:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
 			-- done!
@@ -576,8 +576,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 									-- add (update) to the state space
 									self.nodes:add(succ)
 									-- add to open list
-									self:debug('push %d %s', openList:size(), tostring(succ))
-
+									--self:debug('push %d %s', openList:size(), tostring(succ))
 									succ:insert(openList)
 								else
 									--self:debug('insert existing node back %s (iteration %d), diff %s', tostring(succ), self.iterations, tostring(succ:getCost() - existingSuccNode:getCost()))
@@ -586,7 +585,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 								-- successor cell does not yet exist
 								self.nodes:add(succ)
 								-- put it on the open list as well
-								self:debug('push %d %s', openList:size(), tostring(succ))
+								--self:debug('push %d %s', openList:size(), tostring(succ))
 								succ:insert(openList)
 							end
 						else

@@ -70,12 +70,12 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 				if not self:isValidNode(x + self.gridSize, y, constraints) then
 					table.insert(primitives, {x = x + self.gridSize, y = y + dy,
 											  t = math.atan2(dy, self.gridSize), d = dDiag})
-					table.insert(JumpPointSearch.markers, {label = 'forced x +', x = x + self.gridSize, y = y})
+					--table.insert(JumpPointSearch.markers, {label = 'forced x +', x = x + self.gridSize, y = y})
 				end
 				if not self:isValidNode(x - self.gridSize, y, constraints) then
 					table.insert(primitives, {x = x - self.gridSize, y = y + dy,
 											  t = math.atan2(dy, -self.gridSize), d = dDiag})
-					table.insert(JumpPointSearch.markers, {label = 'forced x -', x = x - self.gridSize, y = y})
+					--table.insert(JumpPointSearch.markers, {label = 'forced x -', x = x - self.gridSize, y = y})
 				end
 			else
 				-- move along the x axis
@@ -87,12 +87,12 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 				if not self:isValidNode(x, y + self.gridSize, constraints) then
 					table.insert(primitives, {x = x + dx, y = y + self.gridSize,
 											  t = math.atan2(self.gridSize, dx), d = dDiag})
-					table.insert(JumpPointSearch.markers, {label = 'forced y +', x = x, y = y + self.gridSize})
+					--table.insert(JumpPointSearch.markers, {label = 'forced y +', x = x, y = y + self.gridSize})
 				end
 				if not self:isValidNode(x, y - self.gridSize, constraints) then
 					table.insert(primitives, {x = x + dx, y = y - self.gridSize,
 											  t = math.atan2(-self.gridSize, dx), d = dDiag})
-					table.insert(JumpPointSearch.markers, {label = 'forced y -', x = x, y = y - self.gridSize})
+					--table.insert(JumpPointSearch.markers, {label = 'forced y -', x = x, y = y - self.gridSize})
 				end
 			end
 		end
@@ -104,7 +104,7 @@ end
 
 function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, recursionCounter)
 	if recursionCounter and recursionCounter > 2 then
-		return node
+		return node,recursionCounter
 	end
 	recursionCounter = recursionCounter and recursionCounter + 1 or 1
 	local x,y = node.x, node.y
@@ -143,13 +143,14 @@ function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, rec
 	end
 	-- Recursive diagonal search
 	if self:isValidNode(x + dx, y, constraints) or self:isValidNode(x, y + dy, constraints) then
-		return self:jump(State3D(x + dx, y + dy, node.t),node, constraints, goal, recursionCounter)
+		return self:jump(State3D(x + dx, y + dy, node.t), node, constraints, goal, recursionCounter)
 	end
 end
 
 function HybridAStar.JpsMotionPrimitives:createSuccessor(node, primitive, hitchLength, constraints, goal)
 	local neighbor = State3D(primitive.x, primitive.y, primitive.t)
-	local jumpNode = self:jump(neighbor, node, constraints, goal)
+	local jumpNode, jumps = self:jump(neighbor, node, constraints, goal)
+	primitive.d = jumps and jumps * primitive.d or primitive.d
 	if jumpNode then
 		return State3D(jumpNode.x, jumpNode.y, jumpNode.t, node.g, node, HybridAStar.Gear.Forward, HybridAStar.Steer.Straight,
 			node:getNextTrailerHeading(self.gridSize, hitchLength))
@@ -169,5 +170,3 @@ end
 function JumpPointSearch:getMotionPrimitives(turnRadius, allowReverse)
 	return HybridAStar.JpsMotionPrimitives(self.deltaPos, self.deltaPosGoal, self.deltaThetaGoal)
 end
-
--- just for debug purposes
