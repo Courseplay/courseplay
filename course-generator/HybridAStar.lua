@@ -467,7 +467,6 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 	else
 		self.analyticSolver = DubinsSolver()
 	end
-
 	-- ignore trailer for the first check, we don't know its heading anyway
 	if not constraints:isValidNode(goal, true, true) then
 		self:debug('Goal node is invalid, abort pathfinding.')
@@ -872,7 +871,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 	return false
 end
 
----@class HybridAStarWithJpsInTheMiddle : PathfinderInterface
+---@class HybridAStarWithJpsInTheMiddle : HybridAStarWithAStarInTheMiddle
 HybridAStarWithJpsInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
 
 function HybridAStarWithJpsInTheMiddle:init(hybridRange, yieldAfter, maxIterations, mustBeAccurate)

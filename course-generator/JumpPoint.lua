@@ -3,22 +3,19 @@ HybridAStar.JpsMotionPrimitives = CpObject(HybridAStar.SimpleMotionPrimitives)
 function HybridAStar.JpsMotionPrimitives:init(gridSize, deltaPosGoal, deltaThetaGoal)
 	-- similar to the A*, the possible motion primitives (the neighbors) are in all 8 directions.
 	HybridAStar.SimpleMotionPrimitives.init(self, gridSize)
-	for _, p in pairs(self.primitives) do
-		-- JPS does not really use motion primitives, what we call primitives are actually the
-		-- successors, with their real coordinates, not just a delta.
-		p.x, p.y, p.t = p.dx, p.dy, p.dt
-	end
 	self.deltaPosGoal = deltaPosGoal
 	self.deltaThetaGoal = deltaThetaGoal
 end
 
-function HybridAStar.JpsMotionPrimitives:isValidNode(x, y, constraints)
-	--print('isValidNode', x, y)
-	local node = {x = x, y = y}
-	if not constraints:isValidNode(node) then
+function HybridAStar.JpsMotionPrimitives:isValidNode(x, y, t, constraints)
+	local node = {x = x, y = y, t = t}
+
+	if not constraints:isValidNode(node, true) then
 		return false
 	else
-		local penalty = constraints:getNodePenalty(node)
+		-- we ignore off-field penalty. The problem with JPS is it works only for uniform cost grids, so a node
+		-- is either invalid or valid, no such thing as higher cost to prefer other paths.
+		local penalty = constraints:getNodePenalty(node, true)
 		return penalty < 1
 	end
 end
@@ -32,7 +29,7 @@ end
 function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 	local primitives = {}
 	if node.pred then
-		local x,y = node.x, node.y
+		local x, y, t = node.x, node.y, node.t
 		-- Node has a parent, we will prune some neighbours
 		-- Gets the direction of move
 		local dx = self.gridSize * (x - node.pred.x) / math.max(1, math.abs(x - node.pred.x))
@@ -41,11 +38,11 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 		local xOk, yOk = false, false
 		if math.abs(dx) > 0.1 and math.abs(dy) > 0.1 then
 			-- diagonal move
-			if self:isValidNode(x, y + dy, constraints) then
+			if self:isValidNode(x, y + dy, t, constraints) then
 				table.insert(primitives, {x = x, y = y + dy, t = math.atan2(dy, 0), d = math.abs(dy)})
 				yOk = true
 			end
-			if self:isValidNode(x + dx, y, constraints) then
+			if self:isValidNode(x + dx, y, t, constraints) then
 				table.insert(primitives, {x = x + dx, y = y, t = math.atan2(0, dx), d = math.abs(dx)})
 				xOk = true
 			end
@@ -53,84 +50,89 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 				table.insert(primitives, {x = x + dx, y = y + dy, t = math.atan2(dy, dx), d = dDiag})
 			end
 			-- Forced neighbors
-			if not self:isValidNode(x - dx, y, constraints) and yOk then
+			if not self:isValidNode(x - dx, y, t, constraints) and yOk then
 				table.insert(primitives, {x = x - dx, y = y + dy, t = math.atan2(dy, -dx), d = dDiag})
 			end
-			if not self:isValidNode(x, y - dy, constraints) and xOk then
+			if not self:isValidNode(x, y - dy, t, constraints) and xOk then
 				table.insert(primitives, {x = x + dx, y = y - dy, t = math.atan2(-dy, dx), d = dDiag})
 			end
 		else
 			if math.abs(dx) < 0.1 then
 				-- move along the y axis
-				if self:isValidNode(x, y + dy, constraints) then
+				if self:isValidNode(x, y + dy, t, constraints) then
 					table.insert(primitives, {x = x, y = y + dy, t = math.atan2(dy, 0), d = math.abs(dy)})
 				end
 				-- Forced neighbors
 				dDiag = math.sqrt(dy * dy + self.gridSize * self.gridSize)
-				if not self:isValidNode(x + self.gridSize, y, constraints) then
+				if not self:isValidNode(x + self.gridSize, y, t, constraints) then
 					table.insert(primitives, {x = x + self.gridSize, y = y + dy,
 											  t = math.atan2(dy, self.gridSize), d = dDiag})
 					--table.insert(JumpPointSearch.markers, {label = 'forced x +', x = x + self.gridSize, y = y})
 				end
-				if not self:isValidNode(x - self.gridSize, y, constraints) then
+				if not self:isValidNode(x - self.gridSize, y, t, constraints) then
 					table.insert(primitives, {x = x - self.gridSize, y = y + dy,
 											  t = math.atan2(dy, -self.gridSize), d = dDiag})
 					--table.insert(JumpPointSearch.markers, {label = 'forced x -', x = x - self.gridSize, y = y})
 				end
 			else
 				-- move along the x axis
-				if self:isValidNode(x + dx, y, constraints) then
+				if self:isValidNode(x + dx, y, t, constraints) then
 					table.insert(primitives, {x = x + dx, y = y, t = math.atan2(0, dx), d = math.abs(dx)})
 				end
 				-- Forced neighbors
 				dDiag = math.sqrt(dx * dx + self.gridSize * self.gridSize)
-				if not self:isValidNode(x, y + self.gridSize, constraints) then
+				if not self:isValidNode(x, y + self.gridSize, t, constraints) then
 					table.insert(primitives, {x = x + dx, y = y + self.gridSize,
 											  t = math.atan2(self.gridSize, dx), d = dDiag})
 					--table.insert(JumpPointSearch.markers, {label = 'forced y +', x = x, y = y + self.gridSize})
 				end
-				if not self:isValidNode(x, y - self.gridSize, constraints) then
+				if not self:isValidNode(x, y - self.gridSize, t, constraints) then
 					table.insert(primitives, {x = x + dx, y = y - self.gridSize,
 											  t = math.atan2(-self.gridSize, dx), d = dDiag})
 					--table.insert(JumpPointSearch.markers, {label = 'forced y -', x = x, y = y - self.gridSize})
 				end
 			end
 		end
-		return primitives
 	else
-		return self.primitives
+		-- no parent, this is the start node
+		for _, p in pairs(self.primitives) do
+			-- JPS does not really use motion primitives, what we call primitives are actually the
+			-- successors, with their real coordinates, not just a delta.
+			table.insert(primitives, { x = node.x + p.dx, y = node.y + p.dy, t = p.dt, d = p.d})
+		end
 	end
+	return primitives
 end
 
 function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, recursionCounter)
 	if recursionCounter and recursionCounter > 2 then
-		return node,recursionCounter
+		return node, recursionCounter
 	end
 	recursionCounter = recursionCounter and recursionCounter + 1 or 1
-	local x,y = node.x, node.y
-	if not self:isValidNode(x, y, constraints) then return nil end
+	local x,y, t = node.x, node.y, node.t
+	if not self:isValidNode(x, y, t, constraints) then return nil end
 	if node:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then return node end
 	local dx = x - pred.x
 	local dy = y - pred.y
 	if math.abs(dx) > 0.1 and math.abs(dy) > 0.1 then
 		-- diagonal move
-		if  (self:isValidNode(x - dx, y + dy, constraints) and not self:isValidNode(x - dx, y, constraints)) or
-			(self:isValidNode(x + dx, y - dy, constraints) and not self:isValidNode(x, y - dy, constraints)) then
+		if  (self:isValidNode(x - dx, y + dy, t, constraints) and not self:isValidNode(x - dx, y, t, constraints)) or
+			(self:isValidNode(x + dx, y - dy, t, constraints) and not self:isValidNode(x, y - dy, t, constraints)) then
 			-- Current node is a jump point if one of its left or right neighbors ahead is forced
 			return node
 		end
 	else
 		if math.abs(dx) > 0.1 then
 			-- move along the x axis
-			if  (self:isValidNode(x + dx, y + self.gridSize, constraints) and not self:isValidNode(x, y + self.gridSize, constraints)) or
-				(self:isValidNode(x + dx, y - self.gridSize, constraints) and not self:isValidNode(x, y - self.gridSize, constraints)) then
+			if  (self:isValidNode(x + dx, y + self.gridSize, t, constraints) and not self:isValidNode(x, y + self.gridSize, t, constraints)) or
+				(self:isValidNode(x + dx, y - self.gridSize, t, constraints) and not self:isValidNode(x, y - self.gridSize, t, constraints)) then
 				-- Current node is a jump point if one of its left or right neighbors ahead is forced
 				return node
 			end
 		else
 			-- move along the y axis
-			if  (self:isValidNode(x + self.gridSize, y + dy, constraints) and not self:isValidNode(x + self.gridSize, y, constraints)) or
-				(self:isValidNode(x - self.gridSize, y + dy, constraints) and not self:isValidNode(x - self.gridSize, y, constraints)) then
+			if  (self:isValidNode(x + self.gridSize, y + dy, t, constraints) and not self:isValidNode(x + self.gridSize, y, t, constraints)) or
+				(self:isValidNode(x - self.gridSize, y + dy, t, constraints) and not self:isValidNode(x - self.gridSize, y, t, constraints)) then
 				-- Current node is a jump point if one of its left or right neighbors ahead is forced
 				return node
 			end
@@ -142,7 +144,7 @@ function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, rec
 		if self:jump(State3D(x, y + dy, node.t), node, constraints, goal, recursionCounter) then return node end
 	end
 	-- Recursive diagonal search
-	if self:isValidNode(x + dx, y, constraints) or self:isValidNode(x, y + dy, constraints) then
+	if self:isValidNode(x + dx, y, t, constraints) or self:isValidNode(x, y + dy, t, constraints) then
 		return self:jump(State3D(x + dx, y + dy, node.t), node, constraints, goal, recursionCounter)
 	end
 end

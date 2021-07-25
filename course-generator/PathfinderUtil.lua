@@ -298,7 +298,7 @@ function PathfinderUtil.CollisionDetector:overlapBoxCallback(transformId)
             -- just bumped into myself or a vehicle we want to ignore
             return
         end
-        --courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'collision: %s', collidingObject:getName())
+        courseplay.debugFormat(courseplay.DBG_PATHFINDER, 'collision: %s', collidingObject:getName())
     end
    	if not getHasClassId(transformId, ClassIds.TERRAIN_TRANSFORM_GROUP) then
         local text = ''
@@ -331,7 +331,7 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
 	self.collidingShapesText = 'unknown'
 
     overlapBox(x, y + 0.2, z, xRot, yRot, zRot, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
-    if log and self.collidingShapes > 0 then
+    if true and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
                 { x = x, y = y + 0.2, z = z, xRot = xRot, yRot = yRot, zRot = zRot, width = width, length = length})
         courseplay.debugFormat(courseplay.DBG_PATHFINDER,
@@ -456,7 +456,8 @@ end
 --- Calculate penalty for this node. The penalty will be added to the cost of the node. This allows for
 --- obstacle avoidance or forcing the search to remain in certain areas.
 ---@param node State3D
-function PathfinderConstraints:getNodePenalty(node)
+---@param noOffFieldPenalty boolean Do not add penalty for off field nodes.
+function PathfinderConstraints:getNodePenalty(node, noOffFieldPenalty)
     -- tweak these two parameters to set up how far the path will be from the field or fruit boundary
     -- size of the area to check for field/fruit
     local areaSize = 4
@@ -465,14 +466,14 @@ function PathfinderConstraints:getNodePenalty(node)
     local penalty = 0
     local isField, area, totalArea = courseplay:isField(node.x, -node.y, areaSize, areaSize)
     -- not on any field
-    local offFieldPenalty = self.offFieldPenalty
+    local offFieldPenalty = noOffFieldPenalty and 0 or self.offFieldPenalty
     local offField = area / totalArea < minRequiredAreaRatio
     if self.fieldNum ~= 0 and not offField then
         -- if there's a preferred field and we are on a field
         if not PathfinderUtil.isWorldPositionOwned(node.x, -node.y) then
             -- the field we are on is not ours, more penalty!
             offField = true
-            offFieldPenalty = self.offFieldPenalty * 1.2
+            offFieldPenalty = offFieldPenalty * 1.2
         end
     end
     if offField then
@@ -528,32 +529,32 @@ end
 ---@param log boolean log colliding shapes/vehicles
 ---@param ignoreTrailer boolean don't check the trailer
 function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
-		ensureHelperNode()
-		PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
-			node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
+	ensureHelperNode()
+	PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
+		node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
 
-    -- check the vehicle and all implements attached to it except a trailer or towed implement
-    local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
-    -- for debug purposes only, store validity info on node
-    node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
+	-- check the vehicle and all implements attached to it except a trailer or towed implement
+	local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
+	-- for debug purposes only, store validity info on node
+	node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
 		PathfinderUtil.helperNode, self.context.vehicleData, self.context.vehiclesToIgnore, self.context.objectsToIgnore, log)
-    if self.context.vehicleData.trailer and not ignoreTrailer then
-        -- now check the trailer or towed implement
-        -- move the node to the rear of the vehicle (where approximately the trailer is attached)
+	if self.context.vehicleData.trailer and not ignoreTrailer then
+		-- now check the trailer or towed implement
+		-- move the node to the rear of the vehicle (where approximately the trailer is attached)
 		local x, y, z = localToWorld(PathfinderUtil.helperNode, 0, 0, self.context.vehicleData.trailerHitchOffset)
 
 		PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode, x, z,
 			courseGenerator.toCpAngle(node.tTrailer), 0.5)
 
-        node.collidingShapes = node.collidingShapes + PathfinderUtil.collisionDetector:findCollidingShapes(
+		node.collidingShapes = node.collidingShapes + PathfinderUtil.collisionDetector:findCollidingShapes(
 			PathfinderUtil.helperNode, self.context.vehicleData.trailerRectangle, self.context.vehiclesToIgnore,
 			self.context.objectsToIgnore, log)
-    end
-    local isValid = node.collidingShapes == 0
-    if not isValid then
-        self.collisionNodeCount = self.collisionNodeCount + 1
-    end
-    return isValid
+	end
+	local isValid = node.collidingShapes == 0
+	if not isValid then
+		self.collisionNodeCount = self.collisionNodeCount + 1
+	end
+	return isValid
 end
 
 function PathfinderConstraints:relaxConstraints()
@@ -653,7 +654,7 @@ end
 ---@param mustBeAccurate boolean must be accurately find the goal position/angle (optional)
 function PathfinderUtil.startPathfinding(start, goal, context, constraints, allowReverse, mustBeAccurate)
     PathfinderUtil.overlapBoxes = {}
-    local pathfinder = HybridAStarWithAStarInTheMiddle(context.turnRadius * 4, 100, 40000, mustBeAccurate)
+    local pathfinder = HybridAStarWithJpsInTheMiddle(context.turnRadius * 4, 100, 40000, mustBeAccurate)
     local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.turnRadius, allowReverse,
             constraints, context.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid
@@ -691,7 +692,7 @@ function PathfinderUtil.findPathForTurn(vehicle, startOffset, goalReferenceNode,
         end
         pathfinder = HybridAStarWithPathInTheMiddle(turnRadius * 3, 200, headlandPath)
     else
-        pathfinder = HybridAStarWithAStarInTheMiddle(turnRadius * 3, 200, 10000)
+        pathfinder = HybridAStarWithJpsInTheMiddle(turnRadius * 3, 200, 10000)
     end
 
     local fieldNum = PathfinderUtil.getFieldNumUnderVehicle(vehicle)

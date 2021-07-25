@@ -126,6 +126,7 @@ local function initialize()
 		'course-generator/BinaryHeap',
 		'course-generator/Dubins',
 		'course-generator/HybridAStar',
+		'course-generator/JumpPoint',
 		'course-generator/ReedsShepp',
 		'course-generator/ReedsSheppSolver',
 		'course-generator/PathfinderUtil',
