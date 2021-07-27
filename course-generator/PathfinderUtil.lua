@@ -821,7 +821,7 @@ function PathfinderUtil.startAStarPathfindingFromVehicleToNode(vehicle, goalNode
             PathfinderUtil.defaultOffFieldPenalty,
             fieldNum)
 
-    local pathfinder = AStar(100, 10000)
+    local pathfinder = JumpPointSearch(100, 10000)
     local done, path, goalNodeInvalid = pathfinder:start(start, goal, context.turnRadius, false,
             constraints, context.trailerHitchLength)
     return pathfinder, done, path, goalNodeInvalid

@@ -10,7 +10,7 @@ end
 function HybridAStar.JpsMotionPrimitives:isValidNode(x, y, t, constraints)
 	local node = {x = x, y = y, t = t}
 
-	if not constraints:isValidNode(node, true) then
+	if not constraints:isValidNode(node, true, true) then
 		return false
 	else
 		-- we ignore off-field penalty. The problem with JPS is it works only for uniform cost grids, so a node
@@ -140,12 +140,19 @@ function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, rec
 	end
 	-- Recursive horizontal/vertical search
 	if math.abs(dx) > 0.1 and math.abs(dy) > 0.1 then
-		if self:jump(State3D(x + dx, y, node.t), node, constraints, goal, recursionCounter) then return node end
-		if self:jump(State3D(x, y + dy, node.t), node, constraints, goal, recursionCounter) then return node end
+		local nextNode = State3D:copy(node)
+		nextNode.x = nextNode.x + dx
+		if self:jump(nextNode, node, constraints, goal, recursionCounter) then return node end
+		nextNode = State3D:copy(node)
+		nextNode.y = nextNode.y + dy
+		if self:jump(nextNode, node, constraints, goal, recursionCounter) then return node end
 	end
 	-- Recursive diagonal search
 	if self:isValidNode(x + dx, y, t, constraints) or self:isValidNode(x, y + dy, t, constraints) then
-		return self:jump(State3D(x + dx, y + dy, node.t), node, constraints, goal, recursionCounter)
+		local nextNode = State3D:copy(node)
+		nextNode.x = nextNode.x + dx
+		nextNode.y = nextNode.y + dy
+		return self:jump(nextNode, node, constraints, goal, recursionCounter)
 	end
 end
 

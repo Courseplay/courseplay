@@ -44,15 +44,15 @@ function CpManager:setUpDebugChannels()
 			defaultActive[courseplay.DBG_REVERSE] = true;
 		end;
 		if getMD5(g_gameSettings:getValue("nickname")) == "3e701b6620453edcd4c170543e72788b" then
-			defaultActive[courseplay.DBG_AI_DRIVER] = true;
-			defaultActive[courseplay.DBG_PPC] = true;
-			defaultActive[courseplay.DBG_REVERSE] = true;
-			defaultActive[courseplay.DBG_TURN] = true;
-			defaultActive[courseplay.DBG_IMPLEMENTS] = true;
+			--defaultActive[courseplay.DBG_AI_DRIVER] = true;
+			--defaultActive[courseplay.DBG_PPC] = true;
+			--defaultActive[courseplay.DBG_REVERSE] = true;
+			--defaultActive[courseplay.DBG_TURN] = true;
+			--defaultActive[courseplay.DBG_IMPLEMENTS] = true;
 			defaultActive[courseplay.DBG_COURSES] = true;
 			defaultActive[courseplay.DBG_PATHFINDER] = true;
-			defaultActive[courseplay.DBG_MODE_4] = true;
-			defaultActive[courseplay.DBG_TRAFFIC] = true;
+			defaultActive[courseplay.DBG_MODE_2] = true;
+			--defaultActive[courseplay.DBG_TRAFFIC] = true;
 		end;
 	end;
 
