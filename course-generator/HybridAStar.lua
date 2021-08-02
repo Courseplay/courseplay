@@ -500,7 +500,6 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 		---@type State3D
 		local pred = State3D.pop(openList)
 		--self:debug('pop %s', tostring(pred))
-
 		if pred:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
 			-- done!
 			self:debug('Popped the goal (%d).', self.iterations)
@@ -538,6 +537,7 @@ function HybridAStar:findPath(start, goal, turnRadius, allowReverse, constraints
 				---@type State3D
 				local succ = hybridMotionPrimitives:createSuccessor(pred, primitive, hitchLength, constraints, goal)
 				if succ then
+					--self:debug('     %s %s', tostring(succ), tostring(constraints:isValidNode(succ)))
 					if succ:equals(goal, self.deltaPosGoal, self.deltaThetaGoal) then
 						succ.pred = succ.pred
 						self:debug('Successor at the goal (%d).', self.iterations)

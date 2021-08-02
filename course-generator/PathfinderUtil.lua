@@ -80,6 +80,21 @@ function PathfinderUtil.VehicleData:init(vehicle, withImplements, buffer)
     end
 end
 
+--- Create a square with sides size m length as vehicle data. This is used by the jump point search instead of
+--- the actual vehicle size, always with the same orientation. This makes sure that a grid cell is always valid or invalid,
+--- regardless of what its predecessor is. If this is not ensured the algorithm may fail as forced nodes may be invalid
+--- when popped (as the vehicle rectangle now has a different orientation and hits an obstacle)
+function PathfinderUtil.VehicleData:createSquare(size)
+	local cubeVehicleData = {}
+	cubeVehicleData.vehicle = self.vehicle
+	cubeVehicleData.rootVehicle = self.rootVehicle
+	cubeVehicleData.dLeft = size / 2
+	cubeVehicleData.dRight = size / 2
+	cubeVehicleData.dFront = size / 2
+	cubeVehicleData.dRear = size / 2
+	return cubeVehicleData
+end
+
 --- Calculate the relative coordinates of a rectangle's corners around a reference node, representing the implement
 function PathfinderUtil.VehicleData:getRectangleForImplement(implement, referenceNode, buffer)
     local rootToReferenceNodeOffset = 0
@@ -219,24 +234,6 @@ function PathfinderUtil.Context:init(vehicle, vehiclesToIgnore, objectsToIgnore)
 	self.objectsToIgnore = objectsToIgnore or {}
 end
 
---- Calculate the four corners of a rectangle around a node (for example the area covered by a vehicle)
---- the data returned by this is the rectangle from the vehicle data translated and rotated to the node
-function PathfinderUtil.getBoundingBoxInWorldCoordinates(node, vehicleData)
-    local x, y, z
-    local corners = {}
-    x, y, z = localToWorld(node, vehicleData.dRight, 0, vehicleData.dRear)
-    table.insert(corners, {x = x, y = y, z = z})
-    x, y, z = localToWorld(node, vehicleData.dRight, 0, vehicleData.dFront)
-    table.insert(corners, {x = x, y = y, z = z})
-    x, y, z = localToWorld(node, vehicleData.dLeft, 0, vehicleData.dFront)
-    table.insert(corners, {x = x, y = y, z = z})
-    x, y, z = localToWorld(node, vehicleData.dLeft, 0, vehicleData.dRear)
-    table.insert(corners, {x = x, y = y, z = z})
-    x, y, z = localToWorld(node, 0, 0, 0)
-    local center = {x = x, y = y, z = z}
-    return {name = vehicleData.name, center = center, corners = corners}
-end
-
 function PathfinderUtil.elementOf(list, key)
     for _, element in ipairs(list or {}) do
         if element == key then return true end
@@ -331,12 +328,12 @@ function PathfinderUtil.CollisionDetector:findCollidingShapes(node, vehicleData,
 	self.collidingShapesText = 'unknown'
 
     overlapBox(x, y + 0.2, z, xRot, yRot, zRot, width, 1, length, 'overlapBoxCallback', self, bitOR(AIVehicleUtil.COLLISION_MASK, 2), true, true, true)
-    if true and self.collidingShapes > 0 then
+    if log and self.collidingShapes > 0 then
         table.insert(PathfinderUtil.overlapBoxes,
                 { x = x, y = y + 0.2, z = z, xRot = xRot, yRot = yRot, zRot = zRot, width = width, length = length})
-        courseplay.debugFormat(courseplay.DBG_PATHFINDER,
-					'pathfinder colliding shapes %s with %s at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
-					self.collidingShapesText, vehicleData.name, x, z, width, length, math.deg(yRot))
+        --courseplay.debugFormat(courseplay.DBG_PATHFINDER,
+		--			'pathfinder colliding shapes %s with %s at x = %.1f, z = %.1f, (%.1fx%.1f), yRot = %d',
+		--			self.collidingShapesText, vehicleData.name, x, z, width, length, math.deg(yRot))
     end
     DebugUtil.drawOverlapBox(x, y, z, xRot, yRot, zRot, width, 1, length, 100, 0, 0)
 
@@ -438,6 +435,7 @@ function PathfinderConstraints:init(context, maxFruitPercent, offFieldPenalty, f
 	self.areaToAvoidPenaltyCount = 0
     self.initialMaxFruitPercent = self.maxFruitPercent
     self.initialOffFieldPenalty = self.offFieldPenalty
+	self.hybridVehicleData = context.vehicleData
     self:resetCounts()
 	local areaText = self.areaToAvoid and
 		string.format('%.1f x %.1f m', self.areaToAvoid.length, self.areaToAvoid.width) or 'none'
@@ -456,8 +454,7 @@ end
 --- Calculate penalty for this node. The penalty will be added to the cost of the node. This allows for
 --- obstacle avoidance or forcing the search to remain in certain areas.
 ---@param node State3D
----@param noOffFieldPenalty boolean Do not add penalty for off field nodes.
-function PathfinderConstraints:getNodePenalty(node, noOffFieldPenalty)
+function PathfinderConstraints:getNodePenalty(node)
     -- tweak these two parameters to set up how far the path will be from the field or fruit boundary
     -- size of the area to check for field/fruit
     local areaSize = 4
@@ -466,7 +463,7 @@ function PathfinderConstraints:getNodePenalty(node, noOffFieldPenalty)
     local penalty = 0
     local isField, area, totalArea = courseplay:isField(node.x, -node.y, areaSize, areaSize)
     -- not on any field
-    local offFieldPenalty = noOffFieldPenalty and 0 or self.offFieldPenalty
+    local offFieldPenalty = self.offFieldPenalty
     local offField = area / totalArea < minRequiredAreaRatio
     if self.fieldNum ~= 0 and not offField then
         -- if there's a preferred field and we are on a field
@@ -533,11 +530,9 @@ function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
 	PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
 		node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
 
-	-- check the vehicle and all implements attached to it except a trailer or towed implement
-	local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
-	-- for debug purposes only, store validity info on node
 	node.collidingShapes = PathfinderUtil.collisionDetector:findCollidingShapes(
-		PathfinderUtil.helperNode, self.context.vehicleData, self.context.vehiclesToIgnore, self.context.objectsToIgnore, log)
+		PathfinderUtil.helperNode, vehicleData or self.context.vehicleData,
+		self.context.vehiclesToIgnore, self.context.objectsToIgnore, log)
 	if self.context.vehicleData.trailer and not ignoreTrailer then
 		-- now check the trailer or towed implement
 		-- move the node to the rear of the vehicle (where approximately the trailer is attached)
@@ -889,18 +884,26 @@ function PathfinderUtil.setVisualDebug(d)
     PathfinderUtil.visualDebugLevel = d
 end
 
+local nodes
+
 function PathfinderUtil.showNodes(pathfinder)
     if PathfinderUtil.visualDebugLevel < 1 then return end
     if pathfinder then
-        local nodes
         if PathfinderUtil.visualDebugLevel > 1 and
                 pathfinder.hybridAStarPathfinder and pathfinder.hybridAStarPathfinder.nodes then
-            nodes = pathfinder.hybridAStarPathfinder.nodes
+            --nodes = pathfinder.hybridAStarPathfinder.nodes
         elseif PathfinderUtil.visualDebugLevel > 0 and pathfinder.aStarPathfinder and pathfinder.aStarPathfinder.nodes then
             nodes = pathfinder.aStarPathfinder.nodes
         elseif PathfinderUtil.visualDebugLevel > 0 and pathfinder.nodes then
-            nodes = pathfinder.nodes
+            --nodes = pathfinder.nodes
         end
+
+		if JumpPointSearch.markers then
+			for _, marker in ipairs(JumpPointSearch.markers) do
+				local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, marker.x, 0, -marker.y)
+				cpDebug:drawPoint(marker.x, y + 1.4, -marker.y, 0, 100, 100)
+			end
+		end
         if nodes then
             for _, row in pairs(nodes.nodes) do
                 for _, column in pairs(row) do
@@ -912,16 +915,21 @@ function PathfinderUtil.showNodes(pathfinder)
                             if cell.offField then
                                 r, g, b = 250 * color, 250 - 250 * color, 0
                             else
-                                r, g, b = color, 1 - color, 0
+                                r, g, b = 50 * color, 50 - 50 * color, 0
                             end
                             local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, cell.x, 0, -cell.y)
                             cpDebug:drawPoint(cell.x, y + 1, -cell.y, r, g, b)
+
+							Utils.renderTextAtWorldPosition(cell.x, y + 1.5, -cell.y, string.format('%.0f', cell.cost), getCorrectTextSize(0.012), 0)
                             if cell.pred and cell.pred.y then
---                                cpDebug:drawLineRGB(cell.x, y + 1 + height, -cell.y, r, g, b, cell.pred.x, y + 1 + height, -cell.pred.y)
+                                cpDebug:drawLineRGB(cell.x, y + 1, -cell.y, r, g, b, cell.pred.x, y + 1, -cell.pred.y)
                             end
                             if cell.isColliding then
                                 cpDebug:drawPoint(cell.x, y + 1.2, -cell.y, 100, 0, 0)
                             end
+							if cell.forced then
+								cpDebug:drawPoint(cell.x, y + 1.3, -cell.y, 0, 0, 100)
+							end
                         end
                     end
                 end

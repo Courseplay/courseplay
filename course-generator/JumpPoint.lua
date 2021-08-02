@@ -1,4 +1,4 @@
----@class HybridAStar.JpsMotionPrimitives : HybridAstar.SimpleMotionPrimitives
+---@class HybridAStar.JpsMotionPrimitives : HybridAStar.SimpleMotionPrimitives
 HybridAStar.JpsMotionPrimitives = CpObject(HybridAStar.SimpleMotionPrimitives)
 function HybridAStar.JpsMotionPrimitives:init(gridSize, deltaPosGoal, deltaThetaGoal)
 	-- similar to the A*, the possible motion primitives (the neighbors) are in all 8 directions.
@@ -7,17 +7,13 @@ function HybridAStar.JpsMotionPrimitives:init(gridSize, deltaPosGoal, deltaTheta
 	self.deltaThetaGoal = deltaThetaGoal
 end
 
+function HybridAStar.JpsMotionPrimitives:getGridSize()
+	return self.gridSize
+end
+
 function HybridAStar.JpsMotionPrimitives:isValidNode(x, y, t, constraints)
 	local node = {x = x, y = y, t = t}
-
-	if not constraints:isValidNode(node, true, true) then
-		return false
-	else
-		-- we ignore off-field penalty. The problem with JPS is it works only for uniform cost grids, so a node
-		-- is either invalid or valid, no such thing as higher cost to prefer other paths.
-		local penalty = constraints:getNodePenalty(node, true)
-		return penalty < 1
-	end
+	return constraints:isValidNode(node, true, true)
 end
 
 -- Get the possible neighbors when coming from the predecessor node.
@@ -52,9 +48,13 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 			-- Forced neighbors
 			if not self:isValidNode(x - dx, y, t, constraints) and yOk then
 				table.insert(primitives, {x = x - dx, y = y + dy, t = math.atan2(dy, -dx), d = dDiag})
+				table.insert(JumpPointSearch.markers, {label = 'forced x - y +', x = x - dx, y = y + dy})
+				node.forced = true
 			end
 			if not self:isValidNode(x, y - dy, t, constraints) and xOk then
 				table.insert(primitives, {x = x + dx, y = y - dy, t = math.atan2(-dy, dx), d = dDiag})
+				table.insert(JumpPointSearch.markers, {label = 'forced x + y -', x = x + dx, y = y - dy})
+				node.forced = true
 			end
 		else
 			if math.abs(dx) < 0.1 then
@@ -67,12 +67,14 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 				if not self:isValidNode(x + self.gridSize, y, t, constraints) then
 					table.insert(primitives, {x = x + self.gridSize, y = y + dy,
 											  t = math.atan2(dy, self.gridSize), d = dDiag})
-					--table.insert(JumpPointSearch.markers, {label = 'forced x +', x = x + self.gridSize, y = y})
+					table.insert(JumpPointSearch.markers, {label = 'forced x +', x = x + self.gridSize, y = y + dy})
+					node.forced = true
 				end
 				if not self:isValidNode(x - self.gridSize, y, t, constraints) then
 					table.insert(primitives, {x = x - self.gridSize, y = y + dy,
 											  t = math.atan2(dy, -self.gridSize), d = dDiag})
-					--table.insert(JumpPointSearch.markers, {label = 'forced x -', x = x - self.gridSize, y = y})
+					table.insert(JumpPointSearch.markers, {label = 'forced x -', x = x - self.gridSize, y = y + dy})
+					node.forced = true
 				end
 			else
 				-- move along the x axis
@@ -84,12 +86,14 @@ function HybridAStar.JpsMotionPrimitives:getPrimitives(node, constraints)
 				if not self:isValidNode(x, y + self.gridSize, t, constraints) then
 					table.insert(primitives, {x = x + dx, y = y + self.gridSize,
 											  t = math.atan2(self.gridSize, dx), d = dDiag})
-					--table.insert(JumpPointSearch.markers, {label = 'forced y +', x = x, y = y + self.gridSize})
+					table.insert(JumpPointSearch.markers, {label = 'forced y +', x = x + dx, y = y + self.gridSize})
+					node.forced = true
 				end
 				if not self:isValidNode(x, y - self.gridSize, t, constraints) then
 					table.insert(primitives, {x = x + dx, y = y - self.gridSize,
 											  t = math.atan2(-self.gridSize, dx), d = dDiag})
-					--table.insert(JumpPointSearch.markers, {label = 'forced y -', x = x, y = y - self.gridSize})
+					table.insert(JumpPointSearch.markers, {label = 'forced y -', x = x + dx, y = y - self.gridSize})
+					node.forced = true
 				end
 			end
 		end
@@ -142,9 +146,11 @@ function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, rec
 	if math.abs(dx) > 0.1 and math.abs(dy) > 0.1 then
 		local nextNode = State3D:copy(node)
 		nextNode.x = nextNode.x + dx
+		nextNode.g = nextNode.g + dx
 		if self:jump(nextNode, node, constraints, goal, recursionCounter) then return node end
 		nextNode = State3D:copy(node)
 		nextNode.y = nextNode.y + dy
+		nextNode.g = nextNode.g + dy
 		if self:jump(nextNode, node, constraints, goal, recursionCounter) then return node end
 	end
 	-- Recursive diagonal search
@@ -152,6 +158,8 @@ function HybridAStar.JpsMotionPrimitives:jump(node, pred, constraints, goal, rec
 		local nextNode = State3D:copy(node)
 		nextNode.x = nextNode.x + dx
 		nextNode.y = nextNode.y + dy
+
+		nextNode.g = nextNode.g + dy
 		return self:jump(nextNode, node, constraints, goal, recursionCounter)
 	end
 end
@@ -166,6 +174,43 @@ function HybridAStar.JpsMotionPrimitives:createSuccessor(node, primitive, hitchL
 	end
 end
 
+---@class JpsPathfinderConstraints : PathfinderConstraints
+JpsPathfinderConstraints = CpObject(PathfinderConstraints)
+function JpsPathfinderConstraints:init(constraints, gridSize)
+	self.context = constraints.context
+	self.maxFruitPercent = constraints.maxFruitPercent
+	self.areaToAvoid = constraints.areaToAvoid
+	self.initialMaxFruitPercent = self.maxFruitPercent
+	self.context.trailerHitchLength = constraints.context.trailerHitchLength
+	self.context.turnRadius = constraints.context.turnRadius
+	self.context.vehiclesToIgnore = constraints.context.vehiclesToIgnore
+	self.context.objectsToIgnore = constraints.context.objectsToIgnore
+	self.gridSize = gridSize
+	self.context.vehicleData = constraints.context.vehicleData:createSquare(gridSize)
+end
+
+function JpsPathfinderConstraints:isValidNode(node, log, ignoreTrailer)
+	local isValid = PathfinderConstraints.isValidNode(self, node, log, ignoreTrailer)
+	if isValid then
+		local isField, area, totalArea = courseplay:isField(node.x, -node.y, self.gridSize, self.gridSize)
+		if isField then
+			local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, self.gridSize, self.gridSize)
+			if hasFruit and fruitValue > self.maxFruitPercent then
+				return false
+			end
+		end
+		return true
+	else
+		return false
+	end
+end
+
+function JpsPathfinderConstraints:getNodePenalty(node)
+	return 0
+end
+
+function JpsPathfinderConstraints:showStatistics()
+end
 
 --- A Jump Point Search
 ---@class JumpPointSearch : AStar
@@ -174,8 +219,15 @@ JumpPointSearch.markers = {}
 
 function JumpPointSearch:init(yieldAfter, maxIterations)
 	AStar.init(self, yieldAfter, maxIterations)
+	JumpPointSearch.markers = {}
+	self.motionPrimitives = HybridAStar.JpsMotionPrimitives(self.deltaPos, self.deltaPosGoal, self.deltaThetaGoal)
 end
 
 function JumpPointSearch:getMotionPrimitives(turnRadius, allowReverse)
-	return HybridAStar.JpsMotionPrimitives(self.deltaPos, self.deltaPosGoal, self.deltaThetaGoal)
+	return self.motionPrimitives
+end
+
+function JumpPointSearch:findPath(start, goal, turnRadius, allowReverse, constraints, hitchLength)
+	local jpsConstraints = JpsPathfinderConstraints(constraints, self.motionPrimitives:getGridSize())
+	return AStar.findPath(self, start, goal, turnRadius, allowReverse, jpsConstraints, hitchLength)
 end
