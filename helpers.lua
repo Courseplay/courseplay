@@ -158,11 +158,16 @@ function courseplay:trueOrNil(bool)
 	return nil;
 end;
 
+-- sets idx into [1, maxIdx] and returns the value of tab at idx
 function courseplay:loopedTable(tab, idx, maxIdx)
 	maxIdx = maxIdx or #tab;
 	idx = idx % maxIdx
 
-	return tab[idx];
+	if idx != 0 then
+		return tab[idx];
+	else
+		return tab[maxIdx]
+	end
 end;
 
 function courseplay:waypointsHaveAttr(vehicle, curRecordNumber, back, forward, attr, value, all)
