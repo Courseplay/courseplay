@@ -111,6 +111,7 @@ function courseplay:setVarValueFromString(self, str, value)
 
 	what = nil;
 end;
+
 function courseplay:getVarValueFromString(self, str)
 	local what = StringUtil.splitString(".", str);
 	local whatDepth = #what;
@@ -159,13 +160,7 @@ end;
 
 function courseplay:loopedTable(tab, idx, maxIdx)
 	maxIdx = maxIdx or #tab;
-	while idx > maxIdx do
-		--idx = maxIdx - idx;
-		idx = idx - maxIdx;
-	end;
-	while idx < 1 do
-		idx = idx + maxIdx;
-	end;
+	idx = idx % maxIdx
 
 	return tab[idx];
 end;
@@ -192,17 +187,19 @@ end;
 function courseplay:varLoop(var, changeBy, maxVar, minVar)
 	minVar = minVar or 1;
 	var = var + changeBy;
-	if var > maxVar then
+	--[[if var > maxVar then
 		var = minVar;
 	elseif var < minVar then
 		var = maxVar;
 	end;
-	return var;
+	return var;]]
+	return math.min(math.max(var, minVar), maxVar)
 end;
 
 -- by horoman
 courseplay.utils.table = {}
 
+-- attention. c1 and c2 could be different types which leads to uncomparable values
 function courseplay.utils.table.compare(t1,t2,field)
 	local result = false
 	local C1 = t1[field]
