@@ -201,7 +201,7 @@ Attachable.onPostLoad = Utils.appendedFunction(Attachable.onPostLoad, courseplay
 Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
 
 -- no static copy is needed, just go with the pointer
---courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
+-- courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
 courseplay.locales = g_i18n.texts
 
 -- make l10n global so they can be used in GUI XML files directly (Thanks `Mogli!)
@@ -218,9 +218,9 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
 
 
--- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
-
--- This fixes the problems with driveInDirection motor and cruise control. There is a bug some where that is setting self.rotatedTime to 0
+-- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil) 
+--Done? if so, delete these comments
+--[[ This fixes the problems with driveInDirection motor and cruise control. There is a bug some where that is setting self.rotatedTime to 0
 local originaldriveInDirection = AIVehicleUtil.driveInDirection;
 AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceleration, slowAcceleration, slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, slowDownFactor)
 
@@ -274,4 +274,4 @@ AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceler
 		WheelsUtil.updateWheelsPhysics(self, dt, self.lastSpeedReal*self.movingDirection, acc, not allowedToDrive, true)
     end
 end
-
+]]

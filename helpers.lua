@@ -184,15 +184,11 @@ function courseplay:waypointsHaveAttr(vehicle, curRecordNumber, back, forward, a
 	end;
 end;
 
+-- changes var by changeBy and returns the result as a number in [minVar, maxVar]
 function courseplay:varLoop(var, changeBy, maxVar, minVar)
 	minVar = minVar or 1;
 	var = var + changeBy;
-	--[[if var > maxVar then
-		var = minVar;
-	elseif var < minVar then
-		var = maxVar;
-	end;
-	return var;]]
+	
 	return math.min(math.max(var, minVar), maxVar)
 end;
 
