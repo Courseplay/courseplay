@@ -3,7 +3,8 @@
 --print_r(g_vehicleTypeManager)
 --DebugUtil.printTableRecursively(g_fillTypeManager, '  ', 0, 10)
 
-g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
+local numInstallationsVehicles = 0;
+local courseplaySpecName = g_currentModName .. ".courseplay"
 
 function courseplay.registerEventListeners(vehicleType)
 	print(string.format( "## Courseplay: Registering event listeners for %s", vehicleType.name))
@@ -41,9 +42,6 @@ end
 if courseplay.houstonWeGotAProblem then
 	return;
 end;
-
-local numInstallationsVehicles = 0;
-local courseplaySpecName = g_currentModName .. ".courseplay"
 
 -- register courseplay specification in vehicle types and prepare compatibility with GlobalCompany
 function courseplay:register(secondTime)
@@ -106,7 +104,6 @@ function courseplay:attachablePostLoad(xmlFile)
 		self.name = courseplay:getObjectName(self, xmlFile);
 	end;
 end;
-Attachable.onPostLoad = Utils.appendedFunction(Attachable.onPostLoad, courseplay.attachablePostLoad);
 
 function courseplay:articulatedAxisOnLoad()
 	-- Due to a bug in Giant's ArticulatedAxis:onLoad() maxRotation has a value in degrees instead of radians,
@@ -116,8 +113,6 @@ function courseplay:articulatedAxisOnLoad()
 		self.maxRotation = math.rad(self.maxRotation)
 	end
 end
-ArticulatedAxis.onLoad = Utils.appendedFunction(ArticulatedAxis.onLoad, courseplay.articulatedAxisOnLoad)
-
 
 function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 	local loadingState = superFunc(self, ...);
@@ -143,11 +138,6 @@ function courseplay.vehiclePostLoadFinished(self, superFunc, ...)
 	return loadingState;
 end;
 
-Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
--- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
-
-FieldworkAIDriver.register()
-
 function courseplay:vehicleDelete()
 	if self.cp ~= nil then
 		--if vehicle is a courseplayer, delete the vehicle from activeCourseplayers
@@ -171,7 +161,6 @@ function courseplay:vehicleDelete()
 
 	end;
 end;
-Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
 
 function courseplay:foldableLoad(savegame)
 	if self.cp == nil then self.cp = {}; end;
@@ -203,9 +192,17 @@ function courseplay:foldableLoad(savegame)
 
 	self.cp.foldingPartsStartMoveDirection = Utils.getNoNil(startMoveDir, 0);
 end;
+-- overwrite/append functions of basegame
 Foldable.load = Utils.appendedFunction(Foldable.load, courseplay.foldableLoad);
+-- NOTE: using loadFinished() instead of load() so any other mod that overwrites Vehicle.load() doesn't interfere
+Vehicle.loadFinished = Utils.overwrittenFunction(Vehicle.loadFinished, courseplay.vehiclePostLoadFinished);
+ArticulatedAxis.onLoad = Utils.appendedFunction(ArticulatedAxis.onLoad, courseplay.articulatedAxisOnLoad)
+Attachable.onPostLoad = Utils.appendedFunction(Attachable.onPostLoad, courseplay.attachablePostLoad);
+Vehicle.delete = Utils.prependedFunction(Vehicle.delete, courseplay.vehicleDelete);
 
-courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
+-- no static copy is needed, just go with the pointer
+--courseplay.locales = courseplay.utils.table.copy(g_i18n.texts, true);
+courseplay.locales = g_i18n.texts
 
 -- make l10n global so they can be used in GUI XML files directly (Thanks `Mogli!)
 for n,t in pairs( g_i18n.texts ) do
@@ -214,8 +211,12 @@ for n,t in pairs( g_i18n.texts ) do
 	end
 end
 
+FieldworkAIDriver.register()
 courseplay:register();
 print(string.format('### Courseplay: installed into %d vehicle types', numInstallationsVehicles));
+
+g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
+
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil)
 
