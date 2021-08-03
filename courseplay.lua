@@ -165,6 +165,7 @@ local function initialize()
 	print(('### Courseplay: initialized %d/%d files (v%s)'):format(numFilesLoaded, numFiles, courseplay.version));
 end;
 
+-- Prepares the version number of courseplay for the CP-GUI
 local function setVersionData()
 	local modItem = g_modManager:getModByName(courseplay.modName)
 	if modItem and modItem.version then

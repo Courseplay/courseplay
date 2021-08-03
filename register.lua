@@ -45,9 +45,11 @@ end;
 local numInstallationsVehicles = 0;
 local courseplaySpecName = g_currentModName .. ".courseplay"
 
+-- register courseplay specification in vehicle types and prepare compatibility with GlobalCompany
 function courseplay:register(secondTime)
 	if secondTime then
 		print('## Courseplay: register later loaded mods:');
+		-- compatibility with GlobalCompany triggers
 		if g_company then
 			if g_company.loadingTrigger then 
 				if g_company.loadingTrigger.loadTriggerCallback then
@@ -76,6 +78,7 @@ function courseplay:register(secondTime)
 	else
 		print('## Courseplay: register into vehicle types:');
 	end
+	-- add courseplay specification to vehicle types
 	for typeName,vehicleType in pairs(g_vehicleTypeManager.vehicleTypes) do
 		if SpecializationUtil.hasSpecialization(AIVehicle, vehicleType.specializations) and not vehicleType.specializationsByName[courseplaySpecName] then
 				print("  install courseplay into "..typeName)
