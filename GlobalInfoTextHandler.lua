@@ -344,7 +344,8 @@ end
 ---@param isUp boolean the mouse button up ?
 ---@param mouseKey number mouse button was pressed ?
 function GlobalInfoTextHandler:onSecondaryMouseClick(posX, posY, isDown, isUp, mouseKey)
-	if self.hasContent and not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
+	if not self.hasContent then return; end;
+	if not self.playerOnFootMouseEnabled and not g_currentMission.player.currentTool then
 		self.playerOnFootMouseEnabled = true
 		self.wasPlayerFrozen = g_currentMission.isPlayerFrozen
 		g_currentMission.isPlayerFrozen = true
