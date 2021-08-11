@@ -294,7 +294,7 @@ end
 --- Delete the best target, so after the unloader has unloaded,
 --- a new approach for the silo is created.
 function BunkerSiloAIDriver:beforeMainCourse()
-	self:deleteBestTarget()
+	self:deleteLastBestTarget()
 end
 
 --- Deletes the best target and forces a new approach.
