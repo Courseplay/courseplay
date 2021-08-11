@@ -175,7 +175,6 @@ function courseplay:onLoad(savegame)
 	self.cp.hasRunRaycastThisLoop = {};
 	self.findVehicleHeights = courseplay.findVehicleHeights; 
 	
-	self.cp.fillTriggers = {}
 	
 	if self.maxRotation then
 		self.cp.steeringAngle = math.deg(self.maxRotation);
@@ -327,6 +326,7 @@ function courseplay:onDraw()
 	courseplay:showTemporaryMarkers(self)
 	if self.cp.driver then 
 		self.cp.driver.triggerHandler:onDraw()
+		self.cp.driver.triggerSensor:onDraw()
 	end
 	local isDriving = self:getIsCourseplayDriving();
 
@@ -1176,14 +1176,7 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
         end
 		--- Add new helpers, if we run out of giants helpers available.
 		--- TODO: Figure out if this needs tweaks for multiplayer.
-		while(spec.currentHelper == nil) do
-			--- Default helpers are index 1-10
-			local index = math.random(1,10)
-			local source = g_helperManager:getHelperByIndex(index)
-			local name = "C"..tostring(math.random(1,100))
-
-			spec.currentHelper = g_helperManager:addHelper(name, name, source.filename)
-		end
+		spec.currentHelper = courseplay.addNewHelper(spec.currentHelper)
 
         g_helperManager:useHelper(spec.currentHelper)
 		---Make sure the farmId is never: 0 == spectator farm id,
@@ -1248,6 +1241,18 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
 		---Making sure the client hud gets correctly updated.
 		vehicle.cp.driver:refreshHUD()
     end
+end
+
+function courseplay.addNewHelper(currentHelper)
+	while(currentHelper == nil and currentHelper.index~=nil) do
+		--- Default helpers are index 1-10
+		local index = math.random(1,10)
+		local source = g_helperManager:getHelperByIndex(index)
+		local name = "C"..tostring(math.random(1,100))
+
+		currentHelper = g_helperManager:addHelper(name, name, source.filename)
+	end
+	return currentHelper
 end
 
 --the same code as giants AIVehicle:stopAIVehicle(helperIndex, noEventSend, startedFarmId), but customized for cp

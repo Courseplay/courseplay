@@ -70,7 +70,7 @@ function courseplay:doSingleRaycast(vehicle, triggerType, direction, callBack, x
 	end;
 end;
 
--- FIND TIP TRIGGER CALLBACK
+--- FIND TIP TRIGGER CALLBACK
 -- target object in raycastAll() was the vehicle, so here, super confusingly, self is the vehicle and not courseplay,
 -- TODO: function signature should really be courseplay.findTipTriggerCallback(vehicle, transformId, x, y, z) for clarity.
 -- When a trigger with a suitable fill type is found, vehicle.cp.currentTipTrigger is set to the trigger (definition unclear)
@@ -183,115 +183,6 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	return true;
 end;
-
--- FIND SPECIAL TRIGGER CALLBACK
-function courseplay:findSpecialTriggerCallback(transformId, x, y, z, distance)
-	if CpManager.confirmedNoneSpecialTriggers[transformId] then
-		return true;
-	end;
-	
-	if courseplay.debugChannels[courseplay.DBG_TRIGGERS] then
-		cpDebug:drawPoint(x, y, z, 1, 1, 0);
-	end;
-	
-	--[[Tommi TODO check if its still nessesary (mode8) 
-	local name = tostring(getName(transformId));
-	local parent = getParent(transformId);
-	for _,implement in pairs(self:getAttachedImplements()) do
-		if (implement.object ~= nil and implement.object.rootNode == parent) then
-			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), courseplay.DBG_TRIGGERS);
-			return true
-		end
-	end	
-	]]
-	
-	--if the trigger is on my list an I'm not in the trigger (because I allready filled up here), add it to my found triggers   
-	if courseplay.triggers.fillTriggers[transformId] then
-		local imNotInThisTrigger = true
-		local trigger = courseplay.triggers.fillTriggers[transformId]
-		for _,workTool in pairs (self.cp.workTools) do
-			if (trigger.onActivateObject and trigger.getIsActivatable and trigger:getIsActivatable(workTool))
-			or (trigger.sourceObject and  #workTool.spec_fillUnit.fillTrigger.triggers > 0 and workTool.spec_fillUnit.fillTrigger.triggers[1] == trigger) then 
-				courseplay:debug(('%s: %s is allready in fillTrigger(%d)'):format(nameNum(self),tostring(workTool:getName()), transformId), courseplay.DBG_TRIGGERS);
-				imNotInThisTrigger = false
-			end
-		end
-		if imNotInThisTrigger then
-			courseplay:debug(('%s: fillTrigger(%d) found, add to vehicle.cp.fillTriggers'):format(nameNum(self), transformId), courseplay.DBG_TRIGGERS);
-			courseplay:addFoundFillTrigger(self, transformId)
-			courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
-		else
-			courseplay:debug(('%s: fillTrigger(%d) found, but Im allready in it so ignore it'):format(nameNum(self), transformId), courseplay.DBG_TRIGGERS);
-		end
-		return false;
-	end
-			
-	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
-	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
-	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), courseplay.DBG_TRIGGERS);
-
-	return true;
-end;
-
-function courseplay:addFoundFillTrigger(vehicle, transformId)
-	--if we dont have a fillTrigger, set cp.fillTrigger
-	if vehicle.cp.fillTrigger == nil then
-		courseplay:debug(string.format("set %s as vehicle.cp.fillTrigger",tostring(transformId)),courseplay.DBG_TRIGGERS)
-		vehicle.cp.fillTrigger = transformId;
-	end
-	-- check whether we have it in our list allready
-	local allreadyThere = false
-	if  #vehicle.cp.fillTriggers >0 then
-		for i=1,#vehicle.cp.fillTriggers do
-			if vehicle.cp.fillTriggers[i] == transformId then	
-				allreadyThere = true;
-				break;
-			end
-		end
-	end
-	--if not, add it
-	if not allreadyThere then
-		table.insert(vehicle.cp.fillTriggers,transformId)
-		courseplay.debugVehicle(courseplay.DBG_TRIGGERS,vehicle,'add %s to vehicle.cp.fillTriggers; new number of triggers: %d',tostring(transformId),#vehicle.cp.fillTriggers)
-	end
-end
-
--- FIND Fuel TRIGGER CALLBACK
-function courseplay:findFuelTriggerCallback(transformId, x, y, z, distance)
-	if CpManager.confirmedNoneSpecialTriggers[transformId] then
-		return true;
-	end;
-		
-	if courseplay.debugChannels[courseplay.DBG_TRIGGERS] then
-		cpDebug:drawPoint(x, y, z, 1, 1, 0);
-	end;
-	
-	--[[Tommi TODO check if its still nessesary (mode8) 
-	local name = tostring(getName(transformId));
-	local parent = getParent(transformId);
-	for _,implement in pairs(self:getAttachedImplements()) do
-		if (implement.object ~= nil and implement.object.rootNode == parent) then
-			courseplay:debug(('%s: trigger %s is from my own implement'):format(nameNum(self), tostring(transformId)), courseplay.DBG_TRIGGERS);
-			return true
-		end
-	end	
-	]]
-	
-	--print("findSpecialTriggerCallback found "..tostring(transformId).." "..getName(transformId))
-	if courseplay.triggers.fillTriggers[transformId] then
-		--print(transformId.." is in fillTrigers")
-		self.cp.fuelFillTrigger = transformId;
-		courseplay:setCustomTimer(self, 'triggerFailBackup', 10);
-		return false;
-	end
-			
-	CpManager.confirmedNoneSpecialTriggers[transformId] = true;
-	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1;
-	courseplay:debug(('%s: added %d (%s) to trigger blacklist -> total=%d'):format(nameNum(self), transformId, name, CpManager.confirmedNoneSpecialTriggersCounter), courseplay.DBG_TRIGGERS);
-
-	return true;
-end;
-
 
 function courseplay:updateAllTriggers()
 	courseplay:debug('updateAllTriggers()', courseplay.DBG_TRIGGERS);
@@ -633,6 +524,15 @@ Triggers.bunkerSilos = {}
 function Triggers.getBunkerSilos()
 	return Triggers.bunkerSilos
 end
+
+function Triggers.getLoadingTriggers()
+	return Triggers.loadingTriggers
+end
+
+function Triggers.getFillTriggers()
+	return Triggers.fillTriggers
+end
+
 
 ---Add all relevant triggers on create and remove them on delete.
 function Triggers.addLoadingTrigger(trigger,superFunc,...)

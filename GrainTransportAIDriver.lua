@@ -70,9 +70,9 @@ function GrainTransportAIDriver:drive(dt)
 
 	local allowedToDrive = true
 	if self:getSiloSelectedFillTypeSetting():isEmpty() then 
-		courseplay:setInfoText(self.vehicle, "COURSEPLAY_MANUAL_LOADING")
 		--checking FillLevels, while loading at StartPoint 
 		if self.readyToLoadManualAtStart then 
+			courseplay:setInfoText(self.vehicle, "COURSEPLAY_MANUAL_LOADING")
 			self:setInfoText('REACHED_OVERLOADING_POINT')			
 			self:checkFillUnits()
 			if self.nextClosestExactFillRootNode then 

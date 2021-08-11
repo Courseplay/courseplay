@@ -105,6 +105,13 @@ function CombineAIDriver:init(vehicle)
 	self.unloadAIDriverToRendezvous = CpTemporaryObject()
 end
 
+function CombineAIDriver:postInit()
+    ---Refresh the Hud content here,as otherwise the moveable pipe is not 
+    ---detected the first time after loading a savegame. 
+    self:setHudContent()
+    UnloadableFieldworkAIDriver.postInit(self)
+end
+
 function CombineAIDriver:setUpPipe()
 	if self.vehicle.spec_pipe then
 		self.pipe = self.vehicle.spec_pipe
@@ -212,7 +219,7 @@ end
 
 function CombineAIDriver:drive(dt)
 	-- handle the pipe in any state
-	self:handlePipe()
+	self:handlePipe(dt)
 	-- the rest is the same as the parent class
 	UnloadableFieldworkAIDriver.drive(self, dt)
 end
@@ -1085,20 +1092,23 @@ function CombineAIDriver:isChopper()
 	return self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) > 10000000
 end
 
-function CombineAIDriver:handlePipe()
+function CombineAIDriver:handlePipe(dt)
 	if self.pipe then
 		if self:isChopper() then
 			self:handleChopperPipe()
 		else
-			self:handleCombinePipe()
+			self:handleCombinePipe(dt)
 		end
 	end
 end
 
-function CombineAIDriver:handleCombinePipe()
+function CombineAIDriver:handleCombinePipe(dt)
     
   if self:isFillableTrailerUnderPipe() or self:isAutoDriveWaitingForPipe() or (self:isWaitingForUnload() and self.vehicle.cp.settings.pipeAlwaysUnfold:is(true)) then
 		self:openPipe()
+		if self.pipe and self.pipe.currentState == AIDriverUtil.PIPE_STATE_OPEN then 
+			self:isWorkingToolPositionReached(dt,1)
+		end
 	else
 		--wait until the objects under the pipe are gone
 		if self.pipe.numObjectsInTriggers <=0 then
@@ -1764,4 +1774,9 @@ function CombineAIDriver:isProximitySlowDownEnabled(vehicle)
 	else
 		return true
 	end
+end
+
+function CombineAIDriver:getWorkingToolPositionsSetting()
+	local setting = self.settings.pipeToolPositions
+	return setting:getHasMoveablePipe() and setting:hasValidToolPositions() and setting
 end

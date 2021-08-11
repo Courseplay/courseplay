@@ -183,8 +183,11 @@ function AIDriver:init(vehicle)
 		self.settings:validateCurrentValues()
 	end
 	self:setHudContent()
+	---@type TriggerHandler
 	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting())
 	self.triggerHandler:enableFuelLoading()
+	---@type TriggerSensor
+	self.triggerSensor = TriggerSensor(self,self.vehicle)
 end
 
 ---This function is called once on the first update tick,
@@ -438,13 +441,13 @@ function AIDriver:update(dt)
 	self:resetSpeed()
 	self:updateLoadingText()
 	self.triggerHandler:onUpdate(dt)
+	self.triggerSensor:onUpdate(dt)
 	self:shouldDriverBeReleased()
-
-	self:updateDistanceMovedSinceStart(dt)
+	self:updateDistanceMovedSinceStart()
 end
 
 ---Update moved distance since start.
-function AIDriver:updateDistanceMovedSinceStart(dt)
+function AIDriver:updateDistanceMovedSinceStart()
 	self.movedDistance = self.movedDistance + self.vehicle.lastMovedDistance
 end
 
@@ -512,14 +515,9 @@ function AIDriver:driveCourse(dt)
 	if not self:hasTipTrigger() then
 		self:setSpeed(self:getRecordedSpeed())
 	end
-
-	local isInTrigger, isAugerWagonTrigger = self.triggerHandler:isInTrigger()
---	if self:getIsInFilltrigger() or self:hasTipTrigger() then-- or isInTrigger then
-	if isInTrigger then
+	
+	if self.triggerHandler:isInTrigger() or self.triggerSensor:isNearTriggers() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
-		if isAugerWagonTrigger then
-			self:setSpeed(self.APPROACH_AUGER_TRIGGER_SPEED)
-		end
 	end
 
 	self:slowDownForWaitPoints()
@@ -1365,6 +1363,12 @@ function AIDriver:searchForTipTriggers()
 		local dx,dz = self.course:getDirectionToWPInDistance(self.ppc:getCurrentWaypointIx(),self.vehicle,raycastDistance)
 		local x,y,z,nx,ny,nz = courseplay:getTipTriggerRaycastDirection(self.vehicle,dx,dz,raycastDistance)	
 		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
+	end
+end
+
+function AIDriver:searchForLoadingFillingTriggers()
+	if self.ppc:getCurrentWaypointIx() > 2 and not self.ppc:reachedLastWaypoint() and not self.ppc:isReversing() then
+		self.triggerSensor:raycastLoadingFillingTriggers()
 	end
 end
 
@@ -2303,5 +2307,11 @@ function AIDriver:isWorkingToolPositionReached(dt,positionIx)
 end
 
 function AIDriver:getWorkingToolPositionsSetting()
-	--- override
+	if self:hasSugarCaneTrailerToolPositions() then 
+		return self.settings.sugarCaneTrailerToolPositions
+	end
+end
+
+function AIDriver:hasSugarCaneTrailerToolPositions()
+	return self.settings.sugarCaneTrailerToolPositions:getHasSugarCaneTrailer()
 end

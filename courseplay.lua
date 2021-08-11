@@ -85,6 +85,7 @@ local function initialize()
 		'Waypoint',
 		'StateModule',
 		'TriggerHandler',
+		'TriggerSensor',
 		'BaleToCollect',
 		'AIDriver',
 		'CombineUnloadAIDriver',
