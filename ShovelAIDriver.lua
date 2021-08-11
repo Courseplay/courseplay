@@ -562,7 +562,7 @@ function ShovelAIDriver:isHeapSearchAllowed()
 end
 
 function ShovelAIDriver:getBestTarget()
-	return self.bunkerSiloManager:getBestTargetFillUnitFillUp()
+	return self.bunkerSiloManager:getBestTargetFillUnitFillUp(self.lastBestTarget)
 end
 
 --- If max silo fillLevel is reached, then continue with the main course.

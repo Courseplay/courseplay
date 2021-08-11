@@ -469,6 +469,7 @@ function BunkerSiloManager:createBunkerSiloMap(width)
 				fillType = fillType;
 				bunkerLength = bunkerLength;
 				bunkerWidth = bunkerWidth;
+				validApproaches = 2 --- Used to decide if the mode 9 driver can reach this tile and clear it.
 			}
 
 			sx = map[heightIndex][widthIndex].wx
@@ -627,15 +628,46 @@ function BunkerSiloManager:isAtEnd(bestTarget)
 end
 
 --- get the bestTarget, firstLine of the bestTarget work with
+---@param lastBestTarget table
 ---@return bestTarget, firstLine of the bestTarget
-function BunkerSiloManager:getBestTargetFillUnitFillUp()
-	local line = self:getFirstSiloPartLineWithFillLevel()
-	local column = self:getSiloPartColumnWithMostFillLevel(line)
+function BunkerSiloManager:getBestTargetFillUnitFillUp(lastBestTarget)
+	local bestColumn
+	local bestLine
+	for line,data in pairs(self.siloMap) do 
+		if self:getSiloPartLineFillLevel(line) > 0 then 
+			local mostFillLevel = 0
+			for column,fillUnit in pairs(data) do 
+				if fillUnit.validApproaches > 0 then 
+					if fillUnit.fillLevel > mostFillLevel then 
+						bestColumn = column 
+						mostFillLevel = fillUnit.fillLevel
+					end
+				end
+			end
+			if bestColumn then 
+				bestLine = line
+				break
+			end
+		end
+	end
+
+--	local line = self:getFirstSiloPartLineWithFillLevel()
+--	local column = self:getSiloPartColumnWithMostFillLevel(line)
 	local bestTarget = {
-		line = line,
-		column = column
+		line = bestLine or self:getNumberOfLines(),
+		column = bestColumn or self:getNumberOfColumns(),
+		fillLevel = self:getSiloPartFillLevel(bestLine,bestColumn)
 	}	
-	return bestTarget, line
+	if lastBestTarget then 
+		if lastBestTarget.line == bestTarget.line and lastBestTarget.column == bestTarget.column then 
+			local siloPart = self:getSiloPart(bestLine,bestColumn)
+			if lastBestTarget.fillLevel >= bestTarget.fillLevel then 
+				siloPart.validApproaches = siloPart.validApproaches - 1
+			end
+		end
+	end
+
+	return bestTarget, bestLine
 end
 
 

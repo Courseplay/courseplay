@@ -305,6 +305,7 @@ end
 
 --- Deletes the best target, but saves the last driven column.
 function BunkerSiloAIDriver:deleteLastBestTarget()
+	self.lastBestTarget = self.bestTarget
 	self.lastDrivenColumn = self.bestTarget and self.bestTarget.column
 	self.bestTarget = nil
 end
