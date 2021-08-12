@@ -272,14 +272,30 @@ function BunkerSiloAIDriver:beforeDriveIntoSilo()
 end
 
 --- Gets the best target for driving into the silo.
+--- Allways starts at the right side and then drives to the left/right side.
 function BunkerSiloAIDriver:getBestTarget()
 	if not self.lastDrivenColumn then 
-		self:siloDebug("Starting a new approach at column 1.")
-		return {line=1,column=1},1
+		local column = math.floor(self.bunkerSiloManager:getNumberOfColumns()/2)
+		self:siloDebug("Starting a new approach in the middle at column %d",column)
+		self.lastDrivenColumnRight = true
+		return {line=1,column=column},1
 	else 
 		local numColumns = self.bunkerSiloManager:getNumberOfColumns()
-		local nextColumn = self.lastDrivenColumn+1
-		if nextColumn > numColumns then nextColumn = 1 end
+		local nextColumn
+		if self.lastDrivenColumnRight then 
+			nextColumn = self.lastDrivenColumn+1
+			if nextColumn > numColumns then 
+				nextColumn = math.floor(self.bunkerSiloManager:getNumberOfColumns()/2) 
+				self.lastDrivenColumnRight = false
+			end
+		else
+			nextColumn = self.lastDrivenColumn-1
+			if nextColumn <= 0 then 
+				nextColumn = math.floor(self.bunkerSiloManager:getNumberOfColumns()/2) 
+				self.lastDrivenColumnRight = true
+			end
+		end
+		
 		self:siloDebug("Starting at column: %d, last column: %d",nextColumn,self.lastDrivenColumn)
 		return {line=1,column=nextColumn},1
 	end
@@ -294,13 +310,14 @@ end
 --- Delete the best target, so after the unloader has unloaded,
 --- a new approach for the silo is created.
 function BunkerSiloAIDriver:beforeMainCourse()
-	self:deleteLastBestTarget()
+	self:deleteBestTarget()
 end
 
 --- Deletes the best target and forces a new approach.
 function BunkerSiloAIDriver:deleteBestTarget()
 	self.lastDrivenColumn = nil
 	self.bestTarget = nil
+	self.lastDrivenColumnRight = not self.lastDrivenColumnRight
 end
 
 --- Deletes the best target, but saves the last driven column.

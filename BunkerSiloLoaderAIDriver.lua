@@ -117,3 +117,7 @@ end
 function BunkerSiloLoaderAIDriver:getBunkerSiloSpeed()
 	return 2
 end
+
+function BunkerSiloLoaderAIDriver:getBestTarget()
+	return 1
+end
