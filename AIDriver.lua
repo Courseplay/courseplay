@@ -2032,7 +2032,7 @@ end
 --- proximity swerve enabled is checked with isProximitySwerveEnabled() and thus can be extended in derived classes with
 --- checking for the specific vehicle.
 function AIDriver:isProximitySwerveEnabled(vehicle)
-	return self.proximitySwerveEnabled
+	return self.proximitySwerveEnabled and not self.triggerSensor:isNearTriggers()
 end
 
 

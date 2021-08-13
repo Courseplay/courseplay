@@ -70,8 +70,6 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	end
 
 	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
-	--- This is used to disable the proximity swerve near a wait point.
-	self.isNearWaitPoint = isNearWaitPoint
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
 	self:enableFillTypeLoading(isNearWaitPoint)
@@ -300,8 +298,5 @@ function FillableFieldworkAIDriver:getTurnEndForwardOffset()
 end
 
 function FillableFieldworkAIDriver:isProximitySwerveEnabled()
-	if self.isNearWaitPoint then 
-		return 
-	end
-	FieldworkAIDriver.isProximitySwerveEnabled(self)
+	return FieldworkAIDriver.isProximitySwerveEnabled(self) and AIDriver.isProximitySwerveEnabled(self)
 end

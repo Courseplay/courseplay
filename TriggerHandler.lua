@@ -205,7 +205,8 @@ function TriggerHandler:changeLoadingState(newState)
 end
 
 function TriggerHandler:updateLoadingTriggers()
-	if self.validFillTypeLoading or self:isAllowedToLoadFuel() then
+	--- Todo: This is a really ugly way of check all the loading triggers. Need a better solution for this.
+	if (self.validFillTypeLoading or self:isAllowedToLoadFuel()) and g_updateLoopIndex %100 == 0 then
 		self:activateLoadingTriggerWhenAvailable()
 	end
 	if self:isLoading() or self:isLoadingFuel() then
