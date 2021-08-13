@@ -78,6 +78,10 @@ function FieldSupplyAIDriver:onEndCourse()
 end
 
 function FieldSupplyAIDriver:isProximitySwerveEnabled()
+	if self.isNearWaitPoint then 
+		return 
+	end
+
 	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
 			self.state == self.states.RETURNING_TO_FIRST_POINT or
 			self.supplyState == self.states.ON_REFILL_COURSE
