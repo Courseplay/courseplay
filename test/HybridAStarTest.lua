@@ -14,7 +14,6 @@ require('mock-Courseplay')
 require("courseGenerator")
 require("State3D")
 require("HybridAStar")
-require("JumpPoint")
 require("BinaryHeap")
 require("Dubins")
 require("ReedsShepp")
@@ -22,6 +21,8 @@ require("ReedsSheppSolver")
 require("settings")
 require("courseGeneratorSettings")
 require('TestPathfinderConstraints')
+PathfinderConstraints = TestPathfinderConstraints
+require("JumpPoint")
 
 courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
 courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
@@ -37,6 +38,7 @@ local fruit = {
 
 local mp = HybridAStar.JpsMotionPrimitives(3, 3, math.pi * 2)
 local constraints = TestPathfinderConstraints(obstacles, fruit)
+--PathfinderConstraints = {isValidNode = constraints.isValidNode}
 local turnRadius = 5
 local startHeading = 0 --math.pi
 

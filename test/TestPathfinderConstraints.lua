@@ -5,6 +5,8 @@ function TestPathfinderConstraints:init(obstacles, fruit)
 	self:resetConstraints()
 	self.obstacles = obstacles
 	self.fruit = fruit
+	local vehicleData = {createSquare = function () return end}
+	self.context = {hitchLength = 10, vehicleData = vehicleData}
 end
 
 ---@param node State3D

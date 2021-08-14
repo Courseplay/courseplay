@@ -177,20 +177,24 @@ end
 ---@class JpsPathfinderConstraints : PathfinderConstraints
 JpsPathfinderConstraints = CpObject(PathfinderConstraints)
 function JpsPathfinderConstraints:init(constraints, gridSize)
-	self.context = constraints.context
 	self.maxFruitPercent = constraints.maxFruitPercent
 	self.areaToAvoid = constraints.areaToAvoid
 	self.initialMaxFruitPercent = self.maxFruitPercent
+	self.context = {}
 	self.context.trailerHitchLength = constraints.context.trailerHitchLength
 	self.context.turnRadius = constraints.context.turnRadius
 	self.context.vehiclesToIgnore = constraints.context.vehiclesToIgnore
 	self.context.objectsToIgnore = constraints.context.objectsToIgnore
 	self.gridSize = gridSize
 	self.context.vehicleData = constraints.context.vehicleData:createSquare(gridSize)
+	-- just for tests
+	self.obstacles = constraints.obstacles
+	self.fruit = constraints.fruit
+	self.fruitLimit = constraints.fruitLimit
 end
 
 function JpsPathfinderConstraints:isValidNode(node, log, ignoreTrailer)
-	local isValid = PathfinderConstraints.isValidNode(self, node, log, ignoreTrailer)
+	local isValid = self._base.isValidNode(self, node, log, ignoreTrailer)
 	if isValid then
 		local isField, area, totalArea = courseplay:isField(node.x, -node.y, self.gridSize, self.gridSize)
 		if isField then

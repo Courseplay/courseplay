@@ -24,6 +24,7 @@ function courseplay.checkFuel() return true end
 function courseplay.turn() end
 function courseplay.lowerImplements() end
 function courseplay.raiseImplements() end
+function courseplay.isField() return false end
 
 courseplay.DBG_COURSES = 19
 courseplay.debugChannels = {}
