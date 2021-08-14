@@ -62,7 +62,6 @@ function GrainTransportAIDriver:drive(dt)
 	self.vehicle.cp.hasRunRaycastThisLoop['tipTrigger'] = false
 	self.vehicle.cp.hasRunRaycastThisLoop['specialTrigger'] = false
 
-	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 
 	-- should we give up control so some other code can drive?
 	local giveUpControl = false
@@ -108,8 +107,7 @@ function GrainTransportAIDriver:drive(dt)
 		self.triggerHandler:disableFillTypeLoading()
 	end
 		-- TODO: are these checks really necessary?
-	if self.vehicle.cp.totalFillLevel ~= nil
-		and self.vehicle.cp.tipRefOffset ~= nil
+	if self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
 
 		self:searchForTipTriggers()

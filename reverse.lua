@@ -291,7 +291,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 		lx, lz = MathUtil.getDirectionFromYRotation(angleDiff);
 	end;
 
-	if (mode == courseplay.MODE_GRAIN_TRANSPORT or mode == courseplay.MODE_COMBI or mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and (vehicle.cp.totalFillLevel ~= nil and vehicle.cp.totalFillLevel > 0) then
+	if (mode == courseplay.MODE_GRAIN_TRANSPORT or mode == courseplay.MODE_COMBI or mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and AIDriverUtil.getTotalFillLevelAndCapacity(vehicle) > 0 then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, -0.1, lzTipper);
 		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
 	end;

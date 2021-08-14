@@ -1185,6 +1185,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 	if unloadPointIsReverse then
 		for _, tipper in pairs (vehicle.cp.workTools) do
 			if tipper.spec_dischargeable then	
+				local trailerFillLevel = AIDriverUtil.getTotalFillLevelAndCapacityForObject(tipper)
 				readyToDischarge = false
 				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
 				local isTipping = tipper.spec_dischargeable.currentRaycastDischargeNode.isEffectActive
@@ -1195,7 +1196,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 				
 				--when we reached the unload point, stop the tractor and inhibit any action from ppc till the trailer is empty
 				--check the heap is at least a specific size and not just a mote, so that the tipper can add to the pile a little bit instead of being so far forward
-				if ((foundHeap and fillLevel > 2000) or z >= 0) and tipper.cp.fillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
+				if ((foundHeap and fillLevel > 2000) or z >= 0) and trailerFillLevel ~= 0 or tipper:getTipState() ~= Trailer.TIPSTATE_CLOSED then
 					stopForTipping = true
 					readyToDischarge = true
 				end
@@ -1219,7 +1220,7 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 						tostring(foundHeap), tostring(fillLevel), tostring(z), tostring(readyToDischarge), tostring(isTipping), tostring(self.pullForward))
 
 				--ready with tipping, go forward on the course
-				if tipper.cp.fillLevel == 0 then
+				if trailerFillLevel == 0 then
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
 					self.pullForward = nil
@@ -1241,14 +1242,15 @@ function AIDriver:dischargeAtUnloadPoint(dt,unloadPointIx)
 			if tipper.spec_dischargeable then	
 				readyToDischarge = false
 				tipRefpoint = tipper:getCurrentDischargeNode().node or tipper.rootNode
-				_,y,_ = getWorldTranslation(tipRefpoint);
+				local _,y,_ = getWorldTranslation(tipRefpoint);
 				local currentDischargeNode = tipper:getCurrentDischargeNode()
 				local isTipping = currentDischargeNode.isEffectActive
-				_,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
+				local _,_,z = worldToLocal(tipRefpoint, uX,uY,uZ);
 				z = courseplay:isNodeTurnedWrongWay(vehicle,tipRefpoint)and -z or z
 				
+				local fillLevel = AIDriverUtil.getTotalFillLevelAndCapacityForObject(tipper)
 				--when we reached the unload point, stop the tractor 
-				if z <= 0 and tipper.cp.fillLevel ~= 0 then
+				if z <= 0 and fillLevel ~= 0 then
 					stopForTipping = true
 					readyToDischarge = true
 				end	
@@ -1315,7 +1317,7 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 			local x2,z2 = trigger.bunkerSiloArea.wx,trigger.bunkerSiloArea.wz
 			local x3,z3 = trigger.bunkerSiloArea.hx,trigger.bunkerSiloArea.hz
 			local trailerInTipRange = MathUtil.hasRectangleLineIntersection2D(x1,z1,x2-x1,z2-z1,x3-x1,z3-z1,x,z,tx-x,tz-z)
-			
+			local fillLevel = AIDriverUtil.getTotalFillLevelAndCapacityForObject(tipper)
 			--tip when I'm inside the Silo
 			if trailerInTipRange then
 				if not self.unloadSpeed then
@@ -1324,11 +1326,11 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					local ex, ey, ez = worldToLocal(trigger.triggerEndId, x, y, z);
 					local totalLength = courseplay:distance3D(sx, sy, sz, ex, ey, ez)
 					local dischargeNode = tipper:getCurrentDischargeNode()
-					local totalTipDuration = ((tipper.cp.fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
+					local totalTipDuration = ((fillLevel / dischargeNode.emptySpeed )/ 1000) + 2 --adding 2 sec for the time between setting tipstate and start of real unloading
 					local meterPrSeconds = totalLength / totalTipDuration;
 					self.unloadSpeed = meterPrSeconds*3.6
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'%s in mode %s: entering BGASilo:',tostring(tipper.getName and tipper:getName() or 'no name'), tostring(self.settings.driverMode:get()))
-					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),tipper.cp.fillLevel)
+					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'emptySpeed: %sl/sek; fillLevel: %0.1fl',tostring(dischargeNode.emptySpeed*1000),fillLevel)
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'Silo length: %sm/Total unload time: %ss *3.6 = unload speed: %.2fkmh',tostring(totalLength) ,tostring(totalTipDuration),self.unloadSpeed)
 				end
 				
@@ -1342,7 +1344,7 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 					courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,"reset self.unloadSpeed")
 				end
 				self.unloadSpeed = nil
-				if tipper.cp.fillLevel == 0 then
+				if fillLevel == 0 then
 					tipper:setDischargeState(Dischargeable.DISCHARGE_STATE_OFF)
 				end
 			end
@@ -1353,9 +1355,10 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 end
 
 function AIDriver:searchForTipTriggers()
+	local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(self.vehicle)
 	if not self.vehicle.cp.hasAugerWagon
 		and not self:hasTipTrigger()
-		and self.vehicle.cp.totalFillLevel > 0
+		and totalFillLevel > 0
 		and self.ppc:getCurrentWaypointIx() > 2
 		and not self.ppc:reachedLastWaypoint()
 		and not self.ppc:isReversing() then
@@ -1382,7 +1385,8 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 		self:openCovers(self.vehicle)
 	end
 	-- done tipping?
-	if self:hasTipTrigger() and self.vehicle.cp.totalFillLevel == 0 and self:getHasAllTippersClosed() then
+	local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(self.vehicle)
+	if self:hasTipTrigger() and totalFillLevel == 0 and self:getHasAllTippersClosed() then
 		courseplay:resetTipTrigger(self.vehicle, true);
 		self:resetBGASiloTables()
 	end
@@ -1390,7 +1394,6 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 	self:cleanUpMissedTriggerExit()
 
 	-- tipper is not empty and tractor reaches TipTrigger
-	--if self.vehicle.cp.totalFillLevel > 0 then
 	if self:hasTipTrigger() and not self:isNearFillPoint() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
@@ -2201,17 +2204,11 @@ function AIDriver:isFuelLevelOk()
 end
 
 function AIDriver:isValidFillType(fillType)
-	return not self:isValidFuelType(self.vehicle, fillType) and fillType ~= FillType.DEF and fillType ~= FillType.AIR
+	return AIDriverUtil.isValidFillType(self.vehicle,fillType)
 end
 
 function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
-	if object.getConsumerFillUnitIndex then 
-		local index = object:getConsumerFillUnitIndex(fillType)
-		if fillUnitIndex ~= nil then 
-			return fillUnitIndex and fillUnitIndex == index
-		end		
-		return index 
-	end
+	return AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex)
 end
 
 function AIDriver:getFuelLevelPercentage()

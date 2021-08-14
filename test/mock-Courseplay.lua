@@ -44,9 +44,6 @@ function courseplay:loc(text)
 	return text
 end
 
-function courseplay.updateFillLevelsAndCapacities()
-end
-
 function courseplay:distance(x1, z1, x2, z2)
 	local dx, dz = x2 - x1, z2 - z1
 	return math.sqrt(dx * dx + dz * dz)

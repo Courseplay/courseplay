@@ -215,9 +215,6 @@ function courseplay:onLoad(savegame)
 	self.cp.workTools = {};
 	self.cp.numWorkTools = 0;
 	self.cp.workToolAttached = false;
-	self.cp.totalFillLevel = nil;
-	self.cp.totalCapacity = nil;
-	self.cp.totalFillLevelPercent = 0;
 	self.cp.tipRefOffset = 0;
 
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);

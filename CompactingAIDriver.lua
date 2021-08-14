@@ -113,7 +113,8 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					--CombineUnloadAIDriver,GrainTransportAIDriver,UnloadableFieldworkAIDriver
 					local isOkayToStop = true
 					if onlyStopFilledDrivers then 
-						if vehicle.cp.totalFillLevel < 0.02 then 
+						local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(vehicle)
+						if totalFillLevel < 0.02 then 
 							isOkayToStop = false
 						end
 					end
@@ -130,9 +131,18 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					return isOkayToStop
 				elseif autodriveSpec and autodriveSpec.HoldDriving and vehicle.ad.stateModule and vehicle.ad.stateModule:isActive() then 
 					--autodrive
-					if setWaiting then
+					local isOkayToStop = true
+					if onlyStopFilledDrivers then 
+						local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(vehicle)
+						if totalFillLevel < 0.02 then 
+							isOkayToStop = false
+						end
+					end
+					
+					if setWaiting and isOkayToStop then
 						autodriveSpec:HoldDriving(vehicle)
 					end
+
 					self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
 					return true
 				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and (AIDriverUtil.hasImplementWithSpecialization(vehicle, Trailer) or vehicle.spec_trailer) then 

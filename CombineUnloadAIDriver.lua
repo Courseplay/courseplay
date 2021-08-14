@@ -208,7 +208,6 @@ function CombineUnloadAIDriver:dismiss()
 end
 
 function CombineUnloadAIDriver:drive(dt)
-	courseplay:updateFillLevelsAndCapacities(self.vehicle)
 	self:updateCombineStatus()
 
 	if self.state == self.states.ON_UNLOAD_COURSE then
@@ -483,11 +482,11 @@ function CombineUnloadAIDriver:setCombineToUnloadClient(combineToUnload)
 end
 
 function CombineUnloadAIDriver:getTractorsFillLevelPercent()
-	return self.tractorToFollow.cp.totalFillLevelPercent
+	return AIDriverUtil.getTotalFillLevelPercentage(self.tractorToFollow)
 end
 
 function CombineUnloadAIDriver:getFillLevelPercent()
-	return self.vehicle.cp.totalFillLevelPercent
+	return AIDriverUtil.getTotalFillLevelPercentage(self.vehicle)
 end
 
 function CombineUnloadAIDriver:getNominalSpeed()

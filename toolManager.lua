@@ -82,7 +82,8 @@ function courseplay:isBaler(workTool) -- is the tool a baler?
 			workTool.balerUnloadingState ~= nil or courseplay:isSpecialBaler(workTool);
 end;
 function courseplay:isCombine(workTool)
-	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and workTool.cp.capacity ~= nil  and workTool.cp.capacity > 0;
+	local fillLevel,capacity = AIDriverUtil.getTotalFillLevelAndCapacityForObject(workTool)
+	return workTool.cp.hasSpecializationCombine and workTool.startThreshing ~= nil and capacity > 0;
 end;
 
 function courseplay:isChopper(workTool)
@@ -527,30 +528,6 @@ function courseplay:getIsToolValidForCpMode(object, mode, callback)
 	for _,impl in pairs(object:getAttachedImplements()) do
 		courseplay:getIsToolValidForCpMode(impl.object, mode, callback)
 	end
-end
-
-function courseplay:updateFillLevelsAndCapacities(vehicle)
-	courseplay:setOwnFillLevelsAndCapacities(vehicle)
-	vehicle.cp.totalFillLevel = vehicle.cp.fillLevel;
-	vehicle.cp.totalCapacity = vehicle.cp.capacity;
-	if vehicle.cp.fillLevel ~= nil and vehicle.cp.capacity ~= nil then
-		vehicle.cp.totalFillLevelPercent = (vehicle.cp.fillLevel*100)/vehicle.cp.capacity;
-	end
-	--print(string.format("vehicle itself(%s): vehicle.cp.totalFillLevel:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalFillLevel)))
-	--print(string.format("vehicle itself(%s): vehicle.cp.totalCapacity:(%s)",tostring(vehicle:getName()),tostring(vehicle.cp.totalCapacity)))
-	if vehicle.cp.workTools ~= nil then
-		for _,tool in pairs(vehicle.cp.workTools) do
-			local hasMoreFillUnits = courseplay:setOwnFillLevelsAndCapacities(tool)
-			if hasMoreFillUnits and tool ~= vehicle then
-				vehicle.cp.totalFillLevel = (vehicle.cp.totalFillLevel or 0) + tool.cp.fillLevel
-				vehicle.cp.totalCapacity = (vehicle.cp.totalCapacity or 0 ) + tool.cp.capacity
-				vehicle.cp.totalFillLevelPercent = (vehicle.cp.totalFillLevel*100)/vehicle.cp.totalCapacity;
-				--print(string.format("%s: adding %s to vehicle.cp.totalFillLevel = %s",tostring(tool:getName()),tostring(tool.cp.fillLevel), tostring(vehicle.cp.totalFillLevel)))
-				--print(string.format("%s: adding %s to vehicle.cp.totalCapacity = %s",tostring(tool:getName()),tostring(tool.cp.capacity), tostring(vehicle.cp.totalCapacity)))
-			end
-		end
-	end
-	--print(string.format("End of function: vehicle.cp.totalFillLevel:(%s)",tostring(vehicle.cp.totalFillLevel)))
 end
 
 function courseplay:setOwnFillLevelsAndCapacities(workTool)

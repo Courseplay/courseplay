@@ -3,7 +3,6 @@ function courseplay:setNameVariable(workTool)
 		workTool.cp = {};
 	end;
 
-	courseplay:updateFillLevelsAndCapacities(workTool)
 
 	-- TODO: is this even needed? Why not use the workTool.spec_* directly? Do we really need our own table?
 	-- Only default specs!
