@@ -1,0 +1,1286 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>CombineUnloadAIDriver &mdash; Courseplay 6.4.0.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="OverloaderAIDriver" href="OverloaderAIDriver.html" />
+    <link rel="prev" title="GrainTransportAIDriver" href="GrainTransportAIDriver.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Courseplay
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="AIDriver.html">AIDriver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GrainTransportAIDriver.html">GrainTransportAIDriver</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CombineUnloadAIDriver</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="OverloaderAIDriver.html">OverloaderAIDriver</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Courseplay</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>CombineUnloadAIDriver</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/doc/AIDrivers/CombineUnloadAIDriver.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="combineunloadaidriver">
+<h1>CombineUnloadAIDriver<a class="headerlink" href="#combineunloadaidriver" title="Permalink to this headline">¶</a></h1>
+<dl class="lua class">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">CombineUnloadAIDriver</span></span><em class="property"><span class="pre">:</span> </em><a class="reference internal" href="AIDriver.html#AIDriver" title="AIDriver"><span class="pre">AIDriver</span></a><a class="headerlink" href="#CombineUnloadAIDriver" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.init">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getAssignedCombines">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getAssignedCombines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getAssignedCombines" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getAssignedCombinesSetting">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getAssignedCombinesSetting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getAssignedCombinesSetting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setHudContent">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setHudContent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setHudContent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onWriteStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onWriteStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onWriteStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onReadStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onReadStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onReadStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.debug">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.debug" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.start">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">startingPoint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.start" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>startingPoint</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.dismiss">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">dismiss</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.dismiss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.drive">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">drive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.drive" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.enableFillTypeUnloading">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">enableFillTypeUnloading</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.enableFillTypeUnloading" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveUnloadCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveUnloadCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveUnloadCourse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.resetPathfinder">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resetPathfinder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.resetPathfinder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.addForwardProximitySensor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">addForwardProximitySensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.addForwardProximitySensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.addChopperProximitySensor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">addChopperProximitySensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.addChopperProximitySensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proximity sensor to check the chopper’s distance</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isTrafficConflictDetectionEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isTrafficConflictDetectionEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isTrafficConflictDetectionEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isProximitySwerveEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isProximitySwerveEnabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isProximitySwerveEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isProximitySpeedControlEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isProximitySpeedControlEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isProximitySpeedControlEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isWaitingForAssignment">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isWaitingForAssignment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isWaitingForAssignment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startWaitingForCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startWaitingForCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startWaitingForCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.stopForPathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">stopForPathfinding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.stopForPathfinding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveInDirection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveInDirection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em>, <em class="sig-param"><span class="pre">lx</span></em>, <em class="sig-param"><span class="pre">lz</span></em>, <em class="sig-param"><span class="pre">fwd</span></em>, <em class="sig-param"><span class="pre">speed</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveInDirection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>lx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>lz</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fwd</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>speed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveOnField">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveOnField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveOnField" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setCombineToUnloadClient">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setCombineToUnloadClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combineToUnload</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setCombineToUnloadClient" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combineToUnload</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getTractorsFillLevelPercent">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getTractorsFillLevelPercent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getTractorsFillLevelPercent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getFillLevelPercent">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getFillLevelPercent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getFillLevelPercent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getNominalSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getNominalSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getNominalSpeed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveBesideCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveBesideCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveBesideCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveBesideChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveBesideChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveBesideChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveBehindChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveBehindChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveBehindChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onEndCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onEndCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onEndCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onLastWaypoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onLastWaypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onLastWaypoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSlowDownDistanceBeforeLastWaypoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSlowDownDistanceBeforeLastWaypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSlowDownDistanceBeforeLastWaypoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setFieldSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setFieldSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setFieldSpeed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setNewState">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setNewState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">newState</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setNewState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newState</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setNewOnFieldState">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setNewOnFieldState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">newState</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setNewOnFieldState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newState</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCourseToAlignTo">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCourseToAlignTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em>, <em class="sig-param"><span class="pre">offset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCourseToAlignTo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>offset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getTrailersTargetNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getTrailersTargetNode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getTrailersTargetNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSpeedBesideChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeedBesideChopper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">targetNode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSpeedBesideChopper" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>targetNode</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSpeedBesideCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeedBesideCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">targetNode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSpeedBesideCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>targetNode</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSpeedBehindCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeedBehindCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSpeedBehindCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSpeedBehindChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeedBehindChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSpeedBehindChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getOffsetBehindChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getOffsetBehindChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getOffsetBehindChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSpeedBehindTractor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeedBehindTractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tractorToFollow</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSpeedBehindTractor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tractorToFollow</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getPipesBaseNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getPipesBaseNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combine</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getPipesBaseNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combine</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCombineIsTurning">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCombineIsTurning</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCombineIsTurning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCombineOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCombineOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combine</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCombineOffset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combine</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getPipeOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getPipeOffset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getPipeOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>(x &gt; 0 left, z &gt; 0 forward) corrected with the manual offset settings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>x and z offset of the pipe’s end from the combine’s root node in the Giants coordinate system</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span> <span class="pre">or</span> <span class="pre">number</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getChopperOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getChopperOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combine</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getChopperOffset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combine</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setSavedCombineOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setSavedCombineOffset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">newOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setSavedCombineOffset" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getSavedCombineOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSavedCombineOffset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getSavedCombineOffset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.raycastFront">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">raycastFront</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.raycastFront" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.raycastFrontCallback">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">raycastFrontCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hitObjectId</span></em>, <em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">z</span></em>, <em class="sig-param"><span class="pre">distance</span></em>, <em class="sig-param"><span class="pre">nx</span></em>, <em class="sig-param"><span class="pre">ny</span></em>, <em class="sig-param"><span class="pre">nz</span></em>, <em class="sig-param"><span class="pre">subShapeIndex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.raycastFrontCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hitObjectId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>y</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>z</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>distance</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>nx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>ny</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>nz</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>subShapeIndex</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.raycastDistance">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">raycastDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxDistance</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.raycastDistance" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>maxDistance</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.raycastDistanceCallback">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">raycastDistanceCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">hitObjectId</span></em>, <em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">z</span></em>, <em class="sig-param"><span class="pre">distance</span></em>, <em class="sig-param"><span class="pre">nx</span></em>, <em class="sig-param"><span class="pre">ny</span></em>, <em class="sig-param"><span class="pre">nz</span></em>, <em class="sig-param"><span class="pre">subShapeIndex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.raycastDistanceCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hitObjectId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>y</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>z</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>distance</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>nx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>ny</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>nz</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>subShapeIndex</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCombinesMeasuredBackDistance">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCombinesMeasuredBackDistance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCombinesMeasuredBackDistance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCanShowDriveOnButton">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCanShowDriveOnButton</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCanShowDriveOnButton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setDriveNow">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setDriveNow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setDriveNow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getAllTrailersFull">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getAllTrailersFull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getAllTrailersFull" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.shouldDriveOn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">shouldDriveOn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.shouldDriveOn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getDriveUnloadNow">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDriveUnloadNow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getDriveUnloadNow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setDriveUnloadNow">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setDriveUnloadNow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">driveUnloadNow</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setDriveUnloadNow" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>driveUnloadNow</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCombinesFillLevelPercent">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCombinesFillLevelPercent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCombinesFillLevelPercent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getFillLevelThreshold">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getFillLevelThreshold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getFillLevelThreshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getDriveOnThreshold">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDriveOnThreshold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getDriveOnThreshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onUserUnassignedActiveCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onUserUnassignedActiveCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onUserUnassignedActiveCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.releaseUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">releaseUnloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.releaseUnloader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getImFirstOfTwoUnloaders">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getImFirstOfTwoUnloaders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getImFirstOfTwoUnloaders" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.combineIsMakingPocket">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">combineIsMakingPocket</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.combineIsMakingPocket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.fixAutoAimNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">fixAutoAimNode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.fixAutoAimNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.releaseAutoAimNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">releaseAutoAimNode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.releaseAutoAimNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isAutoAimNodeFixed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isAutoAimNodeFixed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isAutoAimNodeFixed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.updateFillUnitAutoAimTarget">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateFillUnitAutoAimTarget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em>, <em class="sig-param"><span class="pre">fillUnit</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.updateFillUnitAutoAimTarget" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fillUnit</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isWithinSafeManeuveringDistance">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isWithinSafeManeuveringDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isWithinSafeManeuveringDistance" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isBehindAndAlignedToChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isBehindAndAlignedToChopper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxDirectionDifferenceDeg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isBehindAndAlignedToChopper" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>maxDirectionDifferenceDeg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isBehindAndAlignedToCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isBehindAndAlignedToCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxDirectionDifferenceDeg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isBehindAndAlignedToCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>maxDirectionDifferenceDeg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isInFrontAndAlignedToMovingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isInFrontAndAlignedToMovingCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxDirectionDifferenceDeg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isInFrontAndAlignedToMovingCombine" title="Permalink to this definition">¶</a></dt>
+<dd><p>In front of the combine, right distance from pipe to start unloading and the combine is moving</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>maxDirectionDifferenceDeg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isOkToStartFollowingChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isOkToStartFollowingChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isOkToStartFollowingChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isFollowingChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isFollowingChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isFollowingChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isHandlingChopperTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isHandlingChopperTurn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isHandlingChopperTurn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isOkToStartFollowingFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isOkToStartFollowingFirstUnloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isOkToStartFollowingFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isOkToStartUnloadingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isOkToStartUnloadingCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isOkToStartUnloadingCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.iAmFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">iAmFirstUnloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.iAmFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startWorking">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startWorking</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startWorking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startUnloadCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startUnloadCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startUnloadCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startUnloadingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startUnloadingCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startUnloadingCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startUnloadingStoppedCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startUnloadingStoppedCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startUnloadingStoppedCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startFollowingChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startFollowingChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startFollowingChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startFollowingFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startFollowingFirstUnloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startFollowingFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getWaypointIxBehindFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getWaypointIxBehindFirstUnloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getWaypointIxBehindFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.setupFollowCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setupFollowCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.setupFollowCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startCourseFollowingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startCourseFollowingCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startCourseFollowingCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isPathFound">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isPathFound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dontRelax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isPathFound" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dontRelax</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – do not relax pathfinder constraint on failure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getCombineRootNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCombineRootNode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getCombineRootNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startDrivingToChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startDrivingToChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startDrivingToChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startDrivingToCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startDrivingToCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startDrivingToCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onPathfindingDoneToMovingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDoneToMovingCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">goalNodeInvalid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onPathfindingDoneToMovingCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>goalNodeInvalid</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startPathfindingForDistance">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startPathfindingForDistance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startPathfindingForDistance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onPathfindingDoneForDistance">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDoneForDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">goalNodeInvalid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onPathfindingDoneForDistance" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>goalNodeInvalid</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startPathfindingToCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startPathfindingToCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">onPathfindingDoneFunc</span></em>, <em class="sig-param"><span class="pre">xOffset</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startPathfindingToCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>onPathfindingDoneFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>xOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onPathfindingDoneToCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDoneToCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">goalNodeInvalid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onPathfindingDoneToCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>goalNodeInvalid</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.arrangeRendezvousWithCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">arrangeRendezvousWithCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">d</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.arrangeRendezvousWithCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – distance in meters to drive to the combine, preferably the pathfinder route around the crop</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startPathfindingToFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startPathfindingToFirstUnloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">onPathfindingDoneFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startPathfindingToFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>onPathfindingDoneFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onPathfindingDoneToFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDoneToFirstUnloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">goalNodeInvalid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onPathfindingDoneToFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>goalNodeInvalid</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startPathfindingToTurnEnd">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startPathfindingToTurnEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">xOffset</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startPathfindingToTurnEnd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onPathfindingDoneToTurnEnd">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDoneToTurnEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">goalNodeInvalid</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onPathfindingDoneToTurnEnd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>goalNodeInvalid</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getTargetNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getTargetNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">target</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getTargetNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getOffFieldPenalty">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getOffFieldPenalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combineToUnload</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getOffFieldPenalty" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combineToUnload</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isPathfindingNeeded">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isPathfindingNeeded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em>, <em class="sig-param"><span class="pre">target</span></em>, <em class="sig-param"><span class="pre">xOffset</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em>, <em class="sig-param"><span class="pre">range</span></em>, <em class="sig-param"><span class="pre">sameDirectionThresholdDeg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isPathfindingNeeded" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>target</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>xOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>range</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>sameDirectionThresholdDeg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isFruitAt">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isFruitAt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">target</span></em>, <em class="sig-param"><span class="pre">xOffset</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isFruitAt" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>xOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startPathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startPathfinding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">target</span></em>, <em class="sig-param"><span class="pre">xOffset</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em>, <em class="sig-param"><span class="pre">fieldNum</span></em>, <em class="sig-param"><span class="pre">vehiclesToIgnore</span></em>, <em class="sig-param"><span class="pre">pathfindingCallbackFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startPathfinding" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>xOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fieldNum</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>vehiclesToIgnore</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>pathfindingCallbackFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.getDistanceFromCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDistanceFromCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.getDistanceFromCombine" title="Permalink to this definition">¶</a></dt>
+<dd><p>side offset (local x) of the combine’s back in the tractor’s front coordinate system (positive if the tractor is on
+the right side of the combine)
+back offset (local z) of the combine’s back in the tractor’s front coordinate system (positive if the tractor is behind
+the combine)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>distance between the tractor’s front and the combine’s back (always positive),</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span> <span class="pre">or</span> <span class="pre">number</span> <span class="pre">or</span> <span class="pre">number</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.updateCombineStatus">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateCombineStatus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.updateCombineStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isMyCombineReversing">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isMyCombineReversing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isMyCombineReversing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.changeToUnloadWhenDriveOnLevelReached">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">changeToUnloadWhenDriveOnLevelReached</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.changeToUnloadWhenDriveOnLevelReached" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.changeToUnloadWhenFull">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">changeToUnloadWhenFull</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.changeToUnloadWhenFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true when changed to unload course</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.checkForCombineProximity">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">checkForCombineProximity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.checkForCombineProximity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveToCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveToCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveToCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.driveToMovingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveToMovingCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.driveToMovingCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startWaitingForManeuveringCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startWaitingForManeuveringCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startWaitingForManeuveringCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.waitForManeuveringCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">waitForManeuveringCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.waitForManeuveringCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.unloadStoppedCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">unloadStoppedCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.unloadStoppedCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.unloadMovingCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">unloadMovingCombine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.unloadMovingCombine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startMovingBackFromCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startMovingBackFromCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">newState</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startMovingBackFromCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newState</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.startChopperTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startChopperTurn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.startChopperTurn" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.handleChopperHeadlandTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">handleChopperHeadlandTurn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.handleChopperHeadlandTurn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.followChopper">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">followChopper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.followChopper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.handleChopper180Turn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">handleChopper180Turn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.handleChopper180Turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.followChopperThroughTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">followChopperThroughTurn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.followChopperThroughTurn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.alignToChopperAfterTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">alignToChopperAfterTurn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.alignToChopperAfterTurn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.followFirstUnloader">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">followFirstUnloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.followFirstUnloader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onMissedRendezvous">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onMissedRendezvous</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combineAIDriver</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onMissedRendezvous" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>combineAIDriver</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">CombineAIDriver</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.onBlockingOtherVehicle">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onBlockingOtherVehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">blockedVehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.onBlockingOtherVehicle" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>blockedVehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.moveOutOfWay">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">moveOutOfWay</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.moveOutOfWay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.findOtherUnloaderAroundCombine">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">findOtherUnloaderAroundCombine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">combine</span></em>, <em class="sig-param"><span class="pre">combineOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.findOtherUnloaderAroundCombine" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>combine</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>combineOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.isAutoDriveDriving">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isAutoDriveDriving</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.isAutoDriveDriving" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.drawDebugInfo">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">drawDebugInfo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.drawDebugInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="CombineUnloadAIDriver.renderText">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">renderText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#CombineUnloadAIDriver.renderText" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>y</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="OverloaderAIDriver.html" class="btn btn-neutral float-right" title="OverloaderAIDriver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="GrainTransportAIDriver.html" class="btn btn-neutral float-left" title="GrainTransportAIDriver" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Courseplay dev team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+.. lua:class:: OverloaderAIDriver: CombineUnloadAIDriver
+    :module:
+
+
+
+
+
+
+
+    .. lua:method:: init(vehicle)
+
+
+
+
+
+        :param vehicle: 
+        :type vehicle: any
+
+    .. lua:method:: postInit()
+
+
+
+
+
+
+    .. lua:method:: findPipeAndTrailer()
+
+
+
+
+
+
+    .. lua:method:: setHudContent()
+
+
+
+
+
+
+    .. lua:method:: start(startingPoint)
+
+
+
+
+
+        :param startingPoint: 
+        :type startingPoint: any
+
+    .. lua:method:: isTrailerUnderPipe(shouldTrailerBeStandingStill)
+
+
+
+
+
+        :param shouldTrailerBeStandingStill: 
+        :type shouldTrailerBeStandingStill: any
+
+    .. lua:method:: driveUnloadCourse(dt)
+
+
+
+
+
+        :param dt: 
+        :type dt: any
+
+    .. lua:method:: getWorkingToolPositionsSetting()
+
+
+
+
+
+
+    .. lua:method:: isProximitySwerveEnabled(vehicle)
+
+
+
+
+
+        :param vehicle: 
+        :type vehicle: any
+
+    .. lua:method:: isProximitySpeedControlEnabled()
+
+
+
+
+
+
+    .. lua:method:: onWaypointChange(ix)
+
+
+
+
+
+        :param ix: 
+        :type ix: any
+
+    .. lua:method:: onWaypointPassed(ix)
+
+
+
+
+
+        :param ix: 
+        :type ix: any
+
+    .. lua:method:: getSpeed()
+
+
+
+
+
+
+    .. lua:method:: isTrailerEmpty()
+
+
+
+
+
+
+    .. lua:method:: isMoveOnFillLevelReached()
+
+
+
+
+
+
+    .. lua:method:: enableFillTypeUnloading()
+
+
+
+
+
+
+    .. lua:method:: isNearOverloadPoint()
+
+
+        Is around the overload point?
+
+
+
+
+    .. lua:method:: isStoppingAtWaitPointAllowed()
+
+
+
+
+
+
+

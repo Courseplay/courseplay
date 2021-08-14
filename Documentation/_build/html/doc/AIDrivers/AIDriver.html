@@ -1,0 +1,1739 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>AIDriver &mdash; Courseplay 6.4.0.6 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GrainTransportAIDriver" href="GrainTransportAIDriver.html" />
+    <link rel="prev" title="Welcome to Courseplay’s documentation!" href="../../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Courseplay
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AIDriver</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="GrainTransportAIDriver.html">GrainTransportAIDriver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CombineUnloadAIDriver.html">CombineUnloadAIDriver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OverloaderAIDriver.html">OverloaderAIDriver</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Courseplay</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>AIDriver</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/doc/AIDrivers/AIDriver.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="aidriver">
+<h1>AIDriver<a class="headerlink" href="#aidriver" title="Permalink to this headline">¶</a></h1>
+<dl class="lua class">
+<dt class="sig sig-object lua" id="AIDriver">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AIDriver</span></span><a class="headerlink" href="#AIDriver" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.init">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new driver (usage: aiDriver = AIDriver(vehicle)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.postInit">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">postInit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.postInit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called once on the first update tick,</p>
+<p>for post setup possibilities.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateLoadingText">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateLoadingText</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateLoadingText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.writeUpdateStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">writeUpdateStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em>, <em class="sig-param"><span class="pre">connection</span></em>, <em class="sig-param"><span class="pre">dirtyMask</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.writeUpdateStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>connection</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>dirtyMask</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.readUpdateStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">readUpdateStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em>, <em class="sig-param"><span class="pre">timestamp</span></em>, <em class="sig-param"><span class="pre">connection</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.readUpdateStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>timestamp</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>connection</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onWriteStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onWriteStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onWriteStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onReadStream">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onReadStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">streamId</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onReadStream" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>streamId</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setHudContent">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setHudContent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setHudContent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.delete">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.delete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.deleteCollisionDetector">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">deleteCollisionDetector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.deleteCollisionDetector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.initStates">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">initStates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">states</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.initStates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregation of states from this and all descendant classes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>states</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getMode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getMode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.beforeStart">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">beforeStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.beforeStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>If you have your own start() implementation and you do not call AIDriver.start() then</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.start">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">startingPoint</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start driving</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>startingPoint</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span> <span class="pre">or</span> <span class="pre">one</span></code></span>) – of StartingPointSetting.START_AT_* constants</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.dismiss">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">dismiss</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.dismiss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dismiss the driver</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isActive">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isActive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isActive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the driver started?</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.stop">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msgReference</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msgReference</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span>) – as defined in globalInfoText.msgReference</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.stopAtWaitPoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">stopAtWaitPoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.stopAtWaitPoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setWorkFinished">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setWorkFinished</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msgReference</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setWorkFinished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the driver when the work is done. Could just dismiss at this point,</p>
+<p>the only reason we are still active is that we are displaying the info text while waiting to be dismissed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msgReference</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.continue">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">continue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.continue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.resumeAtOriginalIx">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resumeAtOriginalIx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">cpIx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.resumeAtOriginalIx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compatibility function for the legacy CP code so the course can be resumed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cpIx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.resumeAt">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resumeAt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.resumeAt" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setInfoText">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setInfoText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msgReference</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setInfoText" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msgReference</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span>) – as defined in globalInfoText.msgReference</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.clearInfoText">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">clearInfoText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msgReference</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.clearInfoText" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msgReference</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span>) – as defined in globalInfoText.msgReference</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.clearAllInfoTexts">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">clearAllInfoTexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.clearAllInfoTexts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateInfoText">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateInfoText</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateInfoText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.displayWarning">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">displayWarning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">msgReference</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.displayWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays an one time ingame warning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msgReference</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">str</span></code></span>) – this can be a global info text or just a translation text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.update">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update AI driver, everything that needs to run in every loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateDistanceMovedSinceStart">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateDistanceMovedSinceStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateDistanceMovedSinceStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update moved distance since start.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getDistanceMovedSinceStart">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDistanceMovedSinceStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getDistanceMovedSinceStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the moved distance since start.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateTick">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateTick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateTick" title="Permalink to this definition">¶</a></dt>
+<dd><p>UpdateTick AI driver</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.shouldDriverBeReleased">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">shouldDriverBeReleased</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.shouldDriverBeReleased" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.drive">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">drive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.drive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main driving function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.driveCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.driveCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal driving according to the course waypoints, using  courseplay:goReverse() when needed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.driveVehicleToLocalPosition">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveVehicleToLocalPosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em>, <em class="sig-param"><span class="pre">gx</span></em>, <em class="sig-param"><span class="pre">gz</span></em>, <em class="sig-param"><span class="pre">maxSpeed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.driveVehicleToLocalPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drive to a local position. This is the simplest driving mode towards the goal point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>gx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>gz</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.driveVehicleInDirection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveVehicleInDirection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em>, <em class="sig-param"><span class="pre">lx</span></em>, <em class="sig-param"><span class="pre">lz</span></em>, <em class="sig-param"><span class="pre">maxSpeed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.driveVehicleInDirection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>lx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>lz</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.driveVehicleBySteeringAngle">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveVehicleBySteeringAngle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em>, <em class="sig-param"><span class="pre">steeringAngleNormalized</span></em>, <em class="sig-param"><span class="pre">turnLeft</span></em>, <em class="sig-param"><span class="pre">maxSpeed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.driveVehicleBySteeringAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Drive vehicle by using a steering angle. This is similar to the Giants AIVehicleUtil.driveInDirection() but</p>
+<p>instead of the direction (lx, lz) uses a steering angle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – dt</p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – if true, we want the vehicle to move forwards, false for backwards</p></li>
+<li><p><strong>steeringAngleNormalized</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – between 0 and 1, 1 being the maximum steering angle.</p></li>
+<li><p><strong>turnLeft</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – true when turning to the left</p></li>
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – speed we want the vehicle to drive</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getDirectionNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDirectionNode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getDirectionNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.startCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tempCourse</span></em>, <em class="sig-param"><span class="pre">nextCourse</span></em>, <em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.startCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a course and continue with nextCourse at ix when done</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tempCourse</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p></li>
+<li><p><strong>nextCourse</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p></li>
+<li><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getCurrentCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCurrentCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getCurrentCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.startCourseWithAlignment">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startCourseWithAlignment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em>, <em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.startCourseWithAlignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start course (with alignment if needed) and set course as the current one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p></li>
+<li><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true when an alignment course was added</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onNextCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onNextCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onNextCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do whatever is needed after switching to the next course</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.shouldStopAtEndOfCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">shouldStopAtEndOfCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.shouldStopAtEndOfCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should we stop at the end of the course (or restart it from the beginning)</p>
+<p>In Mode 5 we do what the user wants.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onEndCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onEndCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onEndCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Course ended</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onEndCourseFinished">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onEndCourseFinished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onEndCourseFinished" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getDirectionToGoalPoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDirectionToGoalPoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getDirectionToGoalPoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getReverseDrivingDirection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getReverseDrivingDirection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getReverseDrivingDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the goal point when courseplay:goReverse is driving.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onWaypointChange">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onWaypointChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">newIx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onWaypointChange" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newIx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onWaypointPassed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onWaypointPassed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onWaypointPassed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isStoppingAtWaitPointAllowed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isStoppingAtWaitPointAllowed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isStoppingAtWaitPointAllowed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onLastWaypoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onLastWaypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onLastWaypoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.hasNextCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">hasNextCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.hasNextCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the driver has a next course after the current course ?</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.continueOnNextCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">continueOnNextCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">nextCourse</span></em>, <em class="sig-param"><span class="pre">nextWpIx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.continueOnNextCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>End a course and then continue on nextCourse at nextWpIx</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nextCourse</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>nextWpIx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.continueIfWaitTimeIsOver">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">continueIfWaitTimeIsOver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.continueIfWaitTimeIsOver" title="Permalink to this definition">¶</a></dt>
+<dd><p>When stopped at a wait point, check if the waiting time is over</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isAutoContinueAtWaitPointEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isAutoContinueAtWaitPointEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isAutoContinueAtWaitPointEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is automatically continuing after stopped at a waypoint enabled? This is the default behavior in</p>
+<p>mode 5 when there’s a wait time set. As long as the waitpoint is used for other purposes in other modes, those modes have to override this.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isWaitingAtWaitPoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isWaitingAtWaitPoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isWaitingAtWaitPoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.hasTipTrigger">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">hasTipTrigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.hasTipTrigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setSpeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">speed</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the speed. The idea is that self.speed is reset at the beginning of every loop and</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>speed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getFieldSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getFieldSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getFieldSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Speed on the field when not working</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getWorkSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getWorkSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getWorkSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Speed on the field when working</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.resetLastMoveCommandTime">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resetLastMoveCommandTime</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.resetLastMoveCommandTime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.overrideAutoEngineStop">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">overrideAutoEngineStop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.overrideAutoEngineStop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t auto stop engine. Keep calling this when you do something where the vehicle has a planned stop for a while</p>
+<p>and you don’t want to engine auto stop to engage (for example waiting in the convoy)</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.resetSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resetSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.resetSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset drive controls at the end of each loop</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.hold">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">hold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.hold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Anyone wants to temporarily stop driving for whatever reason, call this</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.holdWithFuelSave">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">holdWithFuelSave</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.holdWithFuelSave" title="Permalink to this definition">¶</a></dt>
+<dd><p>Anyone wants to temporarily stop driving for whatever reason, call this</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used by the driver to get the speed it is supposed to drive at</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getTotalLength">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getTotalLength</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getTotalLength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getRelevantWaypointIx">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getRelevantWaypointIx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getRelevantWaypointIx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get waypoint closest to the current position of the vehicle</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getRecordedSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getRecordedSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getRecordedSpeed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getDefaultStreetSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getDefaultStreetSpeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getDefaultStreetSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getSlowDownDistanceBeforeLastWaypoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSlowDownDistanceBeforeLastWaypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getSlowDownDistanceBeforeLastWaypoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.slowDownForWaitPoints">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">slowDownForWaitPoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.slowDownForWaitPoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isNearFillPoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isNearFillPoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isNearFillPoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getIsInFilltrigger">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getIsInFilltrigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getIsInFilltrigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isAlignmentCourseNeeded">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isAlignmentCourseNeeded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isAlignmentCourseNeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is an alignment course needed to reach waypoint ix in the current course?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.startTurn">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startTurn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">ix</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.startTurn" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setUpAlignmentCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setUpAlignmentCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setUpAlignmentCourse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.debug">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.debug" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.info">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.error">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.error" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.debugSparse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">debugSparse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">...</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.debugSparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>output debug message only at every debugTicks loop</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vararg</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isStopped">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isStopped</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isStopped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.drawTemporaryCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">drawTemporaryCourse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.drawTemporaryCourse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.enableTrafficConflictDetection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">enableTrafficConflictDetection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.enableTrafficConflictDetection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.disableTrafficConflictDetection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">disableTrafficConflictDetection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.disableTrafficConflictDetection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isTrafficConflictDetectionEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isTrafficConflictDetectionEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isTrafficConflictDetectionEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.enableCollisionDetection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">enableCollisionDetection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.enableCollisionDetection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.disableCollisionDetection">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">disableCollisionDetection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.disableCollisionDetection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.detectCollision">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">detectCollision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.detectCollision" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isCollisionDetectionEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isCollisionDetectionEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isCollisionDetectionEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.areBeaconLightsEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">areBeaconLightsEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.areBeaconLightsEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateLights">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateLights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateLights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateAILights">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateAILights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateAILights" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.shouldLightsBeUsedForEnvironment">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">shouldLightsBeUsedForEnvironment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.shouldLightsBeUsedForEnvironment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setLightsMask">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setLightsMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setLightsMask" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onAIEnd">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onAIEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onAIEnd" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onLeaveVehicle">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onLeaveVehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onLeaveVehicle" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.dischargeAtUnloadPoint">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">dischargeAtUnloadPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em>, <em class="sig-param"><span class="pre">unloadPointIx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.dischargeAtUnloadPoint" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>unloadPointIx</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.checkForHeapBehindMe">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">checkForHeapBehindMe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tipper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.checkForHeapBehindMe" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tipper</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.dischargeAtTipTrigger">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">dischargeAtTipTrigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.dischargeAtTipTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.tipIntoBGASiloTipTrigger">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">tipIntoBGASiloTipTrigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.tipIntoBGASiloTipTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.searchForTipTriggers">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">searchForTipTriggers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.searchForTipTriggers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.searchForLoadingFillingTriggers">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">searchForLoadingFillingTriggers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.searchForLoadingFillingTriggers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onUnLoadCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onUnLoadCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">allowedToDrive</span></em>, <em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onUnLoadCourse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.cleanUpMissedTriggerExit">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">cleanUpMissedTriggerExit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.cleanUpMissedTriggerExit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.tipTriggerIsFull">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">tipTriggerIsFull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">trigger</span></em>, <em class="sig-param"><span class="pre">tipper</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.tipTriggerIsFull" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trigger</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>tipper</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateOffset">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateOffset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the unload offset from the current settings and apply it when needed</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getHasAllTippersClosed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getHasAllTippersClosed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getHasAllTippersClosed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setOffsetInBGASilo">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setOffsetInBGASilo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setOffsetInBGASilo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.resetBGASiloTables">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">resetBGASiloTables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.resetBGASiloTables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getStraightForwardCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getStraightForwardCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">length</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getStraightForwardCourse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper functions to generate a straight course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getStraightReverseCourse">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getStraightReverseCourse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">length</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getStraightReverseCourse" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.startCourseWithPathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startCourseWithPathfinding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em>, <em class="sig-param"><span class="pre">ix</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em>, <em class="sig-param"><span class="pre">fieldNum</span></em>, <em class="sig-param"><span class="pre">alwaysUsePathfinding</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.startCourseWithPathfinding" title="Permalink to this definition">¶</a></dt>
+<dd><p>PATHFINDING</p>
+<p>Start course with pathfinding
+Will find a path on a field avoiding fruit as much as possible from the
+current position to waypoint ix of course and start driving.
+When waypoint ix of course reached, switch to the course and continue driving.</p>
+<p>If no path found will use an alignment course to reach waypoint ix of course.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – </p></li>
+<li><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – </p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – or nil length offset of the goal from the goalWaypoint</p></li>
+<li><p><strong>fieldNum</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – or nil if &gt; 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the</p></li>
+<li><p><strong>alwaysUsePathfinding</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – use pathfinding even when close to target</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true when a pathfinding successfully started or an alignment course was added</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.driveToPointWithPathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">driveToPointWithPathfinding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">waypoint</span></em>, <em class="sig-param"><span class="pre">zOffset</span></em>, <em class="sig-param"><span class="pre">allowReverse</span></em>, <em class="sig-param"><span class="pre">course</span></em>, <em class="sig-param"><span class="pre">ix</span></em>, <em class="sig-param"><span class="pre">fieldNum</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.driveToPointWithPathfinding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start driving to a point with pathfinding</p>
+<p>Will find a path on a field avoiding fruit as much as possible from the
+current position to the given coordinates. Will call onEndCourse when it
+reaches that point, so you’ll have to have your own implementation of that</p>
+<p>If no path is found, onNoPathFound() is called, you’ll need your own implementation
+of that to handle that case.</p>
+<p>pathfinding considers any collision-free path valid, also outside of the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waypoint</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Waypoint</span></code></span>) – The destination waypoint (x, z, angle)</p></li>
+<li><p><strong>zOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – length offset of the goal from the goalWaypoint</p></li>
+<li><p><strong>allowReverse</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – allow reverse driving</p></li>
+<li><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">Course</span></code></span>) – course to start after pathfinding is done, can be nil</p></li>
+<li><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – course to start at after pathfinding, can be nil</p></li>
+<li><p><strong>fieldNum</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">number</span></code></span>) – if &gt; 0, the pathfinding is restricted to the given field and its vicinity. Otherwise the</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>true when a pathfinding successfully started</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.stopForPathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">stopForPathfinding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.stopForPathfinding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this if you for example want to completely stop (speed 0 will keep rolling for a while)</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updatePathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updatePathfinding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updatePathfinding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setPathfindingDoneCallback">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setPathfindingDoneCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">object</span></em>, <em class="sig-param"><span class="pre">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setPathfindingDoneCallback" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>func</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onPathfindingDone">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onPathfindingDone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onPathfindingDone" title="Permalink to this definition">¶</a></dt>
+<dd><p>If we have a path now then set it up as a temporary course, also appending an alignment between the end</p>
+<p>of the path and the target course</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true if a temporary course (path/align) is started, false otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onNoPathFound">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onNoPathFound</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onNoPathFound" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>true if a temporary course is started</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getClosestPointOnFieldBoundary">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getClosestPointOnFieldBoundary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">z</span></em>, <em class="sig-param"><span class="pre">fieldNum</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getClosestPointOnFieldBoundary" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>z</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fieldNum</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.startEngineIfNeeded">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">startEngineIfNeeded</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.startEngineIfNeeded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getIsEngineReady">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getIsEngineReady</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getIsEngineReady" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isEngineAutoStopEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isEngineAutoStopEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isEngineAutoStopEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is auto stop engine enabled?</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.stopEngineIfNotNeeded">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">stopEngineIfNotNeeded</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.stopEngineIfNotNeeded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the engine state and stop if we have the fuel save option and been stopped too long</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.holdInTurnManeuver">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">holdInTurnManeuver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">isApproaching</span></em>, <em class="sig-param"><span class="pre">isHeadlandCorner</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.holdInTurnManeuver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compatibility function for turn.lua to check if the vehicle should stop during a turn (for example while it</p>
+<p>is held for unloading or waiting for the straw swath to stop
+Turn.lua calls this in every cycle during the turn and will stop the vehicle if this returns true.
+not yet reached the turn start</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>isApproaching</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – if true we are still in the turn approach phase (still working on the field,</p></li>
+<li><p><strong>isHeadlandCorner</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span>) – is this a headland turn?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onDraw">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onDraw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onDraw" title="Permalink to this definition">¶</a></dt>
+<dd><p>called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded</p>
+<p>without restarting the game.</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setDriveNow">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setDriveNow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setDriveNow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.refreshHUD">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">refreshHUD</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.refreshHUD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.checkIfBlocked">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">checkIfBlocked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.checkIfBlocked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onBlocked">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onBlocked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onBlocked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onUnBlocked">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onUnBlocked</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onUnBlocked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getNominalSpeed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getNominalSpeed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getNominalSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Speed we think we’d be driving normally, used by the conflict detection to predict the vehicle’s location</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.createTrafficConflictDetector">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">createTrafficConflictDetector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.createTrafficConflictDetector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateTrafficConflictDetector">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateTrafficConflictDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">course</span></em>, <em class="sig-param"><span class="pre">ix</span></em>, <em class="sig-param"><span class="pre">speed</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em>, <em class="sig-param"><span class="pre">node</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateTrafficConflictDetector" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>course</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>ix</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>speed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>node</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.onRightOfWayEvaluated">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">onRightOfWayEvaluated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">otherVehicle</span></em>, <em class="sig-param"><span class="pre">mustYield</span></em>, <em class="sig-param"><span class="pre">headOn</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.onRightOfWayEvaluated" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>otherVehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>mustYield</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>headOn</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.removeAllConflictsForVehicle">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">removeAllConflictsForVehicle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">otherVehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.removeAllConflictsForVehicle" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>otherVehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.slowDownForTraffic">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">slowDownForTraffic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxSpeed</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.slowDownForTraffic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.detectSlipping">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">detectSlipping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.detectSlipping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.shouldPayWages">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">shouldPayWages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.shouldPayWages" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, do pay wages when enabled. Some derived classes may decide not to pay under circumstances</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getWagesPercentageAmount">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getWagesPercentageAmount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getWagesPercentageAmount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.updateAILowFrequency">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">updateAILowFrequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em>, <em class="sig-param"><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.updateAILowFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>dt</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getAllowReversePathfinding">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getAllowReversePathfinding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getAllowReversePathfinding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isReversing">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isReversing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isReversing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isInReverseGear">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isInReverseGear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isInReverseGear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setBackMarkerNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setBackMarkerNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setBackMarkerNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.placeBackMarkerNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">placeBackMarkerNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em>, <em class="sig-param"><span class="pre">referenceNode</span></em>, <em class="sig-param"><span class="pre">backMarkerOffset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.placeBackMarkerNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>referenceNode</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>backMarkerOffset</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getBackMarkerNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getBackMarkerNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getBackMarkerNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.setFrontMarkerNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">setFrontMarkerNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.setFrontMarkerNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getFrontMarkerNode">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getFrontMarkerNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getFrontMarkerNode" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.addForwardProximitySensor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">addForwardProximitySensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.addForwardProximitySensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.addBackwardProximitySensor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">addBackwardProximitySensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.addBackwardProximitySensor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.checkSafetyConstraints">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">checkSafetyConstraints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxSpeed</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.checkSafetyConstraints" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.enableProximitySpeedControl">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">enableProximitySpeedControl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.enableProximitySpeedControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proximity sensor control  proximity speed control enabled/disabled: if disabled, all of the vehicle’s proximity sensors are deactivated and won’t see anything, therefore, no stopping/slowing down/swerving on obstacles</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.disableProximitySpeedControl">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">disableProximitySpeedControl</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.disableProximitySpeedControl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isProximitySpeedControlEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isProximitySpeedControlEnabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isProximitySpeedControlEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.enableProximitySwerve">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">enableProximitySwerve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.enableProximitySwerve" title="Permalink to this definition">¶</a></dt>
+<dd><p>proximity swerve enabled/disabled: will try to swerve for other vehicles when enabled. Will swerve for CP driven</p>
+<p>vehicles only when driving in a different direction (heading difference &gt; 45 degrees)</p>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.disableProximitySwerve">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">disableProximitySwerve</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.disableProximitySwerve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isProximitySwerveEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isProximitySwerveEnabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isProximitySwerveEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>proximity swerve enabled is checked with isProximitySwerveEnabled() and thus can be extended in derived classes with</p>
+<p>checking for the specific vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isProximitySlowDownEnabled">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isProximitySlowDownEnabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isProximitySlowDownEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>proximity slow down: slowing down when close to another vehicle</p>
+<p>proximity slow down is checked with isProximitySlowDownEnabled() and thus can be extended in derived classes with checking for the specific vehicle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.ignoreVehicleProximity">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">ignoreVehicleProximity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicleToIgnore</span></em>, <em class="sig-param"><span class="pre">ttlMs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.ignoreVehicleProximity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporarily ignore vehicle for the forward proximity sensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vehicleToIgnore</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>ttlMs</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.haveHeadOnConflictWith">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">haveHeadOnConflictWith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.haveHeadOnConflictWith" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.haveConflictWith">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">haveConflictWith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vehicle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.haveConflictWith" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vehicle</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.checkProximitySensor">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">checkProximitySensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">maxSpeed</span></em>, <em class="sig-param"><span class="pre">allowedToDrive</span></em>, <em class="sig-param"><span class="pre">moveForwards</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.checkProximitySensor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxSpeed</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>allowedToDrive</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>moveForwards</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isAutoDriveDriving">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isAutoDriveDriving</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isAutoDriveDriving" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isFuelLevelOk">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isFuelLevelOk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isFuelLevelOk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isValidFillType">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isValidFillType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">fillType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isValidFillType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fillType</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isValidFuelType">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isValidFuelType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">object</span></em>, <em class="sig-param"><span class="pre">fillType</span></em>, <em class="sig-param"><span class="pre">fillUnitIndex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isValidFuelType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fillType</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>fillUnitIndex</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getFuelLevelPercentage">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getFuelLevelPercentage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getFuelLevelPercentage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getSiloSelectedFillTypeSetting">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSiloSelectedFillTypeSetting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getSiloSelectedFillTypeSetting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getSeparateFillTypeLoadingSetting">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getSeparateFillTypeLoadingSetting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getSeparateFillTypeLoadingSetting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.notAllowedToLoadNextFillType">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">notAllowedToLoadNextFillType</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.notAllowedToLoadNextFillType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getCanShowDriveOnButton">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getCanShowDriveOnButton</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getCanShowDriveOnButton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.openCovers">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">openCovers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">object</span></em>, <em class="sig-param"><span class="pre">validFillType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.openCovers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>validFillType</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.closeCovers">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">closeCovers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">object</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.closeCovers" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>object</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isDetachAllowed">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isDetachAllowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">superFunc</span></em>, <em class="sig-param"><span class="pre">preSuperFunc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isDetachAllowed" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>superFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+<li><p><strong>preSuperFunc</strong> (<span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">any</span></code></span>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.areWorkingToolPositionsValid">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">areWorkingToolPositionsValid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.areWorkingToolPositionsValid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Are all working tool positions set correctly ?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>working tool positions set correctly</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.isWorkingToolPositionReached">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">isWorkingToolPositionReached</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.isWorkingToolPositionReached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is working tool positions reached ?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>working tool positions reached</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><span><code class="xref lua lua-class docutils literal notranslate"><span class="pre">boolean</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.getWorkingToolPositionsSetting">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">getWorkingToolPositionsSetting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.getWorkingToolPositionsSetting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="lua method">
+<dt class="sig sig-object lua" id="AIDriver.hasSugarCaneTrailerToolPositions">
+<em class="property"> </em><span class="sig-name descname"><span class="pre">hasSugarCaneTrailerToolPositions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AIDriver.hasSugarCaneTrailerToolPositions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="GrainTransportAIDriver.html" class="btn btn-neutral float-right" title="GrainTransportAIDriver" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../index.html" class="btn btn-neutral float-left" title="Welcome to Courseplay’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Courseplay dev team.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
