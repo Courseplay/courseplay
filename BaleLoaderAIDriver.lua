@@ -178,9 +178,6 @@ function BaleLoaderAIDriver:updateFillType()
 	if not self.fillType then
 		self.fillType = self:getFillType()
 	end
-	-- This is an ugly hack here here to overwrite the legacy CP code's fillType as it is not
-	-- able to handle the bale loaders. TODO: needs a more professional approach
-	self.baleLoader.cp.fillType = self.fillType
 	self:debugSparse('Bale filltype %s', self.fillType)
 end
 

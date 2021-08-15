@@ -1277,7 +1277,12 @@ function AIDriver:checkForHeapBehindMe(tipper)
     local tempHeightX,tempHeightY,tempHeightZ = localToWorld(dischargeNode,0,0,offset+0.5) 
     local searchWidth = 1    
     local fillType = DensityMapHeightUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
-    if fillType == tipper.cp.fillType then
+    local trailerFillTypes = AIDriverUtil.getAllFillTypes(tipper)
+	local validFillType
+	for _,f in pairs(trailerFillTypes) do 
+		validFillType = f == fillType
+	end
+	if validFillType then
         local fillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType,startX,startZ,startX,startZ+1,startX+1,startZ)    --should represent an area of 1m^2 starting at the discharge node
         return true,fillLevel
     end
@@ -1448,21 +1453,6 @@ function AIDriver:cleanUpMissedTriggerExit() -- at least that's what it seems to
 	end;
 end
 
-function AIDriver:tipTriggerIsFull(trigger,tipper)
-	local trigger = self.vehicle.cp.currentTipTrigger
-	local trailerFillType = tipper.cp.fillType
-	if trigger and trigger.unloadingStation then
-		local ownerFarmId = self.vehicle.getOwnerFarmId(self.vehicle);
-		local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
-		local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
-		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,self.vehicle,'    trigger (%s) fillLevel=%d, capacity=%d ',tostring(trigger.triggerId), fillLevel, capacity);
-		if fillLevel>=capacity then
-			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD, self.vehicle,'    trigger (%s) Trigger is full',tostring(triggerId));
-			return true;
-		end
-	end;
-	return false;
-end
 
 --- Update the unload offset from the current settings and apply it when needed
 function AIDriver:updateOffset()

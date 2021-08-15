@@ -163,7 +163,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 	end;
 
 	courseplay:setNameVariable(workTool);
-	courseplay:setOwnFillLevelsAndCapacities(workTool)
 	local hasWorkTool = false;
 	local hasWaterTrailer = false
 
@@ -528,40 +527,4 @@ function courseplay:getIsToolValidForCpMode(object, mode, callback)
 	for _,impl in pairs(object:getAttachedImplements()) do
 		courseplay:getIsToolValidForCpMode(impl.object, mode, callback)
 	end
-end
-
-function courseplay:setOwnFillLevelsAndCapacities(workTool)
-	local fillLevel, capacity = 0,0
-	local fillLevelPercent = 0;
-	local fillType = 0;
-	if workTool.getFillUnits == nil then
-		return false
-	end
-	local fillUnits = workTool:getFillUnits()
-	for index,fillUnit in pairs(fillUnits) do
-		-- TODO: why not fillUnit.fillType == FillType.DIESEL? answer: because you may have diesel in your trailer
-		if workTool.getConsumerFillUnitIndex and (index == workTool:getConsumerFillUnitIndex(FillType.DIESEL)
-				or index == workTool:getConsumerFillUnitIndex(FillType.DEF)
-				or index == workTool:getConsumerFillUnitIndex(FillType.AIR))
-				or fillUnit.capacity > 999999 then
-		else
-
-			fillLevel = fillLevel + fillUnit.fillLevel
-			capacity = capacity + fillUnit.capacity
-			if fillLevel ~= nil and capacity ~= nil then
-				fillLevelPercent = (fillLevel*100)/capacity;
-			else
-				fillLevelPercent = nil
-			end
-			fillType = fillUnit.lastValidFillType
-		end
-	end
-
-	workTool.cp.fillLevel = fillLevel
-	workTool.cp.capacity = capacity
-	workTool.cp.fillLevelPercent = fillLevelPercent
-	workTool.cp.fillType = fillType
-	--print(string.format("%s: adding %s to workTool.cp.fillLevel",tostring(workTool:getName()),tostring(workTool.cp.fillLevel)))
-	--print(string.format("%s: adding %s to workTool.cp.capacity",tostring(workTool:getName()),tostring(workTool.cp.capacity)))
-	return true
 end

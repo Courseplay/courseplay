@@ -209,8 +209,6 @@ function courseplay:onLoad(savegame)
 		CpManager.trafficCollisionIgnoreList[g_currentMission.terrainRootNode] = true;
 	end;
 
-	courseplay:setOwnFillLevelsAndCapacities(self)
-
 	-- workTools
 	self.cp.workTools = {};
 	self.cp.numWorkTools = 0;

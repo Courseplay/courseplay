@@ -93,15 +93,8 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 
 	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), courseplay.DBG_TRIGGERS);
-		local trailerFillType = self.cp.workTools[1].cp.fillType;
-		if trailerFillType == nil or trailerFillType == 0 then
-			for i=1,#(self.cp.workTools) do
-				trailerFillType = self.cp.workTools[i].cp.fillType;
-				if trailerFillType ~= nil and trailerFillType ~= 0 then 
-					break
-				end
-			end
-		end
+		local trailerFillTypes = AIDriverUtil.getAllFillTypes(self)
+
 		if transformId ~= nil then
 			local trigger = tipTriggers[transformId]
 			if trigger ~= nil then
@@ -128,15 +121,26 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				elseif trigger.isPlaceableHeapTrigger then
 					courseplay:debug('    trigger is PlaceableHeap', courseplay.DBG_TRIGGERS);
 				end;
-
-				courseplay:debug(('    trailerFillType=%s %s'):format(tostring(trailerFillType), trailerFillType and g_fillTypeManager.indexToName[trailerFillType] or ''), courseplay.DBG_TRIGGERS);
-				if trailerFillType and trigger.acceptedFillTypes ~= nil and trigger.acceptedFillTypes[trailerFillType] then
+				local validTrailerFillType
+				if trigger.acceptedFillTypes then
+					for _,fillType in pairs(trailerFillTypes) do 
+						validTrailerFillType =  trigger.acceptedFillTypes[fillType]
+						if validTrailerFillType then 
+							break
+						end
+					end
+				end
+				-- This is an ugly hack here here to enable bale loaders
+				-- TODO: needs a more professional approach
+				validTrailerFillType = validTrailerFillType or self.cp.driver.fillType
+				
+				if validTrailerFillType then
 					courseplay:debug(('    trigger (%s) accepts trailerFillType'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 					-- check trigger fillLevel / capacity
 					if trigger.unloadingStation then
 						local ownerFarmId = self:getOwnerFarmId();
-						local fillLevel = trigger.unloadingStation:getFillLevel(trailerFillType, ownerFarmId);
-						local capacity = trigger.unloadingStation:getCapacity(trailerFillType, ownerFarmId);
+						local fillLevel = trigger.unloadingStation:getFillLevel(validTrailerFillType, ownerFarmId);
+						local capacity = trigger.unloadingStation:getCapacity(validTrailerFillType, ownerFarmId);
 						courseplay:debug(('    trigger (%s) fillLevel=%d, capacity=%d '):format(tostring(triggerId), fillLevel, capacity), courseplay.DBG_TRIGGERS);
 						if fillLevel>=capacity then
 							courseplay:debug(('    trigger (%s) Trigger is full -> abort'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
@@ -147,11 +151,11 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 					-- check single fillType validity
 					local fillTypeIsValid = true;
 					if trigger.currentFillType then
-						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == trailerFillType;
+						fillTypeIsValid = trigger.currentFillType == 0 or trigger.currentFillType == validTrailerFillType;
 						courseplay:debug(('    trigger (%s): currentFillType=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), trigger.currentFillType, tostring(fillTypeIsValid)), courseplay.DBG_TRIGGERS);
 					elseif trigger.getFillType then
 						local triggerFillType = trigger:getFillType();
-						fillTypeIsValid = triggerFillType == 0 or triggerFillType == trailerFillType;
+						fillTypeIsValid = triggerFillType == 0 or triggerFillType == validTrailerFillType;
 						courseplay:debug(('    trigger (%s): trigger:getFillType()=%d -> fillTypeIsValid=%s'):format(tostring(triggerId), triggerFillType, tostring(fillTypeIsValid)), courseplay.DBG_TRIGGERS);
 					end;
 
@@ -164,12 +168,12 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				elseif trigger.acceptedFillTypes ~= nil then
 
 					if courseplay.debugChannels[courseplay.DBG_TRIGGERS] then
-						courseplay:debug(('    trigger (%s) does not accept trailerFillType (%s)'):format(tostring(triggerId), tostring(trailerFillType)), courseplay.DBG_TRIGGERS);
+						courseplay:debug(('    trigger (%s) does not accept trailerFillTypes'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:debug(('    trigger (%s) acceptedFillTypes:'):format(tostring(triggerId)), courseplay.DBG_TRIGGERS);
 						courseplay:printTipTriggersFruits(trigger)
 					end
 				else
-					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes (trailerFillType=%s)", nameNum(self), tostring(triggerId), tostring(trailerFillType)), courseplay.DBG_TRIGGERS);
+					courseplay:debug(string.format("%s: trigger %s does not have acceptedFillTypes.", nameNum(self), tostring(triggerId)), courseplay.DBG_TRIGGERS);
 				end;
 				return true;
 			end;

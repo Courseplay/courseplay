@@ -387,7 +387,7 @@ function AIDriverUtil.getFillTypeFromFillUnit(fillUnit)
 	end
 end
 
---- Gets the complete fill level and capacity without fuel,
+--- Gets the complete fill level and capacity from the complete vehicle combo without fuel/def/air.
 ---@param object table 
 ---@return number totalFillLevel
 ---@return number totalCapacity
@@ -407,13 +407,30 @@ function AIDriverUtil.getTotalFillLevelAndCapacity(object)
 	return totalFillLevel,totalCapacity
 end
 
---- Gets the total fill level percentage.
+--- Gets the total fill level percentage from the complete vehicle combo without fuel/def/air.
 ---@param object table
 function AIDriverUtil.getTotalFillLevelPercentage(object)
 	local fillLevel,capacity = AIDriverUtil.getTotalFillLevelAndCapacity(object)
 	return 100*fillLevel/capacity
 end
 
+--- Gets all fill types from the complete vehicle combo without fuel/def/air.
+function AIDriverUtil.getAllFillTypes(object)
+	local fillLevelInfo = {}
+	AIDriverUtil.getAllFillLevels(object, fillLevelInfo)
+	local fillTypes = {}
+	for fillType,data in pairs(fillLevelInfo) do 
+		if AIDriverUtil.isValidFillType(object,fillType) then
+			table.insert(fillTypes,fillType)
+		end
+	end
+	return fillTypes
+end
+
+--- Gets the complete fill level and capacity for an object without fuel/def/air.
+---@param object table 
+---@return number totalFillLevel
+---@return number totalCapacity
 function AIDriverUtil.getTotalFillLevelAndCapacityForObject(object)
 	local totalFillLevel = 0
 	local totalCapacity = 0
