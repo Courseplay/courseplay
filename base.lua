@@ -1243,9 +1243,8 @@ function courseplay.onStartCpAIDriver(vehicle,helperIndex,noEventSend, startedFa
     end
 end
 
---- Adds a new Helper if needed.
 function courseplay.addNewHelper(currentHelper)
-	while(currentHelper == nil or currentHelper.index~=nil) do
+	while(currentHelper == nil and currentHelper.index~=nil) do
 		--- Default helpers are index 1-10
 		local index = math.random(1,10)
 		local source = g_helperManager:getHelperByIndex(index)
