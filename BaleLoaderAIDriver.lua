@@ -95,7 +95,6 @@ end
 ---@return boolean true if unload took over the driving
 function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	self:updateOffset()
-	self:updateFillType()
 
 	-- by default, drive street/recorded speed.
 	self:setSpeed(self:getRecordedSpeed())
@@ -172,30 +171,6 @@ end
 
 function BaleLoaderAIDriver:haveBales()
 	return self.baleLoader:getFillUnitFillLevel(self.baleLoader.spec_baleLoader.fillUnitIndex) > 0
-end
-
-function BaleLoaderAIDriver:updateFillType()
-	if not self.fillType then
-		self.fillType = self:getFillType()
-	end
-	self:debugSparse('Bale filltype %s', self.fillType)
-end
-
--- Getting fill type for bale loaders is not straightforward as the bales have the actual fill type,
--- the fill type what the trigger has, like STRAW, so just go through our bales and pick the first
--- fill type we find.
-function BaleLoaderAIDriver:getFillType()
-	local spec = self.baleLoader.spec_baleLoader
-	for _, balePlace in pairs(spec.balePlaces) do
-		if balePlace.bales then
-			for _, baleServerId in pairs(balePlace.bales) do
-				local bale = NetworkUtil.getObject(baleServerId)
-				if bale ~= nil then
-					return bale:getFillType()
-				end
-			end
-		end
-	end
 end
 
 --- Unload node is either an unload waypoint or an unload trigger

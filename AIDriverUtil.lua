@@ -349,6 +349,10 @@ function AIDriverUtil.getCurrentNormalizedSteeringAngle(vehicle)
 	end
 end
 
+--- Enriches the fillLevelInfo table with fill types, fill levels and capacities.
+---@param object table 
+---@param fillLevelInfo table 
+---@param driver AIDriver optional
 function AIDriverUtil.getAllFillLevels(object, fillLevelInfo, driver)
 	-- get own fill levels
 	if object.getFillUnits then
@@ -409,19 +413,22 @@ end
 
 --- Gets the total fill level percentage from the complete vehicle combo without fuel/def/air.
 ---@param object table
+---@return number totalFillLevelPercentage
 function AIDriverUtil.getTotalFillLevelPercentage(object)
 	local fillLevel,capacity = AIDriverUtil.getTotalFillLevelAndCapacity(object)
 	return 100*fillLevel/capacity
 end
 
 --- Gets all fill types from the complete vehicle combo without fuel/def/air.
+---@param object table
+---@return fillTypes table
 function AIDriverUtil.getAllFillTypes(object)
 	local fillLevelInfo = {}
 	AIDriverUtil.getAllFillLevels(object, fillLevelInfo)
 	local fillTypes = {}
 	for fillType,data in pairs(fillLevelInfo) do 
 		if AIDriverUtil.isValidFillType(object,fillType) then
-			table.insert(fillTypes,fillType)
+			fillTypes[fillType] = true
 		end
 	end
 	return fillTypes
@@ -446,6 +453,7 @@ function AIDriverUtil.getTotalFillLevelAndCapacityForObject(object)
 	return totalFillLevel,totalCapacity
 end
 
+--- Could probably be consolidated with AIDriverUtil.isValidFuelType().
 ---@param object table 
 ---@param fillType number 
 function AIDriverUtil.isValidFillType(object,fillType)
@@ -466,10 +474,32 @@ function AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex)
 	end
 end
 
+--- Gets all fill types from bale loader.
+---@param baleLoader table
+---@return fillTypes table
+function AIDriverUtil.getBaleLoaderFillTypes(baleLoader)
+	local spec = baleLoader.spec_baleLoader
+	local fillTypes = {}
+	for _, balePlace in pairs(spec.balePlaces) do
+		if balePlace.bales then
+			for _, baleServerId in pairs(balePlace.bales) do
+				local bale = NetworkUtil.getObject(baleServerId)
+				if bale ~= nil then
+					local fillType = bale:getFillType()
+					if fillType then 
+						fillTypes[fillType] = true
+					end
+				end
+			end
+		end
+	end
+	return fillTypes
+end
 
 --- Gets the fill level of an mixerWagon for a fill type.
 ---@param object table
 ---@param fillType number
+---@return number fillLevel
 function AIDriverUtil.getMixerWagonFillLevelForFillTypes(object,fillType)
 	local spec = object.spec_mixerWagon
 	if spec then

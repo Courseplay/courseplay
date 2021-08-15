@@ -1278,11 +1278,7 @@ function AIDriver:checkForHeapBehindMe(tipper)
     local searchWidth = 1    
     local fillType = DensityMapHeightUtil.getFillTypeAtLine(startX,startY,startZ,tempHeightX,tempHeightY,tempHeightZ, searchWidth)
     local trailerFillTypes = AIDriverUtil.getAllFillTypes(tipper)
-	local validFillType
-	for _,f in pairs(trailerFillTypes) do 
-		validFillType = f == fillType
-	end
-	if validFillType then
+	if trailerFillTypes[fillType] then
         local fillLevel = DensityMapHeightUtil.getFillLevelAtArea(fillType,startX,startZ,startX,startZ+1,startX+1,startZ)    --should represent an area of 1m^2 starting at the discharge node
         return true,fillLevel
     end

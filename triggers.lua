@@ -91,9 +91,18 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 	local tipTriggers, tipTriggersCount = courseplay.triggers.tipTriggers, courseplay.triggers.tipTriggersCount
 	courseplay:debug(('%s: found %s'):format(nameNum(self), name), courseplay.DBG_TRIGGERS);
 
-	if self.cp.workTools[1] ~= nil and tipTriggers ~= nil and tipTriggersCount > 0 then
+	if tipTriggers ~= nil and tipTriggersCount > 0 then
 		courseplay:debug(('%s: transformId=%s: %s'):format(nameNum(self), tostring(transformId), name), courseplay.DBG_TRIGGERS);
-		local trailerFillTypes = AIDriverUtil.getAllFillTypes(self)
+		
+		local trailerFillTypes
+		local baleLoader = AIDriverUtil.getImplementWithSpecialization(self,BaleLoader)
+		if baleLoader then 
+			--- Getting fill type for bale loaders is not straightforward as the bales have the actual fill type,
+			-- the fill type what the trigger has, like STRAW, so just go through our bales.
+			trailerFillTypes = AIDriverUtil.getBaleLoaderFillTypes(baleLoader)
+		else
+			trailerFillTypes = AIDriverUtil.getAllFillTypes(self)
+		end
 
 		if transformId ~= nil then
 			local trigger = tipTriggers[transformId]
@@ -123,7 +132,7 @@ function courseplay:findTipTriggerCallback(transformId, x, y, z, distance)
 				end;
 				local validTrailerFillType
 				if trigger.acceptedFillTypes then
-					for _,fillType in pairs(trailerFillTypes) do 
+					for fillType,_ in pairs(trailerFillTypes) do 
 						validTrailerFillType =  trigger.acceptedFillTypes[fillType]
 						if validTrailerFillType then 
 							break
