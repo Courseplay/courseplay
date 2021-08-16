@@ -41,19 +41,26 @@ function FieldSupplyAIDriver:init(vehicle)
 	self.supplyState = self.states.ON_REFILL_COURSE
 	self.mode=courseplay.MODE_FIELD_SUPPLY
 	self.debugChannel = courseplay.DBG_MODE_8
-	self:setHudContent()
+end
+
+function FieldSupplyAIDriver:postInit()
+    ---Refresh the Hud content here,as otherwise the moveable pipe is not 
+    ---detected the first time after loading a savegame. 
+    self:setHudContent()
+    FillableFieldworkAIDriver.postInit(self)
 end
 
 function FieldSupplyAIDriver:setHudContent()
+	self:findPipe()
 	AIDriver.setHudContent(self)
 	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
 end
 --this one is should be better derived!!
 function FieldSupplyAIDriver:start(startingPoint)
 	self.refillState = self.states.REFILL_DONE
+	self.supplyState = self.states.ON_REFILL_COURSE
 	AIDriver.start(self,startingPoint)
 	self.state = self.states.ON_UNLOAD_OR_REFILL_COURSE
-	self:findPipe() --for Augerwagons
 end
 
 function FieldSupplyAIDriver:stop(msgReference)
@@ -84,9 +91,18 @@ function FieldSupplyAIDriver:drive(dt)
 	elseif self.supplyState == self.states.WAITING_FOR_GETTING_UNLOADED then
 		self:holdWithFuelSave()
 		self:updateInfoText()
-		if self.pipe then
-			self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
+		if self.objectWithPipe then
 			self.triggerHandler:enableFillTypeUnloadingAugerWagon()
+			---TODO: Currently it's not possible to open the pipe after the mode 4 driver arrives,
+			---		 as there is not trigger to detect it, while the pipe is closed.
+
+		--	if AIDriverUtil.isTrailerUnderPipe(self.pipe,true) then 
+				--- Open the pipe if there is a trailer under the pipe and standing still.
+				self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
+				self:isWorkingToolPositionReached(dt,1)
+		--	else 
+		--		self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
+		--	end
 		else
 			self.triggerHandler:enableFillTypeUnloading()
 		end
@@ -130,7 +146,7 @@ function FieldSupplyAIDriver:isFillLevelToContinueReached()
 		return
 	end
 	--pipe still opening wait!
-	if self.pipe and not self.pipe:getIsPipeStateChangeAllowed(AIDriverUtil.PIPE_STATE_CLOSED) then
+	if self.objectWithPipe and not self.objectWithPipe:getIsPipeStateChangeAllowed(AIDriverUtil.PIPE_STATE_CLOSED) then
 		return
 	end
 	local fillLevelInfo = {}
@@ -154,15 +170,16 @@ function FieldSupplyAIDriver:needsFillTypeLoading()
 end
 
 function FieldSupplyAIDriver:findPipe()
-    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
+    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe) or self.vehicle.spec_pipe and self.vehicle
     if implementWithPipe then
-        self.pipe = implementWithPipe
+		self.objectWithPipe = implementWithPipe
+		self.pipe = implementWithPipe.spec_pipe
     end
 end
 
 function FieldSupplyAIDriver:closePipeIfNeeded(isInWaitPointRange) 
-	if self.pipe and not self.isInWaitPointRange then
-		self.pipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
+	if self.objectWithPipe and not self.isInWaitPointRange then
+		self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
 	end
 end
 
@@ -172,4 +189,9 @@ end
 
 function FieldSupplyAIDriver:getCanShowDriveOnButton()
 	return AIDriver.getCanShowDriveOnButton(self) or self.refillState == self.states.WAITING_FOR_GETTING_UNLOADED
+end
+
+function FieldSupplyAIDriver:getWorkingToolPositionsSetting()
+	local setting = self.settings.pipeToolPositions
+	return setting:getHasMoveablePipe() and setting:hasValidToolPositions() and setting
 end

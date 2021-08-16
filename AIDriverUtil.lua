@@ -400,3 +400,51 @@ function AIDriverUtil.getMixerWagonFillLevelForFillTypes(object,fillType)
 		end
 	end
 end
+
+--- Is a sugarcane trailer attached ?
+---@param vehicle table
+function AIDriverUtil.hasSugarCaneTrailer(vehicle)
+	if vehicle.spec_shovel and vehicle.spec_trailer then 
+		return true
+	end
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
+		local object = implement.object
+		if object.spec_shovel and object.spec_trailer then 
+			return true
+		end
+	end
+end
+
+--- Are there any trailer under the pipe ?
+---@param pipe table 
+---@param shouldTrailerBeStandingStill boolean
+function AIDriverUtil.isTrailerUnderPipe(pipe,shouldTrailerBeStandingStill)
+	if not pipe then return end
+	for trailer, value in pairs(pipe.objectsInTriggers) do
+		if value > 0 then
+			if shouldTrailerBeStandingStill then 
+				local rootVehicle = trailer:getRootVehicle()
+				if rootVehicle then 
+					if AIDriverUtil.isStopped(rootVehicle) then 
+						return true
+					else 
+						return false
+					end
+				end
+			end
+			return true
+		end
+	end
+	return false
+end
+
+---Gets the total length of the vehicle and all it's implements.
+function AIDriverUtil.getVehicleAndImplementsTotalLength(vehicle)
+	local totalLength = vehicle.sizeLength
+	for _, implement in pairs(AIDriverUtil.getAllAttachedImplements(vehicle)) do
+		if implement.object ~= nil then
+			totalLength = totalLength + implement.object.sizeLength
+		end
+	end
+	return totalLength
+end 

@@ -1139,10 +1139,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					else
 						self:disableButtonWithFunction(vehicle,page,'changeByX', vehicle.cp.settings.levelCompactShieldHeight)
 					end
-				elseif entry.functionToCall == 'augerPipeToolPositions:setOrClearPostion' then
-					--AugerPipeToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][5][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][5][2].text = vehicle.cp.settings.augerPipeToolPositions:getText()
+				elseif entry.functionToCall == 'pipeToolPositions:setOrClearPostion' then
+					--PipeToolPositionsSetting
+					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
+					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.pipeToolPositions:getText()
 				elseif entry.functionToCall == 'mixerWagonToolPositions:setOrClearPostion' then
 					--MixerWagonToolPositionsSetting
 					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
@@ -1158,6 +1158,14 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
 					vehicle.cp.hud.content.pages[page][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
 					local texts = vehicle.cp.settings.frontloaderToolPositions:getTexts()
+					for i=1,4 do 
+						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
+					end
+				elseif entry.functionToCall == 'sugarCaneTrailerToolPositions:setOrClearPostion' then
+					--SugarCaneTrailerToolPositionsSetting
+					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
+					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
+					local texts = vehicle.cp.settings.sugarCaneTrailerToolPositions:getTexts()
 					for i=1,4 do 
 						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
 					end
@@ -2090,6 +2098,11 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 	self:addSettingsRow(vehicle,vehicle.cp.settings.loadUnloadOffsetX,'changeByX', 7, 6, 1 )
 	self:addSettingsRow(vehicle,vehicle.cp.settings.loadUnloadOffsetZ,'changeByX', 7, 7, 1 )
 	
+	if vehicle.cp.driver:hasSugarCaneTrailerToolPositions() then 
+		self:enablePageButton(vehicle,9)
+		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.sugarCaneTrailerToolPositions,9,1)
+	end
+
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
@@ -2156,6 +2169,9 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 		self:addRowButton(vehicle,vehicle.cp.settings.pipeAlwaysUnfold,'toggle', 6, 3, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.strawSwath,'changeByX', 6, 4, 1 )
 		self:addRowButton(vehicle,vehicle.cp.settings.allowUnloadOnFirstHeadland,'toggle', 6, 5, 1 )
+		if vehicle.cp.settings.pipeToolPositions:getHasMoveablePipe() then 
+			self:setupToolPositionButtons(vehicle,vehicle.cp.settings.pipeToolPositions,3,6)
+		end
 
 	end
 
@@ -2188,15 +2204,20 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	self:addRowButton(vehicle,vehicle.cp.settings.useRealisticDriving,'toggle', 8, 4, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.turnOnField,'toggle', 8, 3, 1 )
 	
+	if vehicle.cp.driver:hasSugarCaneTrailerToolPositions() then 
+		self:enablePageButton(vehicle,9)
+		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.sugarCaneTrailerToolPositions,9,1)
+	end
+
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setOverloaderAIDriverContent(vehicle,hasMoveablePipe)
+function courseplay.hud:setOverloaderAIDriverContent(vehicle)
 	-- page 3
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.followAtFillLevel,'changeByX', 3, 3, 1 )
-	if hasMoveablePipe then
-		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.augerPipeToolPositions, 3, 5)
+	if vehicle.cp.settings.pipeToolPositions:getHasMoveablePipe() then 
+		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.pipeToolPositions, 3, 5)
 	end
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 4, 1 )
 end
@@ -2206,6 +2227,9 @@ function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 1, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver,'addFilltype', 3, 2, 1 )
 	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver, 3, 3, 4, 1)
+	if vehicle.cp.settings.pipeToolPositions:getHasMoveablePipe() then 
+		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.pipeToolPositions, 3, 5)
+	end
 end
 
 

@@ -52,11 +52,7 @@ function OverloaderAIDriver:findPipeAndTrailer()
     if implementWithPipe then
         self.pipe = implementWithPipe.spec_pipe
 		self.objectWithPipe = implementWithPipe
-        self.moveablePipe = implementWithPipe.spec_cylindered
 		self:debug('Overloader found its pipe')
-		if self.moveablePipe then
-			self:debug('Overloader found moveable pipe')
-		end
     else
         self:debug('Overloader has no implement with pipe')
     end
@@ -66,7 +62,7 @@ end
 function OverloaderAIDriver:setHudContent()
 	CombineUnloadAIDriver.setHudContent(self)
 	self:findPipeAndTrailer()
-	courseplay.hud:setOverloaderAIDriverContent(self.vehicle,self.moveablePipe)
+	courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
 end
 
 function OverloaderAIDriver:start(startingPoint)
@@ -79,23 +75,7 @@ function OverloaderAIDriver:start(startingPoint)
 end
 
 function OverloaderAIDriver:isTrailerUnderPipe(shouldTrailerBeStandingStill)
-    if not self.pipe then return end
-    for trailer, value in pairs(self.pipe.objectsInTriggers) do
-        if value > 0 then
-            if shouldTrailerBeStandingStill then 
-				local rootVehicle = trailer:getRootVehicle()
-				if rootVehicle then 
-					if rootVehicle:getLastSpeed(true) <1 then 
-						return true
-					else 
-						return false
-					end
-				end
-			end
-			return true
-        end
-    end
-    return false
+    return AIDriverUtil.isTrailerUnderPipe(self.pipe,shouldTrailerBeStandingStill)
 end
 
 function OverloaderAIDriver:driveUnloadCourse(dt)
@@ -135,10 +115,10 @@ function OverloaderAIDriver:driveUnloadCourse(dt)
     AIDriver.drive(self, dt)
 end
 
---if we have augerPipeToolPositions, then wait until we have set them
+--if we have pipeToolPositions, then wait until we have set them
 function OverloaderAIDriver:getWorkingToolPositionsSetting()
-    local setting = self.vehicle.cp.settings.augerPipeToolPositions
-    return self.moveablePipe and setting:hasValidToolPositions() and self.vehicle.cp.settings.augerPipeToolPositions
+    local setting = self.settings.pipeToolPositions
+    return setting:getHasMoveablePipe() and setting:hasValidToolPositions() and setting
 end
 
 function OverloaderAIDriver:isProximitySwerveEnabled(vehicle)

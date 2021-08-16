@@ -27,9 +27,7 @@ function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
 	self.loadingState = StateModule(self,"debug", self.vehicle)
 	self.loadingState:initStates(TriggerHandler.myLoadingStates)
 	self.loadingState.state = self.loadingState.states.STOPPED
-	self.triggers = {}
 	self.objectsInTrigger= {}
-	self.isInAugerWagonTrigger = false
 	self.fillableObject = nil
 	self.lastLoadedFillTypes = {}
 	self.debugTicks = 10
@@ -55,7 +53,6 @@ end
 function TriggerHandler:onStart()
 	self:changeLoadingState("NOTHING")
 	self.lastDistanceToTrigger = nil
-	self.triggers = {}
 	self.objectsInTrigger = {}
 	self.lastLoadedFillTypes = {}
 end 
@@ -71,7 +68,12 @@ function TriggerHandler:onUpdate(dt)
 	end
 	if not self:isStopped() then 
 		if self.validFillTypeUnloading then 
-			self:updateUnloadingTriggers()
+			self:updateUnloadingTriggers(dt)
+		end
+		if not self:isUnloading() then 
+			if self.driver:hasSugarCaneTrailerToolPositions() then 
+				self.driver:isWorkingToolPositionReached(dt,SugarCaneTrailerToolPositionsSetting.TRANSPORT_POSITION)
+			end
 		end
 	end
 	--temp hack to reset driveNow 
@@ -211,9 +213,12 @@ function TriggerHandler:updateLoadingTriggers()
 	end
 end 
 
-function TriggerHandler:updateUnloadingTriggers()
+function TriggerHandler:updateUnloadingTriggers(dt)
 	if self:isUnloading() then 
 		self:disableUnloadingIfEmpty()
+		if self.driver:hasSugarCaneTrailerToolPositions() then 
+			self.driver:isWorkingToolPositionReached(dt,SugarCaneTrailerToolPositionsSetting.UNLOADING_POSITION)
+		end
 	end
 end 
 
@@ -229,7 +234,7 @@ function TriggerHandler:disableUnloadingIfEmpty()
 	if self.fillableObject then		
 		local fillUnitIndex = self.fillableObject.fillUnitIndex
 		local object = self.fillableObject.object
-		if object:getFillUnitFillLevelPercentage(fillUnitIndex)*100 < 0.5 and object.spec_waterTrailer then 
+		if object:getFillUnitFillLevelPercentage(fillUnitIndex)*100 < 0.5 and (object.spec_waterTrailer or self.driver:hasSugarCaneTrailerToolPositions()) then 
 			self:resetUnloadingState()
 		end
 	end
@@ -385,9 +390,7 @@ function TriggerHandler:isInTrigger()
 	if oldCpTrigger and oldCpTrigger.bunkerSilo ~= nil then
 		return false
 	end
-	local bool = self.validFillTypeLoading and (self.driver:getIsInFilltrigger() or next(self.triggers) ~=nil) or self.validFillTypeUnloading and  self.driver:hasTipTrigger()
---	local bool = next(self.triggers) ~=nil or next(self.objectsInTrigger) ~=nil
-	return bool, self.isInAugerWagonTrigger
+	return self.validFillTypeUnloading and self.driver:hasTipTrigger()
 end
 
 function TriggerHandler:isDriveNowActivated()
@@ -934,12 +937,6 @@ end
 LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback,TriggerHandler.loadTriggerCallback)
 
 function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
-	local triggerHandler = rootVehicle.cp.driver.triggerHandler
-	if not onLeave and triggerHandler.triggers[self] == nil then 
-		triggerHandler.triggers[self] = true
-	elseif onLeave and (self.courseplayersInTrigger[rootVehicle] == nil or next(self.courseplayersInTrigger[rootVehicle]) == nil) then 
-		triggerHandler.triggers[self] = nil
-	end
 	if onEnter then 
 		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'LoadTrigger onEnter')
 		if fillableObject.getFillUnitIndexFromNode ~= nil then
@@ -955,7 +952,7 @@ function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnt
 					if fillableObject:getFillUnitSupportsFillType(foundFillUnitIndex, fillTypeIndex) then
 						if fillableObject:getFillUnitAllowsFillType(foundFillUnitIndex, fillTypeIndex) and fillableObject.spec_cover then
 							SpecializationUtil.raiseEvent(fillableObject, "onAddedFillUnitTrigger",fillTypeIndex,foundFillUnitIndex,1)
-							triggerHandler:debugSparse(fillableObject,"LoadTrigger: open Cover for loading")
+							courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject,"LoadTrigger: open Cover for loading")
 						end
 					end
 				end
@@ -1009,11 +1006,6 @@ function TriggerHandler:fillTriggerCallback(superFunc, triggerId, otherId, onEnt
 		if not triggerHandler.validFillTypeLoading then
 			return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 		end
-		if not onLeave and triggerHandler.triggers[self] == nil then 
-			triggerHandler.triggers[self] = true
-		elseif onLeave and (self.courseplayersInTrigger[rootVehicle] == nil or next(self.courseplayersInTrigger[rootVehicle]) == nil)  then 
-			triggerHandler.triggers[self] = nil
-		end
 		if onEnter then
 			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'fillTrigger onEnter')
 		end
@@ -1038,14 +1030,6 @@ end
 --Augerwagons handling
 --Pipe callback used for augerwagons to open the cover on the fillableObject
 function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
-	if not self.objectsInTrigger then 
-		self.objectsInTrigger = {}
-	end
-	if onEnter then
-		self.objectsInTrigger[otherId] = true
-	elseif onLeave then 
-		self.objectsInTrigger[otherId] = nil
-	end	
 	local rootVehicle = self:getRootVehicle()
 	if courseplay:isAIDriverActive(rootVehicle) and not rootVehicle.cp.driver.triggerHandler.validFillTypeUnloadingAugerWagon then 
 		return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
@@ -1060,11 +1044,7 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 		if not objectTriggerHandler.validFillTypeLoading then
 			return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
 		end
-		if not onLeave and objectTriggerHandler.triggers[self] == nil then 
-			objectTriggerHandler.triggers[self] = true
-		elseif onLeave and next(self.objectsInTrigger) == nil then 
-			objectTriggerHandler.triggers[self] = nil
-		end
+
 		if object.getFillUnitIndexFromNode ~= nil and not onLeave then
 			local fillUnitIndex = object:getFillUnitIndexFromNode(otherId)
             if fillUnitIndex ~= nil then
@@ -1075,7 +1055,6 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
                     if fillType and validFillUnitIndex then 
 						courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,object,"unloadingTriggerCallback open Cover for "..g_fillTypeManager:getFillTypeByIndex(fillType).title)
 						SpecializationUtil.raiseEvent(object, "onAddedFillUnitTrigger",fillType,validFillUnitIndex,1)
-						objectTriggerHandler.isInAugerWagonTrigger = true
 					end
 				end
 			end
@@ -1083,7 +1062,6 @@ function TriggerHandler:unloadingTriggerCallback(superFunc,triggerId, otherId, o
 			SpecializationUtil.raiseEvent(object, "onRemovedFillUnitTrigger",0)
 			courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,object,"unloadingTriggerCallback close Cover")
 			objectTriggerHandler:resetLoadingState()
-			objectTriggerHandler.isInAugerWagonTrigger = false
 		end
 	end
 	return superFunc(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId)
@@ -1168,37 +1146,56 @@ end
 Dischargeable.updateRaycast = Utils.overwrittenFunction(Dischargeable.updateRaycast, TriggerHandler.updateRaycast)
 
 --check if we can unload and then wait and also set triggerSpeed for unloadingTriggers for now until raycast is fixed
-function TriggerHandler:onUpdateDischargeable(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
-	local rootVehicle = self:getRootVehicle()
-	local spec = self.spec_dischargeable
-	if courseplay:isAIDriverActive(rootVehicle) and spec and spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF then
-		local triggerHandler = rootVehicle.cp.driver.triggerHandler
+function TriggerHandler.onUpdateDischargeable(object,dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)
+	local rootVehicle = object:getRootVehicle()
+	local spec = object.spec_dischargeable
+	local driver = rootVehicle.cp.driver
+	if courseplay:isAIDriverActive(rootVehicle) and (spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF or driver:hasSugarCaneTrailerToolPositions())then
+		local triggerHandler = driver.triggerHandler
 		local currentDischargeNode = spec.currentDischargeNode
 		if triggerHandler:isStopped() or not triggerHandler.validFillTypeUnloading or not currentDischargeNode then 
 			return
 		end
-		if spec:getCanDischargeToObject(currentDischargeNode) and not triggerHandler:isDriveNowActivated() then 
-			triggerHandler:setUnloadingState(self,currentDischargeNode.fillUnitIndex,spec:getDischargeFillType(currentDischargeNode))
-			triggerHandler:debugSparse(self,"getCanDischargeToObject")
-			spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
+		if driver:hasSugarCaneTrailerToolPositions() then 
+			triggerHandler:handleSugarCaneTrailerUnloading(object,driver,triggerHandler)
+		else
+			if spec:getCanDischargeToObject(currentDischargeNode) and not triggerHandler:isDriveNowActivated() then 
+				triggerHandler:setUnloadingState(object,currentDischargeNode.fillUnitIndex,spec:getDischargeFillType(currentDischargeNode))
+				triggerHandler:debugSparse(object,"getCanDischargeToObject")
+				spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
+			end
 		end
 		if currentDischargeNode.dischargeFailedReason and currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 
 			g_globalInfoTextHandler:setInfoText(rootVehicle, 'FARM_SILO_IS_FULL') -- not working for now, might have to double check
 		end
 		if currentDischargeNode.dischargeObject then
-			if triggerHandler.objectsInTrigger[self] == nil then
-				triggerHandler.objectsInTrigger[self] = true
+			if triggerHandler.objectsInTrigger[object] == nil then
+				triggerHandler.objectsInTrigger[object] = true
 			end
 		else
-			triggerHandler.objectsInTrigger[self] = nil
+			triggerHandler.objectsInTrigger[object] = nil
 		end
 		if spec.currentDischargeState == Dischargeable.DISCHARGE_STATE_OFF and rootVehicle.cp.driver:hasTipTrigger() then 
 			courseplay:setInfoText(rootVehicle,"COURSEPLAY_TIPTRIGGER_REACHED")
-			triggerHandler:debugSparse(self,"COURSEPLAY_TIPTRIGGER_REACHED")
+			triggerHandler:debugSparse(object,"COURSEPLAY_TIPTRIGGER_REACHED")
 		end
 	end
 end
 Dischargeable.onUpdate = Utils.appendedFunction(Dischargeable.onUpdate, TriggerHandler.onUpdateDischargeable)
+
+function TriggerHandler:handleSugarCaneTrailerUnloading(object,driver,triggerHandler)
+	local spec = object.spec_dischargeable
+	local currentDischargeNode = spec.currentDischargeNode
+	if currentDischargeNode.dischargeObject and object:getFillUnitFillLevelPercentage(currentDischargeNode.fillUnitIndex)*100 > 0.5 then 
+		if not driver:areWorkingToolPositionsValid() then 
+			triggerHandler:resetUnloadingState()
+			driver:hold()
+			return
+		end
+		triggerHandler:setUnloadingState(object,currentDischargeNode.fillUnitIndex,spec:getDischargeFillType(currentDischargeNode))
+		triggerHandler:debugSparse(object,"Discharging with sugar cane trailer.")
+	end
+end
 
 --check if we have any fillTrigger nearby and handle them
 function TriggerHandler:onUpdateTickFillUnit(dt, isActiveForInput, isActiveForInputIgnoreSelection, isSelected)

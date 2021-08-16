@@ -1599,7 +1599,7 @@ function DriverModeSetting:setAIDriver()
 end
 
 function DriverModeSetting:resetToDefault()
-	self:set(self.defaultMode)
+	self:set(self.defaultMode,true)
 end
 
 function DriverModeSetting:getDefaultMode()
@@ -3482,11 +3482,13 @@ function WorkingToolPositionsSetting:updateAndSetPosition(object,dt,posX,callbac
 	local spec = object.spec_cylindered 
 	if spec and spec.cpWorkingToolPos and spec.cpWorkingToolPos[posX] and self:isValidSpec(object) then 
 		for toolIndex, tool in ipairs(spec.movingTools) do
-			local isRotating,rotDiff = self.checkToolRotation(object,tool,toolIndex,posX,dt,self) 
-			local isMoving,moveDiff = self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) 			
-			if isRotating or isMoving then 
-				callback.isDirty = true
-				callback.diff = math.max(rotDiff,moveDiff,callback.diff)
+			if object:getIsMovingToolActive(tool) then 
+				local isRotating,rotDiff = self.checkToolRotation(object,tool,toolIndex,posX,dt,self) 
+				local isMoving,moveDiff = self.checkToolTranslation(object,tool,toolIndex,posX,dt,self) 			
+				if isRotating or isMoving then 
+					callback.isDirty = true
+					callback.diff = math.max(rotDiff,moveDiff,callback.diff)
+				end
 			end
 		end
 	end
@@ -3734,19 +3736,31 @@ function FrontloaderToolPositionsSetting:isDisabled()
 	return self.driverModeSetting:get() ~= courseplay.MODE_SHOVEL_FILL_AND_EMPTY
 end
 
----@class AugerPipeToolPositionsSetting : WorkingToolPositionsSetting
-AugerPipeToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
-function AugerPipeToolPositionsSetting:init(vehicle)
+---@class PipeToolPositionsSetting : WorkingToolPositionsSetting
+PipeToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+function PipeToolPositionsSetting:init(vehicle)
 	local label = "pipe"
 	local toolTip = "pipe"
 	local validSpecs = {Pipe}
-	WorkingToolPositionsSetting.init(self,"augerPipeToolPositions", label, toolTip, vehicle,1,validSpecs)
+	WorkingToolPositionsSetting.init(self,"pipeToolPositions", label, toolTip, vehicle,1,validSpecs)
 end
 
-function AugerPipeToolPositionsSetting:getText()
+function PipeToolPositionsSetting:getText()
 	if self.hasPosition[1] then 
 		return "ok"
 	end
+end
+
+function PipeToolPositionsSetting:validateCurrentValue()
+	self.hasMoveablePipe = nil
+	local pipeImplement = AIDriverUtil.getImplementWithSpecialization(self.vehicle,Pipe) or self.vehicle.spec_pipe and self.vehicle
+	if pipeImplement then
+		self.hasMoveablePipe = pipeImplement.spec_cylindered ~= nil
+	end
+end
+
+function PipeToolPositionsSetting:getHasMoveablePipe()
+	return self.hasMoveablePipe
 end
 
 ---@class MixerWagonToolPositionsSetting : WorkingToolPositionsSetting
@@ -3755,6 +3769,25 @@ function MixerWagonToolPositionsSetting:init(vehicle)
 	local label = "mixerWagon"
 	local toolTip = "mixerWagon"
 	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
+end
+
+---@class SugarCaneTrailerToolPositionsSetting : WorkingToolPositionsSetting
+SugarCaneTrailerToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
+SugarCaneTrailerToolPositionsSetting.TRANSPORT_POSITION = 1
+SugarCaneTrailerToolPositionsSetting.UNLOADING_POSITION = 2
+function SugarCaneTrailerToolPositionsSetting:init(vehicle)
+	local label = "sugarCaneTrailer"
+	local toolTip = "sugarCaneTrailer"
+	local validSpecs = {Shovel}
+	WorkingToolPositionsSetting.init(self,"sugarCaneTrailerToolPositions", label, toolTip, vehicle,2,validSpecs)
+end
+
+function SugarCaneTrailerToolPositionsSetting:validateCurrentValue()
+	self.hasSugarCaneTrailer = AIDriverUtil.hasSugarCaneTrailer(self.vehicle)
+end
+
+function SugarCaneTrailerToolPositionsSetting:getHasSugarCaneTrailer()
+	return self.hasSugarCaneTrailer
 end
 
 ---@class AlwaysWaitForShovelPositionsSetting : BooleanSetting
@@ -4146,7 +4179,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(ConvoyMinDistanceSetting,vehicle)
 	container:addSetting(ConvoyMaxDistanceSetting,vehicle) -- do we need this one ?
 	container:addSetting(FrontloaderToolPositionsSetting,vehicle,container.driverMode)
-	container:addSetting(AugerPipeToolPositionsSetting,vehicle)
+	container:addSetting(PipeToolPositionsSetting,vehicle)
 	container:addSetting(AlwaysWaitForShovelPositionsSetting,vehicle)
 	container:addSetting(LevelCompactModeSetting,vehicle)
 	container:addSetting(LevelCompactSearchOnlyAutomatedDriverSetting,vehicle)
@@ -4164,6 +4197,7 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	container:addSetting(CourseDrawModeSetting,vehicle)
+	container:addSetting(SugarCaneTrailerToolPositionsSetting, vehicle)
 	return container
 end
 
