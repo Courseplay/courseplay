@@ -871,18 +871,6 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 	return false
 end
 
----@class HybridAStarWithJpsInTheMiddle : HybridAStarWithAStarInTheMiddle
-HybridAStarWithJpsInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
-
-function HybridAStarWithJpsInTheMiddle:init(hybridRange, yieldAfter, maxIterations, mustBeAccurate)
-	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, maxIterations, mustBeAccurate)
-end
-
-function HybridAStarWithJpsInTheMiddle:getAStar()
-	return JumpPointSearch(self.yieldAfter)
-end
-
-
 --- Dummy A* pathfinder implementation, does not calculate a path, just returns a pre-calculated path passed in 
 --- to its constructor. 
 ---@see HybridAStarWithPathInTheMiddle

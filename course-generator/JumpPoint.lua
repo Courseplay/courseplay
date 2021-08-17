@@ -186,7 +186,9 @@ function JpsPathfinderConstraints:init(constraints, gridSize)
 	self.context.vehiclesToIgnore = constraints.context.vehiclesToIgnore
 	self.context.objectsToIgnore = constraints.context.objectsToIgnore
 	self.gridSize = gridSize
-	self.context.vehicleData = constraints.context.vehicleData:createSquare(gridSize)
+	local size = math.abs(constraints.context.vehicleData.dLeft) + math.abs(constraints.context.vehicleData.dRight)
+	self.context.vehicleData = constraints.context.vehicleData:createSquare(size)
+	self:resetCounts()
 	-- just for tests
 	self.obstacles = constraints.obstacles
 	self.fruit = constraints.fruit
@@ -194,9 +196,10 @@ function JpsPathfinderConstraints:init(constraints, gridSize)
 end
 
 function JpsPathfinderConstraints:isValidNode(node, log, ignoreTrailer)
-	local isValid = self._base.isValidNode(self, node, log, ignoreTrailer)
+	local isValid = PathfinderConstraints.isValidNode(self, node, log, ignoreTrailer)
 	if isValid then
-		local isField, area, totalArea = courseplay:isField(node.x, -node.y, self.gridSize, self.gridSize)
+		-- TODO: isField seem to be buggy and checking twice the size of the area
+		local isField, area, totalArea = courseplay:isField(node.x, -node.y, self.gridSize / 2, self.gridSize / 2)
 		if isField then
 			local hasFruit, fruitValue = PathfinderUtil.hasFruit(node.x, -node.y, self.gridSize, self.gridSize)
 			if hasFruit and fruitValue > self.maxFruitPercent then
@@ -235,3 +238,16 @@ function JumpPointSearch:findPath(start, goal, turnRadius, allowReverse, constra
 	local jpsConstraints = JpsPathfinderConstraints(constraints, self.motionPrimitives:getGridSize())
 	return AStar.findPath(self, start, goal, turnRadius, allowReverse, jpsConstraints, hitchLength)
 end
+
+
+---@class HybridAStarWithJpsInTheMiddle : HybridAStarWithAStarInTheMiddle
+HybridAStarWithJpsInTheMiddle = CpObject(HybridAStarWithAStarInTheMiddle)
+
+function HybridAStarWithJpsInTheMiddle:init(hybridRange, yieldAfter, maxIterations, mustBeAccurate)
+	HybridAStarWithAStarInTheMiddle.init(self, hybridRange, yieldAfter, maxIterations, mustBeAccurate)
+end
+
+function HybridAStarWithJpsInTheMiddle:getAStar()
+	return JumpPointSearch(self.yieldAfter)
+end
+

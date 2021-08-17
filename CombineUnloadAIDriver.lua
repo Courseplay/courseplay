@@ -1213,7 +1213,10 @@ function CombineUnloadAIDriver:isPathFound(path, goalNodeInvalid, goalDescriptor
 		return true
 	else
 		if goalNodeInvalid then
-			self:error('No path found to %s, goal occupied by a vehicle, waiting...', goalDescriptor)
+			self:error('No path found to %s, there is an obstacle at the goal, waiting...', goalDescriptor)
+			if self.combineToUnload and self.combineToUnload.cp.driver:hasRendezvousWith(self) then
+				self.combineToUnload.cp.driver:cancelRendezvous()
+			end
 			return false
 		elseif not dontRelax then
 			self.pathfinderFailureCount = self.pathfinderFailureCount + 1
@@ -1340,7 +1343,7 @@ function CombineUnloadAIDriver:startPathfindingForDistance()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneForDistance(path, goalNodeInvalid)
-	local pauseMs = math.min(self.vehicle.timer - (self.pathfindingStartedAt or 0), 15000)
+	local pauseMs = math.max(self.vehicle.timer - (self.pathfindingStartedAt or 0), 10000)
 	self:debug('No pathfinding for distance for %d milliseconds', pauseMs)
 	self.justFinishedPathfindingForDistance:set(true, pauseMs)
 	if self.onFieldState == self.states.WAITING_FOR_PATHFINDER then

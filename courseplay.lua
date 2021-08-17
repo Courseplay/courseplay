@@ -125,6 +125,7 @@ local function initialize()
 		'course-generator/State3D',
 		'course-generator/BinaryHeap',
 		'course-generator/Dubins',
+		'course-generator/PathfinderConstraints',
 		'course-generator/HybridAStar',
 		'course-generator/JumpPoint',
 		'course-generator/ReedsShepp',
