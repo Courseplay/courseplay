@@ -106,7 +106,7 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	-- use the relevant node, not the current one to determine we are around the unload point as the current changes
 	-- when we change direction
 	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 50)
-	if self:hasTipTrigger() or nearUnloadPoint then
+	if self.triggerSensor:hasCurrentBaleUnloadingTrigger() or nearUnloadPoint then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 
 		if self:haveBales() and self.unloadRefillState == nil then
@@ -150,7 +150,6 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 					g_client:getServerConnection():sendEvent(BaleLoaderStateEvent:new(self.baleLoader, BaleLoader.CHANGE_BUTTON_EMPTY))
 				else
 					self:debug('Bales unloaded, continue course.')
-					courseplay:resetTipTrigger(self.vehicle)
 					self.unloadRefillState = nil
 					self.ppc:initialize(self.course:getNextFwdWaypointIx(self.ppc:getCurrentWaypointIx()));
 				end
@@ -183,7 +182,8 @@ function BaleLoaderAIDriver:getDistanceFromUnloadNode(isUnloadpoint, unloadPoint
 		-- this way too early
 		return calcDistanceFrom(self.manualUnloadNode.node, self.baleLoader.cp.realUnloadOrFillNode)
 	else
-		local _, _, d = localToLocal(self.vehicle.cp.currentTipTrigger.triggerId,
+		local baleTrigger = self.triggerSensor:getCurrentBaleUnloadingTrigger()
+		local _, _, d = localToLocal(baleTrigger.triggerID,
 			self.baleLoader.cp.realUnloadOrFillNode, 0, 0, 0)
 		return d
 	end

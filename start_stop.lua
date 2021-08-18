@@ -66,7 +66,6 @@ function courseplay:start(self)
 	courseplay:debug(string.format("%s: numWaitPoints=%d, waitPoints[1]=%s, numCrossingPoints=%d",
 		nameNum(self), self.cp.numWaitPoints, tostring(self.cp.waitPoints[1]), numCrossingPoints), courseplay.DBG_COURSES);
 
-	courseplay:updateAllTriggers();
 
 	---Do we need to set distanceCheck==true at the beginning of courseplay:start() and set now set it to false 50 lines later ??
 --	self.cp.distanceCheck = false

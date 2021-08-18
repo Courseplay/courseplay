@@ -60,7 +60,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 			-- Start: Fixes issue #525
 			local tx, ty, tz = localToWorld(vehicle.cp.directionNode, 0, 1, -3);
 			local nx, ny, nz = localDirectionToWorld(vehicle.cp.directionNode, lx, -0,1, lz);
-			courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, tx, ty, tz, nx, ny, nz);
+			vehicle.cp.driver.triggerSensor:raycast(tx, ty, tz, nx, ny, nz,"raycastCallback",10)
 			--  End:  Fixes issue #525
 		end
 		-- false means that this is a trivial reverse and can be handled by drive
@@ -293,7 +293,7 @@ function courseplay:goReverse(vehicle,lx,lz,mode2)
 
 	if (mode == courseplay.MODE_GRAIN_TRANSPORT or mode == courseplay.MODE_COMBI or mode == courseplay.MODE_FIELDWORK) and vehicle.cp.currentTipTrigger == nil and AIDriverUtil.getTotalFillLevelAndCapacity(vehicle) > 0 then
 		local nx, ny, nz = localDirectionToWorld(node, lxTipper, -0.1, lzTipper);
-		courseplay:doTriggerRaycasts(vehicle, 'tipTrigger', 'rev', false, xTipper, yTipper + 1, zTipper, nx, ny, nz);
+		vehicle.cp.driver.triggerSensor:raycast(xTipper, yTipper + 1, zTipper, nx, ny, nz,"raycastCallback",10)
 	end;
 	courseplay:showDirection(turnNode,lx,lz, 0.7, 0, 1);
 	-- do a little bit of damping if using the articulated axis as lx tends to oscillate around 0 which results in the

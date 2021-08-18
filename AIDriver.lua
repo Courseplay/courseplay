@@ -183,11 +183,11 @@ function AIDriver:init(vehicle)
 		self.settings:validateCurrentValues()
 	end
 	self:setHudContent()
-	---@type TriggerHandler
-	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting())
-	self.triggerHandler:enableFuelLoading()
 	---@type TriggerSensor
 	self.triggerSensor = TriggerSensor(self,self.vehicle)
+	---@type TriggerHandler
+	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting(),self.triggerSensor)
+	self.triggerHandler:enableFuelLoading()
 end
 
 ---This function is called once on the first update tick,
@@ -511,13 +511,15 @@ function AIDriver:driveCourse(dt)
 		end
 	end
 
-	-- use the recorded speed by default
+	--- Only allow trigger, recorded speed while no bunker silo is near.
 	if not self:hasTipTrigger() then
-		self:setSpeed(self:getRecordedSpeed())
-	end
-	
-	if self.triggerHandler:isInTrigger() or self.triggerSensor:isNearTriggers() then
-		self:setSpeed(self.vehicle.cp.speeds.approach)
+		if self.triggerSensor:isNearTriggers() or self.triggerHandler:isInTrigger() then 
+			--- Using the trigger approach speed
+			self:setSpeed(self.vehicle.cp.speeds.approach)
+		else
+			-- use the recorded speed by default
+			self:setSpeed(self:getRecordedSpeed())
+		end
 	end
 
 	self:slowDownForWaitPoints()
@@ -1363,16 +1365,13 @@ function AIDriver:searchForTipTriggers()
 		and self.ppc:getCurrentWaypointIx() > 2
 		and not self.ppc:reachedLastWaypoint()
 		and not self.ppc:isReversing() then
-		local raycastDistance = 10
-		local dx,dz = self.course:getDirectionToWPInDistance(self.ppc:getCurrentWaypointIx(),self.vehicle,raycastDistance)
-		local x,y,z,nx,ny,nz = courseplay:getTipTriggerRaycastDirection(self.vehicle,dx,dz,raycastDistance)	
-		courseplay:doTriggerRaycasts(self.vehicle, 'tipTrigger', 'fwd', true, x, y, z, nx, ny, nz,raycastDistance)
+		self.triggerSensor:raycastTriggers()
 	end
 end
 
 function AIDriver:searchForLoadingFillingTriggers()
 	if self.ppc:getCurrentWaypointIx() > 2 and not self.ppc:reachedLastWaypoint() and not self.ppc:isReversing() then
-		self.triggerSensor:raycastLoadingFillingTriggers()
+		self.triggerSensor:raycastTriggers(true)
 	end
 end
 
@@ -2021,7 +2020,7 @@ end
 --- proximity swerve enabled is checked with isProximitySwerveEnabled() and thus can be extended in derived classes with
 --- checking for the specific vehicle.
 function AIDriver:isProximitySwerveEnabled(vehicle)
-	return self.proximitySwerveEnabled and not self.triggerSensor:isNearTriggers()
+	return self.proximitySwerveEnabled and not self.triggerSensor:isNearTriggers() and not self.triggerHandler:isInTrigger()
 end
 
 

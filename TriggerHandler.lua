@@ -15,9 +15,14 @@ TriggerHandler.myLoadingStates = {
 }
 TriggerHandler.APPROACH_AUGER_TRIGGER_SPEED = 3
 
-function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting)
+---@param driver AIDriver
+---@param vehicle table 
+---@param siloSelectedFillTypeSetting Setting 
+---@param triggerSensor TriggerSensor
+function TriggerHandler:init(driver,vehicle,siloSelectedFillTypeSetting,triggerSensor)
 	self.vehicle = vehicle
 	self.driver = driver
+	self.triggerSensor = triggerSensor
 	self.siloSelectedFillTypeSetting=siloSelectedFillTypeSetting
 	self.alwaysSearchFuel = vehicle.cp.settings.alwaysSearchFuel
 	self.validFillTypeLoading = false
@@ -78,7 +83,7 @@ function TriggerHandler:onUpdate(dt)
 	end
 	--temp hack to reset driveNow 
 	local isNearWaitPoint, waitPointIx = (self.driver.ppc:getCurrentWaypointIx()-5)>1 and self.driver.course:hasWaitPointWithinDistance(self.driver.ppc:getCurrentWaypointIx()-5, 10)
-	if not self:isInTrigger() and not isNearWaitPoint then 
+	if not self.triggerSensor:isNearTriggers() and not isNearWaitPoint then 
 		if self:isDriveNowActivated() then 
 			self:changeLoadingState("NOTHING")
 		end
@@ -92,7 +97,6 @@ function TriggerHandler:onDraw()
 		y = self:renderText(y,"validFillTypeLoading: "..tostring(self.validFillTypeLoading))
 		y = self:renderText(y,"validFillTypeUnloading: "..tostring(self.validFillTypeUnloading))
 		y = self:renderText(y,"loadingState: "..tostring(self.loadingState:getName()))
-		y = self:renderText(y,"isInTrigger: "..tostring(self:isInTrigger()))
 		local yTable = {}
 		yTable.y = y
 		self:debugDischargeNodes(self.vehicle,yTable)
@@ -206,7 +210,7 @@ end
 
 function TriggerHandler:updateLoadingTriggers()
 	--- Todo: This is a really ugly way of check all the loading triggers. Need a better solution for this.
-	if (self.validFillTypeLoading or self:isAllowedToLoadFuel()) and g_updateLoopIndex %100 == 0 then
+	if (self.validFillTypeLoading or self:isAllowedToLoadFuel()) and g_updateLoopIndex %20 == 0 then
 		self:activateLoadingTriggerWhenAvailable()
 	end
 	if self:isLoading() or self:isLoadingFuel() then
@@ -385,13 +389,8 @@ function TriggerHandler:setDriveNow()
 	end
 end
 
---AIDriver uses this function to check if we are in trigger or not!
 function TriggerHandler:isInTrigger()
-	local oldCpTrigger = self.vehicle.cp.currentTipTrigger
-	if oldCpTrigger and oldCpTrigger.bunkerSilo ~= nil then
-		return false
-	end
-	return self.validFillTypeUnloading and self.driver:hasTipTrigger()
+	return self.numCurrentLoadingTriggers and self.numCurrentLoadingTriggers > 0 or next(self.vehicle.spec_fillUnit.fillTrigger.triggers) ~=nil
 end
 
 function TriggerHandler:isDriveNowActivated()
@@ -432,11 +431,13 @@ end
 
 --scanning for LoadingTriggers and FillTriggers(checkFillTriggers)
 function TriggerHandler:activateLoadingTriggerWhenAvailable()
-	for key, object in pairs(g_currentMission.activatableObjects) do
-		if object:getIsActivatable(self.vehicle) and self:isObjectALoadingTrigger(object) then
-			self:activateTriggerForVehicle(object, self.vehicle)
+	if self.numCurrentLoadingTriggers and self.numCurrentLoadingTriggers>0 then
+		for trigger, _ in pairs(self.currentLoadingTriggers) do
+			if trigger:getIsActivatable(self.vehicle)then
+				self:activateTriggerForVehicle(trigger, self.vehicle)
+			end
 		end
-    end
+	end
 end
 
 function TriggerHandler:isObjectALoadingTrigger(object)
@@ -912,22 +913,21 @@ function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave
 		rootVehicle = fillableObject:getRootVehicle()
 	end
 	
-	if not self.courseplayersInTrigger then 
-		self.courseplayersInTrigger = {}
-	end
 	if rootVehicle then 
-		if onLeave then 
-			if self.courseplayersInTrigger[rootVehicle] then
-				self.courseplayersInTrigger[rootVehicle][fillableObject] = nil
-				if next(self.courseplayersInTrigger[rootVehicle]) == nil then
-					self.courseplayersInTrigger[rootVehicle] = nil
-				end
+		local triggerHandler = rootVehicle.cp and rootVehicle.cp.driver.triggerHandler
+		if triggerHandler.loadingTriggers == nil then
+			triggerHandler.currentLoadingTriggers = {}
+			triggerHandler.numCurrentLoadingTriggers = 0
+		end
+		
+		if triggerHandler then 
+			if onEnter then 
+				triggerHandler.currentLoadingTriggers[self] = true
+				triggerHandler.numCurrentLoadingTriggers = triggerHandler.numCurrentLoadingTriggers + 1
+			elseif onLeave then 
+				triggerHandler.currentLoadingTriggers[self] = nil
+				triggerHandler.numCurrentLoadingTriggers = triggerHandler.numCurrentLoadingTriggers - 1
 			end
-		else 
-			if self.courseplayersInTrigger[rootVehicle] == nil then
-				self.courseplayersInTrigger[rootVehicle]= {}
-			end
-			self.courseplayersInTrigger[rootVehicle][fillableObject] = true
 		end
 	end		
 
@@ -938,6 +938,10 @@ end
 LoadTrigger.loadTriggerCallback = Utils.appendedFunction(LoadTrigger.loadTriggerCallback,TriggerHandler.loadTriggerCallback)
 
 function TriggerHandler.handleLoadTriggerCallback(self,triggerId, otherId, onEnter, onLeave, onStay, otherShapeId,rootVehicle,fillableObject)
+	
+	
+	
+	
 	if onEnter then 
 		courseplay.debugVehicle(courseplay.DBG_LOAD_UNLOAD,fillableObject, 'LoadTrigger onEnter')
 		if fillableObject.getFillUnitIndexFromNode ~= nil then
