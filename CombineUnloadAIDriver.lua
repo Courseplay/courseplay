@@ -232,7 +232,6 @@ end
 
 function CombineUnloadAIDriver:driveUnloadCourse(dt)
 	-- TODO: refactor that whole unload process, it was just copied from the legacy CP code
-	self:searchForTipTriggers()
 	local allowedToDrive, giveUpControl = self:onUnLoadCourse(true, dt)
 	if not allowedToDrive then
 		self:hold()

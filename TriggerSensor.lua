@@ -103,13 +103,13 @@ end
 ---@param z number 
 ---@param distance number
 function TriggerSensor:raycastCallback(transformId, x, y, z, distance)
-	if CpManager.confirmedNoneSpecialTriggers[transformId] then
-		return true;
-	end;
-	local objectName = tostring(getName(transformId));
+	if CpManager.confirmedNoneTriggers[transformId] then
+		return true
+	end
+	local objectName = tostring(getName(transformId))
 	if self:debugEnabled() then
-		cpDebug:drawPoint(x, y, z, 1, 1, 0);
-	end;
+		cpDebug:drawPoint(x, y, z, 1, 1, 0)
+	end
 
 
 	--- Handle loading, filling and normal unloading triggers.
@@ -132,6 +132,11 @@ function TriggerSensor:raycastCallback(transformId, x, y, z, distance)
 	local bunkerSilos = Triggers.getBunkerSilos()
 	trigger = bunkerSilos[transformId]
 	if trigger then 
+		if not self.driver.triggerHandler:isAllowedToUnloadAtBunkerSilo() then 
+			--- Isn't allowed to unload here, so skip.
+			return false
+		end
+		
 		if trigger.state ~= BunkerSilo.STATE_FILL then 
 			--- Bunker silo state not correct to accept unloading into.
 			return false
@@ -142,45 +147,50 @@ function TriggerSensor:raycastCallback(transformId, x, y, z, distance)
 			
 			--- Legancy code needed for unloading at bunker silos.
 			--- TODO: Rework this code.
-			self.vehicle.cp.currentTipTrigger = trigger;
+			self.vehicle.cp.currentTipTrigger = trigger
 			self.vehicle.cp.currentTipTrigger.cpActualLength = courseplay:nodeToNodeDistance(self.driver:getDirectionNode(), transformId)*2
 
 		end
 		return false
 	end
 			
-	CpManager.confirmedNoneSpecialTriggers[transformId] = true
-	CpManager.confirmedNoneSpecialTriggersCounter = CpManager.confirmedNoneSpecialTriggersCounter + 1
-	self:debug("added %d (%s) to trigger blacklist -> total = %d",transformId,objectName, CpManager.confirmedNoneSpecialTriggersCounter)
+	CpManager.confirmedNoneTriggers[transformId] = true
+	CpManager.confirmedNoneTriggersCounter = CpManager.confirmedNoneTriggersCounter + 1
+	self:debug("added %d (%s) to trigger blacklist -> total = %d",transformId,objectName, CpManager.confirmedNoneTriggersCounter)
 	return true
 end
 
 --- Raycast to find triggers in front of the driver direction.
----@param isHammerHeadRaycastAllowed boolean used to detect small loading triggers, as their hit box can be relative small.
-function TriggerSensor:raycastTriggers(isHammerHeadRaycastAllowed)
-	local raycastDistance = self.TRIGGER_RAYCAST_DISTANCE
-	local dx,dz = self.driver.course:getDirectionToWPInDistance(self.driver.ppc:getCurrentWaypointIx(),self.vehicle,raycastDistance)
-	local x,y,z,nx,ny,nz = courseplay:getTipTriggerRaycastDirection(self.vehicle,dx,dz,raycastDistance)	
+function TriggerSensor:raycastTriggers()
+	local isLoadingEnabled = self.driver.triggerHandler:isAllowedToLoad()
+	--- Only allow raycast for unloading if fill level isn't empty.
+	local isUnloadingEnabled = AIDriverUtil.getTotalFillLevelPercentage(self.vehicle) > 0
+	if isLoadingEnabled or isUnloadingEnabled then 
+		local raycastDistance = self.TRIGGER_RAYCAST_DISTANCE
+		local dx,dz = self.driver.course:getDirectionToWPInDistance(self.driver.ppc:getCurrentWaypointIx(),self.vehicle,raycastDistance)
+		local x,y,z,nx,ny,nz = self:getRaycastDirection(dx,dz,raycastDistance)	
 
-	self:raycast(x,y,z, nx,ny,nz, "raycastCallback", raycastDistance)
+		self:raycast(x,y,z, nx,ny,nz, "raycastCallback", raycastDistance)
 
-	if isHammerHeadRaycastAllowed then
-		local directionNode = self.driver:getDirectionNode()
-		local ny = 0
+		--- Used to detect small loading triggers, as their hit box can be relative small.
+		if isLoadingEnabled then
+			local directionNode = self.driver:getDirectionNode()
+			local ny = 0
 
-		-- raycast start point in front of vehicle
-		local x1,_,z1 = localToWorld(directionNode,2,0,0)
-		local x2,_,z2 = localToWorld(directionNode,-2,0,0)
+			-- raycast start point in front of vehicle
+			local x1,_,z1 = localToWorld(directionNode,2,0,0)
+			local x2,_,z2 = localToWorld(directionNode,-2,0,0)
 
-		local dx1,dz1 = x1+nx*raycastDistance,z1+nz*raycastDistance
-		local dx2,dz2 = x2+nx*raycastDistance,z2+nz*raycastDistance
+			local dx1,dz1 = x1+nx*raycastDistance,z1+nz*raycastDistance
+			local dx2,dz2 = x2+nx*raycastDistance,z2+nz*raycastDistance
 
-		local nx1,nz1 = MathUtil.vector2Normalize(dx2 - x1, dz2 - z1)
-		local nx2,nz2 = MathUtil.vector2Normalize(dx1 - x2, dz1 - z2)
+			local nx1,nz1 = MathUtil.vector2Normalize(dx2 - x1, dz2 - z1)
+			local nx2,nz2 = MathUtil.vector2Normalize(dx1 - x2, dz1 - z2)
 
-		--create a hammerhead raycast to get small triggers
-		nx, ny, nz = localDirectionToWorld(directionNode, 1, 0, 0)
-		self:raycast(dx2, y+2, dz2, nx, ny, nz,"raycastCallback", 4)
+			--create a hammerhead raycast to get small triggers
+			nx, ny, nz = localDirectionToWorld(directionNode, 1, 0, 0)
+			self:raycast(dx2, y+2, dz2, nx, ny, nz,"raycastCallback", 4)
+		end
 	end
 end
 
@@ -198,4 +208,17 @@ function TriggerSensor:raycast(x,y,z, nx,ny,nz, callback, raycastDistance)
 		cpDebug:drawLine(x,y,z, 1,0,0, x+(nx*raycastDistance),y+(ny*raycastDistance),z+(nz*raycastDistance))
 	end
 	raycastAll(x,y,z, nx,ny,nz, callback, raycastDistance, self)
+end
+
+
+function TriggerSensor:getRaycastDirection(lx,lz,distance)
+	--get raycast direction x and z
+	local nx,_, nz = localDirectionToWorld(self.driver:getDirectionNode(), lx or 0, 0, lz or 1)
+	-- get raycast start point in front of vehicle
+	local x, y, z = localToWorld(self.driver:getDirectionNode(), 0, 1, 3)
+	--get the raycast direction y to a point 1m below terrain at raycast tip 
+	local xt,zt = x+(nx*distance), z+(nz*distance)
+	local yt = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, xt, 0, zt);
+	local _, ny,_ = courseplay:getWorldDirection(x, y, z, xt, yt-1, zt)
+	return x,y,z,nx,ny,nz;
 end

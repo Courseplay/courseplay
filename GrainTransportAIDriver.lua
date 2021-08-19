@@ -110,7 +110,6 @@ function GrainTransportAIDriver:drive(dt)
 	if self.vehicle.cp.tipRefOffset ~= nil
 		and self.vehicle.cp.workToolAttached then
 
-		self:searchForTipTriggers()
 		allowedToDrive, giveUpControl = self:onUnLoadCourse(allowedToDrive, dt)
 	else
 		self:debug('Safety check failed')

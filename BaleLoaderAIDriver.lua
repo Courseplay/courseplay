@@ -99,10 +99,6 @@ function BaleLoaderAIDriver:driveUnloadOrRefill(dt)
 	-- by default, drive street/recorded speed.
 	self:setSpeed(self:getRecordedSpeed())
 
-	if not self.ppc:isReversing() then
-		-- 'cause reverse does the raycasting for us
-		self:searchForTipTriggers()
-	end
 	-- use the relevant node, not the current one to determine we are around the unload point as the current changes
 	-- when we change direction
 	local nearUnloadPoint, unloadPointIx = self.course:hasUnloadPointWithinDistance(self.ppc:getRelevantWaypointIx(), 50)

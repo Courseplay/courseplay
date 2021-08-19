@@ -484,9 +484,7 @@ function TriggerHandler:disableFuelLoading()
 end
 
 function TriggerHandler:isAllowedToLoadFillType()
-	if self.validFillTypeLoading and self.siloSelectedFillTypeSetting then
-		return true
-	end
+	return  self.validFillTypeLoading and self.siloSelectedFillTypeSetting
 end 
 
 function TriggerHandler:isAllowedToLoadFuel()
@@ -497,6 +495,14 @@ end
 
 function TriggerHandler:isAllowedToUnloadAtBunkerSilo()
 	return self.validFillTypeUnloadingBunkerSilo 
+end
+
+function TriggerHandler:isAllowedToUnload()
+	return self.validFillTypeUnloading or self.validFillTypeUnloadingBunkerSilo 
+end
+
+function TriggerHandler:isAllowedToLoad()
+	return self:isAllowedToLoadFillType() or self:isAllowedToLoadFuel()
 end
 
 --Loading Trigger callback check 

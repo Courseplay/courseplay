@@ -133,10 +133,9 @@ function CpManager:loadMap(name)
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRIGGERS
-	self.confirmedNoneTipTriggers = {};
-	self.confirmedNoneTipTriggersCounter = 0;
-	self.confirmedNoneSpecialTriggers = {};
-	self.confirmedNoneSpecialTriggersCounter = 0;
+	self.confirmedNoneTriggers = {};
+	self.confirmedNoneTriggersCounter = 0;
+
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- TRAFFIC

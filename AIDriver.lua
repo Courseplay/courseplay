@@ -458,6 +458,8 @@ end
 
 --- UpdateTick AI driver
 function AIDriver:updateTick(dt)
+	--- Search for triggers in front of the driver, only while driving forwards for now.
+	self:searchForTriggers()
 	self.triggerHandler:onUpdateTick(dt)
 end
 
@@ -1357,22 +1359,18 @@ function AIDriver:tipIntoBGASiloTipTrigger(dt)
 
 end
 
-function AIDriver:searchForTipTriggers()
-	local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(self.vehicle)
-	if not self.vehicle.cp.hasAugerWagon
-		and not self:hasTipTrigger()
-		and totalFillLevel > 0
-		and self.ppc:getCurrentWaypointIx() > 2
-		and not self.ppc:reachedLastWaypoint()
-		and not self.ppc:isReversing() then
-		self.triggerSensor:raycastTriggers()
+function AIDriver:searchForTriggers()
+	if self:isSearchForTriggersAllowed() then 
+		if not AIDriverUtil.isStopped(self.vehicle) and not self:hasTipTrigger() then 
+			if not self.ppc:isReversing() then 
+				self.triggerSensor:raycastTriggers()
+			end
+		end
 	end
 end
 
-function AIDriver:searchForLoadingFillingTriggers()
-	if self.ppc:getCurrentWaypointIx() > 2 and not self.ppc:reachedLastWaypoint() and not self.ppc:isReversing() then
-		self.triggerSensor:raycastTriggers(true)
-	end
+function AIDriver:isSearchForTriggersAllowed()
+	return self.triggerHandler:isAllowedToLoad() or self.triggerHandler:isAllowedToUnload()
 end
 
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
