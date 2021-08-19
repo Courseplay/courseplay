@@ -390,7 +390,7 @@ function TriggerHandler:setDriveNow()
 end
 
 function TriggerHandler:isInTrigger()
-	return self.numCurrentLoadingTriggers and self.numCurrentLoadingTriggers > 0 or next(self.vehicle.spec_fillUnit.fillTrigger.triggers) ~=nil
+	return self.vehicle.cp.numCurrentLoadingTriggers and self.vehicle.cp.numCurrentLoadingTriggers > 0 or next(self.vehicle.spec_fillUnit.fillTrigger.triggers) ~=nil
 end
 
 function TriggerHandler:isDriveNowActivated()
@@ -431,8 +431,8 @@ end
 
 --scanning for LoadingTriggers and FillTriggers(checkFillTriggers)
 function TriggerHandler:activateLoadingTriggerWhenAvailable()
-	if self.numCurrentLoadingTriggers and self.numCurrentLoadingTriggers>0 then
-		for trigger, _ in pairs(self.currentLoadingTriggers) do
+	if self.vehicle.cp.numCurrentLoadingTriggers and self.vehicle.cp.numCurrentLoadingTriggers>0 then
+		for trigger, _ in pairs(self.vehicle.cp.currentLoadingTriggers) do
 			if trigger:getIsActivatable(self.vehicle)then
 				self:activateTriggerForVehicle(trigger, self.vehicle)
 			end
@@ -919,22 +919,19 @@ function TriggerHandler:loadTriggerCallback(triggerId, otherId, onEnter, onLeave
 		rootVehicle = fillableObject:getRootVehicle()
 	end
 	
-	if rootVehicle then 
-		local triggerHandler = rootVehicle.cp and rootVehicle.cp.driver.triggerHandler
-		if triggerHandler.loadingTriggers == nil then
-			triggerHandler.currentLoadingTriggers = {}
-			triggerHandler.numCurrentLoadingTriggers = 0
+	if rootVehicle and rootVehicle.cp  then 
+		if not rootVehicle.cp.currentLoadingTriggers then
+			rootVehicle.cp.currentLoadingTriggers = {}
+			rootVehicle.cp.numCurrentLoadingTriggers = 0
 		end
-		
-		if triggerHandler then 
-			if onEnter then 
-				triggerHandler.currentLoadingTriggers[self] = true
-				triggerHandler.numCurrentLoadingTriggers = triggerHandler.numCurrentLoadingTriggers + 1
-			elseif onLeave then 
-				triggerHandler.currentLoadingTriggers[self] = nil
-				triggerHandler.numCurrentLoadingTriggers = triggerHandler.numCurrentLoadingTriggers - 1
-			end
+		if onEnter then 
+			rootVehicle.cp.currentLoadingTriggers[self] = true
+			rootVehicle.cp.numCurrentLoadingTriggers = rootVehicle.cp.numCurrentLoadingTriggers + 1
+		elseif onLeave then 
+			rootVehicle.cp.currentLoadingTriggers[self] = nil
+			rootVehicle.cp.numCurrentLoadingTriggers = rootVehicle.cp.numCurrentLoadingTriggers - 1
 		end
+
 	end		
 
 	if courseplay:isAIDriverActive(rootVehicle) then
