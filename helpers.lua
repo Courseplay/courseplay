@@ -25,6 +25,7 @@ function tableConcat(...)
 	return t;
 end;
 
+-- rounds num at decimalth postcommadigit.
 function courseplay:round(num, decimals)
 	if num == nil or type(num) ~= "number" then
 		return nil;
@@ -77,7 +78,7 @@ function courseplay:setVarValueFromString(self, str, value)
 	end;
 
 	local baseVar;
-	if what[1] == "self" then 
+	if what[1] == "self" then
 		baseVar = self;
 	elseif what[1] == "courseplay" then
 		baseVar = courseplay;
@@ -126,7 +127,7 @@ function courseplay:getVarValueFromString(self, str)
 		for i=2,whatDepth do
 			local key = what[i];
 			whatObj = whatObj[key];
-			
+	
 			if i ~= whatDepth and type(whatObj) ~= "table" then
 				print(('%s: error in string %q @ %s: traversal failed'):format(nameNum(self), str, key));
 				whatObj = nil;
@@ -145,12 +146,14 @@ function courseplay:boolToInt(bool)
 	end;
 	return;
 end;
+
 function courseplay:intToBool(int)
 	if int == nil or type(int) ~= "number" then
 		return nil;
 	end;
 	return int == 1;
 end;
+
 function courseplay:trueOrNil(bool)
 	if bool ~= nil and bool == true then
 		return true;
@@ -163,7 +166,7 @@ function courseplay:loopedTable(tab, idx, maxIdx)
 	maxIdx = maxIdx or #tab;
 	idx = idx % maxIdx
 
-	if idx != 0 then
+	if idx ~= 0 then
 		return tab[idx];
 	else
 		return tab[maxIdx]
@@ -262,7 +265,7 @@ function courseplay.utils.table.merge(t1, t2, overwrite)
 	end
 	for k, v in pairs(t2) do
 		if overwrite or t1[k] == nil then
-			t1[k] = v		
+			t1[k] = v	
 		end
 	end
 	return t1
@@ -497,7 +500,7 @@ function courseplay.utils.setMultipleXMLNodes(File, root_node, node_name , value
 		else
 			node = string.format(root_node .. '.' .. node_name .. '(%d)', j)
 			j = j+1
-		end		
+		end	
 		courseplay.utils.setMultipleXML(File, node, v, types)
 	end
 end
@@ -518,6 +521,7 @@ end;
 function courseplay:setCustomTimer(vehicle, timerName, seconds)
 	vehicle.cp.timers[timerName] = vehicle.timer + (seconds * 1000);
 end;
+
 function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	local timer = vehicle.cp.timers[timerName];
 	if timer == nil then
@@ -525,9 +529,11 @@ function courseplay:timerIsThrough(vehicle, timerName, defaultToBool)
 	end;
 	return vehicle.timer > timer;
 end;
+
 function courseplay:getCustomTimerExists(vehicle, timerName)
 	return vehicle.cp.timers[timerName] ~= nil;
 end;
+
 function courseplay:resetCustomTimer(vehicle, timerName, setToNil)
 	if setToNil then
 		vehicle.cp.timers[timerName] = nil;
@@ -1076,7 +1082,7 @@ function courseplay:sekToTimeFormat(numSec)
 					nHours = nHours;
 					nMins = nMins;
 					nSecs = nSecs;
-					
+	
 					}
 	return timeTable	
 end
@@ -1249,7 +1255,7 @@ function HelperUtil.printVariableToXML(variableName, maxDepth,printToSeparateXml
 		local key = string.format('%s.depth:%d',baseKey,0)
 		setXMLString(xmlFile, key .. '#valueType', tostring(valueType))
 		setXMLString(xmlFile, key .. '#variableName', tostring(variableName))
-		if valueType == 'table' then		
+		if valueType == 'table' then	
 			HelperUtil.printTableRecursivelyToXML(value,1,depth,xmlFile,key)
 			local mt = getmetatable(value)
 			if mt and type(mt) == 'table' then

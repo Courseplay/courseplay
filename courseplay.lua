@@ -37,7 +37,7 @@ courseplay.generation = {};
 courseplay.lights = {};
 courseplay.clock = 0;
 
-	local sonOfaBangSonOfaBoom = {
+local sonOfaBangSonOfaBoom = {
 	['56bb4a8d3f72d5a31aee0c317302dde5'] = true; -- Thomas
 	['9a9f028043394ff9de1cf6c905b515c1'] = true; -- Satis
 	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
