@@ -6,6 +6,7 @@
 out
 reload/venv
 reload.xml
+.vscode
 
 
 # Windows image file caches
