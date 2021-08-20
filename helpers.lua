@@ -42,19 +42,30 @@ function courseplay:nilOrBool(variable, bool)
 end;
 
 function nameNum(vehicle, hideNum)
+	local name = vehicle:getName()
+	local storeItem = g_storeManager:getItemByXMLFilename(vehicle.configFileName)
+
+	if storeItem ~= nil then
+		local brand = g_brandManager:getBrandByIndex(storeItem.brandIndex)
+
+		if brand ~= nil then
+			name = brand.title .. " " .. name
+		end
+	end
+	
 	if vehicle == nil or not vehicle.getName then
 		return 'nil';
 	end;
 
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
 		if hideNum then
-			return tostring(vehicle:getName());
+			return tostring(name);
 		end;
-		return tostring(vehicle:getName()) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
+		return tostring(name) .. ' (#' .. tostring(vehicle.cp.coursePlayerNum) .. ')';
 	elseif vehicle.isHired then
-		return tostring(vehicle:getName()) .. ' (helper)';
+		return tostring(name) .. ' (helper)';
 	end;
-	return vehicle:getName()
+	return name
 end;
 
 function courseplay:isBetween(n, num1, num2, include)
