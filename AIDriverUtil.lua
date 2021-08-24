@@ -387,6 +387,68 @@ function AIDriverUtil.getFillTypeFromFillUnit(fillUnit)
 	end
 end
 
+--- Gets the complete fill level and capacity without fuel,
+---@param object table 
+---@return number totalFillLevel
+---@return number totalCapacity
+function AIDriverUtil.getTotalFillLevelAndCapacity(object)
+
+	local fillLevelInfo = {}
+	AIDriverUtil.getAllFillLevels(object, fillLevelInfo)
+
+	local totalFillLevel = 0
+	local totalCapacity = 0
+	for fillType,data in pairs(fillLevelInfo) do 
+		if AIDriverUtil.isValidFillType(object,fillType) then
+			totalFillLevel = totalFillLevel  + data.fillLevel
+			totalCapacity = totalCapacity + data.capacity
+		end
+	end
+	return totalFillLevel,totalCapacity
+end
+
+--- Gets the total fill level percentage.
+---@param object table
+function AIDriverUtil.getTotalFillLevelPercentage(object)
+	local fillLevel,capacity = AIDriverUtil.getTotalFillLevelAndCapacity(object)
+	return 100*fillLevel/capacity
+end
+
+function AIDriverUtil.getTotalFillLevelAndCapacityForObject(object)
+	local totalFillLevel = 0
+	local totalCapacity = 0
+	if object.getFillUnits then
+		for index,fillUnit in pairs(object:getFillUnits()) do
+			local fillType = AIDriverUtil.getFillTypeFromFillUnit(fillUnit)
+			if AIDriverUtil.isValidFillType(object,fillType) then 
+				totalFillLevel = totalFillLevel + fillUnit.fillLevel
+				totalCapacity = totalCapacity + fillUnit.capacity
+			end
+		end
+	end
+	return totalFillLevel,totalCapacity
+end
+
+---@param object table 
+---@param fillType number 
+function AIDriverUtil.isValidFillType(object,fillType)
+	return not AIDriverUtil.isValidFuelType(object, fillType) and fillType ~= FillType.DEF and fillType ~= FillType.AIR
+end
+
+--- Is the fill type fuel ?
+---@param object table 
+---@param fillType number 
+---@param fillUnitIndex number 
+function AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex)
+	if object.getConsumerFillUnitIndex then 
+		local index = object:getConsumerFillUnitIndex(fillType)
+		if fillUnitIndex ~= nil then 
+			return fillUnitIndex and fillUnitIndex == index
+		end		
+		return index 
+	end
+end
+
 --- Gets the fill level of an mixerWagon for a fill type.
 ---@param object table
 ---@param fillType number

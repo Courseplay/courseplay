@@ -451,14 +451,22 @@ end
 --- Raycast callback for searching of trailers/triggers near the shovelEmptyPoint (first wait point).
 function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
 	local object = g_currentMission:getNodeObject(transformId)
-	--has the target already been hit ?
-
+	local unloadTriggers = Triggers.getUnloadingTriggers()
+	local baleUnloadTriggers = Triggers.getBaleUnloadTriggers()
+	local trigger = unloadTriggers[transformId] or baleUnloadTriggers[transformId]
+	
+	--- Has the target already been hit ?
 	if not self:isWaitingForTrailer() then
 		return
 	end
 	if object then
 		--is object a vehicle, trailer,...
 		if object:isa(Vehicle) then 
+			--check if the vehicle is stopped 
+			local rootVehicle = object:getRootVehicle()
+			if not AIDriverUtil.isStopped(rootVehicle) then 
+				return
+			end
 			--object supports filltype, bassicly trailer and so on
 			if object.getFillUnitSupportsToolType then
 				for fillUnitIndex,fillUnit in pairs(object:getFillUnits()) do
@@ -471,13 +479,6 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 						self:shovelDebug("allowedToFillByShovel")
 						if supportedFillType then 
 							--valid trailer/ fillableObject found
-							
-							--check if the vehicle is stopped 
-							local rootVehicle = object:getRootVehicle()
-							if not AIDriverUtil.isStopped(rootVehicle) then 
-								return
-							end
-							---
 							local exactFillRootNode = object:getFillUnitExactFillRootNode(fillUnitIndex) or object.rootNode
 							self:shovelDebug("supportedFillType")
 							self:shovelDebug("Trailer found!")
@@ -494,29 +495,17 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 				self:shovelDebug("FillUnit not found!")
 			end
 			return
-		--UnloadTrigger found
-		elseif object:isa(UnloadTrigger) then 
-		--	DebugUtil.printTableRecursively(object, "  ", 0, 2)
+		elseif trigger then
 			self:shovelDebug("UnloadTrigger found!")
-			local fillUnitIndex = object:getFillUnitIndexFromNode(hitShapeId)
-			self:setupDrivingToUnloadingTriggerCourse(object)
-			return
-		--some diffrent object which is valid
-		elseif object.getFillUnitIndexFromNode ~= nil then
-		--	DebugUtil.printTableRecursively(object, "  ", 0, 2)
-			local fillUnitIndex = object:getFillUnitIndexFromNode(hitShapeId)
-			if fillUnitIndex ~= nil then	
+			if trigger.getIsFillTypeAllowed and trigger.getIsToolTypeAllowed then 
 				local fillType = self.shovel:getDischargeFillType(self.currentDischargeNode)
-				if object:getFillUnitSupportsFillType(fillUnitIndex, fillType) then
-					self:shovelDebug("Trigger found!")
-					self:setupDrivingToUnloadingTriggerCourse(object)
-				else 
-					self:shovelDebug("fillType not supported!")
+				if trigger:getIsFillTypeAllowed(fillType) and trigger:getIsToolTypeAllowed(ToolType.DISCHARGEABLE) then 
+					self:shovelDebug("UnloadTrigger is valid!")
+					self:setupDrivingToUnloadingTriggerCourse(trigger)
 				end
-			else 
-				self:shovelDebug("no fillUnitIndex found!")
 			end
 		end
+
 	else
 		self:shovelDebug("Nothing found!")
 		return
