@@ -173,18 +173,14 @@ local function setVersionData()
 	end;
 
 	if courseplay.version then
-		local versionSplitStr = StringUtil.splitString('.', courseplay.version); -- split as strings
-		versionSplitStr[3] = versionSplitStr[3] or '0000';
-		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', versionSplitStr[1], versionSplitStr[2], versionSplitStr[3]); --multiline display string
-		courseplay.isDevVersion = tonumber(versionSplitStr[3]) > 0;
+		courseplay.versionDisplayStr = string.format("v%s",courseplay.version)
+		courseplay.isDevVersion = true
 		if courseplay.isDevVersion then
 			courseplay.versionDisplayStr = courseplay.versionDisplayStr .. '.dev';
 		end;
-		courseplay.versionFlt = tonumber(string.format('%s.%s%s', versionSplitStr[1], versionSplitStr[2], versionSplitStr[3]));
 	else
 		courseplay.version = ' [no version specified]';
 		courseplay.versionDisplayStr = 'no\nversion';
-		courseplay.versionFlt = 0.00000;
 		courseplay.isDevVersion = false;
 	end;
 end;
