@@ -211,12 +211,11 @@ for n,t in pairs( g_i18n.texts ) do
 	end
 end
 
+g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
+
 FieldworkAIDriver.register()
 courseplay:register();
 print(string.format('### Courseplay: installed into %d vehicle types', numInstallationsVehicles));
-
-g_specializationManager:addSpecialization("courseplay", "courseplay", Utils.getFilename("courseplay.lua",  g_currentModDirectory), nil)
-
 
 -- TODO: Remove the AIVehicleUtil.driveToPoint overwrite when the new patch goes out to fix it. (Temp fix from Giants: Emil) 
 --Done? if so, delete these comments
