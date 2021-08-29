@@ -42,6 +42,10 @@ function courseplay:nilOrBool(variable, bool)
 end;
 
 function nameNum(vehicle, hideNum)
+	if vehicle == nil or not vehicle.getName then
+		return 'nil';
+	end;
+	
 	local name = vehicle:getName()
 	local storeItem = g_storeManager:getItemByXMLFilename(vehicle.configFileName)
 
@@ -53,10 +57,6 @@ function nameNum(vehicle, hideNum)
 		end
 	end
 	
-	if vehicle == nil or not vehicle.getName then
-		return 'nil';
-	end;
-
 	if vehicle.cp ~= nil and vehicle.cp.coursePlayerNum ~= nil then
 		if hideNum then
 			return tostring(name);
