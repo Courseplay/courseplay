@@ -1700,7 +1700,7 @@ function CombineUnloadAIDriver:changeToUnloadWhenFull()
 		if self.followCourse and self.followCourse:isCloseToNextTurn(10) and not self.followCourse:isCloseToLastTurn(20) then
             self:debug('... but we are too close to the end of the row, moving back before changing to unload course')
             self:startMovingBackFromCombine(self.states.MOVE_BACK_FROM_EMPTY_COMBINE)
-        elseif self.combineToUnload:isAboutToReturnFromPocket() then
+        elseif self.combineToUnload.cp.driver:isAboutToReturnFromPocket()  then
             self:debug('... letting the combine return from the pocket')
             self:startMovingBackFromCombine(self.states.MOVE_BACK_FROM_EMPTY_COMBINE)
         else    
