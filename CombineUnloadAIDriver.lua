@@ -1764,7 +1764,7 @@ function CombineUnloadAIDriver:driveToMovingCombine()
 	end
 
 	if g_updateLoopIndex % 20 == 0 then
-		if self.combineToUnload.cp.driver:isWaitingForUnloadAfterPulledBack() then
+		if self.combineToUnload.cp.driver:isWaitingForUnload() then
 			self:debug('combine is now waiting for unload after pulled back, recalculate path')
 			self:startDrivingToCombine()
 		end
