@@ -1643,6 +1643,11 @@ function CombineAIDriver:willWaitForUnloadToFinish()
 					self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOAD_AFTER_FIELDWORK_ENDED)
 end
 
+--- Try to not hit our Unloader after Pocket.
+function CombineAIDriver:isAboutToReturnFromPocket()
+	return self.fieldworkUnloadOrRefillState == self.states.WAITING_FOR_UNLOADER_TO_LEAVE and self.stateBeforeWaitingForUnloaderToLeave == self.states.WAITING_FOR_UNLOAD_IN_POCKET
+end
+
 function CombineAIDriver:shouldStrawSwathBeOn(ix)
 	local strawMode = self.vehicle.cp.settings.strawSwath:get()
 	local headland = self.course:isOnHeadland(ix)
