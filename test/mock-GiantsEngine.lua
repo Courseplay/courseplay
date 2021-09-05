@@ -40,6 +40,7 @@ Cylindered = {}
 
 Utils = {}
 Utils.appendedFunction = noOp
+Utils.overwrittenFunction = noOp
 
 MathUtil = {}
 function MathUtil.vector2Length(x, y)
