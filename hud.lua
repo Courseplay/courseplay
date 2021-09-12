@@ -1141,34 +1141,20 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					end
 				elseif entry.functionToCall == 'pipeToolPositions:setOrClearPostion' then
 					--PipeToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.pipeToolPositions:getText()
+					local setting = vehicle.cp.settings.pipeToolPositions
+					self:updateWorkingToolPositionTexts(vehicle,page,line,setting)
 				elseif entry.functionToCall == 'mixerWagonToolPositions:setOrClearPostion' then
 					--MixerWagonToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
-					local texts = vehicle.cp.settings.mixerWagonToolPositions:getTexts()
-					for i=1,2 do 
-						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
-					end
+					local setting = vehicle.cp.settings.mixerWagonToolPositions
+					self:updateWorkingToolPositionTexts(vehicle,page,line,setting)
 				elseif entry.functionToCall == 'frontloaderToolPositions:setOrClearPostion' then
 					--FrontloaderToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_LOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
-					vehicle.cp.hud.content.pages[page][3][1].text = courseplay:loc('COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION');
-					vehicle.cp.hud.content.pages[page][4][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
-					local texts = vehicle.cp.settings.frontloaderToolPositions:getTexts()
-					for i=1,4 do 
-						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
-					end
+					local setting = vehicle.cp.settings.frontloaderToolPositions
+					self:updateWorkingToolPositionTexts(vehicle,page,line,setting)
 				elseif entry.functionToCall == 'sugarCaneTrailerToolPositions:setOrClearPostion' then
 					--SugarCaneTrailerToolPositionsSetting
-					vehicle.cp.hud.content.pages[page][1][1].text = courseplay:loc('COURSEPLAY_SHOVEL_TRANSPORT_POSITION');
-					vehicle.cp.hud.content.pages[page][2][1].text = courseplay:loc('COURSEPLAY_SHOVEL_UNLOADING_POSITION');
-					local texts = vehicle.cp.settings.sugarCaneTrailerToolPositions:getTexts()
-					for i=1,4 do 
-						vehicle.cp.hud.content.pages[page][i][2].text = texts[i]
-					end
+					local setting = vehicle.cp.settings.sugarCaneTrailerToolPositions
+					self:updateWorkingToolPositionTexts(vehicle,page,line,setting)
 				end
 			end		
 		end
@@ -1217,6 +1203,20 @@ function courseplay.hud:updatePageContent(vehicle, page)
 	self:setReloadPageOrder(vehicle, page, forceUpdate);
 end;
 --END updatePageContent
+
+----------------------------------------
+--- Generic hud text update functions:
+function courseplay.hud:updateWorkingToolPositionTexts(vehicle,page,line,setting)
+	local labels,texts = setting:getLabelsAndTexts()
+	local numPositions = setting:getTotalPositions()
+	for i=1,numPositions do 
+		local ln = line + i - 1 
+		vehicle.cp.hud.content.pages[page][ln][1].text = labels[i]
+		vehicle.cp.hud.content.pages[page][ln][2].text = texts[i]
+	end
+end
+
+--------------------------------------
 
 function courseplay.hud:setReloadPageOrder(vehicle, page, bool)
 	-- self = courseplay.hud
@@ -1601,6 +1601,8 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 		w = self.contentMaxWidth,
 		h = self.lineHeight
 	}
+	--- TODO: Move these tool tips to the different working tool position settings. 
+
 	btn_saveToolTips = {
 		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_LOADING_POSITION'),
 		courseplay:loc('COURSEPLAY_SHOVEL_SAVE_TRANSPORT_POSITION'),
@@ -1619,14 +1621,14 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 		'shovelPreUnload',
 		'shovelUnloading'
 	}
-	
+	local firstLine = line
 	local funcCall = setting:getName()..":".."setOrClearPostion"
 	for i=1,setting:getTotalPositions() do 
 		courseplay.button:new(vehicle, page, { 'iconSprite.png', btn_icons[i]   }, 'setOrClearPostion', i, shovelX1, self.linesButtonPosY[line], btnW, btnH, i, nil, true, false, true, btn_saveToolTips[i]):setSetting(setting)
 		courseplay.button:new(vehicle, page, { 'iconSprite.png', 'recordingPlay' }, 'playPosition', i, shovelX2, self.linesButtonPosY[line], wSmall, hSmall, i, nil, true, false, false, btn_moveToolTips[i]):setSetting(setting)
 		line = line +1
 	end
-	vehicle.cp.hud.content.pages[page][line-1][1].functionToCall = funcCall
+	vehicle.cp.hud.content.pages[page][firstLine][1].functionToCall = funcCall
 	
 end
 
@@ -1984,7 +1986,7 @@ function courseplay.hud:disableButtonWithFunction(vehicle,page, func,class)
 end
 
 ---Gets the next allowed hud page.
----@param vehicle
+---@param table vehicle
 function courseplay.hud.getNextPage(vehicle)
 	---self.numPages: is off by one page, as the first page is 0
 	local numPages = courseplay.hud.numPages + 1
@@ -2002,7 +2004,7 @@ function courseplay.hud.getNextPage(vehicle)
 end
 
 ---Gets the previous allowed hud page.
----@param vehicle
+---@param table vehicle
 function courseplay.hud.getPrevPage(vehicle)
 	---self.numPages: is off by one page, as the first page is 0
 	local numPages = courseplay.hud.numPages + 1
@@ -2020,7 +2022,7 @@ function courseplay.hud.getPrevPage(vehicle)
 end
 
 ---Gets the current hud page.
----@param vehicle
+---@param table vehicle
 function courseplay.hud.getCurrentPage(vehicle)
 	return vehicle.cp.hud.currentPage
 end
@@ -2213,13 +2215,18 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 end
 
 function courseplay.hud:setOverloaderAIDriverContent(vehicle)
+	local settings = vehicle.cp.settings
 	-- page 3
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 2, 1 )
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.followAtFillLevel,'changeByX', 3, 3, 1 )
-	if vehicle.cp.settings.pipeToolPositions:getHasMoveablePipe() then 
-		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.pipeToolPositions, 3, 5)
+	self:addSettingsRowWithArrows(vehicle,settings.driveOnAtFillLevel,'changeByX', 3, 2, 1 )
+	self:addSettingsRowWithArrows(vehicle,settings.followAtFillLevel,'changeByX', 3, 3, 1 )
+	if settings.pipeToolPositions:getHasMoveablePipe() then 
+		--- An auger wagon is attached.
+		self:setupToolPositionButtons(vehicle,settings.pipeToolPositions, 3, 5)
+	elseif settings.sugarCaneTrailerToolPositions:getHasSugarCaneTrailer() then
+		--- An sugar cane wagon is attached.
+		self:setupToolPositionButtons(vehicle,settings.sugarCaneTrailerToolPositions, 3, 5)
 	end
-	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 4, 1 )
+	self:addSettingsRowWithArrows(vehicle,settings.moveOnAtFillLevel,'changeByX', 3, 4, 1 )
 end
 
 function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
