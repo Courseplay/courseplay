@@ -74,7 +74,7 @@
 		<text name="COURSEPLAY_UNLOADING_BALES" 							text="Ballen werden entladen." />
 		<text name="COURSEPLAY_NO_FIELD_SELECTED"						 	text=": no field selected" />
 		<text name="COURSEPLAY_IS_IN_TRAFFIC" 								text="Steckt im Verkehr fest" />
-		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="Bremse ab auf Grund von Verkehr" />
+		<text name="COURSEPLAY_SLOWING_DOWN_FOR_TRAFFIC" 					text="Fahrzeug vorraus, bremse ab" />
 		<text name="COURSEPLAY_TIPTRIGGER_REACHED" 							text="Abladestelle erreicht" />
 		<text name="COURSEPLAY_LAST_VAILD_TIP_DIST" 						text="Abstand z. Abladepunkt" />
 		<text name="COURSEPLAY_LOADING_AMOUNT" 								text="Wird beladen: %d von %d" />
