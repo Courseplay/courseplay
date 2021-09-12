@@ -103,7 +103,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 		local x,y,z = getTranslation(self.relevantWaypointNode.node)
 		DebugUtil.drawDebugCircle(x,y+2,z, r, math.ceil(r/2))
 	end
-	local onlyStopFilledDrivers = self.settings.levelCompactSiloTyp:get()
+
 	for _, vehicle in pairs(g_currentMission.vehicles) do
 		if vehicle ~= self.vehicle then
 			local d = calcDistanceFrom(self.relevantWaypointNode.node, vehicle.rootNode)
@@ -111,13 +111,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 				local autodriveSpec = vehicle.spec_autodrive 
 				if courseplay:isAIDriverActive(vehicle) and vehicle.cp.driver.triggerHandler:isAllowedToUnloadAtBunkerSilo() then
 					--CombineUnloadAIDriver,GrainTransportAIDriver,UnloadableFieldworkAIDriver
-					local isOkayToStop = true
-					if onlyStopFilledDrivers then 
-						if vehicle.cp.totalFillLevel < 0.02 then 
-							isOkayToStop = false
-						end
-					end
-					
+					local isOkayToStop = self:isTheUnloaderAllowedToStop(vehicle)
 					if setWaiting and isOkayToStop then 
 						vehicle.cp.driver:hold()
 						vehicle.cp.driver:setInfoText("WAITING_FOR_LEVELCOMPACTAIDRIVER")
@@ -129,12 +123,14 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 					self:debugSparse("found cp driver : %s",nameNum(vehicle))
 					return isOkayToStop
 				elseif autodriveSpec and autodriveSpec.HoldDriving and vehicle.ad.stateModule and vehicle.ad.stateModule:isActive() then 
-					--autodrive
-					if setWaiting then
+					--- Autodrive 
+					local isOkayToStop = self:isTheUnloaderAllowedToStop(vehicle)
+					if setWaiting and isOkayToStop then
 						autodriveSpec:HoldDriving(vehicle)
 					end
+					
 					self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
-					return true
+					return isOkayToStop
 				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and (AIDriverUtil.hasImplementWithSpecialization(vehicle, Trailer) or vehicle.spec_trailer) then 
 					--Player controlled vehicle
 					if self.settings.levelCompactSearchOnlyAutomatedDriver:is(false) then
@@ -146,6 +142,17 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 			end
 		end
 	end
+end
+
+function CompactingAIDriver:isTheUnloaderAllowedToStop(unloader)
+	local onlyStopFilledDrivers = self.settings.levelCompactSiloTyp:get()
+	if onlyStopFilledDrivers then 
+		local totalFillLevel = AIDriverUtil.getTotalFillLevelAndCapacity(unloader)
+		if totalFillLevel < 0.02 then 
+			return false
+		end
+	end
+	return true
 end
 
 function CompactingAIDriver:beforeDriveIntoSilo()
