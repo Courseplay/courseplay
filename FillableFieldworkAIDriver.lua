@@ -181,7 +181,10 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRef
 				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
 			else
 				if fillType == FillType.SEEDS then hasSeeds = true end
-			end		
+			end
+			if info.fillLevel ~= 0 and fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then 
+				hasNoFertilizer = false
+			end
 			if fillType == FillType.LIQUIDFERTILIZER then liquidFertilizerFillLevel = info.fillLevel end
 			if fillType == FillType.HERBICIDE then  herbicideFillLevel = info.fillLevel end
 		end
@@ -196,6 +199,11 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRef
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
+		allOk = true
+	end
+	-- special check if the needed fillTypes for sowing are there but a fillUnit is empty
+	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(true) and not hasNoFertilizer and hasSeeds then
+		self:debugSparse('Sowing machine has fertilizer and seeds but there is another empty fillUnit')
 		allOk = true
 	end
 	--check if fillLevel changed, refill on Field
