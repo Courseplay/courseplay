@@ -169,21 +169,13 @@ end;
 local function setVersionData()
 	local modItem = g_modManager:getModByName(courseplay.modName)
 	if modItem and modItem.version then
-		courseplay.version = modItem.version;
-	end;
-
-	if courseplay.version then
+		courseplay.version = modItem.version
 		courseplay.versionDisplayStr = string.format("v%s",courseplay.version)
-		courseplay.isDevVersion = true
-		if courseplay.isDevVersion then
-			courseplay.versionDisplayStr = courseplay.versionDisplayStr .. '.dev';
-		end;
 	else
-		courseplay.version = ' [no version specified]';
-		courseplay.versionDisplayStr = 'no\nversion';
-		courseplay.isDevVersion = false;
-	end;
-end;
+		courseplay.version = ' [no version specified]'
+		courseplay.versionDisplayStr = 'no\nversion'
+	end
+end
 
 local function setGlobalData()
 	courseplay.MODE_GRAIN_TRANSPORT = 1;
@@ -294,7 +286,7 @@ courseplay.inputBindings.updateInputButtonData();
 setGlobalData();
 
 
-if courseplay.isDevVersion then
+local function displayDevWaring()
 	local maxLength = 91;
 	local s = {
 		('%-' .. maxLength .. 's'):format('You are using a development version of Courseplay, which may and will contain errors, bugs,');
@@ -304,7 +296,9 @@ if courseplay.isDevVersion then
 		('%-' .. maxLength .. 's'):format('crop destroyed, savegames deleted or baby pandas killed.');
 	};
 	print('    ' .. ('*'):rep((maxLength - 5) * 0.5) .. ' WARNING ' .. ('*'):rep((maxLength - 5) * 0.5) .. '\n    * ' .. table.concat(s, ' *\n    * ') .. ' *\n    ' .. ('*'):rep(maxLength + 4));
-end;
+end
+
+displayDevWaring()
 
 
 --load(), update(), updateTick(), draw() are located in base.lua
