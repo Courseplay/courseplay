@@ -420,8 +420,8 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('--> vehicle has "Shovel" spec -> return', courseplay.DBG_REVERSE);
 		return;
 	end;
-	if workTool.cp.hasSpecializationShovel then
-		courseplay:debug('--> workTool has "Shovel" spec -> return', courseplay.DBG_REVERSE);
+	if workTool.cp.hasSpecializationShovel and not courseplay:isWheeledWorkTool(workTool) then
+		courseplay:debug('--> workTool has "Shovel" spec and has no wheels -> return', courseplay.DBG_REVERSE);
 		return;
 	end;
 	if not courseplay:isWheeledWorkTool(workTool) or courseplay:isHookLift(workTool) or courseplay:isAttacherModule(workTool) then

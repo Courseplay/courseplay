@@ -109,13 +109,16 @@ function AIDriverUtil.getTowBarLength(vehicle)
 	-- is there a wheeled implement behind the tractor and is it on a pivot?
 	local workTool = courseplay:getFirstReversingWheeledWorkTool(vehicle)
 	if not workTool or not workTool.cp.realTurningNode then
-		return 0
+		courseplay.debugVehicle(courseplay.DBG_AI_DRIVER, vehicle, 'could not get tow bar length, using default 3 m.')
+		-- default is not 0 as this is used to calculate trailer heading and 0 here may result in NaNs
+		return 3
 	end
 	-- get the distance between the tractor and the towed implement's turn node
 	-- (not quite accurate when the angle between the tractor and the tool is high)
 	local tractorX, _, tractorZ = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
 	local toolX, _, toolZ = getWorldTranslation( workTool.cp.realTurningNode )
 	local towBarLength = courseplay:distance( tractorX, tractorZ, toolX, toolZ )
+	courseplay.debugVehicle(courseplay.DBG_AI_DRIVER, vehicle, 'tow bar length is %.1f.', towBarLength)
 	return towBarLength
 end
 
