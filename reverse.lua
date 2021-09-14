@@ -420,6 +420,9 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		courseplay:debug('--> vehicle has "Shovel" spec -> return', courseplay.DBG_REVERSE);
 		return;
 	end;
+	-- Sugarcane trailer for some reason also have a shovel specialization but we still want to use
+	-- them as trailers and reverse them, for which we need the realTurningNode which is set below.
+	-- So only ignore tools which do have a shovel but no wheel...
 	if workTool.cp.hasSpecializationShovel and not courseplay:isWheeledWorkTool(workTool) then
 		courseplay:debug('--> workTool has "Shovel" spec and has no wheels -> return', courseplay.DBG_REVERSE);
 		return;
@@ -437,6 +440,8 @@ function courseplay:getReverseProperties(vehicle, workTool)
 		workTool.cp.distances = courseplay:getDistances(workTool);
 	end;
 
+	-- TODO: figure out why these are only set for reversing, one would think they are pretty generic
+	-- and should be set in all cases...
 	workTool.cp.realTurningNode = courseplay:getRealTurningNode(workTool);
 
 	workTool.cp.realUnloadOrFillNode = courseplay:getRealUnloadOrFillNode(workTool);
