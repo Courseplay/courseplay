@@ -2194,8 +2194,9 @@ function AIDriver:isFuelLevelOk()
 		return false
 	elseif currentFuelPercentage < 20 then
 		self:setInfoText('FUEL_SHOULD')
-	elseif currentFuelPercentage < 99.99 then
-	--	self:setInfoText('FUEL_IS')
+	else
+		self:clearInfoText('FUEL_MUST')
+		self:clearInfoText('FUEL_SHOULD')
 	end
 	return true
 end
