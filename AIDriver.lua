@@ -2194,24 +2194,19 @@ function AIDriver:isFuelLevelOk()
 		return false
 	elseif currentFuelPercentage < 20 then
 		self:setInfoText('FUEL_SHOULD')
-	elseif currentFuelPercentage < 99.99 then
-	--	self:setInfoText('FUEL_IS')
+	else
+		self:clearInfoText('FUEL_MUST')
+		self:clearInfoText('FUEL_SHOULD')
 	end
 	return true
 end
 
 function AIDriver:isValidFillType(fillType)
-	return not self:isValidFuelType(self.vehicle, fillType) and fillType ~= FillType.DEF and fillType ~= FillType.AIR
+	return AIDriverUtil.isValidFillType(self.vehicle,fillType)
 end
 
 function AIDriver:isValidFuelType(object,fillType,fillUnitIndex)
-	if object.getConsumerFillUnitIndex then 
-		local index = object:getConsumerFillUnitIndex(fillType)
-		if fillUnitIndex ~= nil then 
-			return fillUnitIndex and fillUnitIndex == index
-		end		
-		return index 
-	end
+	return AIDriverUtil.isValidFuelType(object,fillType,fillUnitIndex)
 end
 
 function AIDriver:getFuelLevelPercentage()

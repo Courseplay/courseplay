@@ -533,6 +533,13 @@ function Triggers.getFillTriggers()
 	return Triggers.fillTriggers
 end
 
+function Triggers.getUnloadingTriggers()
+	return Triggers.unloadingTriggers
+end
+
+function Triggers.getBaleUnloadTriggers()
+	return Triggers.baleUnloadingTriggers
+end
 
 ---Add all relevant triggers on create and remove them on delete.
 function Triggers.addLoadingTrigger(trigger,superFunc,...)

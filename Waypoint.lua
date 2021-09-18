@@ -1366,12 +1366,16 @@ function Course:setUseTightTurnOffsetForLastWaypoints(d)
 end
 
 --- Get the next contiguous headland section of a course, starting at startIx
----@param headland number of headland, starting at 1 on the outermost headland, any headland if nil
+---@param lane number of lane (headland), starting at -1 on the outermost headland, any headland if nil
 ---@param startIx number start at this waypoint index
 ---@return Course, number headland section as a Course object, next wp index after the section
-function Course:getNextHeadlandSection(headland, startIx)
+function Course:getNextHeadlandSection(lane, startIx)
 	return self:getNextSectionWithProperty(startIx, function(wp)
-		return headland and (wp.lane and wp.lane == -headland) or wp.lane ~= nil
+		if lane then
+			return wp.lane and wp.lane == lane
+		else
+			return wp.lane ~= nil
+		end
 	end)
 end
 
@@ -1424,12 +1428,12 @@ function Course:offsetUpDownRows(offsetX, offsetZ, useSameTurnWidth)
 end
 
 ---@param waypoints Polyline
-function Course:markAsHeadland(waypoints)
+function Course:markAsHeadland(waypoints, passNumber)
 	-- TODO: this should be in Polyline
 
 	for _, p in ipairs(waypoints) do
 		-- don't care which headland, just make sure it is a headland
-		p.lane = -1
+		p.lane = passNumber
 	end
 end
 
@@ -1471,7 +1475,10 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 	local ix = 1
 	while ix and (ix < #self.waypoints) do
 		local origHeadlandsCourse
-		origHeadlandsCourse, ix = self:getNextHeadlandSection(nil, ix)
+		-- time to get rid of this negative lane number marking the headland, why on Earth must it be negative?
+		local currentLaneNumber = self.waypoints[ix].lane
+		-- work on the headland passes one by one to keep have the correct lane number in the offset course
+		origHeadlandsCourse, ix = self:getNextHeadlandSection(currentLaneNumber, ix)
 		if origHeadlandsCourse:getNumberOfWaypoints() > 0 then
 			if origHeadlandsCourse:getNumberOfWaypoints() > 2 then
 				courseplay.debugFormat(courseplay.DBG_COURSES, 'Headland section to %d', ix)
@@ -1488,7 +1495,7 @@ function Course:calculateOffsetCourse(nVehicles, position, width, useSameTurnWid
 					courseplay.info('Could not generate offset headland')
 				else
 					offsetHeadlands:calculateData()
-					self:markAsHeadland(offsetHeadlands)
+					self:markAsHeadland(offsetHeadlands, currentLaneNumber)
 					if origHeadlandsCourse:isTurnStartAtIx(origHeadlandsCourse:getNumberOfWaypoints()) then
 						courseplay.debugFormat(courseplay.DBG_COURSES, 'Original headland transitioned to the center with a turn, adding a turn start to the offset one')
 						offsetHeadlands[#offsetHeadlands].turnStart = true

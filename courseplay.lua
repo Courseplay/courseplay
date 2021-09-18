@@ -169,25 +169,13 @@ end;
 local function setVersionData()
 	local modItem = g_modManager:getModByName(courseplay.modName)
 	if modItem and modItem.version then
-		courseplay.version = modItem.version;
-	end;
-
-	if courseplay.version then
-		local versionSplitStr = StringUtil.splitString('.', courseplay.version); -- split as strings
-		versionSplitStr[3] = versionSplitStr[3] or '0000';
-		courseplay.versionDisplayStr = string.format('v%s.%s\n.%s', versionSplitStr[1], versionSplitStr[2], versionSplitStr[3]); --multiline display string
-		courseplay.isDevVersion = tonumber(versionSplitStr[3]) > 0;
-		if courseplay.isDevVersion then
-			courseplay.versionDisplayStr = courseplay.versionDisplayStr .. '.dev';
-		end;
-		courseplay.versionFlt = tonumber(string.format('%s.%s%s', versionSplitStr[1], versionSplitStr[2], versionSplitStr[3]));
+		courseplay.version = modItem.version
+		courseplay.versionDisplayStr = string.format("v%s",courseplay.version)
 	else
-		courseplay.version = ' [no version specified]';
-		courseplay.versionDisplayStr = 'no\nversion';
-		courseplay.versionFlt = 0.00000;
-		courseplay.isDevVersion = false;
-	end;
-end;
+		courseplay.version = ' [no version specified]'
+		courseplay.versionDisplayStr = 'no\nversion'
+	end
+end
 
 local function setGlobalData()
 	courseplay.MODE_GRAIN_TRANSPORT = 1;
@@ -298,7 +286,7 @@ courseplay.inputBindings.updateInputButtonData();
 setGlobalData();
 
 
-if courseplay.isDevVersion then
+local function displayDevWaring()
 	local maxLength = 91;
 	local s = {
 		('%-' .. maxLength .. 's'):format('You are using a development version of Courseplay, which may and will contain errors, bugs,');
@@ -308,7 +296,9 @@ if courseplay.isDevVersion then
 		('%-' .. maxLength .. 's'):format('crop destroyed, savegames deleted or baby pandas killed.');
 	};
 	print('    ' .. ('*'):rep((maxLength - 5) * 0.5) .. ' WARNING ' .. ('*'):rep((maxLength - 5) * 0.5) .. '\n    * ' .. table.concat(s, ' *\n    * ') .. ' *\n    ' .. ('*'):rep(maxLength + 4));
-end;
+end
+
+displayDevWaring()
 
 
 --load(), update(), updateTick(), draw() are located in base.lua
