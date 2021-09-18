@@ -838,7 +838,7 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 end;
 
 function courseplay:changeDrawCourseMode(vehicle, changeBy)
-	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, courseplay.COURSE_2D_DISPLAY_BOTH, courseplay.COURSE_2D_DISPLAY_OFF);
+	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, courseplay.COURSE_2D_DISPLAY_OFF);
 	vehicle.cp.hud.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
 end;
 
@@ -3987,11 +3987,11 @@ function CourseDrawModeSetting:isDeactivated()
 end
 
 function CourseDrawModeSetting:isCourseMapVisible()
-	return self:get() == self.COURSE_2D_DISPLAY_2DONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
 end
 
 function CourseDrawModeSetting:isCourseVisible()
-	return self:get() == self.COURSE_2D_DISPLAY_DBGONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
 end
 
 --[[
