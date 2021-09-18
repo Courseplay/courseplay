@@ -1732,10 +1732,6 @@ end
 --- called from courseplay:onDraw, a placeholder for showing debug infos, which can this way be added and reloaded
 --- without restarting the game.
 function AIDriver:onDraw()
-	if CpManager.isDeveloper and self.course and
-	self.settings.courseDrawMode:isCourseVisible()  then
-		self.course:draw()
-	end
 	if CpManager.isDeveloper and self.pathfinder then
 		PathfinderUtil.showNodes(self.pathfinder)
 	end

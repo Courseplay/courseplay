@@ -3965,23 +3965,17 @@ end
 
 --- @class CourseDrawModeSetting : SettingList
 CourseDrawModeSetting = CpObject(SettingList)
--- 2D/debug lines display options
+-- 2D lines display options
 CourseDrawModeSetting.COURSE_2D_DISPLAY_OFF	 = 0;
 CourseDrawModeSetting.COURSE_2D_DISPLAY_2DONLY	 = 1;
-CourseDrawModeSetting.COURSE_2D_DISPLAY_DBGONLY = 2;
-CourseDrawModeSetting.COURSE_2D_DISPLAY_BOTH	 = 3;
 function CourseDrawModeSetting:init(vehicle)
 	local values = {
 		self.COURSE_2D_DISPLAY_OFF,
 		self.COURSE_2D_DISPLAY_2DONLY,
-		self.COURSE_2D_DISPLAY_DBGONLY,
-		self.COURSE_2D_DISPLAY_BOTH
 	}
 	local texts = {
 		"",
 		"2D",
-		"\nDBG",
-		"2D\nDBG"
 	}
 	SettingList.init(self,"courseDrawMode","","",vehicle,values,texts)
 	self:set(self.COURSE_2D_DISPLAY_OFF)
