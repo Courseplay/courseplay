@@ -124,7 +124,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 	-- ##################################################
 	-- 2D COURSE WINDOW: DRAG + DROP MOVE
-	if vehicle.cp.course2dDrawData and vehicle.cp.settings.courseDrawMode:isCourseVisible() then
+	if vehicle.cp.course2dDrawData and vehicle.cp.settings.courseDrawMode:isCourseMapVisible() then
 		local plot = CpManager.course2dPlotField;
 		if isDown and mouseButton == courseplay.inputBindings.mouse.primaryButtonId and vehicle.cp.mouseCursorActive and vehicle:getIsEntered() and courseplay:mouseIsInArea(posX, posY, plot.x, plot.x + plot.width, plot.y, plot.y + plot.height) then
 			CpManager.course2dDragDropMouseDown = { posX, posY };

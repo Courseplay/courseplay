@@ -3985,10 +3985,6 @@ function CourseDrawModeSetting:isCourseMapVisible()
 	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
 end
 
-function CourseDrawModeSetting:isCourseVisible()
-	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
-end
-
 --[[
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
