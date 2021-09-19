@@ -68,6 +68,11 @@
 				<Specialization name="spec_trailer"/>
 			</Setup>
 			<Setup>
+				<!-- This enables Sugar cane trailers. -->
+				<Specialization name="spec_shovel"/>
+				<Specialization name="spec_trailer"/>
+			</Setup>
+			<Setup>
 			<!-- as an example special tools can be enabled by the xml file of the tool
 				<SpecialTool name="fieldLinerHTS31.xml"/>
 			 -->
@@ -302,5 +307,3 @@
 		</DisallowedSetups>
 	</Mode>
 </ValidModeSetup>
-
-

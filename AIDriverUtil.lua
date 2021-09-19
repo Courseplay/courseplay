@@ -313,6 +313,14 @@ function AIDriverUtil.getImplementWithSpecialization(vehicle, specialization)
 	return AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
 end
 
+--- Gets a directly attached implement to the vehicle with a given specialization.
+--- Additionally checks if the vehicle has the specialization and returns it, if no implement was found.
+--- For example a self driving overloader.
+function AIDriverUtil.getImplementOrVehicleWithSpecialization(vehicle, specialization)
+	return  AIDriverUtil.getImplementWithSpecialization(vehicle, specialization) or  
+			SpecializationUtil.hasSpecialization(specialization, vehicle.specializations) and vehicle
+end
+
 function AIDriverUtil.getImplementWithSpecializationFromList(specialization, implements)
 	for _, implement in ipairs(implements) do
 		if SpecializationUtil.hasSpecialization(specialization, implement.object.specializations) then

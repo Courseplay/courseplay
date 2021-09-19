@@ -3337,14 +3337,17 @@ end
 ---@class WorkingToolPositionsSetting : Setting
 ---@param totalPositionsAmount number of possible postions
 ---@param validSpecs table Specializations of objects that get saved, nil = every object
+---@param labels table Tool position names.
 WorkingToolPositionsSetting = CpObject(Setting)
 WorkingToolPositionsSetting.NetworkTypes = {}
 WorkingToolPositionsSetting.NetworkTypes.SET_OR_CLEAR_POSITION = 0
 WorkingToolPositionsSetting.NetworkTypes.PLAY_POSITION = 1
 WorkingToolPositionsSetting.Settings = {}
-function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs)
+function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPositionsAmount,validSpecs,labels)
 	Setting.init(self, name,label, toolTip, vehicle)
 	self.texts = {}
+	self.labels = {}
+	self:enrichLabels(labels)
 	self.hasPosition = {}
 	self.totalPositions = totalPositionsAmount or 4
 	self.playTestPostion = nil
@@ -3359,7 +3362,16 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	table.insert(WorkingToolPositionsSetting.Settings,self)
 end
 
-function WorkingToolPositionsSetting:getTexts()
+function WorkingToolPositionsSetting:enrichLabels(labels)
+	for i,l in ipairs(labels) do 
+		table.insert(self.labels,courseplay:loc(l))
+	end
+end
+
+--- Gets the tool position labels and texts.
+---@return table labels 
+---@return table texts
+function WorkingToolPositionsSetting:getLabelsAndTexts()
 	local texts = {}
 	for i=1,self.totalPositions do 
 		local text = ""
@@ -3368,7 +3380,7 @@ function WorkingToolPositionsSetting:getTexts()
 		end
 		texts[i] = text
 	end
-	return texts
+	return self.labels,texts
 end
 
 --- Saves or clears an tool position.
@@ -3717,7 +3729,13 @@ function FrontloaderToolPositionsSetting:init(vehicle, driverModeSetting)
 	self.driverModeSetting = driverModeSetting
 	local label = "front"
 	local toolTip = "front"
-	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4)
+	local labels = {
+		"COURSEPLAY_SHOVEL_LOADING_POSITION",
+		"COURSEPLAY_SHOVEL_TRANSPORT_POSITION",
+		"COURSEPLAY_SHOVEL_PRE_UNLOADING_POSITION",
+		"COURSEPLAY_SHOVEL_UNLOADING_POSITION"
+	}
+	WorkingToolPositionsSetting.init(self,"frontloaderToolPositions", label, toolTip, vehicle,4,nil,labels)
 end
 
 function FrontloaderToolPositionsSetting:actionEventSavePosition(actionName, inputValue, callbackState, isAnalog)
@@ -3741,8 +3759,11 @@ PipeToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
 function PipeToolPositionsSetting:init(vehicle)
 	local label = "pipe"
 	local toolTip = "pipe"
+	local labels = {
+		"COURSEPLAY_SHOVEL_LOADING_POSITION"
+	}
 	local validSpecs = {Pipe}
-	WorkingToolPositionsSetting.init(self,"pipeToolPositions", label, toolTip, vehicle,1,validSpecs)
+	WorkingToolPositionsSetting.init(self,"pipeToolPositions", label, toolTip, vehicle,1,validSpecs,labels)
 end
 
 function PipeToolPositionsSetting:getText()
@@ -3768,7 +3789,11 @@ MixerWagonToolPositionsSetting = CpObject(WorkingToolPositionsSetting)
 function MixerWagonToolPositionsSetting:init(vehicle)
 	local label = "mixerWagon"
 	local toolTip = "mixerWagon"
-	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2)
+	local labels = {
+		"COURSEPLAY_SHOVEL_LOADING_POSITION",
+		"COURSEPLAY_SHOVEL_TRANSPORT_POSITION"
+	}
+	WorkingToolPositionsSetting.init(self,"mixerWagonToolPositions", label, toolTip, vehicle,2,nil,labels)
 end
 
 ---@class SugarCaneTrailerToolPositionsSetting : WorkingToolPositionsSetting
@@ -3778,8 +3803,12 @@ SugarCaneTrailerToolPositionsSetting.UNLOADING_POSITION = 2
 function SugarCaneTrailerToolPositionsSetting:init(vehicle)
 	local label = "sugarCaneTrailer"
 	local toolTip = "sugarCaneTrailer"
+	local labels = {
+		"COURSEPLAY_SHOVEL_TRANSPORT_POSITION",
+		"COURSEPLAY_SHOVEL_UNLOADING_POSITION"
+	}
 	local validSpecs = {Shovel}
-	WorkingToolPositionsSetting.init(self,"sugarCaneTrailerToolPositions", label, toolTip, vehicle,2,validSpecs)
+	WorkingToolPositionsSetting.init(self,"sugarCaneTrailerToolPositions", label, toolTip, vehicle,2,validSpecs,labels)
 end
 
 function SugarCaneTrailerToolPositionsSetting:validateCurrentValue()

@@ -27,7 +27,7 @@ OverloaderAIDriver.myStates = {
 }
 
 OverloaderAIDriver.MIN_SPEED_UNLOAD_COURSE = 10
-
+OverloaderAIDriver.FILL_LEVEL_THRESHOLD = 0.99 -- 99%
 
 function OverloaderAIDriver:init(vehicle)
     --there seems to be a bug, where "vehicle" is not always set once start is pressed
@@ -47,78 +47,262 @@ function OverloaderAIDriver:postInit()
     CombineUnloadAIDriver.postInit(self)
 end
 
-function OverloaderAIDriver:findPipeAndTrailer()
-    local implementWithPipe = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Pipe)
+function OverloaderAIDriver:setupTrailerData()
+    
+    --- Checks if there is a auger wagon object.
+    --- Gets the pipe object.
+    local implementWithPipe = AIDriverUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Pipe)
     if implementWithPipe then
-        self.pipe = implementWithPipe.spec_pipe
-		self.objectWithPipe = implementWithPipe
-		self:debug('Overloader found its pipe')
+        --- Pipe was found.
+        self.pipeSpec = implementWithPipe.spec_pipe
+        self.trailer = implementWithPipe
+		self:debug('Overloader found an auger wagon.')
+        return
     else
-        self:debug('Overloader has no implement with pipe')
+        self:debug('Overloader has no implement with pipe.')
     end
-    self.trailer = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Trailer)
+
+    --- Checks if there is a sugar cane trailer attached.
+    --- Gets the shovel object, as a sugar cane trailer uses the shovel spec to unload.
+    local implementWithShovel = AIDriverUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Shovel)
+    if implementWithShovel then
+        --- Sugar cane trailer was found.
+        self.shovelSpec = implementWithShovel.spec_shovel
+        self.trailer = implementWithShovel
+		self:debug('Overloader found a sugar cane trailer.')
+        return
+    else
+        self:debug('Overloader has no sugar cane trailer.')
+    end
+    --- Gets the trailer object for different over loaders. Still WIP.
+    self.trailer = AIDriverUtil.getImplementOrVehicleWithSpecialization(self.vehicle, Trailer)
+
+    --- TODO: Implement special trailers, like the annaburger fieldLinerHTS31.
 end
 
 function OverloaderAIDriver:setHudContent()
+    self:setupTrailerData()
 	CombineUnloadAIDriver.setHudContent(self)
-	self:findPipeAndTrailer()
 	courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
 end
 
 function OverloaderAIDriver:start(startingPoint)
-    --- Looks like the implements are not attached at onLoad() when the game loads so we end up
-    --- with no pipe after game start. So make another attempt to find it when missing
-    --- TODO: this should be fixed properly, just like the other hack in start_stop.lua for the bale loader
-    if not self.pipe or not self.trailer then self:findPipeAndTrailer() end
     self.unloadCourseState = self.states.ENROUTE
+    if self.shovelSpec then
+        --- Remember the old giants setup.
+        --- This disables unloading to ground, while the driver is driving.
+        self.oldCanDischargeToGroundFunction = self.trailer.getCanDischargeToGround
+        self.trailer.getCanDischargeToGround = function () return false end
+    end 
+
     CombineUnloadAIDriver.start(self, startingPoint)
 end
 
+function OverloaderAIDriver:dismiss()
+    --- Resets the old giants setup.
+    if self.shovelSpec then
+        self.trailer.getCanDischargeToGround = self.oldCanDischargeToGroundFunction
+        self.oldCanDischargeToGroundFunction = nil
+    end
+    CombineUnloadAIDriver.dismiss(self)
+end
+
+--- Are there any trailer under the pipe ?
+---@param shouldTrailerBeStandingStill boolean
 function OverloaderAIDriver:isTrailerUnderPipe(shouldTrailerBeStandingStill)
-    return AIDriverUtil.isTrailerUnderPipe(self.pipe,shouldTrailerBeStandingStill)
+    return AIDriverUtil.isTrailerUnderPipe(self.pipeSpec,shouldTrailerBeStandingStill)
 end
 
 function OverloaderAIDriver:driveUnloadCourse(dt)
+    if self.pipeSpec then 
+        self:driveUnloadCourseWithAugerWagon(dt)
+    elseif self.shovelSpec then 
+        self:driveUnloadCourseWithSugarCaneTrailer(dt)
+    end
+    AIDriver.drive(self, dt)
+end
+
+function OverloaderAIDriver:driveUnloadCourseWithAugerWagon(dt)
     if self.unloadCourseState == self.states.ENROUTE then
     elseif self.unloadCourseState == self.states.WAITING_FOR_TRAILER then
         self:holdWithFuelSave()
+        --- Is there any valid still standing target under the pipe ?
         if self:isTrailerUnderPipe(true) then
-            self:debug('Trailer is here, opening pipe')
-            if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_OPEN) end
+            self:debug('Trailer is here, opening pipe.')
+            self.trailer:setPipeState(AIDriverUtil.PIPE_STATE_OPEN)
             self.unloadCourseState = self.states.WAITING_FOR_OVERLOAD_TO_START
              --- If the driver was in fuel save make sure it gets started again for overloading.
             self:startEngineIfNeeded()
         end
     elseif self.unloadCourseState == self.states.WAITING_FOR_OVERLOAD_TO_START then
-        self:setSpeed(0)
-		--can discharge and not pipe is moving 
-		if self.pipe.currentState == self.pipe.targetState then
+        self:hold()
+		--- Pipe isn't moving, so start overloading.
+		if self.pipeSpec.currentState == self.pipeSpec.targetState then
             self:debug('Overloading started')
+            --- Waiting for an optional tool position to start. 
             if self:isWorkingToolPositionReached(dt,1) then 
 				self.unloadCourseState = self.states.OVERLOADING
 			end
 		end
     elseif self.unloadCourseState == self.states.OVERLOADING then
-        self:setSpeed(0)
-        if self.pipe:getDischargeState() == Dischargeable.DISCHARGE_STATE_OFF then
+        self:hold()
+        --- Finished overloading.
+        if not self.trailer:getCanDischargeToObject(self.trailer:getCurrentDischargeNode()) then
+            --- If the driver is unloaded enough, continue.
             if self:isMoveOnFillLevelReached() then 
                 self:debug('Overloading finished, closing pipe')
-                if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
+                self.trailer:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
                 self.unloadCourseState = self.states.ENROUTE
+            --- Closing the pipe and wait for another unload target, only after the last target has left.
 			elseif not self:isTrailerUnderPipe() then
                 self:debug('No Trailer here, closing pipe for now')
-                if self.pipe then self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED) end
+                self.trailer:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
                 self.unloadCourseState = self.states.WAITING_FOR_TRAILER
 			end
 		end
     end
-    AIDriver.drive(self, dt)
 end
 
---if we have pipeToolPositions, then wait until we have set them
+function OverloaderAIDriver:driveUnloadCourseWithSugarCaneTrailer(dt)
+    --- To handle sugarcane trailers all tool positions have to be set.
+    if not self:areWorkingToolPositionsValid() then 
+        self:holdWithFuelSave()
+    end
+    if self.unloadCourseState == self.states.ENROUTE then
+        if not self:isWorkingToolPositionReached(dt,SugarCaneTrailerToolPositionsSetting.TRANSPORT_POSITION) then 
+            self:hold()
+        end
+    elseif self.unloadCourseState == self.states.WAITING_FOR_TRAILER then
+        self:holdWithFuelSave()
+        --- If the driver is unloaded enough, continue.
+        if self:isMoveOnFillLevelReached() then 
+            self.unloadCourseState = self.states.ENROUTE
+            return
+        end
+        
+        self:isWorkingToolPositionReached(dt,SugarCaneTrailerToolPositionsSetting.TRANSPORT_POSITION) 
+        --- Needs raycast to check for trailers to the side.
+
+    elseif self.unloadCourseState == self.states.OVERLOADING then
+        self:hold()
+         --- If the driver is unloaded enough, continue.
+        if self:isMoveOnFillLevelReached() then 
+            self.unloadCourseState = self.states.ENROUTE
+            return
+        end
+
+        local dischargeNode = self.trailer:getCurrentDischargeNode()
+        local dischargeObject = dischargeNode.dischargeObject
+        local fillUnitIndex = dischargeNode.dischargeFillUnitIndex
+        if dischargeObject then 
+            local fillLevelPercentage = dischargeObject:getFillUnitFillLevelPercentage(fillUnitIndex)
+            --- This disables unloading, when the target is filled >= 99 %.
+            if fillLevelPercentage > self.FILL_LEVEL_THRESHOLD then 
+                self.unloadCourseState = self.states.WAITING_FOR_TRAILER
+            end
+        end
+
+        if self:isWorkingToolPositionReached(dt,SugarCaneTrailerToolPositionsSetting.UNLOADING_POSITION) then 
+            --- When the unloading position is reached, but the trailer is gone, then go back to transport position.
+            if not dischargeObject then 
+                self.unloadCourseState = self.states.WAITING_FOR_TRAILER
+            end
+        end
+    end
+end
+
+function OverloaderAIDriver:updateTick()
+    --- Only use the raycast with a sugar cane trailer.
+    if self.shovelSpec then
+         --- This creates a raycast to the sides of the trailer to check for unload targets.
+        if self.unloadCourseState == self.states.WAITING_FOR_TRAILER then 
+            self:raycastSugarCaneTrailerSides()
+        end
+    end
+    CombineUnloadAIDriver.updateTick(self)
+end
+
+--- Searches for unloading target to the left side of the sugar cane trailer. 
+--- TODO: Make the search direction and the raycast start point relative to the current discharge node.
+function OverloaderAIDriver:raycastSugarCaneTrailerSides()
+    local rootNode = self.trailer.rootNode
+    local sideOffset = 2
+    local heightOffset = 3
+    local raycastLength = 5
+    local ny = -1
+    --- Raycast to the right side.
+---    local x,y,z = localToWorld(rootNode,-sideOffset,heightOffset,0)
+---    local nx,_,nz = localDirectionToWorld(rootNode,-1,0,0)
+---    self:raycastSugarCaneTrailer(x,y,z,nx,ny,nz,raycastLength)
+    --- Raycast to the left side.
+    local x,y,z = localToWorld(rootNode,sideOffset,heightOffset,0)
+    local nx,_,nz = localDirectionToWorld(rootNode,1,0,0)
+    self:raycastSugarCaneTrailer(x,y,z,nx,ny,nz,raycastLength)
+end
+
+function OverloaderAIDriver:raycastSugarCaneTrailer(x,y,z,nx,ny,nz,distance)
+    if courseplay.debugChannels[self.debugChannel] then
+        cpDebug:drawLine(x,y,z,1,1,1,x+distance*nx,y+distance*ny,z+distance*nz)
+    end
+    raycastAll(x, y, z, nx, ny, nz, "raycastSugarCaneTrailerCallback", distance, self)
+end
+
+function OverloaderAIDriver:raycastSugarCaneTrailerCallback(hitActorId, x, y, z, distance, nx, ny, nz, subShapeIndex, hitShapeId)
+    if self.unloadCourseState == self.states.OVERLOADING then 
+        self:debug("Is already overloading.")
+        return false
+    end
+    if hitActorId ~= nil then
+        local object = g_currentMission:getNodeObject(hitActorId)
+        if object and object.getRootVehicle then 
+            local rootVehicle = object:getRootVehicle()
+            if rootVehicle == self.vehicle then 
+                return true
+            end
+            if rootVehicle then 
+                --- Checks if the vehicle is stopped.
+                if not AIDriverUtil.isStopped(rootVehicle) then
+                    self:debug("Target %s is still moving.",nameNum(object))
+                    return false
+                end
+
+                local fillUnitIndex = object:getFillUnitIndexFromNode(hitShapeId)
+
+                --- Fill unit not found.
+                if not fillUnitIndex then 
+                    return true
+                end
+
+                local allowedToFillByShovel = object:getFillUnitSupportsToolType(fillUnitIndex, ToolType.DISCHARGEABLE)	
+                local currentDischargeNode = self.trailer:getCurrentDischargeNode()
+                local fillType = self.trailer:getDischargeFillType(currentDischargeNode)
+                local validFillType = object:getFillUnitAllowsFillType(fillUnitIndex,fillType)
+                if validFillType then 
+                    local fillLevelPercentage = object:getFillUnitFillLevelPercentage(fillUnitIndex)
+                    if fillLevelPercentage < self.FILL_LEVEL_THRESHOLD then 
+                        --- If the driver was in fuel save make sure it gets started again for overloading.
+                        self:startEngineIfNeeded()
+                        self.unloadCourseState = self.states.OVERLOADING
+                        self:debug("Starting to overload.")
+                        return false
+                    else 
+                        self:debug("Target %s is already full.",nameNum(object))
+                        return false
+                    end
+                else 
+                    self:debug("Target %s doesn't support this fillType %s, fillUnitIndex : %d.",nameNum(object),g_fillTypeManager:getFillTypeNameByIndex(fillType),fillUnitIndex)
+                    return true
+                end
+            end
+        end
+    end
+    return true
+end
+
+--- Check if there are valid tool positions set.
 function OverloaderAIDriver:getWorkingToolPositionsSetting()
-    local setting = self.settings.pipeToolPositions
-    return setting:getHasMoveablePipe() and setting:hasValidToolPositions() and setting
+    local setting = self.pipeSpec and self.settings.pipeToolPositions or self.settings.sugarCaneTrailerToolPositions
+    return setting:hasValidToolPositions() and setting
 end
 
 function OverloaderAIDriver:isProximitySwerveEnabled(vehicle)
@@ -194,6 +378,16 @@ function OverloaderAIDriver:isNearOverloadPoint()
 	return self.nearOverloadPoint
 end
 
+--- Driver is waiting at the overloading point.
+function OverloaderAIDriver:isWaitingAtOverloadingPoint()
+    return self.unloadCourseState ~= self.states.ENROUTE
+end
+
 function OverloaderAIDriver:isStoppingAtWaitPointAllowed()
 	return false
 end
+
+function OverloaderAIDriver:hasSugarCaneTrailerToolPositions()
+    return false
+end
+
