@@ -837,10 +837,6 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 	end;
 end;
 
-function courseplay:changeDrawCourseMode(vehicle, changeBy)
-	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, CourseDrawModeSetting.COURSE_2D_DISPLAY_2DONLY, courseplay.COURSE_2D_DISPLAY_OFF);
-end;
-
 function courseplay:setEngineState(vehicle, on)
 	if vehicle == nil or on == nil or vehicle.spec_motorized.isMotorStarted == on then
 		return;
