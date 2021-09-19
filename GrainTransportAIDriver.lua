@@ -273,7 +273,7 @@ end
 
 function GrainTransportAIDriver:isProximitySwerveEnabled(vehicle)
 	--- Disable swerve near the fill point, currently form wp 1 to 5.
-	local swerveAllowed = self:isNearFillPoint()
+	local swerveAllowed = not self:isNearFillPoint()
 	local driver = vehicle.cp and vehicle.cp.driver 
 	if driver and driver:is_a(OverloaderAIDriver) then
 		--- The other vehicle is an overloader, potentially waiting for us. We should not swerve,
