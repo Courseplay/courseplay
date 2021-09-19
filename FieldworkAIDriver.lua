@@ -29,8 +29,8 @@ FieldworkAIDriver = CpObject(AIDriver)
 FieldworkAIDriver.myStates = {
 	-- main states
 	ON_FIELDWORK_COURSE = {},
-	ON_UNLOAD_OR_REFILL_COURSE = {},
-	RETURNING_TO_FIRST_POINT = {},
+	ON_UNLOAD_OR_REFILL_COURSE = {enableProximitySwerve = true},
+	RETURNING_TO_FIRST_POINT = {enableProximitySwerve = true},
 	ON_UNLOAD_OR_REFILL_WITH_AUTODRIVE = {},
 	-- ON_FIELDWORK_COURSE substates
 	WORKING = {},
@@ -161,9 +161,8 @@ function FieldworkAIDriver:isProximitySpeedControlEnabled()
 		self.state == self.states.ON_FIELDWORK_COURSE
 end
 
-function FieldworkAIDriver:isProximitySwerveEnabled()
-	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
-			self.state == self.states.RETURNING_TO_FIRST_POINT
+function FieldworkAIDriver:isProximitySwerveEnabled(vehicle)
+	return self.state.properties.enableProximitySwerve and AIDriver.isProximitySwerveEnabled(self,vehicle)
 end
 
 function FieldworkAIDriver:shouldStopAtEndOfCourse()

@@ -68,15 +68,15 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 	else
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
-
-	local isNearWaitPoint, waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
+	local waitPointIx
+	self.closeToWaitPoint,waitPointIx = self.course:hasWaitPointWithinDistance(self.ppc:getRelevantWaypointIx(), 25)
 	--this one is used to disable loading at the unloading stations,
 	--might be better to disable the triggerID for loading
-	self:enableFillTypeLoading(isNearWaitPoint)
+	self:enableFillTypeLoading(self.closeToWaitPoint)
 	if self.course:isTemporary() then
 		-- use the courseplay speed limit until we get to the actual unload corse fields (on alignment/temporary)
 		self:setSpeed(self:getFieldSpeed())
-	elseif  self.refillState == self.states.TO_BE_REFILLED and isNearWaitPoint then
+	elseif  self.refillState == self.states.TO_BE_REFILLED and self.closeToWaitPoint then
 		-- should be reworked and be similar to mode 1 loading at start 
 		local distanceToWait = self.course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, waitPointIx)
 		self:setSpeed(MathUtil.clamp(distanceToWait,self.vehicle.cp.speeds.crawl,self:getRecordedSpeed()))
@@ -91,9 +91,14 @@ function FillableFieldworkAIDriver:driveUnloadOrRefill()
 		end
 		-- just drive normally
 		self:setSpeed(self:getRecordedSpeed())
-		self:closePipeIfNeeded(isNearWaitPoint)
+		self:closePipeIfNeeded(self.closeToWaitPoint)
 		self:searchForLoadingFillingTriggers()
 	end	
+end
+
+--- Driver is close to a wait point or is currently loading at it.
+function FillableFieldworkAIDriver:isNearWaitPoint()
+	return self.closeToWaitPoint or self.refillState == self.states.TO_BE_REFILLED
 end
 
 function FillableFieldworkAIDriver:enableFillTypeLoading(isInWaitPointRange)
@@ -296,5 +301,19 @@ function FillableFieldworkAIDriver:getTurnEndForwardOffset()
 		return 0
 	end
 end
+
+function FillableFieldworkAIDriver:isProximitySwerveEnabled(vehicle)
+	local swerveAllowed = true
+	local driver = vehicle.cp and vehicle.cp.driver
+	
+	if driver and driver:is_a(FillableFieldworkAIDriver) then
+		--- The other vehicle is a FieldSupplyAIDriver and we are approaching it for reloading.
+		if driver:isNearWaitPoint() then
+			swerveAllowed = false
+		end
+	end
+	return swerveAllowed and FieldworkAIDriver.isProximitySwerveEnabled(self,vehicle)
+end
+
 
 

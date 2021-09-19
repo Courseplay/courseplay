@@ -1185,6 +1185,10 @@ end
 
 function Course:getDirectionToWPInDistance(ix, vehicle, distance)
 	local lx, lz = 0, 1
+	--- Allows searching between the last and first waypoint.
+	if ix == #self.waypoints then 
+		ix = 1
+	end
 	for i = ix, #self.waypoints do
 		if self:getDistanceBetweenVehicleAndWaypoint(vehicle, i) > distance then
 			local x,y,z = self:getWaypointPosition(i)

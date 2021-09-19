@@ -77,10 +77,18 @@ function FieldSupplyAIDriver:onEndCourse()
 	AIDriver.onEndCourse(self)
 end
 
-function FieldSupplyAIDriver:isProximitySwerveEnabled()
-	return self.state == self.states.ON_UNLOAD_OR_REFILL_COURSE or
-			self.state == self.states.RETURNING_TO_FIRST_POINT or
-			self.supplyState == self.states.ON_REFILL_COURSE
+function FieldSupplyAIDriver:isProximitySwerveEnabled(vehicle)
+	local swerveAllowed = true
+	local driver = vehicle.cp and vehicle.cp.driver
+	
+	if driver and driver:is_a(FillableFieldworkAIDriver) then
+		--- The other vehicle is a FieldSupplyAIDriver and we are approaching it for reloading.
+		--- Additionally check if we are driving to another FieldSupplyAIDriver to refill it.
+		if driver:isNearWaitPoint() or driver.triggerSensor:isNearFillPoint() then
+			swerveAllowed = false
+		end
+	end
+	return swerveAllowed and AIDriver.isProximitySwerveEnabled(self,vehicle)
 end
 
 function FieldSupplyAIDriver:drive(dt)
@@ -164,7 +172,7 @@ function FieldSupplyAIDriver:isFillLevelToContinueReached()
 end
 
 function FieldSupplyAIDriver:needsFillTypeLoading()
-	if not self.isInWaitPointRange  then
+	if not self:isNearWaitPoint()  then
 		return true
 	end
 end
@@ -178,7 +186,7 @@ function FieldSupplyAIDriver:findPipe()
 end
 
 function FieldSupplyAIDriver:closePipeIfNeeded(isInWaitPointRange) 
-	if self.objectWithPipe and not self.isInWaitPointRange then
+	if self.objectWithPipe and not isInWaitPointRange then
 		self.objectWithPipe:setPipeState(AIDriverUtil.PIPE_STATE_CLOSED)
 	end
 end
@@ -194,4 +202,14 @@ end
 function FieldSupplyAIDriver:getWorkingToolPositionsSetting()
 	local setting = self.settings.pipeToolPositions
 	return setting:getHasMoveablePipe() and setting:hasValidToolPositions() and setting
+end
+
+--- Driver is close to a wait point or is currently loading at it.
+function FieldSupplyAIDriver:isNearWaitPoint()
+	return self.closeToWaitPoint or self.supplyState == self.states.WAITING_FOR_GETTING_UNLOADED
+end
+
+--- Enables loading trigger search in between the first and last waypoint.
+function GrainTransportAIDriver:isSearchingForTriggersAtWaypointAllowed() 
+	return true
 end

@@ -1367,9 +1367,14 @@ function AIDriver:searchForTipTriggers()
 end
 
 function AIDriver:searchForLoadingFillingTriggers()
-	if self.ppc:getCurrentWaypointIx() > 2 and not self.ppc:reachedLastWaypoint() and not self.ppc:isReversing() then
+	if self:isSearchingForTriggersAtWaypointAllowed() and not self.ppc:isReversing() then
 		self.triggerSensor:raycastLoadingFillingTriggers()
 	end
+end
+
+--- Disables loading trigger search from the last to the first waypoint.
+function AIDriver:isSearchingForTriggersAtWaypointAllowed()
+	return self.ppc:getCurrentWaypointIx() > 2 and not self.ppc:reachedLastWaypoint()
 end
 
 function AIDriver:onUnLoadCourse(allowedToDrive, dt)
@@ -2031,8 +2036,9 @@ end
 
 --- proximity swerve enabled is checked with isProximitySwerveEnabled() and thus can be extended in derived classes with
 --- checking for the specific vehicle.
+--- Additionally disable swerve around loading triggers.
 function AIDriver:isProximitySwerveEnabled(vehicle)
-	return self.proximitySwerveEnabled
+	return self.proximitySwerveEnabled and not self.triggerSensor:isNearTriggers()
 end
 
 

@@ -272,12 +272,18 @@ function GrainTransportAIDriver:delete()
 end
 
 function GrainTransportAIDriver:isProximitySwerveEnabled(vehicle)
+	--- Disable swerve near the fill point, currently form wp 1 to 5.
+	local swerveAllowed = self:isNearFillPoint()
 	local driver = vehicle.cp and vehicle.cp.driver 
 	if driver and driver:is_a(OverloaderAIDriver) then
-		-- the other vehicle as an overloader, potentially waiting for us. We should not swerve
-		-- as we need to drive under the pipe of the overloader wagon
-		return not driver:isNearOverloadPoint() and not driver:isWaitingAtOverloadingPoint()
-	else
-		return true
+		--- The other vehicle is an overloader, potentially waiting for us. We should not swerve,
+		--- as we need to drive under the pipe of the overloader wagon.
+		swerveAllowed = not driver:isNearOverloadPoint() and not driver:isWaitingAtOverloadingPoint()	
 	end
+	return swerveAllowed and AIDriver.isProximitySwerveEnabled(self,vehicle)
+end
+
+--- Enables loading trigger search in between the first and last waypoint.
+function GrainTransportAIDriver:isSearchingForTriggersAtWaypointAllowed() 
+	return true
 end
