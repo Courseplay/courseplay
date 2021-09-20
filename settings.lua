@@ -837,11 +837,6 @@ function courseplay:showFieldEdgePath(vehicle, pathType)
 	end;
 end;
 
-function courseplay:changeDrawCourseMode(vehicle, changeBy)
-	vehicle.cp.drawCourseMode = courseplay:varLoop(vehicle.cp.drawCourseMode, changeBy, courseplay.COURSE_2D_DISPLAY_BOTH, courseplay.COURSE_2D_DISPLAY_OFF);
-	vehicle.cp.hud.changeDrawCourseModeButton:setActive(vehicle.cp.drawCourseMode ~= courseplay.COURSE_2D_DISPLAY_OFF);
-end;
-
 function courseplay:setEngineState(vehicle, on)
 	if vehicle == nil or on == nil or vehicle.spec_motorized.isMotorStarted == on then
 		return;
@@ -3994,23 +3989,17 @@ end
 
 --- @class CourseDrawModeSetting : SettingList
 CourseDrawModeSetting = CpObject(SettingList)
--- 2D/debug lines display options
+-- 2D lines display options
 CourseDrawModeSetting.COURSE_2D_DISPLAY_OFF	 = 0;
 CourseDrawModeSetting.COURSE_2D_DISPLAY_2DONLY	 = 1;
-CourseDrawModeSetting.COURSE_2D_DISPLAY_DBGONLY = 2;
-CourseDrawModeSetting.COURSE_2D_DISPLAY_BOTH	 = 3;
 function CourseDrawModeSetting:init(vehicle)
 	local values = {
 		self.COURSE_2D_DISPLAY_OFF,
 		self.COURSE_2D_DISPLAY_2DONLY,
-		self.COURSE_2D_DISPLAY_DBGONLY,
-		self.COURSE_2D_DISPLAY_BOTH
 	}
 	local texts = {
 		"",
 		"2D",
-		"\nDBG",
-		"2D\nDBG"
 	}
 	SettingList.init(self,"courseDrawMode","","",vehicle,values,texts)
 	self:set(self.COURSE_2D_DISPLAY_OFF)
@@ -4022,11 +4011,7 @@ function CourseDrawModeSetting:isDeactivated()
 end
 
 function CourseDrawModeSetting:isCourseMapVisible()
-	return self:get() == self.COURSE_2D_DISPLAY_2DONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
-end
-
-function CourseDrawModeSetting:isCourseVisible()
-	return self:get() == self.COURSE_2D_DISPLAY_DBGONLY or self:get() == self.COURSE_2D_DISPLAY_BOTH
+	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
 end
 
 --[[

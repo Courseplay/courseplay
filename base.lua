@@ -435,42 +435,6 @@ function courseplay:showWorkWidth(vehicle)
 	end;
 end;
 
-function courseplay:drawWaypointsLines(vehicle)
-	if vehicle ~= g_currentMission.controlledVehicle then return; end;
-
-	local height = 2.5;
-	local r,g,b,a;
-	for i,wp in pairs(vehicle.Waypoints) do
-		if wp.cy == nil or wp.cy == 0 then
-			wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 1, wp.cz);
-		end;
-		local np = vehicle.Waypoints[i+1];
-		if np and (np.cy == nil or np.cy == 0) then
-			np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 1, np.cz);
-		end;
-
-		if i == 1 or wp.turnStart then
-			r,g,b,a = 0, 1, 0, 1;
-		elseif i == vehicle.cp.numWaypoints or wp.turnEnd then
-			r,g,b,a = 1, 0, 0, 1;
-		elseif i == vehicle.cp.waypointIndex then
-			r,g,b,a = 0.9, 0, 0.6, 1;
-		else
-			r,g,b,a = 1, 1, 0, 1;
-		end;
-		cpDebug:drawPoint(wp.cx, wp.cy + height, wp.cz, r,g,b);
-
-		if i < vehicle.cp.numWaypoints then
-			if i + 1 == vehicle.cp.waypointIndex then
-				--drawDebugLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz, 1, 0.4, 0.05);
-				cpDebug:drawLine(wp.cx, wp.cy + height, wp.cz, 0.9, 0, 0.6, np.cx, np.cy + height, np.cz);
-			else
-				cpDebug:drawLine(wp.cx, wp.cy + height, wp.cz, 0, 1, 1, np.cx, np.cy + height, np.cz);
-			end;
-		end;
-	end;
-end;
-
 function courseplay:onUpdate(dt)	
 	--if the vehicle is attached to another vehicle, disable cp
 	if not courseplay.isEnabled(self) then
@@ -494,11 +458,6 @@ function courseplay:onUpdate(dt)
 			self.cp.postInitDone = true
 		end
 	end
-
-
-	if self.cp.settings.courseDrawMode:isCourseVisible() then
-		courseplay:drawWaypointsLines(self);
-	end;
 
 	-- we are in record mode
 	if self.cp.isRecording then
