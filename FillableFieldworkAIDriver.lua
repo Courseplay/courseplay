@@ -163,7 +163,7 @@ end
 function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRefill)
 	local allOk = true
 	local hasSeeds, hasNoFertilizer = false, false
-	local liquidFertilizerFillLevel,herbicideFillLevel = 0, 0
+	local liquidFertilizerFillLevel,herbicideFillLevel, seedsFillLevel, fertilizerFillLevel = 0, 0, 0, 0
 	if self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and AIDriverUtil.hasAIImplementWithSpecialization(self.vehicle, FertilizingCultivator) then
 		courseplay:setInfoText(self.vehicle, "skipping loading Seeds/Fertilizer and continue with Cultivator !!!")
 		return true
@@ -181,7 +181,12 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRef
 				if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then hasNoFertilizer = true end
 			else
 				if fillType == FillType.SEEDS then hasSeeds = true end
-			end		
+			end
+			if fillType == FillType.FERTILIZER or fillType == FillType.LIQUIDFERTILIZER then
+				fertilizerFillLevel = fertilizerFillLevel + info.fillLevel
+			elseif fillType == FillType.SEEDS then
+				seedsFillLevel = seedsFillLevel + info.fillLevel
+			end
 			if fillType == FillType.LIQUIDFERTILIZER then liquidFertilizerFillLevel = info.fillLevel end
 			if fillType == FillType.HERBICIDE then  herbicideFillLevel = info.fillLevel end
 		end
@@ -196,6 +201,11 @@ function FillableFieldworkAIDriver:areFillLevelsOk(fillLevelInfo,isWaitingForRef
 	-- special handling for sowing machines with fertilizer
 	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(false) and hasNoFertilizer and hasSeeds then
 		self:debugSparse('Has no fertilizer but has seeds so keep working.')
+		allOk = true
+	end
+	-- special check if the needed fillTypes for sowing are there but a fillUnit is empty
+	if not allOk and self.vehicle.cp.settings.sowingMachineFertilizerEnabled:is(true) and fertilizerFillLevel > 0 and seedsFillLevel > 0 then
+		self:debugSparse('Sowing machine has fertilizer and seeds but there is another empty fillUnit')
 		allOk = true
 	end
 	--check if fillLevel changed, refill on Field
