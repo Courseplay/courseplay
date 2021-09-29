@@ -990,3 +990,19 @@ function CpManager:loadXmlSettings()
 	end;
 end;
 
+files = {}
+
+function CpManager:fileCallback(name, isDirectory)
+	table.insert(files, name)
+end
+
+getFiles(getUserProfileAppPath(), 'fileCallback', CpManager)
+
+print(string.format('kakukk %d', #files))
+
+for _, file in ipairs(files) do
+	print(file)
+end
+
+print(files)
+print('kakukk')

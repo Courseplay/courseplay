@@ -94,3 +94,16 @@ end
 function giantsVehicle.setCruiseControlMaxSpeed() end
 
 g_time = 0
+
+function createFolder(folder)
+	os.execute('mkdir "' .. folder .. '"')
+end
+
+function getFiles(folder, callback, object)
+	for dir in io.popen('dir "' .. folder .. '" /b /ad'):lines() do
+		object[callback](object, dir, true)
+	end
+	for file in io.popen('dir "' .. folder .. '" /b /a-d'):lines() do
+		object[callback](object, file, false)
+	end
+end
