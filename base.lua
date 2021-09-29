@@ -711,10 +711,6 @@ function courseplay:onReadStream(streamId, connection)
 	-- SETUP 2D COURSE DRAW DATA
 	self.cp.course2dUpdateDrawData = true;
 	
-	local debugChannelsString = streamReadString(streamId)
-	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
-		courseplay:toggleDebugChannel(self, k, v == 'true');
-	end;
 		
 	if streamReadBool(streamId) then 
 		self.cp.timeRemaining = streamReadFloat32(streamId)
@@ -768,8 +764,6 @@ function courseplay:onWriteStream(streamId, connection)
 		end
 	end
 
-	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
-	streamWriteString(streamId, debugChannelsString) 
 		
 	if self.cp.timeRemaining then 
 		streamWriteBool(streamId,true)

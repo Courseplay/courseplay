@@ -368,6 +368,43 @@ function courseplay.hud:setup()
 	-- SOUND
 	self.clickSound = createSample('clickSound');
 	loadSample(self.clickSound, Utils.getFilename('sounds/cpClickSound.ogg', courseplay.path), false);
+
+
+	local debugToolTips = courseplay.globalSettings.debugChannels:getToolTips()
+	local numDebugChannels = courseplay.globalSettings.debugChannels:getNumberOfChannels()
+	--- Setup debug hud buttons
+	self.debugChannelData = {}
+	--- Number of channels per line.
+	self.debugChannelData.buttonsPerLine = 12
+	--- Number of debug channel lines.
+	self.debugChannelData.lines = math.ceil(numDebugChannels / self.debugChannelData.buttonsPerLine)
+	--- Current selected debug channel line
+	self.debugChannelData.lineSelected = 1
+	--- First channel of the line.
+	self.debugChannelData.lineFirstChannel = 1
+	--- Last channel of the line.
+	self.debugChannelData.lineLastChannel = self.debugChannelData.buttonsPerLine
+	self.debugChannelData.btnPosData = {}
+	self.debugChannelData.toolTips = debugToolTips
+
+	local dbgW = self:pxToNormal(22, 'x')
+	local dbgH = self:pxToNormal(22, 'y')
+	local dbgMarginX = dbgW * 0.075
+	local dbgMaxX = self.contentMaxX - (2 * (self.buttonSize.small.w + self.buttonSize.small.margin))
+	local dbgMinX = dbgMaxX - (self.debugChannelData.buttonsPerLine * dbgW) - ((self.debugChannelData.buttonsPerLine - 1) * dbgMarginX)
+	local dbgBtnPosY = self.linesPosY[8] - self:pxToNormal(5, 'y')
+	for i = 1, self.debugChannelData.buttonsPerLine do
+		local data = {}
+		data.width  = dbgW
+		data.height = dbgH
+		data.posX = dbgMinX + ((i - 1) * (dbgW + dbgMarginX))
+		data.posY = dbgBtnPosY
+		data.textPosX = data.posX + (dbgW * 0.5)
+		data.textPosY = self.linesPosY[8]
+
+		self.debugChannelData.btnPosData[i] = data
+	end
+
 end;
 
 ---Getter functions
@@ -541,8 +578,8 @@ function courseplay.hud:renderHud(vehicle)
 	if page == 6 then -- debug channels text
 		courseplay:setFontSettings('textDark', true, 'center');
 		local channelNum;
-		for i,data in ipairs(courseplay.debugButtonPosData) do
-			channelNum = courseplay.debugChannelSectionStart + (i - 1);
+		for i,data in ipairs(self.debugChannelData.btnPosData) do
+			channelNum = self.debugChannelData.lineFirstChannel + (i - 1);
 			renderText(data.textPosX, data.textPosY, self.fontSizes.contentValue, tostring(channelNum));
 		end
 		courseplay:setFontSettings('white', false, 'left');
@@ -1429,10 +1466,12 @@ function courseplay.hud:setupDebugButtons(vehicle,debugButtonOnPage)
 		};
 	
 	
-	for dbg=1, courseplay.numDebugChannelButtonsPerLine do
-		local data = courseplay.debugButtonPosData[dbg];
-		local toolTip = courseplay.debugChannelsDesc[dbg];
-		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleDebugChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip);
+	for dbg=1, self.debugChannelData.buttonsPerLine do
+		local data = self.debugChannelData.btnPosData[dbg];
+		local toolTip = self.debugChannelData.toolTips[dbg];
+		vehicle.cp.hud.debugChannelButtons[dbg] = courseplay.button:new(vehicle, debugButtonOnPage, 'iconSprite.png', 'toggleChannel', dbg, data.posX, data.posY, data.width, data.height, nil, nil, nil, false, false, toolTip):setSetting(courseplay.globalSettings.debugChannels);
+		--- Is needed apparently.
+		vehicle.cp.hud.debugChannelButtons[dbg]:setSpriteSectionUVs('recordingStop');
 	end;
 	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navUp' },   'changeDebugChannelSection', -1, self.buttonPosX[2], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage, -1, true, false);
 	courseplay.button:new(vehicle, debugButtonOnPage, { 'iconSprite.png', 'navDown' }, 'changeDebugChannelSection',  1, self.buttonPosX[1], self.linesButtonPosY[8], self.buttonSize.small.w, self.buttonSize.small.h, debugButtonOnPage,  1, true, false);
@@ -1703,13 +1742,16 @@ function courseplay.hud:updateCombinesList(vehicle,page)
 end
 
 function courseplay.hud:updateDebugChannelButtons(vehicle)
-	for _,button in pairs(vehicle.cp.buttons[6]) do
-		if button.functionToCall == 'toggleDebugChannel' then
-			button:setDisabled(button.parameter > courseplay.numDebugChannels);
-			button:setActive(courseplay.debugChannels[button.parameter] == true);
-			button:setCanBeClicked(not button.isDisabled);
-		end;
-	end;
+	local setting = courseplay.globalSettings.debugChannels
+	local debugChannels = setting:get()
+	local numDebugChannels = setting:getNumberOfChannels()
+	local i = self.debugChannelData.lineFirstChannel
+	for _,button in ipairs(vehicle.cp.hud.debugChannelButtons) do
+		button:setDisabled(i > numDebugChannels)
+		button:setActive(debugChannels[i] == true)
+		button:setCanBeClicked(not button.isDisabled)
+		i = i + 1
+	end
 end
 
 function courseplay.hud:updateCourseButtonsVisibilty(vehicle)

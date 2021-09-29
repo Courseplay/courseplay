@@ -159,3 +159,121 @@ function ShowMapHotspotSetting:getMapHotspotText(vehicle)
 	end
 	return text
 end
+
+
+--- This Setting handles all debug channels. 
+--- For each debug channel is a code short cut created, 
+--- for example: DebugChannelsSetting.DBG_MODE_3.
+--- This is defined in the debug config xml file.
+--- For backwards compatibility are all 
+--- courseplay.debugChannels[ix] or courseplay["DBG_MODE_3"] calls still valid.
+---@class DebugChannelsSetting : Setting 
+DebugChannelsSetting = CpObject(Setting)
+function DebugChannelsSetting:init()
+	Setting.init(self,"debugChannels")
+	self.xmlFilePath = Utils.getFilename('config/DebugChannels.xml', courseplay.path)
+	self:load(self.xmlFilePath)
+	self.DEFAULT_EVENT = self:registerIntEvent(self.setFromNetwork)
+end
+
+function DebugChannelsSetting:load(xmlFilePath)
+	local xmlFile = loadXMLFile('debugChannels', xmlFilePath)
+	local baseKey = "DebugChannels"
+	self.channels = {}
+	self.numChannels = 0
+	self.toolTips = {}
+	if xmlFile and hasXMLProperty(xmlFile, baseKey) then 
+		local i = 0
+		while true do
+			local key = string.format("%s.%s(%d)",baseKey,"DebugChannel",i)
+			if not hasXMLProperty(xmlFile, key) then
+				break
+			end
+			local text = getXMLString(xmlFile, key.."#text")
+			local name = getXMLString(xmlFile, key.."#name")
+			local active = getXMLBool(xmlFile, key.."#active")
+			i = i + 1
+			self[name] = i
+			courseplay[name] = i --- Old code 
+			self.toolTips[i] = text
+
+			--- Evaluate pre debug setups from the DevSetup xml file.
+			--- Also make sure active ~= nil.
+			active = Utils.getNoNil(active or 
+									CpManager.preDebugSetup.nameToChannel[name] or 
+									CpManager.preDebugSetup.idToChannel[i]
+									,false)
+
+			self.channels[i] = active
+			if active then 
+				print(string.format("Debug channel id: %s, name: %s is activated.",tostring(i),tostring(name)))
+			end
+		end
+		self.numChannels = i
+		delete(xmlFile)
+	end
+	courseplay.debugChannels = self.channels --- Old code 
+end
+
+function DebugChannelsSetting:onWriteStream(streamID)
+	for ix,value in ipairs(self.channels) do 
+		streamWriteBool(streamID,value)
+	end
+end
+
+function DebugChannelsSetting:onReadStream(streamID)
+	for ix,_ in ipairs(self.channels) do 
+		self.channels[ix] = streamReadBool(streamID)
+	end
+end
+
+function DebugChannelsSetting:toggleChannel(ix,noEventSend)
+	self:set(ix,not self.channels[ix],noEventSend)
+end
+
+function DebugChannelsSetting:set(ix,value,noEventSend)
+	self.channels[ix] = value
+	if noEventSend == nil or noEventSend == false then 
+		self:sendEvent(ix)
+	end
+	self:onChange()
+end
+
+function DebugChannelsSetting:get() 
+	return self.channels
+end
+
+function DebugChannelsSetting:getNumberOfChannels()
+	return self.numChannels
+end
+	
+function DebugChannelsSetting:getToolTips()
+	return self.toolTips
+end
+
+function DebugChannelsSetting:sendEvent(ix)
+	self:raiseEvent(self.DEFAULT_EVENT,ix)
+end
+
+function DebugChannelsSetting:setFromNetwork(ix)
+	self:toggleChannel(ix,true)
+end
+
+function DebugChannelsSetting:isActive(ix)
+	return self.channels[ix]
+end
+
+function SettingsContainer.createGlobalSettings()
+	local container = SettingsContainer("globalSettings")
+	container:addSetting(DebugChannelsSetting)
+	container:addSetting(LoadCoursesAtStartupSetting)
+	container:addSetting(AutoFieldScanSetting)
+	container:addSetting(WorkerWagesSetting)
+	container:addSetting(ClickToSwitchSetting)
+	container:addSetting(ShowMiniHudSetting)
+	container:addSetting(EnableOpenHudWithMouseGlobalSetting)
+	container:addSetting(AutoRepairSetting)
+	container:addSetting(ShowMapHotspotSetting)
+	container:addSetting(ShowActionEventTextsSetting)
+	return container
+end

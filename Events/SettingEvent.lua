@@ -31,19 +31,20 @@ end
 
 --- Reads the serialized data on the receiving end of the event.
 function SettingEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
+	
+	self.parentName = streamReadString(streamId)
+	self.name = streamReadString(streamId)
+	self.eventIx = streamReadUInt8(streamId)
+	self.debug("Parent name: %s, Setting name: %s, eventIx: %d",self.parentName, self.name,self.eventIx)
 	self.vehicle = nil
 	if streamReadBool(streamId) then
 		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 		self.debugVehicle(self.vehicle,"Vehicle setting")
+		self.setting,self.eventData = self.encodeEventData(self.vehicle,self.parentName,self.name,self.eventIx)
 	else
 		self.debug("Global setting")
+		self.setting,self.eventData = self.encodeEventData(nil,self.parentName,self.name,self.eventIx)
 	end
-
-	self.parentName = streamReadString(streamId)
-	self.name = streamReadString(streamId)
-	self.eventIx = streamReadUInt8(streamId)
-
-	self.setting,self.eventData = self.encodeEventData(self.vehicle,self.parentName,self.name,self.eventIx)
 
 	if self.eventData.readFunc then 
 		self.value = self.eventData.readFunc(streamId)
@@ -58,6 +59,10 @@ end
 --- Writes the serialized data from the sender.
 function SettingEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
 	self.debug("SettingEvent:writeStream()")
+	streamWriteString(streamId, self.parentName)
+	streamWriteString(streamId, self.name)
+	streamWriteUInt8(streamId,self.eventIx)
+	self.debug("Parent name: %s, Setting name: %s, value: %s, eventIx: %d",self.parentName, self.name, tostring(self.value),self.eventIx)
 	if self.vehicle ~= nil then
 		self.debugVehicle(self.vehicle,"Vehicle setting")
 		streamWriteBool(streamId, true)
@@ -66,10 +71,6 @@ function SettingEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn 
 		self.debug("Global setting")
 		streamWriteBool(streamId, false)
 	end
-	self.debug("Parent name: %s, Setting name: %s, value: %s, eventIx: %d",self.parentName, self.name, tostring(self.value),self.eventIx)
-	streamWriteString(streamId, self.parentName)
-	streamWriteString(streamId, self.name)
-	streamWriteUInt8(streamId,self.eventIx)
 	if self.writeFunc then 
 		self.writeFunc(streamId, self.value)
 	end
@@ -84,7 +85,7 @@ function SettingEvent:run(connection) -- wir fuehren das empfangene event aus
 	if not connection:getIsServer() then
 		self.debug("Send SettingEvent to clients")
 		g_server:broadcastEvent(SettingEvent:new(self.vehicle,self.setting,self.eventData,self.value), nil, connection, self.vehicle)
-	end;
+	end
 end
 
 ---  Sends an Event either:
@@ -132,10 +133,10 @@ end
 ---@param eventIx number Event number received
 function SettingEvent.encodeEventData(vehicle,parentName,settingName,eventIx)
 	local setting
-	if vehicle then 
+	if vehicle ~= nil then 
 		setting = vehicle.cp[parentName][settingName]
 	else 
-		setting = courseplay.globalSettings[parentName][settingName]
+		setting = courseplay[parentName][settingName]
 	end
 	return setting,setting:getEvent(eventIx)
 end
