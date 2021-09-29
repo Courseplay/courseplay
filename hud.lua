@@ -787,13 +787,10 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.useRealisticDriving:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.useRealisticDriving:getText()
 
-				elseif entry.functionToCall == 'changeTurnDiameter' then
-					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_TURN_RADIUS');
-					if vehicle.cp.turnDiameterAuto ~= nil or vehicle.cp.turnDiameter ~= nil then
-						vehicle.cp.hud.content.pages[page][line][2].text = ('%s %d%s'):format(vehicle.cp.turnDiameterAutoMode and '(auto)' or '(mnl)', vehicle.cp.turnDiameter, courseplay:loc('COURSEPLAY_UNIT_METER'));
-					else
-						vehicle.cp.hud.content.pages[page][line][2].text = '---';
-					end;
+				elseif entry.functionToCall == 'turnDiameter:changeByX' then
+					local setting = vehicle.cp.settings.turnDiameter
+					vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
+					vehicle.cp.hud.content.pages[page][line][2].text = setting:getText()
 				elseif entry.functionToCall == 'changeWorkWidth' then
 					vehicle.cp.hud.content.pages[page][line][1].text = courseplay:loc('COURSEPLAY_WORK_WIDTH');
 					if vehicle.cp.manualWorkWidth then 
@@ -2124,7 +2121,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 
 	--page 3 settings
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRow(vehicle,nil,'changeTurnDiameter', 3, 1, 1 )
+	self:addSettingsRow(vehicle,vehicle.cp.settings.turnDiameter,'changeByX', 3, 1, 1 )
 	self:addSettingsRow(vehicle,nil,'changeWorkWidth', 3, 2, 1, 0.1 )
 	self:setupCalculateWorkWidthButton(vehicle,3, 2)
 	self:addRowButton(vehicle,vehicle.cp.settings.convoyActive,'toggle', 3, 3, 1 )
@@ -2186,7 +2183,7 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'changeByX', 1, 3, 1 )
 	-- page 3
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRow(vehicle,nil,'changeTurnDiameter', 3, 1, 1 )
+	self:addSettingsRow(vehicle,vehicle.cp.settings.turnDiameter,'changeByX', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 2, 1 )
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.followAtFillLevel,'changeByX', 3, 3, 1 )
 
@@ -2287,7 +2284,7 @@ function courseplay.hud:setBaleCollectorAIDriverContent(vehicle)
 
 	--page 3 settings
 	self:enablePageButton(vehicle, 3)
-	self:addSettingsRow(vehicle,nil,'changeTurnDiameter', 3, 1, 1 )
+	self:addSettingsRow(vehicle,vehicle.cp.settings.turnDiameter,'changeByX', 3, 1, 1 )
 
 	--page 8 fieldwork settings
 	self:enablePageButton(vehicle, 8)

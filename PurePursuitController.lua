@@ -64,7 +64,7 @@ PurePursuitController.shortLookaheadDistance = 2.5
 
 -- constructor
 function PurePursuitController:init(vehicle)
-	self.normalLookAheadDistance = math.min(vehicle.cp.turnDiameter / 2, 6)
+	self.normalLookAheadDistance = math.min(vehicle.cp.settings.turnDiameter:get() / 2, 6)
 	self.shortLookaheadDistance = self.normalLookAheadDistance / 2
 	self.veryShortLookaheadDistance = 2
 	-- normal lookahead distance
@@ -301,7 +301,7 @@ function PurePursuitController:havePassedWaypoint(wpNode)
 		-- Also, when on the process of aligning to the course, like for example the vehicle just started
 		-- driving towards the first waypoint, we have to make sure we actually get close to the waypoint 
 		-- (as we may already be in front of it), so try get within the turn diameter * 2.
-		if dz >= 0 and dFromNext < self.vehicle.cp.turnDiameter * 2 then
+		if dz >= 0 and dFromNext < self.vehicle.cp.settings.turnDiameter:get() * 2 then
 			result = true
 		end
 	end

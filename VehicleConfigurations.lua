@@ -108,6 +108,10 @@ end
 --- @param attribute string configuration attribute to get
 --- @return any the value of the configuration attribute or nil if there's no custom config for it
 function VehicleConfigurations:get(object, attribute)
+    if not g_server then 
+        courseplay.info("Error: VehicleConfigurations:get() %s",attribute)
+        return
+    end
     if object and object.configFileName then
         local vehicleXmlFileName = courseplay.utils:getFileNameFromPath(object.configFileName)
         if self.vehicleConfigurations[vehicleXmlFileName] then
@@ -125,6 +129,10 @@ end
 --- @param attribute string configuration attribute to get
 --- @return any the value of the configuration attribute or nil if there's no custom config for it
 function VehicleConfigurations:getRecursively(object, attribute)
+    if not g_server then 
+        courseplay.info("Error: VehicleConfigurations:getRecursively() %s",attribute)
+        return
+    end
     local value = self:get(object, attribute)
     if value then
         return value

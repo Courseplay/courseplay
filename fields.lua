@@ -49,9 +49,20 @@ function courseplay.fields:setAllFieldEdges()
 
 	local fieldDef = courseplay.fields.fieldDefinitionBase[self.curFieldScanIndex];
 	if fieldDef ~= nil then
-		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and (fieldDef.farmland.isOwned or fieldDef.currentMission)) then  --TODO: Check, whether I'm the owner
-		--if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and fieldDef.ownedByPlayer) then
-			local fieldNum = fieldDef.fieldId;
+		local fieldNum = fieldDef.fieldId;
+		local missionActive = false
+		--- Make sure active mission fields get also scanned.
+		if g_missionManager:getIsAnyMissionActive() then
+			local activeMissions = g_missionManager:getActiveMissions()
+			for _,m in pairs(activeMissions) do 
+				missionActive = m.field and m.field.fieldId == fieldNum 
+				if missionActive then 
+					break
+				end
+			end
+		end
+
+		if not self.onlyScanOwnedFields or (self.onlyScanOwnedFields and (fieldDef.farmland.isOwned or missionActive)) then
 			if self.fieldData[fieldNum] == nil then
 				local initObject = fieldDef.nameIndicator;
 				local x,_,z = getWorldTranslation(initObject);
@@ -416,7 +427,6 @@ function courseplay.fields.addContractField(self) -- scan field when we take a c
 	end;
 end;
 AbstractFieldMission.addToMissionMap = Utils.appendedFunction(AbstractFieldMission.addToMissionMap, courseplay.fields.addContractField);
-
 
 function courseplay.fields.removeContractField(self, success) -- scan field when we complete a contract
 	-- print(string.format('buyField(fieldDef, isOwned) [fieldNumber %s]', tostring(fieldDef.fieldNumber)));

@@ -184,7 +184,7 @@ function FieldworkAIDriver:start(startingPoint)
 	self.aiDriverOffsetX = 0
 	self.aiDriverOffsetZ = 0
 
-	self.workWidth = courseplay:getWorkWidth(self.vehicle)
+	self.workWidth = self.courseGeneratorSettings.workWidth:getAutoWorkWidth()
 	self.ppc:setNormalLookaheadDistance()
 
 	self:setUpAndStart(startingPoint)
@@ -667,7 +667,7 @@ function FieldworkAIDriver:onWaypointPassed(ix)
 			local d, firstUpDownWpIx = self.course:getDistanceToFirstUpDownRowWaypoint(ix)
 			self:debug('up/down rows start in %s meters.', tostring(d))
 			-- (no alignment if there is a turn generated here)
-			if d < self.vehicle.cp.turnDiameter * 2 and firstUpDownWpIx and not self.course:isTurnEndAtIx(firstUpDownWpIx) then
+			if d < self.settings.turnDiameter:get() * 2 and firstUpDownWpIx and not self.course:isTurnEndAtIx(firstUpDownWpIx) then
 				self:debug('End connecting track, start working on up/down rows (waypoint %d) with alignment course if needed.', firstUpDownWpIx)
 				self:startFieldworkWithAlignment(firstUpDownWpIx)
 			end
@@ -814,7 +814,7 @@ function FieldworkAIDriver:setUpCourses()
 	-- apply the current tool offset to the fieldwork part (multitool offset is added by calculateOffsetCourse when needed)
 	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get(), self.vehicle.cp.settings.toolOffsetZ:get())
 	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
-	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or courseplay:getWorkWidth(self.vehicle))
+	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or self.courseGeneratorSettings.workWidth:getAutoWorkWidth())
 	if self.vehicle.cp.courseGeneratorSettings.multiTools:get() > 1 then
 		self:debug('Calculating offset course for position %d of %d', self.vehicle.cp.laneNumber,
 			self.vehicle.cp.courseGeneratorSettings.multiTools:get())

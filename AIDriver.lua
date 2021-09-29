@@ -154,7 +154,7 @@ function AIDriver:init(vehicle)
 	end
 	self.aiDriverData = vehicle.cp.aiDriverData
 	self:debug('creating AIDriver')
-	self.maxDrivingVectorLength = self.vehicle.cp.turnDiameter
+	self.maxDrivingVectorLength = self.vehicle.cp.settings.turnDiameter:get()
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
@@ -177,6 +177,7 @@ function AIDriver:init(vehicle)
 	self.activeMsgReferences = {}
 
 	self.settings = self.vehicle.cp.settings
+	self.courseGeneratorSettings = self.vehicle.cp.courseGeneratorSettings
 	-- make sure all vehicle settings are valid for this mode
 	if self.settings then
 		self:debug('Validating current settings...')
@@ -969,7 +970,7 @@ end
 ---@param course Course
 function AIDriver:isAlignmentCourseNeeded(course, ix)
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
-	return d > self.vehicle.cp.turnDiameter
+	return d > self.settings.turnDiameter:get()
 end
 
 function AIDriver:startTurn(ix)
@@ -1557,7 +1558,8 @@ function AIDriver:startCourseWithPathfinding(course, ix, zOffset, fieldNum, alwa
 	local d = course:getDistanceBetweenVehicleAndWaypoint(self.vehicle, ix)
 	-- always enforce a minimum distance needed for pathfinding, otherwise we'll end up with vehicles making
 	-- a circle just to end up 50 cm to the left or right...
-	local pathfindingRange = alwaysUsePathfinding and self.vehicle.cp.turnDiameter or (3 * self.vehicle.cp.turnDiameter)
+	local turnDiameter = self.settings.turnDiameter:get()
+	local pathfindingRange = alwaysUsePathfinding and turnDiameter or (3 * turnDiameter)
 	if not alwaysUsePathfinding and d < pathfindingRange then
 		self:debug('Too close to target (%.1fm), will not perform pathfinding', d)
 		return self:startCourseWithAlignment(course, ix)

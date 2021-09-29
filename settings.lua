@@ -50,7 +50,7 @@ function courseplay:setAIDriver(vehicle, mode)
 	else
 		-- give it another try as a fallback level
 		courseplay.infoVehicle(vehicle, 'Retrying initialization in mode 5')
-		self.cp.settings.driverMode:resetToDefault()
+		self.cp.settings.driverMode:resetToDefault(true)
 	end
 end
 
@@ -141,7 +141,7 @@ end;
 
 --- These three tool offset function should be handled by the setting.
 function courseplay:changeToolOffsetX(vehicle, changeBy)
-	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1)
+	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1,true)
 	vehicle.cp.totalOffsetX = vehicle.cp.settings.toolOffsetX:get();
 	-- show new setting for a few seconds on the screen
 	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
@@ -152,7 +152,7 @@ function courseplay:setAutoToolOffsetX(vehicle)
 end
 
 function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
-	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1)
+	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1,true)
 	-- show new setting for a few seconds on the screen
 	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
 end;
@@ -164,7 +164,7 @@ function courseplay:calculateWorkWidth(vehicle, noDraw)
 		return
 	end
 
-	courseplay:changeWorkWidth(vehicle, nil, courseplay:getWorkWidth(vehicle), noDraw);
+	courseplay:changeWorkWidth(vehicle, nil,vehicle.cp.courseGeneratorSettings.workWidth:getAutoWorkWidth(), noDraw);
 
 end;
 
@@ -220,21 +220,6 @@ function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 	
 end;
-
-
-function courseplay:changeTurnDiameter(vehicle, changeBy)
-	vehicle.cp.turnDiameter = vehicle.cp.turnDiameter + changeBy;
-	vehicle.cp.turnDiameterAutoMode = false;
-
-	if vehicle.cp.turnDiameter < 0.5 then
-		vehicle.cp.turnDiameter = 0;
-	end;
-
-	if vehicle.cp.turnDiameter <= 0 then
-		vehicle.cp.turnDiameterAutoMode = true;
-		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto
-	end;
-end
 
 --legancy Code in toolManager still using it!
 function courseplay:changeReverseSpeed(vehicle, changeBy, force, forceReloadPage)
@@ -622,14 +607,6 @@ function courseplay:toggleDebugChannel(self, channel, force)
 	end;
 end;
 
-function courseplay:setMultiTools(vehicle, set)
-	if vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0 then
-		courseplay:changeLaneNumber(vehicle, 1)
-	else
-		courseplay:changeLaneNumber(vehicle, 0, true)
-	end;
-end;
-
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and
 		not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
@@ -933,6 +910,8 @@ function Setting:init(name, label, toolTip, vehicle, value)
 	-- override
 	self.xmlKey = name
 	self.xmlAttribute = '#value'
+	self.events={}
+	self.debugMpChannel = courseplay.DBG_MULTIPLAYER
 end
 
 -- Get the current value
@@ -962,6 +941,10 @@ function Setting:getName()
 	return self.name
 end
 
+function Setting:getParentName()
+	return self.parentName
+end
+
 function Setting:getToolTip()
 	return courseplay:loc(self.toolTip)
 end
@@ -969,7 +952,6 @@ end
 -- function only called from network to set synced setting
 function Setting:setFromNetwork(value)
 	self:set(value,true)
-	self:onChange()
 end
 
 function Setting:getDebugString()
@@ -979,6 +961,7 @@ end
 --- Set to a specific value
 function Setting:set(value)
 	self.value = value
+	self:onChange()
 end
 
 function Setting:onChange()
@@ -1026,7 +1009,96 @@ function Setting:actionEvent(actionName, inputValue, callbackState, isAnalog)
 	---override
 end
 
----@class FloatSetting
+--- Registers an event that synchronizes a value.
+---@param eventFunc function Callback function run on the receiving end of the event.
+---@param getValueFunc function Callback function to get the value, which needs synchronizing.
+---@param readFunc function Reads the value data stream on the receiving end with this function.
+---@param writeFunc function Writes the value data stream from the sender with this function.
+function Setting:registerEvent(eventFunc,getValueFunc,readFunc,writeFunc)
+	local ix = #self.events+1
+	local event = {
+		eventFunc = eventFunc,
+		getValueFunc = getValueFunc,
+		readFunc = readFunc,
+		writeFunc = writeFunc,
+		ix = ix
+	}
+	table.insert(self.events,event)
+	return ix
+end
+
+--- Registers an event that synchronizes an Int value.
+---@param eventFunc function
+---@param getValueFunc function
+function Setting:registerIntEvent(eventFunc,getValueFunc)
+	return self:registerEvent(eventFunc,getValueFunc,streamReadInt32,streamWriteInt32)
+end
+
+--- Registers an event that synchronizes an Float value.
+---@param eventFunc function
+---@param getValueFunc function
+function Setting:registerFloatEvent(eventFunc,getValueFunc)
+	return self:registerEvent(eventFunc,getValueFunc,streamReadFloat32,streamWriteFloat32)
+end
+
+--- Registers an event that synchronizes an Boolean value.
+---@param eventFunc function
+---@param getValueFunc function
+function Setting:registerBoolEvent(eventFunc,getValueFunc)
+	return self:registerEvent(eventFunc,getValueFunc,streamReadBool,streamWriteBool)
+end
+--- Registers an event that requests a function call on the receiving end.
+---@param eventFunc function
+function Setting:registerFunctionEvent(eventFunc)
+	return self:registerEvent(eventFunc)
+end
+
+--- Gets an event by it's id.
+function Setting:getEvent(ix)
+	return self.events[ix]
+end
+
+--- Raises an event by it's id to synchronize a value,
+--- which is defined by a callback function.
+function Setting:raiseEvent(eventIx,value)
+	local event = self:getEvent(eventIx)
+	value = event.getValueFunc and event.getValueFunc(self) or value
+	SettingEvent.sendEvent(self.vehicle,self,event,value)
+end
+
+--- Setting debug.
+---@param channel number debug channel
+function Setting:debug(channel,...)
+	courseplay.debugFormat(channel,...)
+end
+
+function Setting:debugMp(...)
+	self:debug(self.debugMpChannel,...)
+end
+
+function Setting:isMpDebugActive()
+	return courseplay.debugChannels[courseplay.DBG_MULTIPLAYER]
+end
+
+--- Debug for synchronizing on joining a game.
+---@param value any the value that gets synchronized.
+---@param valueName string the value name
+function Setting:debugWriteStream(value,valueName)
+	if self:isMpDebugActive() then
+		self:debugMp("Write, container: %s, setting: %s, %s: %s",self.parentName,self.name,valueName or "value",tostring(value))
+	end
+end
+
+--- Debug for synchronizing on joining a game.
+---@param value any the value that gets synchronized.
+---@param valueName string the value name
+function Setting:debugReadStream(value,valueName)
+	if self:isMpDebugActive() then
+		self:debugMp("Read, container: %s, setting: %s, %s: %s",self.parentName,self.name,valueName or "value",tostring(value))
+	end
+end
+
+---@class FloatSetting :Setting
 FloatSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
 --- @param label string text ID in translations used as a label for this setting on the GUI
@@ -1035,6 +1107,7 @@ FloatSetting = CpObject(Setting)
 --- @param value number default value
 function FloatSetting:init(name, label, toolTip, vehicle, value)
 	Setting.init(self, name, label, toolTip, vehicle, value)
+	self.DEFAULT_EVENT = self:registerFloatEvent(self.setFromNetwork,self.get)
 end
 
 function FloatSetting:loadFromXml(xml, parentKey)
@@ -1049,11 +1122,14 @@ function FloatSetting:saveToXml(xml, parentKey)
 end
 
 function FloatSetting:onWriteStream(stream)
-	streamDebugWriteFloat32(stream, self:get())
+	local value = self:get()
+	self:debugWriteStream(value)
+	streamWriteFloat32(stream, value)
 end
 
 function FloatSetting:onReadStream(stream)
-	local value = streamDebugReadFloat32(stream)
+	local value = streamReadFloat32(stream)
+	self:debugReadStream(value)
 	if value then 
 		self:setFromNetwork(value)
 	end
@@ -1063,7 +1139,21 @@ function FloatSetting:changeByX(x)
 	self:set(self:get()+x)
 end
 
----@class IntSetting
+function FloatSetting:set(value,noEventSend)
+	self.value = value
+	if noEventSend == nil or noEventSend == false then
+		if self.syncValue then
+			self:sendEvent(value)
+		end
+	end
+	self:onChange()
+end
+
+function FloatSetting:sendEvent(value)
+	self:raiseEvent(self.DEFAULT_EVENT)
+end
+
+---@class IntSetting : Setting
 IntSetting = CpObject(Setting)
 --- @param name string name of this settings, will be used as an identifier in containers and XML
 --- @param label string text ID in translations used as a label for this setting on the GUI
@@ -1076,6 +1166,7 @@ function IntSetting:init(name, label, toolTip, vehicle,MIN,MAX,value)
 	Setting.init(self, name, label, toolTip, vehicle,value)
 	self.MAX = MAX
 	self.MIN = MIN
+	self.DEFAULT_EVENT = self:registerIntEvent(self.setFromNetwork,self.get)
 end
 
 function IntSetting:loadFromXml(xml, parentKey)
@@ -1090,11 +1181,14 @@ function IntSetting:saveToXml(xml, parentKey)
 end
 
 function IntSetting:onWriteStream(stream)
-	streamDebugWriteInt32(stream, self:get())
+	local value = self:get()
+	self:debugWriteStream(value)
+	streamWriteInt32(stream, value)
 end
 
 function IntSetting:onReadStream(stream)
-	local value = streamDebugReadInt32(stream)
+	local value = streamReadInt32(stream)
+	self:debugReadStream(value)
 	if value then 
 		self:setFromNetwork(value)
 	end
@@ -1119,10 +1213,10 @@ function IntSetting:set(value,noEventSend)
 end
 
 function IntSetting:sendEvent(value)
-	SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, value)
+	self:raiseEvent(self.DEFAULT_EVENT)
 end
 
----@class SettingList
+---@class SettingList : Setting
 SettingList = CpObject(Setting)
 
 --- A setting that can have a predefined set of values
@@ -1140,6 +1234,8 @@ function SettingList:init(name, label, toolTip, vehicle, values, texts)
 	self.current = 1
 	-- index of the previous value/text
 	self.previous = 1
+
+	self.DEFAULT_EVENT = self:registerIntEvent(self.setFromNetwork,self.getNetworkCurrentValue)
 end
 
 -- Get the current value
@@ -1330,15 +1426,16 @@ function SettingList:getDebugString()
 end
 
 function SettingList:onWriteStream(stream)
-	streamDebugWriteInt32(stream, self:getNetworkCurrentValue())
+	local value =  self:getNetworkCurrentValue()
+	self:debugWriteStream(value)
+	streamWriteInt32(stream, value)
 end
 
 function SettingList:onReadStream(stream)
-	local value = streamDebugReadInt32(stream)
+	local value = streamReadInt32(stream)
+	self:debugReadStream(value)
 	if value ~= nil then 
 		self:setFromNetwork(value)
-	else 
-		print(self:getName()..": Error")
 	end
 end
 
@@ -1347,11 +1444,7 @@ function SettingList:getNetworkCurrentValue()
 end
 
 function SettingList:sendEvent()
-	if self.vehicle then 
-		SettingsListEvent.sendEvent(self.vehicle,self.parentName, self.name, self.current)
-	else 
-		GlobalSettingsEvent.sendEvent(self.parentName, self.name, self.current)
-	end
+	self:raiseEvent(self.DEFAULT_EVENT)
 end
 
 function SettingList:actionEvent(actionName, inputValue, callbackState, isAnalog)
@@ -1561,24 +1654,31 @@ end
 function DriverModeSetting:loadFromXml(xml, parentKey)
 	-- remember the value loaded from XML for those settings which aren't up to date when loading,
 	-- for example the field numbers
-	self.valueFromXml = getXMLInt(xml, self:getKey(parentKey))
+	self.valueFromXml = Utils.getNoNil(getXMLInt(xml, self:getKey(parentKey)),self.defaultMode)
+	self:setFromNetwork(self.valueFromXml)
 end
 
+--- Only allow courseplay:getIsToolCombiValidForCpMode() after all implements are attached 
+--- and make sure to update the hud.
 function DriverModeSetting:postInit()
-	if self.valueFromXml then
-		self:set(self.valueFromXml,true)
-	end
+	self.valueFromXml = nil
+	self:validateCurrentValue()
+	self.vehicle.cp.driver:refreshHUD()
 end
 
 function DriverModeSetting:validateCurrentValue()
+	--- When the AIDriver gets initialized the first time not all 
+	--- implements are attached, so ignore the valid check.
+	
 	self.validModes = {}
-	local wasResetToDefault = false
 	for i=1,self.NUM_MODES do 
 		local valid = courseplay:getIsToolCombiValidForCpMode(self.vehicle,i)
 		self.validModes[i] = valid or false
-		if self:get() == i and not valid then 
-			self:resetToDefault()
-			wasResetToDefault = true
+		--- Only reset the driver mode from the server
+		if g_server and self.valueFromXml == nil then
+			if self:get() == i and not valid then 
+				self:resetToDefault()
+			end
 		end
 	end
 end
@@ -1593,8 +1693,8 @@ function DriverModeSetting:setAIDriver()
 	courseplay:setAIDriver(self.vehicle, self:get())
 end
 
-function DriverModeSetting:resetToDefault()
-	self:set(self.defaultMode,true)
+function DriverModeSetting:resetToDefault(noEventSend)
+	self:set(self.defaultMode,noEventSend)
 end
 
 function DriverModeSetting:getDefaultMode()
@@ -1919,17 +2019,22 @@ function OffsetSetting:init(name, label, toolTip, vehicle, value)
 end
 
 -- increment/decrement offset
-function OffsetSetting:changeBy(changeBy)
-	self.value = courseplay:round(self.value, 1) + changeBy
-	if abs(self.value) < 0.1 then
-		self.value = 0
-	end
+function OffsetSetting:changeBy(changeBy,noEventSend)
+	self:set(self.value+changeBy,noEventSend)
 end
 
 --- Currently all hud settings use changeByX() or toggle() should consolidate this. 
 --- Also apply the change rate of 0.1 here, so the courseplay:..() function are not needed anymore.
-function OffsetSetting:changeByX(changeBy)
-	self:changeBy(changeBy*0.1)
+function OffsetSetting:changeByX(changeBy,noEventSend)
+	self:changeBy(changeBy*0.1,noEventSend)
+end
+
+function OffsetSetting:set(value,noEventSend)
+	value = courseplay:round(value, 1)
+	if abs(value) < 0.1 then
+		value = 0
+	end
+	FloatSetting.set(self,value,noEventSend)
 end
 
 function OffsetSetting:getTextX()
@@ -1963,12 +2068,17 @@ end
 ToolOffsetXSetting = CpObject(OffsetSetting)
 function ToolOffsetXSetting:init(vehicle)
 	OffsetSetting.init(self, 'toolOffsetX', 'COURSEPLAY_TOOL_OFFSET_X', 'COURSEPLAY_TOOL_OFFSET_X', vehicle, 0)
+	self.SET_TO_CONFIGURED_VALUE_EVENT = self:registerFunctionEvent(self.setToConfiguredValue) 
 end
 
 --- Set to the configured value if exists, 0 otherwise
 function ToolOffsetXSetting:setToConfiguredValue()
 	-- set the auto tool offset if exists or 0
-	self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
+	if g_server then 
+		self:set(g_vehicleConfigurations:getRecursively(self.vehicle, self.name) or 0)
+	else 
+		self:raiseEvent(self.SET_TO_CONFIGURED_VALUE_EVENT)
+	end
 end
 
 function ToolOffsetXSetting:getText()
@@ -2034,6 +2144,98 @@ end
 
 function CombineOffsetZSetting:getText()
 	return self:getTextZ()
+end
+
+
+---@class TurnDiameterSetting : OffsetSetting 
+TurnDiameterSetting = CpObject(OffsetSetting)
+function TurnDiameterSetting:init(vehicle,driverMode)
+	OffsetSetting.init(self,"turnDiameter","COURSEPLAY_TURN_RADIUS","COURSEPLAY_TURN_RADIUS",vehicle,0)
+	self.disabledText = courseplay:loc("COURSEPLAY_AUTOMATIC")
+	self.autoTurnDiameter = FloatSetting("autoTurnDiameter",nil,nil,vehicle, 0)
+	self.driverMode = driverMode
+	self.AUTO_TURN_DIAMETER_EVENT = self:registerFloatEvent(self.setAutoTurnDiameterFromNetwork)
+end
+
+function TurnDiameterSetting:getAutoTurnDiameter()
+	local turnDiameter = self.vehicle.cp.vehicleTurnRadius * 2
+	local toolTurnDiameter = AIDriverUtil.getTurningRadius(self.vehicle) * 2
+
+	-- Check if we have worktools and if we are in a valid mode
+	if self.driverMode == courseplay.MODE_COMBI 
+		or self.driverMode == courseplay.MODE_OVERLOADER 
+		or self.driverMode == courseplay.MODE_SEED_FERTILIZE 
+		or self.driverMode == courseplay.MODE_FIELDWORK then
+
+		if toolTurnDiameter > turnDiameter then
+			turnDiameter = toolTurnDiameter
+		end
+	end
+
+	return turnDiameter
+end
+
+function TurnDiameterSetting:validateCurrentValue()
+	if g_server then 
+		self:updateAutoTurnDiameter()
+	end
+end
+
+function TurnDiameterSetting:updateAutoTurnDiameter()
+	local value = self:getAutoTurnDiameter()
+	self.autoTurnDiameter:set(value,true)
+	self:raiseEvent(self.AUTO_TURN_DIAMETER_EVENT,value)
+end
+
+function TurnDiameterSetting:onReadStream(stream)
+	OffsetSetting.onReadStream(self,stream)
+	self.autoTurnDiameter:onReadStream(stream)
+end
+
+function TurnDiameterSetting:onWriteStream(stream)
+	OffsetSetting.onWriteStream(self,stream)
+	self.autoTurnDiameter:onWriteStream(stream)
+end
+
+function TurnDiameterSetting:get()
+	local value = OffsetSetting.get(self)
+	if value == 0 then 
+		return self.autoTurnDiameter:get()
+	end
+	return value
+end
+
+function TurnDiameterSetting:setAutoTurnDiameterFromNetwork(value)
+	self.autoTurnDiameter:set(value,true)
+end
+
+function TurnDiameterSetting:getText()
+	if self.value ~= 0 then
+		return ('%.1f%s'):format(
+				self.value,
+				courseplay:loc('COURSEPLAY_UNIT_METER'))
+	else
+		return ('%s(%.1f%s)'):format(
+			self.disabledText,
+			self:get(),
+			courseplay:loc('COURSEPLAY_UNIT_METER'))
+	end
+end
+
+function TurnDiameterSetting:isAutomaticActive()
+	return self.value == 0
+end
+
+function TurnDiameterSetting:set(value,noEventSend)
+	value = courseplay:round(value, 1)
+	if value < 0.1 then
+		value = 0
+	end
+	FloatSetting.set(self,value,noEventSend)
+end
+
+function TurnDiameterSetting:changeByX(changeBy,noEventSend)
+	self:changeBy(changeBy,noEventSend)
 end
 
 --- Setting to select a field
@@ -2790,32 +2992,44 @@ end
 
 function SiloSelectedFillTypeSetting:onWriteStream(stream)
 	local size = self:getSize() or 0
-	streamDebugWriteInt32(stream, size)
-	streamDebugWriteBool(stream,self.runCounterActive)
+	self:debugWriteStream(size,"size")
+	streamWriteInt32(stream, size)
+	self:debugWriteStream(self.runCounterActive,"runCounterActive")
+	streamWriteBool(stream,self.runCounterActive)
 	if size > 0 then 
 		for key,data in ipairs(self:getData()) do
-			streamDebugWriteInt32(stream, data.fillType)
+			self:debugWriteStream( data.fillType,"fillType")
+			streamWriteInt32(stream, data.fillType)
 			if self.runCounterActive then
-				streamDebugWriteInt32(stream, data.runCounter)
+				self:debugWriteStream( data.runCounter,"runCounter")
+				streamWriteInt32(stream, data.runCounter)
 			end
-			streamDebugWriteInt32(stream, data.maxFillLevel)
-			streamDebugWriteInt32(stream, data.minFillLevel)
+			self:debugWriteStream( data.maxFillLevel,"maxFillLevel")
+			streamWriteInt32(stream, data.maxFillLevel)
+			self:debugWriteStream( data.minFillLevel,"minFillLevel")
+			streamWriteInt32(stream, data.minFillLevel)
 		end
 	end
 end
 
 function SiloSelectedFillTypeSetting:onReadStream(stream)
-	local size = streamDebugReadInt32(stream)
-	self.runCounterActive = streamDebugReadBool(stream)
+	local size = streamReadInt32(stream)
+	self:debugReadStream(size,"size")
+	self.runCounterActive = streamReadBool(stream)
+	self:debugReadStream(self.runCounterActive,"runCounterActive")
 	if size and size>0 then
 		for key=1,size do 
-			local selectedFillType = streamDebugReadInt32(stream)
+			local selectedFillType = streamReadInt32(stream)
+			self:debugReadStream(selectedFillType,"selectedFillType")
 			local counter
 			if self.runCounterActive then
-				counter = streamDebugReadInt32(stream)
+				counter = streamReadInt32(stream)
+				self:debugReadStream(counter,"counter")
 			end
-			local maxLevel = streamDebugReadInt32(stream)
-			local minLevel = streamDebugReadInt32(stream)
+			local maxLevel = streamReadInt32(stream)
+			self:debugReadStream(maxLevel,"maxLevel")
+			local minLevel = streamReadInt32(stream)
+			self:debugReadStream(minLevel,"minLevel")
 			if selectedFillType then 
 				self:addLast(self:fillTypeDataToAdd(selectedFillType,counter,maxLevel,minLevel))
 			end
@@ -3355,6 +3569,9 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	--- Store all instances of this setting in a global table,
 	--- for direct access to update their manual tool positions.
 	table.insert(WorkingToolPositionsSetting.Settings,self)
+
+	self.PLAY_POSITION_EVENT = self:registerIntEvent(self.playPosition)
+	self.SET_OR_CLEAR_POSITION_EVENT = self:registerIntEvent(self.setFromNetwork)
 end
 
 function WorkingToolPositionsSetting:enrichLabels(labels)
@@ -3393,9 +3610,13 @@ function WorkingToolPositionsSetting:setOrClearPostion(x,noEventSend)
 		end
 	end
 	if not noEventSend then
-		WorkingToolPositionsEvents.sendEvent(self.vehicle,self.name,self.NetworkTypes.SET_OR_CLEAR_POSITION,x)
+		self:raiseEvent(self.SET_OR_CLEAR_POSITION_EVENT,x)
 	end
 	self.vehicle.cp.driver:refreshHUD()
+end
+
+function WorkingToolPositionsSetting:setFromNetwork(position)
+	self:setOrClearPostion(position,true)
 end
 
 
@@ -3447,7 +3668,7 @@ function WorkingToolPositionsSetting:playPosition(x)
 			self.playTestPostion = x
 		end
 	else 
-		WorkingToolPositionsEvents.sendEvent(self.vehicle,self.name,self.NetworkTypes.PLAY_POSITION,x)
+		self:raiseEvent(self.PLAY_POSITION_EVENT,x)
 	end
 end
 
@@ -3598,6 +3819,7 @@ end
 
 function WorkingToolPositionsSetting:onWriteStream(streamId)
 	for i=1,self.totalPositions do 
+		self:debugWriteStream(self.hasPosition[i]==true,"hasPos: "..i)
 		streamWriteBool(streamId,self.hasPosition[i]==true)
 	end
 end
@@ -3605,6 +3827,7 @@ end
 function WorkingToolPositionsSetting:onReadStream(streamId)
 	for i=1,self.totalPositions do 
 		self.hasPosition[i] = streamReadBool(streamId)
+		self:debugReadStream(self.hasPosition[i],"hasPos: "..i)
 	end
 end
 
@@ -4014,6 +4237,7 @@ function CourseDrawModeSetting:isCourseMapVisible()
 	return self:get() == self.COURSE_2D_DISPLAY_2DONLY
 end
 
+
 --[[
 ---@class SearchCombineAutomaticallySetting : BooleanSetting
 SearchCombineAutomaticallySetting = CpObject(BooleanSetting)
@@ -4078,7 +4302,7 @@ end
 
 function SettingsContainer:onReadStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self.validateSetting(setting) and setting.syncValue then 
 			setting:onReadStream(stream)
 		end
 	end
@@ -4086,7 +4310,7 @@ end
 
 function SettingsContainer:onWriteStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self.validateSetting(setting) and setting.syncValue then 
 			setting:onWriteStream(stream)
 		end
 	end
@@ -4212,9 +4436,9 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	container:addSetting(CourseDrawModeSetting,vehicle)
 	container:addSetting(SugarCaneTrailerToolPositionsSetting, vehicle)
+	container:addSetting(TurnDiameterSetting,vehicle,container.driverMode)
 	return container
 end
-
 
 
 

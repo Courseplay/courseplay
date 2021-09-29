@@ -41,8 +41,12 @@ function courseplay:updateOnAttachOrDetach(vehicle)
 	
 	vehicle.cp.settings:validateCurrentValues()
 
-	-- reset tool offset to the preconfigured value if exists
-	vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
+	--- Only call these function, as they depend on the vehicle configurations.
+	if g_server then
+		-- reset tool offset to the preconfigured value if exists
+		vehicle.cp.settings.toolOffsetX:setToConfiguredValue()
+		vehicle.cp.courseGeneratorSettings.workWidth:updateAutoWorkWidth()
+	end
 
 	if vehicle.cp.driver then
 		vehicle.cp.driver:refreshHUD()
@@ -244,11 +248,6 @@ function courseplay:updateWorkTools(vehicle, workTool, isImplement)
 			end;
 		end;
 
-		-- TURN DIAMETER
-		if g_server ~= nil then
-			courseplay:setAutoTurnDiameter(vehicle, hasWorkTool);
-		end
-
 		-- TIP REFERENCE POINTS
 		courseplay:setTipRefOffset(vehicle);
 
@@ -376,34 +375,6 @@ function courseplay:setFoldedStates(object)
 	end;
 end;
 
-
-function courseplay:setAutoTurnDiameter(vehicle, hasWorkTool)
-	courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 3);
-	local turnRadius, turnRadiusAuto = 10, 10;
-
-	vehicle.cp.turnDiameterAuto = vehicle.cp.vehicleTurnRadius * 2;
-	courseplay:debug(('%s: Set turnDiameterAuto to %.2fm (2 x vehicleTurnRadius)'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), courseplay.DBG_IMPLEMENTS);
-	local mode = vehicle.cp.settings.driverMode:get()
-	-- Check if we have worktools and if we are in a valid mode
-	if hasWorkTool and (mode == courseplay.MODE_COMBI or mode == courseplay.MODE_OVERLOADER or mode == courseplay.MODE_SEED_FERTILIZE or mode == courseplay.MODE_FIELDWORK) then
-		courseplay:debug(('%s: getHighestToolTurnDiameter(%s)'):format(nameNum(vehicle), vehicle.name), courseplay.DBG_IMPLEMENTS);
-
-		local toolTurnDiameter = AIDriverUtil.getTurningRadius(vehicle) * 2
-
-		-- If the toolTurnDiameter is bigger than the turnDiameterAuto, then set turnDiameterAuto to toolTurnDiameter
-		if toolTurnDiameter > vehicle.cp.turnDiameterAuto then
-			courseplay:debug(('%s: toolTurnDiameter(%.2fm) > turnDiameterAuto(%.2fm), turnDiameterAuto set to %.2fm'):format(nameNum(vehicle), toolTurnDiameter, vehicle.cp.turnDiameterAuto, toolTurnDiameter), courseplay.DBG_IMPLEMENTS);
-			vehicle.cp.turnDiameterAuto = toolTurnDiameter;
-		end;
-	end;
-
-
-	if vehicle.cp.turnDiameterAutoMode then
-		vehicle.cp.turnDiameter = vehicle.cp.turnDiameterAuto;
-		courseplay:debug(('%s: turnDiameterAutoMode is active: turnDiameter set to %.2fm'):format(nameNum(vehicle), vehicle.cp.turnDiameterAuto), courseplay.DBG_IMPLEMENTS);
-	end;
-	courseplay.debugLine(courseplay.DBG_IMPLEMENTS, 1);
-end;
 
 function courseplay:addCpNilTempFillLevelFunction()
 	local cpNilTempFillLevel = function(self, state)

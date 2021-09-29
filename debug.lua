@@ -1,5 +1,7 @@
 courseplay = courseplay or {}
 
+--- TODO: create a xml file for the debug channel setup and additional developer settings.
+
 -- Debug channels. The numbers represent the channel numbers on the HUD
 courseplay.DBG_MODE_1 = 1
 courseplay.DBG_MODE_2 = 2
@@ -55,6 +57,7 @@ function CpManager:setUpDebugChannels()
 			defaultActive[courseplay.DBG_TRAFFIC] = true;
 		end;
 	end;
+
 
 	-- DEBUG CHANNELS
 	courseplay.numAvailableDebugChannels = 24;
@@ -344,7 +347,7 @@ stream_debug_counter = 0;
 function streamDebugWriteFloat32(streamId, value)
 	value = Utils.getNoNil(value, 0.0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: writing float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteFloat32(streamId, value)
 end
 
@@ -357,21 +360,21 @@ function streamDebugWriteBool(streamId, value)
 	end
 
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: writing bool: %s",stream_debug_counter, tostring(value) ),courseplay.DBG_MULTIPLAYER)
 	streamWriteBool(streamId, value)
 end
 
 function streamDebugWriteInt32(streamId, value)
 	value = Utils.getNoNil(value, 0)
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: writing int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteInt32(streamId, value)
 end
 
 function streamDebugWriteString(streamId, value)
 	value = Utils.getNoNil(value, "")
 	stream_debug_counter = stream_debug_counter + 1
-	courseplay:debug(string.format("%d: writing string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: writing string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	streamWriteString(streamId, value)
 end
 
@@ -379,7 +382,7 @@ end
 function streamDebugReadFloat32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadFloat32(streamId)
-	courseplay:debug(string.format("%d: reading float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: reading float: %f",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
@@ -387,21 +390,21 @@ end
 function streamDebugReadInt32(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadInt32(streamId)
-	courseplay:debug(string.format("%d: reading int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: reading int: %d",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
 function streamDebugReadBool(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadBool(streamId)
-	courseplay:debug(string.format("%d: reading bool: %s",stream_debug_counter, tostring(value)),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: reading bool: %s",stream_debug_counter, tostring(value)),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 
 function streamDebugReadString(streamId)
 	stream_debug_counter = stream_debug_counter + 1
 	local value = streamReadString(streamId)
-	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
+---	courseplay:debug(string.format("%d: reading string: %s",stream_debug_counter, value ),courseplay.DBG_MULTIPLAYER)
 	return value
 end
 

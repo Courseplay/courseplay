@@ -70,8 +70,8 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	writeStream:")
 	courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"	messageNumber: %s, functionCall: %s, value: %s, page: %s, type: %s ",tostring(messageNumber), tostring(self.func), tostring(self.value),tostring(self.page), tostring(self.type))
 	NetworkUtil.writeNodeObject(streamId, self.vehicle);
-	streamWriteFloat32(streamId, self.messageNumber);
-	streamWriteString(streamId, self.func);
+	streamDebugWriteFloat32(streamId, self.messageNumber);
+	streamDebugWriteString(streamId, self.func);
 	if self.page == "global" then
 		self.page = 999
 	elseif self.page == true then
@@ -81,21 +81,21 @@ function CourseplayEvent:writeStream(streamId, connection)  -- Wird aufgrufen we
 	elseif self.page == nil then
 		self.page = 996
 	end
-	streamWriteInt32(streamId, self.page);
-	streamWriteString(streamId, self.type);
+	streamDebugWriteInt32(streamId, self.page);
+	streamDebugWriteString(streamId, self.type);
 	if self.type == "boolean" then
-		streamWriteBool(streamId, self.value);
+		streamDebugWriteBool(streamId, self.value);
 	elseif self.type == "string" then
-		streamWriteString(streamId, self.value);
+		streamDebugWriteString(streamId, self.value);
 	elseif self.type == "nil" then
-		streamWriteString(streamId, "nil");
+		streamDebugWriteString(streamId, "nil");
 	elseif self.type == "waypointList" then
-		streamWriteInt32(streamId, #(self.value))
+		streamDebugWriteInt32(streamId, #(self.value))
 		for w = 1, #(self.value) do
 			CoursePlayNetworkHelper:writeWaypoint(streamId, self.value[w])
 		end
 	else
-		streamWriteFloat32(streamId, self.value);
+		streamDebugWriteFloat32(streamId, self.value);
 	end
 end
 
@@ -123,15 +123,6 @@ function CourseplayEvent.sendEvent(vehicle, func, value, noEventSend, page) -- h
 	end;
 end
 
-function courseplay:checkForChangeAndBroadcast(self, stringName, variable , variableMemory)
-	if variable ~= variableMemory then
-		courseplay:debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"checkForChangeAndBroadcast")
-		CourseplayEvent.sendEvent(self, stringName, variable)
-		variableMemory = variable
-	end
-	return variableMemory
-
-end
 
 
 
@@ -163,6 +154,7 @@ end
 
 CourseplayJoinFixEvent = {};
 CourseplayJoinFixEvent_mt = Class(CourseplayJoinFixEvent, Event);
+CourseplayJoinFixEvent.mpDebugActive = true
 
 InitEventClass(CourseplayJoinFixEvent, "CourseplayJoinFixEvent");
 
@@ -181,7 +173,6 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
 		courseplay.globalSettings:onWriteStream(streamId)
-		
 		--transfer courses
 		local course_count = 0
 		for _,_ in pairs(g_currentMission.cp_courses) do
@@ -191,13 +182,20 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		streamDebugWriteInt32(streamId, course_count)
 		for id, course in pairs(g_currentMission.cp_courses) do
 			streamDebugWriteString(streamId, course.name)
+			self:debugWrite(course.name,"course name")
 			streamDebugWriteString(streamId, course.uid)
+			self:debugWrite(course.uid,"course uid")
 			streamDebugWriteString(streamId, course.type)
+			self:debugWrite(course.type,"course type")
 			streamDebugWriteInt32(streamId, course.id)
+			self:debugWrite(course.id,"course id")
 			streamDebugWriteInt32(streamId, course.parent)
+			self:debugWrite(course.parent,"course parent")
 			streamDebugWriteInt32(streamId, course.multiTools)
+			self:debugWrite(course.multiTools,"course multiTools")
 			if course.waypoints then
 				streamDebugWriteInt32(streamId, #(course.waypoints))
+				self:debugWrite(#(course.waypoints),"course numWaypoints")
 				for w = 1, #(course.waypoints) do
 					CourseEvent:writeWaypoint(streamId, course.waypoints[w])
 				end
@@ -205,7 +203,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 				streamDebugWriteInt32(streamId, -1)
 			end
 		end
-				
+		self:debug("Stream write folders")		
 		local folderCount = 0
 		for _,_ in pairs(g_currentMission.cp_folders) do
 			folderCount = folderCount + 1
@@ -214,14 +212,20 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		print(string.format("\t### CourseplayMultiplayer: writing %d folders ", folderCount ))
 		for id, folder in pairs(g_currentMission.cp_folders) do
 			streamDebugWriteString(streamId, folder.name)
+			self:debugWrite(folder.name,"folder name")
 			streamDebugWriteString(streamId, folder.uid)
+			self:debugWrite(folder.uid,"folder uid")
 			streamDebugWriteString(streamId, folder.type)
+			self:debugWrite(folder.type,"folder type")
 			streamDebugWriteInt32(streamId, folder.id)
+			self:debugWrite(folder.id,"folder id")
 			streamDebugWriteInt32(streamId, folder.parent)
+			self:debugWrite(folder.parent,"folder parent")
 			streamDebugWriteBool(streamId, folder.virtual)
+			self:debugWrite(folder.virtual,"folder virtual")
 			streamDebugWriteBool(streamId, folder.autodrive)
-		end
-				
+			self:debugWrite(folder.autodrive,"folder autodrive")
+		end		
 		local fieldsCount = 0
 		for _, field in pairs(courseplay.fields.fieldData) do
 			if field.isCustom then
@@ -230,21 +234,33 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		end
 		streamDebugWriteInt32(streamId, fieldsCount)
 		print(string.format("\t### CourseplayMultiplayer: writing %d custom fields ", fieldsCount))
-		for id, course in pairs(courseplay.fields.fieldData) do
-			if course.isCustom then
-				streamDebugWriteString(streamId, course.name)
-				streamDebugWriteInt32(streamId, course.numPoints)
-				streamDebugWriteBool(streamId, course.isCustom)
-				streamDebugWriteInt32(streamId, course.fieldNum)
-				streamDebugWriteInt32(streamId, course.dimensions.minX)
-				streamDebugWriteInt32(streamId, course.dimensions.maxX)
-				streamDebugWriteInt32(streamId, course.dimensions.minZ)
-				streamDebugWriteInt32(streamId, course.dimensions.maxZ)
-				streamDebugWriteInt32(streamId, #(course.points))
-				for p = 1, #(course.points) do
-					streamDebugWriteFloat32(streamId, course.points[p].cx)
-					streamDebugWriteFloat32(streamId, course.points[p].cy)
-					streamDebugWriteFloat32(streamId, course.points[p].cz)
+		for id, field in pairs(courseplay.fields.fieldData) do
+			if field.isCustom then
+				streamDebugWriteString(streamId, field.name)
+				self:debugWrite(field.name,"field name")
+				streamDebugWriteInt32(streamId, field.numPoints)
+				self:debugWrite(field.numPoints,"field numPoints")
+				streamDebugWriteBool(streamId, field.isCustom)
+				self:debugWrite(field.isCustom,"field isCustom")
+				streamDebugWriteInt32(streamId, field.fieldNum)
+				self:debugWrite(field.fieldNum,"field fieldNum")
+				streamDebugWriteInt32(streamId, field.dimensions.minX)
+				self:debugWrite(field.dimensions.min,"field minX")
+				streamDebugWriteInt32(streamId, field.dimensions.maxX)
+				self:debugWrite(field.dimensions.maxX,"field maxX")
+				streamDebugWriteInt32(streamId, field.dimensions.minZ)
+				self:debugWrite(field.dimensions.minZ,"field minZ")
+				streamDebugWriteInt32(streamId, field.dimensions.maxZ)
+				self:debugWrite(field.dimensions.maxZ,"field maxZ")
+				streamDebugWriteInt32(streamId, #(field.points))
+				self:debugWrite(field.points,"field points")
+				for p = 1, #(field.points) do
+					streamDebugWriteFloat32(streamId, field.points[p].cx)
+					self:debugWrite(field.points[p].cx,"field cx")
+					streamDebugWriteFloat32(streamId, field.points[p].cy)
+					self:debugWrite(field.points[p].cy,"field cy")
+					streamDebugWriteFloat32(streamId, field.points[p].cz)
+					self:debugWrite(field.points[p].cz,"field cz")
 				end
 			end
 		end
@@ -254,19 +270,25 @@ end
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
 		courseplay.globalSettings:onReadStream(streamId)
-
-		local course_count = streamDebugReadInt32(streamId)
+		local course_count = streamReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
 		g_currentMission.cp_courses = {}
 		for i = 1, course_count do
 			--courseplay:debug("got course", courseplay.DBG_COURSES);
-			local course_name = streamDebugReadString(streamId)
-			local courseUid = streamDebugReadString(streamId)
-			local courseType = streamDebugReadString(streamId)
-			local course_id = streamDebugReadInt32(streamId)
-			local courseParent = streamDebugReadInt32(streamId)
-			local courseMultiTools = streamDebugReadInt32(streamId)
-			local wp_count = streamDebugReadInt32(streamId)
+			local course_name = streamReadString(streamId)
+			self:debugRead(course_name,"course name")
+			local courseUid = streamReadString(streamId)
+			self:debugRead(courseUid,"course uid")
+			local courseType = streamReadString(streamId)
+			self:debugRead(courseType,"course type")
+			local course_id = streamReadInt32(streamId)
+			self:debugRead(course_id,"course id")
+			local courseParent = streamReadInt32(streamId)
+			self:debugRead(courseParent,"course parent")
+			local courseMultiTools = streamReadInt32(streamId)
+			self:debugRead(courseMultiTools,"course multi tools")
+			local wp_count = streamReadInt32(streamId)
+			self:debugRead(wp_count,"course waypoint amount")
 			local waypoints = {}
 			if wp_count >= 0 then
 				for w = 1, wp_count do
@@ -280,41 +302,58 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 			g_currentMission.cp_courses[course_id] = course
 			g_currentMission.cp_sorted = courseplay.courses:sort()
 		end
-		
-		local folderCount = streamDebugReadInt32(streamId)
+		local folderCount = streamReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d folders ", folderCount ))
 		g_currentMission.cp_folders = {}
 		for i = 1, folderCount do
-			local folderName = streamDebugReadString(streamId)
-			local folderUid = streamDebugReadString(streamId)
-			local folderType = streamDebugReadString(streamId)
-			local folderId = streamDebugReadInt32(streamId)
-			local folderParent = streamDebugReadInt32(streamId)
-			local folderVirtual = streamDebugReadBool(streamId)
-			local folderAutoDrive = streamDebugReadBool(streamId)
+			local folderName = streamReadString(streamId)
+			self:debugRead(folderName,"folder name")
+			local folderUid = streamReadString(streamId)
+			self:debugRead(folderUid,"folder uid")
+			local folderType = streamReadString(streamId)
+			self:debugRead(folderType,"folder type")
+			local folderId = streamReadInt32(streamId)
+			self:debugRead(folderId,"folder id")
+			local folderParent = streamReadInt32(streamId)
+			self:debugRead(folderParent,"folder parent")
+			local folderVirtual = streamReadBool(streamId)
+			self:debugRead(folderVirtual,"folder virtual")
+			local folderAutoDrive = streamReadBool(streamId)
+			self:debugRead(folderAutoDrive,"folder is auto drive")
 			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent, virtual = folderVirtual, autodrive = folderAutoDrive }
 			g_currentMission.cp_folders[folderId] = folder
 			g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
 		end
-		
-		local fieldsCount = streamDebugReadInt32(streamId)		
+		local fieldsCount = streamReadInt32(streamId)		
 		print(string.format("\t### CourseplayMultiplayer: reading %d custom fields ", fieldsCount))
 		courseplay.fields.fieldData = {}
 		for i = 1, fieldsCount do
-			local name = streamDebugReadString(streamId)
-			local numPoints = streamDebugReadInt32(streamId)
-			local isCustom = streamDebugReadBool(streamId)
-			local fieldNum = streamDebugReadInt32(streamId)
-			local minX = streamDebugReadInt32(streamId)
-			local maxX = streamDebugReadInt32(streamId)
-			local minZ = streamDebugReadInt32(streamId)
-			local maxZ = streamDebugReadInt32(streamId)
-			local ammountPoints = streamDebugReadInt32(streamId)
+			local name = streamReadString(streamId)
+			self:debugRead(name,"field name")
+			local numPoints = streamReadInt32(streamId)
+			self:debugRead(numPoints,"field numPoints")
+			local isCustom = streamReadBool(streamId)
+			self:debugRead(isCustom,"field isCustom")
+			local fieldNum = streamReadInt32(streamId)
+			self:debugRead(fieldNum,"field fieldNum")
+			local minX = streamReadInt32(streamId)
+			self:debugRead(minX,"field minX")
+			local maxX = streamReadInt32(streamId)
+			self:debugRead(maxX,"field maxX")
+			local minZ = streamReadInt32(streamId)
+			self:debugRead(minZ,"field minZ")
+			local maxZ = streamReadInt32(streamId)
+			self:debugRead(maxZ,"field maxZ")
+			local ammountPoints = streamReadInt32(streamId)
+			self:debugRead(ammountPoints,"field numPoints")
 			local waypoints = {}
 			for w = 1, ammountPoints do 
-				local cx = streamDebugReadFloat32(streamId)
-				local cy = streamDebugReadFloat32(streamId)
-				local cz = streamDebugReadFloat32(streamId)
+				local cx = streamReadFloat32(streamId)
+				self:debugRead(cx,"field cx")
+				local cy = streamReadFloat32(streamId)
+				self:debugRead(cy,"field cy")
+				local cz = streamReadFloat32(streamId)
+				self:debugRead(cz,"field cz")
 				local wp = { cx = cx, cy = cy, cz = cz}
 				table.insert(waypoints, wp)
 			end
@@ -325,6 +364,22 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 	end;
 end
 
+function CourseplayJoinFixEvent:debug(str,...)
+---	if courseplay.debugChannels[courseplay.DBG_MULTIPLAYER] then 
+---		courseplay.debugFormat(courseplay.DBG_MULTIPLAYER,...)
+---	end
+	if self.mpDebugActive then 
+		print(string.format(str,...))
+	end
+end
+
+function CourseplayJoinFixEvent:debugWrite(value,valueName)
+	self:debug("Stream write, %s: %s ",valueName,tostring(value))
+end
+
+function CourseplayJoinFixEvent:debugRead(value,valueName)
+	self:debug("Stream read, %s: %s ",valueName,tostring(value))
+end
 function CourseplayJoinFixEvent:run(connection)
 	--courseplay:debug("CourseplayJoinFixEvent Run function should never be called", courseplay.DBG_COURSES);
 end;
