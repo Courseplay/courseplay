@@ -25,4 +25,6 @@ jobs:
       - name: Run unit tests
         run:  |
           cd test
+          dir ..
+          dir ..\..
           ..\.lua\bin\lua.exe CourseManagerTest.lua
