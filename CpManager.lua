@@ -78,7 +78,7 @@ function CpManager:loadMap(name)
 		self.cpDebugPrintXmlFolderPath = string.format("%s%s",getUserProfileAppPath(),"courseplayDebugPrint")
 		self.cpDebugPrintXmlFilePathDefault = string.format("%s/%s",self.cpDebugPrintXmlFolderPath,"courseplayDebugPrint.xml")
 		createFolder(self.cpDebugPrintXmlFolderPath)
-		
+
 		-- we need to create CoursePlay_Courses folder before we can create any new folders inside it.
 		createFolder(("%sCoursePlay_Courses"):format(getUserProfileAppPath()));
 		createFolder(self.cpCoursesFolderPath);
@@ -989,20 +989,3 @@ function CpManager:loadXmlSettings()
 		delete(cpSettingsXml);
 	end;
 end;
-
-files = {}
-
-function CpManager:fileCallback(name, isDirectory)
-	table.insert(files, name)
-end
-
-getFiles(getUserProfileAppPath(), 'fileCallback', CpManager)
-
-print(string.format('kakukk %d', #files))
-
-for _, file in ipairs(files) do
-	print(file)
-end
-
-print(files)
-print('kakukk')

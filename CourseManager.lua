@@ -1,8 +1,9 @@
 ---class FileSystemEntity
 FileSystemEntity = CpObject()
 
-function FileSystemEntity:init(fullPath, name)
+function FileSystemEntity:init(fullPath, parent, name)
 	self.fullPath = fullPath
+	self.parent = parent
 	self.name = name or string.match(fullPath, '.*\\(.+)')
 end
 
@@ -10,8 +11,20 @@ function FileSystemEntity:isDirectory()
 	return false
 end
 
+function FileSystemEntity:getName()
+	return self.name
+end
+
 function FileSystemEntity:getFullPath()
 	return self.fullPath
+end
+
+function FileSystemEntity:getParent()
+	return self.parent
+end
+
+function FileSystemEntity.__eq(a, b)
+	return a.fullPath == b.fullPath
 end
 
 function FileSystemEntity:__tostring()
@@ -28,8 +41,8 @@ end
 ---@class Directory : FileSystemEntity
 Directory = CpObject(FileSystemEntity)
 
-function Directory:init(fullPath, name)
-	FileSystemEntity.init(self, fullPath, name)
+function Directory:init(fullPath, parent, name)
+	FileSystemEntity.init(self, fullPath, parent, name)
 	self.entries = {}
 	createFolder(self.fullPath)
 	self:refresh()
@@ -44,21 +57,25 @@ function Directory:refresh()
 end
 
 function Directory:fileCallback(name, isDirectory)
-	print(name, isDirectory)
 	if isDirectory then
 		if self.entries[name] then
 			self.entries[name]:refresh()
 		else
-			self.entries[name] = Directory(self.fullPath .. '\\' .. name)
+			self.entries[name] = Directory(self.fullPath .. '\\' .. name, self)
 		end
 	elseif not self.entries[name] then
-		self.entries[name] = File(self.fullPath .. '\\' .. name)
+		self.entries[name] = File(self.fullPath .. '\\' .. name, self)
 	end
 end
 
-function Directory:mkdir(name)
+function Directory:deleteFile(name)
+	delete(self.entries[name]:getFullPath())
+	self.entries[name] = nil
+end
+
+function Directory:createDirectory(name)
 	if not self.entries[name] then
-		self.entries[name] = Directory(self.fullPath .. '\\' .. name)
+		self.entries[name] = Directory(self.fullPath .. '\\' .. name, self)
 	end
 	return self.entries[name]
 end
@@ -71,20 +88,109 @@ function Directory:__tostring()
 	return str
 end
 
+
+FileSystemEntityView = CpObject()
+function FileSystemEntityView:init(entity, level)
+	self.name = entity:getName()
+	self.level = level or 0
+	self.entity = entity
+	self.indent = ''
+	-- indent only from level 2. level 0 is never shown, as it is the root directory, level 1
+	-- has no indent.
+	for i = 2, self.level do
+		self.indent = self.indent .. '  '
+	end
+end
+
+function FileSystemEntityView:__tostring()
+	return self.indent .. self.name .. '\n'
+end
+
+function FileSystemEntityView.__lt(a, b)
+	return a.name < b.name
+end
+
+function FileSystemEntityView:isDirectory()
+	return self.entity:isDirectory()
+end
+
+FileView = CpObject(FileSystemEntityView)
+function FileView:init(file, level)
+	FileSystemEntityView.init(self, file, level)
+end
+
+---@class DirectoryView
+DirectoryView = CpObject(FileSystemEntityView)
+
+---@param directory Directory
+function DirectoryView:init(directory, level, folded)
+	FileSystemEntityView.init(self, directory, level)
+	self.directory = directory
+	self.folded = folded or false
+	self.directoryViews = {}
+	self.fileViews = {}
+	self.entries = {}
+	for _, entry in pairs(self.directory.entries) do
+		if entry:isDirectory() then
+			table.insert(self.directoryViews, DirectoryView(entry, self.level + 1, true))
+		else
+			table.insert(self.fileViews, FileView(entry, self.level + 1))
+		end
+	end
+	table.sort(self.directoryViews)
+	table.sort(self.fileViews)
+	self:collectEntries(self.entries)
+end
+
+function DirectoryView:fold()
+	self.folded = true
+end
+
+function DirectoryView:unfold()
+	self.folded = false
+end
+
+function DirectoryView:__tostring()
+	local str = ''
+	if self.level > 0 then
+		str = str .. self.indent .. self.name .. '\n'
+	end
+	if not self.folded then
+		for _, dv in ipairs(self.directoryViews) do
+			str = str .. tostring(dv)
+		end
+		for _, fv in ipairs(self.fileViews) do
+			str = str .. tostring(fv)
+		end
+	end
+	return str
+end
+
+
+function DirectoryView:collectEntries(t)
+	if self.level > 0 then
+		table.insert(t, self)
+	end
+	if not self.folded then
+		for _, dv in ipairs(self.directoryViews) do
+			dv:collectEntries(t)
+		end
+		for _, fv in ipairs(self.fileViews) do
+			table.insert(t, fv)
+		end
+	end
+end
+
+function DirectoryView:getEntries()
+	return self.entries
+end
+
+
 ---@class CourseManager
 CourseManager = CpObject()
 
-function CourseManager:init(courseFolder)
-	self.courseFolder = courseFolder
-	self.files = {}
-	getFiles(courseFolder, 'fileCallback', self)
-end
-
-function CourseManager:fileCallback(name, isDirectory)
-	table.insert(self.files, name)
-	print(name, isDirectory)
-	if isDirectory then
-		getFiles(courseFolder, 'fileCallback', self)
-	end
+function CourseManager:init(courseDirFullPath)
+	self.courseDirFullPath = courseDirFullPath
+	self.courseDir = Directory(courseDirFullPath)
 end
 

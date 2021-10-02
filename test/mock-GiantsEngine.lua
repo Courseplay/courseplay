@@ -107,3 +107,14 @@ function getFiles(folder, callback, object)
 		object[callback](object, file, false)
 	end
 end
+
+function delete(fullPath)
+	os.execute('del "' .. fullPath .. '"')
+end
+
+function fileExists(fullPath)
+	for _ in io.popen('dir "' .. fullPath .. '" /b'):lines() do
+		return true
+	end
+	return false
+end
