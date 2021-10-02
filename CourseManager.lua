@@ -129,7 +129,6 @@ function DirectoryView:init(directory, level, folded)
 	self.folded = folded or false
 	self.directoryViews = {}
 	self.fileViews = {}
-	self.entries = {}
 	for _, entry in pairs(self.directory.entries) do
 		if entry:isDirectory() then
 			table.insert(self.directoryViews, DirectoryView(entry, self.level + 1, true))
@@ -139,7 +138,6 @@ function DirectoryView:init(directory, level, folded)
 	end
 	table.sort(self.directoryViews)
 	table.sort(self.fileViews)
-	self:collectEntries(self.entries)
 end
 
 function DirectoryView:fold()
@@ -182,6 +180,8 @@ function DirectoryView:collectEntries(t)
 end
 
 function DirectoryView:getEntries()
+	self.entries = {}
+	self:collectEntries(self.entries)
 	return self.entries
 end
 

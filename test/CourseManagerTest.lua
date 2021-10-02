@@ -59,6 +59,7 @@ file1
 ]])
 assert(e[1]:isDirectory())
 e[1]:unfold()
+e = dv:getEntries()
 assert(tostring(dv) == [[test1
   test2
   file1
@@ -67,6 +68,7 @@ assert(tostring(dv) == [[test1
 file1
 ]])
 e[2]:unfold()
+e = dv:getEntries()
 assert(tostring(dv) == [[test1
   test2
     file1
@@ -76,6 +78,11 @@ assert(tostring(dv) == [[test1
   file3
 file1
 ]])
+e[1]:fold()
+assert(tostring(dv) == [[test1
+file1
+]])
+
 
 print(dir)
 
