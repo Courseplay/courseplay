@@ -1710,7 +1710,8 @@ function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,s
 end
 
 --update functions
-function courseplay.hud:updateCourseList(vehicle, page)
+
+function courseplay.hud:updateCourseListDeprecated(vehicle, page)
 	-- update courses?
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'updateCourseList(): reload courses %s', tostring(vehicle.cp.reloadCourseItems))
 	if vehicle.cp.reloadCourseItems then

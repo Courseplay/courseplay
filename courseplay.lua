@@ -106,6 +106,7 @@ local function initialize()
 		'VehicleConfigurations',
 		'ActionEventsLoader',
 		'GlobalInfoTextHandler',
+		'CourseManager',
 		'course-generator/geo',
 		'course-generator/Island',
 		'course-generator/courseGenerator',

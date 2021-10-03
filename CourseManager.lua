@@ -102,6 +102,14 @@ function FileSystemEntityView:init(entity, level)
 	end
 end
 
+function FileSystemEntityView:getName()
+	return self.name
+end
+
+function FileSystemEntityView:getLevel()
+	return self.level
+end
+
 function FileSystemEntityView:__tostring()
 	return self.indent .. self.name .. '\n'
 end
@@ -192,5 +200,38 @@ CourseManager = CpObject()
 function CourseManager:init(courseDirFullPath)
 	self.courseDirFullPath = courseDirFullPath
 	self.courseDir = Directory(courseDirFullPath)
+	self.courseDirView = DirectoryView(self.courseDir)
+	self.currentEntry = 1
 end
 
+function CourseManager:getEntries()
+	return self.courseDirView:getEntries()
+end
+
+function CourseManager:setCurrentEntry(num)
+	self.currentEntry = math.max(math.min(num, #self.courseDirView:getEntries()), 1)
+end
+
+function CourseManager:getCurrentEntry()
+	return self.currentEntry
+end
+
+function courseplay.hud:updateCourseList(vehicle, page)
+	local hudPage = vehicle.cp.hud.content.pages[page]
+	local entries = g_courseManager and g_courseManager:getEntries() or {}
+	local entryId = g_courseManager and g_courseManager:getCurrentEntry() or 1
+	local line = 1
+	while line <= self.numLines and entryId <= #entries do
+		hudPage[line][1].text = entries[entryId]:getName();
+		if entries[line]:isDirectory() then
+			hudPage[line][1].indention = (entries[line]:getLevel() + 1) * self.indent;
+		else
+			hudPage[line][1].indention = entries[line]:getLevel() * self.indent;
+		end
+		line = line + 1
+		entryId = entryId + 1
+	end
+	for l = line, self.numLines do
+		hudPage[l][1].text = nil;
+	end
+end

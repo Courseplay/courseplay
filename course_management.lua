@@ -1458,7 +1458,7 @@ function courseplay.courses:loadCoursesAndFoldersFromXml()
 		end
 
 		if save then
-			-- this will update courseManager file and therefore update the courses and folders without ids.
+			-- this will update courseManager file and therefore update the courses and folders without ids.f
 			self:saveAllToXml(cpCManXml);
 		end
 		delete(cpCManXml);

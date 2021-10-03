@@ -52,11 +52,15 @@ os.execute('echo "" > "' .. test2:getFullPath() .. '\\file1"')
 os.execute('echo "" > "' .. test2:getFullPath() .. '\\file2"')
 dir:refresh()
 
+------------------------------------------------------------------------------------------------------------------------
+-- DirectoryView
+------------------------------------------------------------------------------------------------------------------------
 local dv = DirectoryView(dir)
 local e = dv:getEntries()
 assert(tostring(dv) == [[test1
 file1
 ]])
+
 assert(e[1]:isDirectory())
 e[1]:unfold()
 e = dv:getEntries()
@@ -67,6 +71,7 @@ assert(tostring(dv) == [[test1
   file3
 file1
 ]])
+
 e[2]:unfold()
 e = dv:getEntries()
 assert(tostring(dv) == [[test1
@@ -78,15 +83,22 @@ assert(tostring(dv) == [[test1
   file3
 file1
 ]])
+
 e[1]:fold()
 assert(tostring(dv) == [[test1
 file1
 ]])
 
-
-print(dir)
-
 ------------------------------------------------------------------------------------------------------------------------
 -- CourseManager
 ---------------------------------------------------------------------------------------------------------------------------
 local cm = CourseManager(workingDir .. '\\Courses')
+
+assert(cm:getCurrentEntry() == 1)
+assert(#cm:getEntries() == 2)
+
+cm:setCurrentEntry(3)
+assert(cm:getCurrentEntry() == 2)
+
+cm:setCurrentEntry(-1)
+assert(cm:getCurrentEntry() == 1)

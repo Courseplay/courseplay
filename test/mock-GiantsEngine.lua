@@ -1,6 +1,6 @@
 --[[
 This file is part of Courseplay (https://github.com/Courseplay/courseplay)
-Copyright (C) 2018 Peter Vajko
+Copyright (C) 2018 Peter Vaiko
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -79,9 +79,13 @@ end
 g_updateLoopIndex = 1
 g_currentMission = {}
 g_currentMission.mock = true
-
+g_currentMission.missionInfo = {}
+g_currentMission.missionInfo.mapId = 'MockMap'
 giantsVehicle = {}
 giantsVehicle.lastSpeedReal = 10
+
+courseplay = {}
+courseplay.hud = {}
 
 function giantsVehicle.raiseAIEvent(vehicleEvent, otherEvent)
 	print(vehicleEvent, otherEvent)
@@ -94,6 +98,10 @@ end
 function giantsVehicle.setCruiseControlMaxSpeed() end
 
 g_time = 0
+
+function getUserProfileAppPath()
+	return ''
+end
 
 function createFolder(folder)
 	os.execute('mkdir "' .. folder .. '"')
@@ -118,3 +126,4 @@ function fileExists(fullPath)
 	end
 	return false
 end
+

@@ -355,128 +355,15 @@ function courseplay.hud.reloadCourses(vehicle)
 	end
 end
 
-function courseplay:shiftHudCourses(vehicle, change_by)	
-	local hudLines = courseplay.hud.numLines
-	local index = hudLines
-	
-	while change_by > 0 do
-		-- get the index of the last showed item
-		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[#(vehicle.cp.hud.courses)].uid].sorted_index
-		
-		-- search for the next item
-		index = courseplay.courses:getNextCourse(vehicle,index)
-		if index == 0 then
-			-- there is no next item: abort
-			change_by = 0
-		else
-			if #(vehicle.cp.hud.courses) == hudLines then
-				-- remove first entry...
-				table.remove(vehicle.cp.hud.courses, 1)
-			end
-			-- ... and add one at the end
-			table.insert(vehicle.cp.hud.courses, vehicle.cp.sorted.item[index])
-			change_by = change_by - 1
-		end		
-	end
-
-	while change_by < 0 do
-		-- get the index of the first showed item
-		index = vehicle.cp.sorted.info[vehicle.cp.hud.courses[1].uid].sorted_index
-		
-		-- search reverse for the next item
-		index = courseplay.courses:getNextCourse(vehicle, index, true)
-		if index == 0 then
-			-- there is no next item: abort
-			change_by = 0
-			
-			-- show LevelZeroFolder?
-			if vehicle.cp.hud.showZeroLevelFolder then
-				if #(vehicle.cp.hud.courses) >= hudLines then
-					-- remove last entry...
-					table.remove(vehicle.cp.hud.courses)
-				end
-				table.insert(vehicle.cp.hud.courses, 1, { id=0, uid=0, name='Level 0', displayname='Level 0', parent=0, type='folder', level=0})
-			end
-			
-		else
-			if #(vehicle.cp.hud.courses) >= hudLines then
-				-- remove last entry...
-				table.remove(vehicle.cp.hud.courses)
-			end
-			-- ... and add one at the beginning:	
-			table.insert(vehicle.cp.hud.courses, 1, vehicle.cp.sorted.item[index])
-			change_by = change_by + 1
-		end		
-	end
-	
+function courseplay:shiftHudCourses(vehicle, changeBy)
+	g_courseManager:setCurrentEntry(g_courseManager:getCurrentEntry() + changeBy)
 	courseplay.hud:setReloadPageOrder(vehicle, 2, true);
 end
 
 --Update all vehicles' course list arrow displays
 function courseplay.settings.validateCourseListArrows(vehicle)
-	local n_courses = #(vehicle.cp.sorted.item)
-	local n_hudcourses, prev, next
-	
-	if vehicle then
-		-- update vehicle only
-		prev = true
-		next = true
-		n_hudcourses = #(vehicle.cp.hud.courses)
-		if not (n_hudcourses > 0) then
-			prev = false
-			next = false
-		else
-			-- update prev
-			if vehicle.cp.hud.showZeroLevelFolder then
-				if vehicle.cp.hud.courses[1].uid == 0 then
-					prev = false
-				end
-			elseif vehicle.cp.sorted.info[ vehicle.cp.hud.courses[1].uid ].sorted_index == 1 then
-				prev = false
-			end
-			-- update next
-			if n_hudcourses < courseplay.hud.numLines then
-				next = false
-			elseif vehicle.cp.hud.showZeroLevelFolder and vehicle.cp.hud.courses[n_hudcourses].uid == 0 then
-				next = false
-			elseif 0 == courseplay.courses:getNextCourse(vehicle, vehicle.cp.sorted.info[ vehicle.cp.hud.courses[n_hudcourses].uid ].sorted_index) then
-				next = false
-			end
-		end
-		return prev, next;
-		--vehicle.cp.hud.courseListPrev = prev
-		--vehicle.cp.hud.courseListNext = next
-	--[[else
-		-- update all vehicles
-			for k,v in pairs(g_currentMission.enterables) do
-			if v.hasCourseplaySpec then -- alternative way to check if SpecializationUtil.hasSpecialization(courseplay, v.specializations)
-				prev = true
-				next = true
-				n_hudcourses = #(v.cp.hud.courses)
-				if not (n_hudcourses > 0) then
-					prev = false
-					next = false
-				else
-					-- update prev
-					if v.cp.hud.showZeroLevelFolder then
-						if v.cp.hud.courses[1].uid == 0 then
-							prev = false
-						end
-					elseif v.cp.sorted.info[v.cp.hud.courses[1].uid].sorted_index == 1 then
-						prev = false
-					end
-					-- update next
-					if n_hudcourses < coursplay.hud.numLines then
-						next = false
-					elseif 0 == courseplay.courses:getNextCourse(v, v.cp.sorted.info[v.cp.hud.courses[n_hudcourses].uid].sorted_index) then
-						next = false
-					end
-				end
-				v.cp.hud.courseListPrev = prev
-				v.cp.hud.courseListNext = next
-			end -- if hasSpecialization
-		end]] -- in pairs(enterables)
-	end -- if vehicle
+	return g_courseManager:getCurrentEntry() > 1,
+		g_courseManager:getCurrentEntry() < #g_courseManager:getEntries() - courseplay.hud.numLines
 end;
 
 function courseplay:expandFolder(vehicle, index)
