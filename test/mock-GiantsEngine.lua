@@ -87,6 +87,10 @@ giantsVehicle.lastSpeedReal = 10
 courseplay = {}
 courseplay.hud = {}
 
+function courseplay.debugFormat(channel, ...)
+	print('debug: ', string.format(...))
+end
+
 function giantsVehicle.raiseAIEvent(vehicleEvent, otherEvent)
 	print(vehicleEvent, otherEvent)
 end
@@ -125,5 +129,14 @@ function fileExists(fullPath)
 		return true
 	end
 	return false
+end
+
+-- course_management.lua mocks
+courseplay.courses = {}
+function courseplay.courses:loadCourseFromFile(course)
+end
+
+function courseplay.courses:writeCourseFile(fullPath, course)
+	os.execute('echo "' .. fullPath .. '" > "' .. fullPath)
 end
 

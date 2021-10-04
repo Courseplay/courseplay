@@ -82,6 +82,9 @@ function CpManager:loadMap(name)
 		self.cpDebugPrintXmlFilePathDefault = string.format("%s/%s",self.cpDebugPrintXmlFolderPath,"courseplayDebugPrint.xml")
 		createFolder(self.cpDebugPrintXmlFolderPath)
 
+		createFolder(self.cpDebugPrintXmlFolderPath .. '/x')
+		getfenv(0).deleteFolder(self.cpDebugPrintXmlFolderPath .. '/x')
+
 		-- we need to create CoursePlay_Courses folder before we can create any new folders inside it.
 		createFolder(("%sCoursePlay_Courses"):format(getUserProfileAppPath()));
 		createFolder(self.cpCoursesFolderPath);
@@ -180,6 +183,7 @@ function CpManager:loadMap(name)
 	
 	addConsoleCommand( 'cpCreateVehicleDebugSparseHook', 'Create a debug Sparse Hook', 'createVehicleVariableDebugSparseHook', self)
 	addConsoleCommand( 'cpUpgradeAllCourses', 'Upgrade all courses to the new (faster) format', 'upgradeAllCourses', courseplay.courses)
+	addConsoleCommand( 'cpMigrateCourses', 'Migrate all courses to the new course folder.', 'migrateCourses', self)
 
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -719,6 +723,19 @@ end
 
 function CpManager:showCombineUnloadManagerStatus()
 	g_combineUnloadManager:printStatus()
+end
+
+function CpManager:migrateCourses()
+	-- make sure all courses are loaded into g_currentMission.cp_courses
+	-- but save the old setting before
+	local loadCoursesAtStartup = courseplay.globalSettings.loadCoursesAtStartup:get()
+	courseplay.globalSettings.loadCoursesAtStartup:set(true)
+	-- load all courses from disk
+	courseplay.courses:loadCoursesAndFoldersFromXml()
+	-- migrate them to the new structure
+	g_courseManager:migrateOldCourses(g_currentMission.cp_folders, g_currentMission.cp_courses)
+	-- restore old setting
+	courseplay.globalSettings.loadCoursesAtStartup:set(loadCoursesAtStartup)
 end
 
 function CpManager:setLookaheadDistance(d)

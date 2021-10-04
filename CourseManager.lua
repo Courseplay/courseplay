@@ -53,7 +53,14 @@ function Directory:isDirectory()
 end
 
 function Directory:refresh()
+	self.entriesToRemove = {}
+	for key, _ in pairs(self.entries) do
+		self.entriesToRemove[key] = true
+	end
 	getFiles(self.fullPath, 'fileCallback', self)
+	for key, _ in pairs(self.entriesToRemove) do
+		self.entries[key] = nil
+	end
 end
 
 function Directory:fileCallback(name, isDirectory)
@@ -65,6 +72,9 @@ function Directory:fileCallback(name, isDirectory)
 		end
 	elseif not self.entries[name] then
 		self.entries[name] = File(self.fullPath .. '\\' .. name, self)
+	end
+	if self.entriesToRemove[name] then
+		self.entriesToRemove[name] = nil
 	end
 end
 
@@ -135,6 +145,10 @@ function DirectoryView:init(directory, level, folded)
 	FileSystemEntityView.init(self, directory, level)
 	self.directory = directory
 	self.folded = folded or false
+	self:refresh()
+end
+
+function DirectoryView:refresh()
 	self.directoryViews = {}
 	self.fileViews = {}
 	for _, entry in pairs(self.directory.entries) do
@@ -204,6 +218,17 @@ function CourseManager:init(courseDirFullPath)
 	self.currentEntry = 1
 end
 
+-- wrapper to create a global instance.
+function CourseManager.create()
+	return CourseManager(("%s%s/%s"):format(getUserProfileAppPath(),"modsSettings/Courseplay",
+		g_currentMission.missionInfo.mapId))
+end
+
+function CourseManager:refresh()
+	self.courseDir:refresh()
+	self.courseDirView:refresh()
+end
+
 function CourseManager:getEntries()
 	return self.courseDirView:getEntries()
 end
@@ -234,4 +259,40 @@ function courseplay.hud:updateCourseList(vehicle, page)
 	for l = line, self.numLines do
 		hudPage[l][1].text = nil;
 	end
+end
+
+function CourseManager:migrateOldCourses(folders, courses)
+	local levels = {}
+	for _, folder in pairs(folders) do
+		if not levels[folder.level] then
+			levels[folder.level] = {}
+		end
+		table.insert(levels[folder.level], folder)
+	end
+	local foldersById = {}
+	foldersById[0] = self.courseDir
+	for level = 0, #levels do
+		for _, folder in ipairs(levels[level]) do
+			foldersById[folder.id] = foldersById[folder.parent]:createDirectory(folder.name)
+		end
+	end
+
+	for _, course in pairs(courses) do
+		if not course.virtual then
+			self:debug('Loading course %s...', course.name)
+			courseplay.courses:loadCourseFromFile(course)
+			self:debug('Migrating course %s to %s', course.name, foldersById[course.parent]:getFullPath())
+			courseplay.courses:writeCourseFile(foldersById[course.parent]:getFullPath() .. '/' .. course.name, course)
+		end
+	end
+end
+
+function CourseManager:debug(...)
+	courseplay.debugFormat(courseplay.DBG_COURSES, string.format(...))
+end
+
+-- Recreate if already exists. This is only for development to recreate the global instance if this
+-- file is reloaded while the game is running
+if g_courseManager then
+	g_courseManager = CourseManager.create()
 end

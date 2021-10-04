@@ -1835,7 +1835,7 @@ function courseplay.courses:loadAutoDriveCourse(vehicle, course)
 	return course
 end
 
---- Upgrde all courses to version 2, the new, faster format
+--- Upgrade all courses to version 2, the new, faster format
 function courseplay.courses:upgradeAllCourses()
 	for i, course in pairs(g_currentMission.cp_courses) do
 		if course.type == 'course' and not course.virtual and course.nameClean then

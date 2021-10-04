@@ -102,3 +102,33 @@ assert(cm:getCurrentEntry() == 2)
 
 cm:setCurrentEntry(-1)
 assert(cm:getCurrentEntry() == 1)
+
+os.execute('del /s /q Courses\\*')
+os.execute('for /d %i in ("Courses\\*") do rd /s /q %i')
+cm:refresh()
+assert(#cm:getEntries() == 0)
+
+-- Migration
+local folders = {
+	{level = 1, id = 3, parent = 1, name = 'Level1-1'},
+	{level = 0, id = 1, parent = 0, name = 'Level0-1'},
+	{level = 0, id = 2, parent = 0, name = 'Level0-2'},
+}
+
+local courses = {
+	{parent = 0, name = 'Course One'},
+	{parent = 1, name = 'Course Two Under 0-1'},
+	{parent = 2, name = 'Course Three Under 0-2'},
+	{parent = 3, name = 'Course Four Under 1-1'},
+}
+
+cm:migrateOldCourses(folders, courses)
+cm:refresh()
+local entries = cm:getEntries()
+assert(entries[1].name == 'Level0-1')
+assert(entries[2].name == 'Level0-2')
+assert(entries[3].name == 'Course One')entries[1]:unfold()
+entries = cm:getEntries()
+assert(entries[2].name == 'Level1-1')
+assert(entries[3].name == 'Course Two Under 0-1')
+assert(entries[5].name == 'Course One')
