@@ -219,6 +219,9 @@ print(string.format('### Courseplay: installed into %d vehicle types', numInstal
 -- This fixes the problems with driveInDirection motor and cruise control. There is a bug some where that is setting self.rotatedTime to 0
 local originaldriveInDirection = AIVehicleUtil.driveInDirection;
 AIVehicleUtil.driveInDirection = function (self, dt, steeringAngleLimit, acceleration, slowAcceleration, slowAngleLimit, allowedToDrive, moveForwards, lx, lz, maxSpeed, slowDownFactor)
+	if self.getMotorStartTime ~= nil then
+		allowedToDrive = allowedToDrive and (self:getMotorStartTime() <= g_currentMission.time)
+	end
 
 	local angle = 0;
     if lx ~= nil and lz ~= nil then
