@@ -425,8 +425,8 @@ function courseplay:setMouseCursor(self, show)
 		for i,button in pairs(self.cp.buttons[self.cp.hud.currentPage]) do
 			button:setHovered(false);
 		end;
-		if self.cp.hud.currentPage == 2 then
-			for i,button in pairs(self.cp.buttons[-2]) do
+		if self.cp.hud.currentPage == courseplay.hud.PAGE_MANAGE_COURSES then
+			for i,button in pairs(self.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
 				button:setHovered(false);
 			end;
 		end;

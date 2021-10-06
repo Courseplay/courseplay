@@ -56,6 +56,8 @@ function courseplay.hud:setup()
 	self.PAGE_COMBINE_CONTROLS	= 0;
 	self.PAGE_CP_CONTROL		= 1;
 	self.PAGE_MANAGE_COURSES	= 2;
+	-- dummy page to collect the course management buttons (OMG...)
+	self.COURSE_MANAGEMENT_BUTTONS	= -2;
 	self.PAGE_COMBI_MODE		= 3;
 	self.PAGE_MANAGE_COMBINES	= 4;
 	self.PAGE_SPEEDS			= 5;
@@ -1136,7 +1138,7 @@ function courseplay.hud:updatePageContent(vehicle, page)
 		vehicle.cp.hud.reloadCourses:setShow(g_server ~= nil and not vehicle.cp.canDrive and not g_currentMission.missionDynamicInfo.isMultiplayer);
 		vehicle.cp.hud.newFolderButton:setShow(not vehicle.cp.isDriving)
 		self:showShiftHudButtons(vehicle, true)
-		self:updateCourseButtonsVisibilty(vehicle)
+		self:updateCourseButtonsVisibility(vehicle)
 	else
 		self:showShiftHudButtons(vehicle, false)
 		vehicle.cp.hud.filterButton:setShow(false);
@@ -1322,7 +1324,7 @@ function courseplay.hud:setupVehicleHud(vehicle)
 	-- clickable buttons
 	vehicle.cp.buttons = {};
 	vehicle.cp.buttons.global = {};
-	vehicle.cp.buttons[-2] = {};
+	vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS] = {};
 		
 	for page=0, self.numPages do
 		vehicle.cp.buttons[page] = {};
@@ -1594,12 +1596,20 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 		hoverAreaWidth = self.buttonCoursesPosX[1] + wSmall - self.buttonCoursesPosX[4];
 	end;
 	for i=1, self.numLines do
-		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'navPlus' }, 'expandFolder', i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
-		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse', i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
-		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse', i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
-		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'folderParentFrom' }, 'linkParent', i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_MOVE_TO_FOLDER'));
-		courseplay.button:new(vehicle, -2, { 'iconSprite.png', 'delete' }, 'deleteSortedItem', i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_DELETE_COURSE'));
-		courseplay.button:new(vehicle, -2, nil, nil, nil, self.buttonCoursesPosX[4], self.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navPlus' }, 'unfold',
+			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navMinus' }, 'fold',
+			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse',
+			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse',
+			i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'folderParentFrom' }, 'linkParent',
+			i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_MOVE_TO_FOLDER'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'delete' }, 'deleteSortedItem',
+			i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_DELETE_COURSE'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, nil, nil, nil,
+			self.buttonCoursesPosX[4], self.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end;
 	vehicle.cp.hud.filterButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS'));
 	vehicle.cp.hud.newFolderButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[2], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CREATE_FOLDER'));
@@ -1767,13 +1777,13 @@ function courseplay.hud:updateDebugChannelButtons(vehicle)
 	end
 end
 
-function courseplay.hud:updateCourseButtonsVisibilty(vehicle)
+function courseplay.hud:updateCourseButtonsVisibilityDeprecated(vehicle)
 	local enable, show = true, true;
 	local numVisibleCourses = #(vehicle.cp.hud.courses);
 	local nofolders = nil == next(g_currentMission.cp_folders);
 	local indent = courseplay.hud.indent;
 	local row, fn;
-	for _, button in pairs(vehicle.cp.buttons[-2]) do
+	for _, button in pairs(vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
 		row = button.row;
 		fn = button.functionToCall;
 		enable = true;
@@ -2422,7 +2432,6 @@ end
 		
 function courseplay.hud:debug(vehicle,...)
 	courseplay.debugVehicle(courseplay.DBG_HUD, vehicle, ...)
-end	
-	
+end
 -- do not remove this comment
 -- vim: set noexpandtab:

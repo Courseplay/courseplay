@@ -103,6 +103,9 @@ assert(cm:getCurrentEntry() == 2)
 cm:setCurrentEntry(-1)
 assert(cm:getCurrentEntry() == 1)
 
+cm:unfold(1)
+assert(cm:getEntries()[2] == 'test2')
+
 os.execute('del /s /q Courses\\*')
 os.execute('for /d %i in ("Courses\\*") do rd /s /q %i')
 cm:refresh()

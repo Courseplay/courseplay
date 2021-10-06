@@ -53,7 +53,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 
 		if buttonToHandle == nil then
 			if vehicle.cp.hud.currentPage == 2 then
-				for _,button in pairs(vehicle.cp.buttons[-2]) do
+				for _,button in pairs(vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
 					if button.show and button:getHasMouse(posX, posY) and not button.isMouseWheelArea then
 						buttonToHandle = button;
 						break;
@@ -106,7 +106,7 @@ function courseplay:onMouseEvent(posX, posY, isDown, isUp, mouseButton)
 		end;
 
 		if vehicle.cp.hud.currentPage == 2 then
-			for _,button in pairs(vehicle.cp.buttons[-2]) do
+			for _,button in pairs(vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
 				button:setClicked(false);
 				if button.show and not button.isHidden then
 					button:setHovered(button:getHasMouse(posX, posY));

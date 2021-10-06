@@ -380,7 +380,7 @@ function courseplay.buttons:renderButtons(vehicle, page)
 	end;
 
 	if page == courseplay.hud.PAGE_MANAGE_COURSES then 
-		for _,button in pairs(vehicle.cp.buttons[-courseplay.hud.PAGE_MANAGE_COURSES]) do
+		for _,button in pairs(vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
 			if button:render() then
 				hoveredButton = button;
 			end;

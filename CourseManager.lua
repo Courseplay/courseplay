@@ -132,9 +132,42 @@ function FileSystemEntityView:isDirectory()
 	return self.entity:isDirectory()
 end
 
+-- by default, no fold or unfold shown
+function FileSystemEntityView:showUnfoldButton()
+	return false
+end
+function FileSystemEntityView:showFoldButton()
+	return false
+end
+
+-- for now, disable delete and move
+function FileSystemEntityView:showDeleteButton()
+	return false
+end
+
+function FileSystemEntityView:showMoveButton()
+	return false
+end
+
+function FileSystemEntityView:showLoadButton()
+	return false
+end
+
+function FileSystemEntityView:showAddButton()
+	return false
+end
+
 FileView = CpObject(FileSystemEntityView)
 function FileView:init(file, level)
 	FileSystemEntityView.init(self, file, level)
+end
+
+function FileView:showLoadButton()
+	return true
+end
+
+function FileView:showAddButton()
+	return true
 end
 
 ---@class DirectoryView
@@ -168,6 +201,10 @@ end
 
 function DirectoryView:unfold()
 	self.folded = false
+end
+
+function DirectoryView:isFolded()
+	return self.folded
 end
 
 function DirectoryView:__tostring()
@@ -207,6 +244,14 @@ function DirectoryView:getEntries()
 	return self.entries
 end
 
+function DirectoryView:showUnfoldButton()
+	return self:isFolded()
+end
+
+function DirectoryView:showFoldButton()
+	return not self:isFolded()
+end
+
 
 ---@class CourseManager
 CourseManager = CpObject()
@@ -241,24 +286,19 @@ function CourseManager:getCurrentEntry()
 	return self.currentEntry
 end
 
-function courseplay.hud:updateCourseList(vehicle, page)
-	local hudPage = vehicle.cp.hud.content.pages[page]
-	local entries = g_courseManager and g_courseManager:getEntries() or {}
-	local entryId = g_courseManager and g_courseManager:getCurrentEntry() or 1
-	local line = 1
-	while line <= self.numLines and entryId <= #entries do
-		hudPage[line][1].text = entries[entryId]:getName();
-		if entries[line]:isDirectory() then
-			hudPage[line][1].indention = (entries[line]:getLevel() + 1) * self.indent;
-		else
-			hudPage[line][1].indention = entries[line]:getLevel() * self.indent;
-		end
-		line = line + 1
-		entryId = entryId + 1
-	end
-	for l = line, self.numLines do
-		hudPage[l][1].text = nil;
-	end
+-- Unfold (expand) a folder
+function CourseManager:unfold(index)
+	self:getCurrentEntry()
+	local dir = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+	dir:unfold()
+	self:debug('%s unfolded', dir:getName())
+end
+
+-- Fold (hide contents) a folder
+function CourseManager:fold(index)
+	local dir = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+	dir:fold()
+	self:debug('%s folded', dir:getName())
 end
 
 function CourseManager:migrateOldCourses(folders, courses)
@@ -296,3 +336,73 @@ end
 if g_courseManager then
 	g_courseManager = CourseManager.create()
 end
+
+
+-- Relocated to this file so it can be reloaded while the game is running (hud.lua is not reloadable)
+function courseplay.hud:updateCourseList(vehicle, page)
+	local hudPage = vehicle.cp.hud.content.pages[page]
+	local entries = g_courseManager and g_courseManager:getEntries() or {}
+	local entryId = g_courseManager and g_courseManager:getCurrentEntry() or 1
+	local row = 1
+	while row <= self.numLines and entryId <= #entries do
+		hudPage[row][1].text = entries[entryId]:getName();
+		hudPage[row][1].indention = entries[entryId]:getLevel() * self.indent;
+		row = row + 1
+		entryId = entryId + 1
+	end
+	for l = row, self.numLines do
+		hudPage[l][1].text = nil;
+	end
+end
+
+function courseplay.hud:updateCourseButtonsVisibility(vehicle)
+	local buttonsByRow = {}
+	for _, button in pairs(vehicle.cp.buttons[courseplay.hud.COURSE_MANAGEMENT_BUTTONS]) do
+		if button.row and button.functionToCall then
+			if buttonsByRow[button.row] == nil then
+				buttonsByRow[button.row] = {}
+			end
+			buttonsByRow[button.row][button.functionToCall] = button
+		end
+	end
+	local entries = g_courseManager and g_courseManager:getEntries() or {}
+	local entryId = g_courseManager and g_courseManager:getCurrentEntry() or 1
+	local row = 1
+	while row <= self.numLines do
+		local unfoldButton = buttonsByRow[row]['unfold']
+		local foldButton = buttonsByRow[row]['fold']
+		local loadButton = buttonsByRow[row]['loadSortedCourse']
+		local addButton = buttonsByRow[row]['addSortedCourse']
+		local deleteButton = buttonsByRow[row]['deleteSortedItem']
+		local moveButton = buttonsByRow[row]['linkParent']
+		if entryId <= #entries then
+			unfoldButton:setShow(entries[entryId]:showUnfoldButton())
+			foldButton:setShow(entries[entryId]:showFoldButton())
+			loadButton:setShow(entries[entryId]:showLoadButton())
+			addButton:setShow(entries[entryId]:showAddButton())
+			deleteButton:setShow(entries[entryId]:showDeleteButton())
+			moveButton:setShow(entries[entryId]:showMoveButton())
+		else
+			foldButton:setShow(false)
+			unfoldButton:setShow(false)
+			loadButton:setShow(false)
+			addButton:setShow(false)
+			deleteButton:setShow(false)
+			moveButton:setShow(false)
+		end
+		row = row + 1
+		entryId = entryId + 1
+	end
+end
+
+
+function courseplay:unfold(vehicle, index)
+	g_courseManager:unfold(index)
+	courseplay.hud:setReloadPageOrder(vehicle, courseplay.hud.PAGE_MANAGE_COURSES, true);
+end
+
+function courseplay:fold(vehicle, index)
+	g_courseManager:fold(index)
+	courseplay.hud:setReloadPageOrder(vehicle, courseplay.hud.PAGE_MANAGE_COURSES, true);
+end
+
