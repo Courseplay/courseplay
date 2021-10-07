@@ -78,6 +78,7 @@ function CombineAIDriver:init(vehicle)
             self.combine.spec_aiImplement.rightMarker = self.combine.rootNode
             self.combine.spec_aiImplement.leftMarker  = self.combine.rootNode
             self.combine.spec_aiImplement.backMarker  = self.combine.rootNode
+			self.combine.isPremos = true --- This is needed as there is some logic in the CombineUnloadManager for it.
 		else
 			self:error('Vehicle is not a combine and could not find implement with spec_combine')
 		end
