@@ -112,9 +112,10 @@ function AITurn.canMakeKTurn(vehicle, turnContext)
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Headland turn, let turn.lua drive for now.')
 		return false
 	end
-	if vehicle.cp.turnDiameter <= math.abs(turnContext.dx) then
+	local turnDiameter = vehicle.cp.settings.turnDiameter:get()
+	if turnDiameter <= math.abs(turnContext.dx) then
 		courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'wide turn with no reversing (turn diameter = %.1f, dx = %.1f, let turn.lua do that for now.',
-			vehicle.cp.turnDiameter, math.abs(turnContext.dx))
+			turnDiameter, math.abs(turnContext.dx))
 		return true
 	end
 	if not AIVehicleUtil.getAttachedImplementsAllowTurnBackward(vehicle) then
@@ -248,8 +249,8 @@ function KTurn:turn(dt)
 	end
 
 	AITurn.turn(self)
-
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
+	local turnDiameter = self.vehicle.cp.settings.turnDiameter:get()
+	local turnRadius = turnDiameter / 2
 	if self.state == self.states.FORWARD then
 		local dx, _, dz = self.turnContext:getLocalPositionFromTurnEnd(self.driver:getDirectionNode())
 		self:setForwardSpeed()
@@ -337,7 +338,8 @@ function CombineHeadlandTurn:init(vehicle, driver, turnContext)
 	self:addState('FORWARD')
 	self:addState('REVERSE_STRAIGHT')
 	self:addState('REVERSE_ARC')
-	self.turnRadius = self.vehicle.cp.turnDiameter / 2
+	local turnDiameter = self.vehicle.cp.settings.turnDiameter:get()
+	self.turnRadius = turnDiameter / 2
 	self.cornerAngleToTurn = turnContext:getCornerAngleToTurn()
 	self.angleToTurnInReverse = math.abs(self.cornerAngleToTurn / 2)
 	self.dxToStartReverseTurn = self.turnRadius - math.abs(self.turnRadius - self.turnRadius * math.cos(self.cornerAngleToTurn))
@@ -630,7 +632,8 @@ end
 ---@param turnContext TurnContext
 function CombinePocketHeadlandTurn:generatePocketHeadlandTurn(turnContext)
 	local cornerWaypoints = {}
-	local turnRadius = self.vehicle.cp.turnDiameter / 2
+	local turnDiameter = self.vehicle.cp.settings.turnDiameter:get()
+	local turnRadius = turnDiameter / 2
 	-- this is how far we have to cut into the next headland (the position where the header will be after the turn)
 	local offset = math.min(turnRadius + turnContext.frontMarkerDistance,  self.vehicle.cp.workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)

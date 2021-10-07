@@ -119,6 +119,7 @@ WorkWidthSetting.Increment = 0.1
 function WorkWidthSetting:init(vehicle)
 	SettingList.init(self, 'workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle)
 	self.value = FloatSetting('workWidth', 'COURSEPLAY_WORK_WIDTH', 'COURSEPLAY_WORK_WIDTH', vehicle, 0)
+	self.automaticValue = FloatSetting('automaticWorkWidth',nil,nil,vehicle,0)
 	self.minWidth, self.maxWidth = 1, 50
 	-- do not attempt to send an event from the constructor as at that point, the vehicle is not completely ready
 	-- and parentName is not set.
@@ -126,6 +127,11 @@ function WorkWidthSetting:init(vehicle)
 	-- TODO: add parentName to the constructor of the settings instead of the explicit setter.
 	self:setToDefault(true)
 	self:refresh()
+	self.WORK_WIDTH_EVENT = self:registerFloatEvent(self.setWorkWidthFromNetwork)
+	self.AUTO_WORK_WIDTH_EVENT = self:registerFloatEvent(self.setAutoWorkWidthFromNetwork)
+	if g_server then
+		self:updateAutoWorkWidth()
+	end
 end
 
 function WorkWidthSetting:loadFromXml(xml, parentKey)
@@ -139,10 +145,12 @@ end
 
 function WorkWidthSetting:onWriteStream(stream)
 	self.value:onWriteStream(stream)
+	self.automaticValue:onWriteStream(stream)
 end
 
 function WorkWidthSetting:onReadStream(stream)
 	self.value:onReadStream(stream)
+	self.automaticValue:onReadStream(stream)
 	self:updateGuiElement()
 end
 
@@ -181,27 +189,36 @@ function WorkWidthSetting:setFromGuiElement()
 end
 
 function WorkWidthSetting:setToDefault(noEventSend)
-	local autoWidth = courseplay:getWorkWidth(self.vehicle)
+	local autoWidth = self:getAutoWorkWidth()
 	if autoWidth > 0 then
-		self:set(courseplay:getWorkWidth(self.vehicle), noEventSend)
+		self:set(autoWidth, noEventSend)
 	end
 end
 
 function WorkWidthSetting:set(value, noEventSend)
 	self.value:set(value, noEventSend)
-	if not noEventSend then
-		self:sendEvent()
+	if noEventSend == nil or noEventSend == false then
+		self:sendWorkWidthEvent(value)
 	end
 	self:updateGuiElement()
 end
 
 -- override SettingList sendEvent() for setting the float value from the list
-function WorkWidthSetting:sendEvent()
-	WorkWidthSettingEvent.sendEvent(self.vehicle, self.parentName, self.name, self.value:get())
+function WorkWidthSetting:sendWorkWidthEvent(value)
+	self:raiseEvent(self.WORK_WIDTH_EVENT,value)
 end
 
-function WorkWidthSetting:setFromNetwork(value)
-	self.value:set(value, true)
+-- override SettingList sendEvent() for setting the float auto work width
+function WorkWidthSetting:sendAutoWorkWidthEvent(value)
+	self:raiseEvent(self.AUTO_WORK_WIDTH_EVENT,value)
+end
+
+function WorkWidthSetting:setWorkWidthFromNetwork(value)
+	self.value:set(value,true)
+end
+
+function WorkWidthSetting:setAutoWorkWidthFromNetwork(value)
+	self.automaticValue:set(value,true)
 end
 
 function WorkWidthSetting:setNext()
@@ -210,6 +227,19 @@ end
 
 function WorkWidthSetting:setPrevious()
 	self:set(math.max(self.value:get() - WorkWidthSetting.Increment, self.minWidth))
+end
+
+--- This is needed as the client can't retrieve it directly,
+--- so we update it on a attach/detach of an implement and 
+--- send the changed value with an event to the client.
+function WorkWidthSetting:updateAutoWorkWidth()
+	local value = courseplay:getWorkWidth(self.vehicle) or 0
+	self.automaticValue:set(value,true)
+	self:sendAutoWorkWidthEvent(value)
+end
+
+function WorkWidthSetting:getAutoWorkWidth()
+	return self.automaticValue:get()
 end
 
 --- Course gen center mode setting

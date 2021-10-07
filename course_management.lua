@@ -307,7 +307,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
 
 		if CpManager.isMP and g_server ~= nil then
-		--	CourseplayEvent.sendEvent(vehicle, "setVehicleWaypoints", vehicle.Waypoints, courseplay.isClient);
 			CourseEvent.sendEvent(vehicle,vehicle.Waypoints)
 		end
 	end

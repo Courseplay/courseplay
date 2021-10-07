@@ -90,7 +90,7 @@ function CombineAIDriver:init(vehicle)
 	self.pullBackRightSideOffset = math.abs(self.pipeOffsetX) - self.vehicle.cp.workWidth / 2 + 5
 	self.pullBackRightSideOffset = self.pipeOnLeftSide and self.pullBackRightSideOffset or -self.pullBackRightSideOffset
 	-- should be at pullBackRightSideOffset to the right or left at pullBackDistanceStart
-	self.pullBackDistanceStart = self.vehicle.cp.turnDiameter --* 0.7
+	self.pullBackDistanceStart = self.settings.turnDiameter:get() --* 0.7
 	-- and back up another bit
 	self.pullBackDistanceEnd = self.pullBackDistanceStart + 5
 	-- when making a pocket, how far to back up before changing to forward

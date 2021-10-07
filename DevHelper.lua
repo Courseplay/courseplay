@@ -195,7 +195,7 @@ function DevHelper:startPathfinding()
     if self.vehicle and self.vehicle.cp.driver and self.vehicle.cp.driver.fieldworkCourse then
         self:debug('Starting pathfinding for turn between %s and %s', tostring(self.start), tostring(self.goal))
         self.pathfinder, done, path = PathfinderUtil.findPathForTurn(self.vehicle, 0, self.goalNode, 0,
-                1.05 * self.vehicle.cp.turnDiameter / 2, false, self.vehicle.cp.driver.fieldworkCourse)
+                1.05 * self.vehicle.cp.settings.turnDiameter:get() / 2, false, self.vehicle.cp.driver.fieldworkCourse)
     else
         self:debug('Starting pathfinding (no reverse) between %s and %s, field %d',
                 tostring(self.start), tostring(self.goal), self.fieldNumForPathfinding or 0)

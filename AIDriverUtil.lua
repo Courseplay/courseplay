@@ -69,7 +69,8 @@ function AIDriverUtil.calculateTightTurnOffset(vehicle, course, previousOffset, 
 	-- limit the radius we are trying to follow to the vehicle's turn radius.
 	-- TODO: there's some potential here as the towed implement can move on a radius less than the vehicle's
 	-- turn radius so this limit may be too pessimistic
-	r = math.max(r, vehicle.cp.turnDiameter / 2)
+	local turnDiameter = vehicle.cp.settings.turnDiameter:get()
+	r = math.max(r, turnDiameter / 2)
 
 	local towBarLength = AIDriverUtil.getTowBarLength(vehicle)
 
@@ -173,8 +174,10 @@ function AIDriverUtil.getTurningRadius(vehicle)
 		radius = g_vehicleConfigurations:get(vehicle, 'turnRadius')
 		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius set from configfile to %.1f', radius)
 	end
-	if vehicle.cp.turnDiameterAutoMode == false and vehicle.cp.turnDiameter ~= nil then
-		radius = vehicle.cp.turnDiameter / 2
+	
+	local turnDiameterSetting = vehicle.cp.settings.turnDiameter
+	if not turnDiameterSetting:isAutomaticActive() then
+		radius = turnDiameterSetting:get() / 2
 		courseplay.debugVehicle(courseplay.DBG_IMPLEMENTS, vehicle, '  turnRadius manually set to %.1f', radius)
 	end
 

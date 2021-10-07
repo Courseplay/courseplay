@@ -138,18 +138,15 @@ local function initialize()
 		'gui/AdvancedSettingsScreen',
 		'gui/GlobalSettingsPage',
 		'gui/VehicleSettingsPage',
+		'Events/SettingEvent',
 		'Events/StartStopEvent',
 		'Events/UnloaderEvents',
 		'Events/SiloSelectedFillTypeEvent',
 		'Events/StartStopWorkEvent',
-		'Events/SettingsListEvent',
-		'Events/GlobalSettingsEvent',
 		'Events/AssignedCombinesEvents',
 		'Events/CourseEvent',
 		'Events/InfoTextEvent',
-		'Events/WorkingToolPositionsEvents',
 		'Events/CommandEvents',
-		'Events/WorkWidthSettingEvent',
 		'Generic/LinkedList'
 	};
 
@@ -239,24 +236,21 @@ local function setGlobalData()
 
 	courseplay.multiplayerSyncTable = {
 
-	[1]={name='self.cp.turnDiameterAuto',dataFormat='Float'},
-	[2]={name='self.cp.canDrive',dataFormat='Bool'},
-	[3]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
-	[4]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
-	[5]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
-	[6]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
-	[7]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
-	[8]={name='self.cp.isDriving',dataFormat='Bool'},
-	[9]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[10]={name='self.cp.workWidth',dataFormat='Float'},
-	[11]={name='self.cp.turnDiameterAutoMode',dataFormat='Bool'},
-	[12]={name='self.cp.turnDiameter',dataFormat='Float'},
-	[13]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
-	[14]={name='self.cp.laneOffset',dataFormat='Float'},
-	[15]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[16]={name='self.cp.waypointIndex',dataFormat='Int'},
-	[17]={name='self.cp.isRecording',dataFormat='Bool'},
-	[18]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
+	[1]={name='self.cp.canDrive',dataFormat='Bool'},
+	[2]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
+	[3]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
+	[4]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
+	[5]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
+	[6]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
+	[7]={name='self.cp.isDriving',dataFormat='Bool'},
+	[8]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
+	[9]={name='self.cp.workWidth',dataFormat='Float'},
+	[10]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
+	[11]={name='self.cp.laneOffset',dataFormat='Float'},
+	[12]={name='self.cp.hud.currentPage',dataFormat='Int'},
+	[13]={name='self.cp.waypointIndex',dataFormat='Int'},
+	[14]={name='self.cp.isRecording',dataFormat='Bool'},
+	[15]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
 	}
 	
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()

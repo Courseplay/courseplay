@@ -294,13 +294,13 @@ end
 function FillableFieldworkAIDriver:getTurnEndForwardOffset()
 	-- TODO: do other implements need this?
 	if  SpecializationUtil.hasSpecialization(Sprayer, self.vehicle.specializations)
-			and self.vehicle.cp.workWidth > self.vehicle.cp.turnDiameter then
+			and self.vehicle.cp.workWidth > self.settings.turnDiameter:get() then
 		-- compensate for very wide implements like sprayer booms where the tip of the implement
 		-- on the inner side of the turn may be very far forward of the vehicle's root and miss
 		-- parts of the inside corner.
-		local forwardOffset = - (self.vehicle.cp.workWidth - self.vehicle.cp.turnDiameter) / 2.5
+		local forwardOffset = - (self.vehicle.cp.workWidth - self.settings.turnDiameter:get()) / 2.5
 		self:debug('sprayer working width %.1f > turn diameter %.1f, applying forward offset %.1f to turn end',
-				self.vehicle.cp.workWidth, self.vehicle.cp.turnDiameter, forwardOffset)
+				self.vehicle.cp.workWidth, self.settings.turnDiameter:get(), forwardOffset)
 		return forwardOffset
 	else
 		return 0

@@ -164,7 +164,7 @@ function CourseGeneratorScreen:onClickWidth( state )
 end
 
 function CourseGeneratorScreen:onOpenAutoWidth(element)
-	local autoWidth = courseplay:getWorkWidth(self.vehicle)
+	local autoWidth = self.settings.workWidth:getAutoWorkWidth()
 	if autoWidth > 0 then
 		element:setVisible(true)
 	else

@@ -446,7 +446,7 @@ function CombineUnloadAIDriver:driveOnField(dt)
 	elseif self.onFieldState == self.states.MOVE_BACK_FULL then
 		local _, dx, dz = self:getDistanceFromCombine(self.combineJustUnloaded)
 		-- drive back way further if we are behind a chopper to have room
-		local dDriveBack = math.abs(dx) < 3 and 0.75 * self.vehicle.cp.turnDiameter or -10
+		local dDriveBack = math.abs(dx) < 3 and 0.75 * self.settings.turnDiameter:get() or -10
 		if dz > dDriveBack then
 			self:startUnloadCourse()
 		end
@@ -1496,7 +1496,7 @@ function CombineUnloadAIDriver:startPathfindingToTurnEnd(xOffset, zOffset)
 		local turnEndNode, startOffset, goalOffset = self.turnContext:getTurnEndNodeAndOffsets(self.vehicle)
 		-- ignore combine for pathfinding, it is moving anyway and our turn functions make sure we won't hit it
 		self.pathfinder, done, path, goalNodeInvalid = PathfinderUtil.findPathForTurn(self.vehicle, startOffset, turnEndNode, goalOffset,
-				self.vehicle.cp.turnDiameter / 2, self:getAllowReversePathfinding(), self.followCourse, {self.combineToUnload})
+				self.settings.turnDiameter:get() / 2, self:getAllowReversePathfinding(), self.followCourse, {self.combineToUnload})
 		if done then
 			return self:onPathfindingDoneToTurnEnd(path, goalNodeInvalid)
 		else

@@ -162,7 +162,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 	--- Get the turn radius either by the automatic or user provided turn circle.
 	local extRadius = 0.5 + (0.15 * directionNodeToTurnNodeLength); -- The extra calculation is for dynamic trailer length to prevent jackknifing;
-	turnInfo.turnRadius = vehicle.cp.turnDiameter * 0.5 + extRadius;
+	turnInfo.turnRadius = vehicle.cp.settings.turnDiameter:get() * 0.5 + extRadius;
 	turnInfo.turnDiameter = turnInfo.turnRadius * 2;
 
 
@@ -1534,7 +1534,7 @@ see https://ggbm.at/RN3cawGc
 function courseplay:getAlignWpsToTargetWaypoint( vehicle, vx, vz, tx, tz, tDirection, generateStraightWaypoints )
 	vehicle.cp.turnTargets = {}
 	-- make the radius a bit bigger to make sure we can make the turn
-	local turnRadius = 1.1 * vehicle.cp.turnDiameter / 2
+	local turnRadius = 1.1 * vehicle.cp.settings.turnDiameter:get() / 2
 	-- target waypoint we want to reach
 	local wpNode = courseplay.createNode( "wpNode", tx, tz, tDirection )
 	-- which side of the target node are we?
@@ -2113,7 +2113,7 @@ end
 ---@return Course
 function TurnContext:createEndingTurnCourse(vehicle, corner)
 	local startAngle = math.deg(self:getNodeDirection(AIDriverUtil.getDirectionNode(vehicle)))
-	local r = vehicle.cp.turnDiameter / 2
+	local r = vehicle.cp.settings.turnDiameter:get() / 2
 	local startPos, endPos = {}, {}
 	startPos.x, _, startPos.z = getWorldTranslation(AIDriverUtil.getDirectionNode(vehicle))
 	endPos.x, _, endPos.z = getWorldTranslation(self.vehicleAtTurnEndNode)

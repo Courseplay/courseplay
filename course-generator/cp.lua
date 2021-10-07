@@ -156,7 +156,7 @@ function courseGenerator.generate(vehicle)
 	-- tool causing the innermost tool on the headland
 	-- turn tighter than possible
 	-- Using vehicle.cp.turnDiameter as this is updated when the user changes the value
-	local turnRadiusAdjustedForMultiTool = vehicle.cp.turnDiameter / 2 +
+	local turnRadiusAdjustedForMultiTool = vehicle.cp.settings.turnDiameter:get() / 2 +
 		vehicle.cp.courseGeneratorSettings.workWidth:get() *
 			(vehicle.cp.courseGeneratorSettings.multiTools:get() - 1) / 2
 	local status, ok = xpcall(generateCourseForField, function(err)

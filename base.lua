@@ -221,9 +221,6 @@ function courseplay:onLoad(savegame)
 	self.cp.tipRefOffset = 0;
 
 	self.cp.vehicleTurnRadius = courseplay:getVehicleTurnRadius(self);
-	self.cp.turnDiameter = self.cp.vehicleTurnRadius * 2;
-	self.cp.turnDiameterAuto = self.cp.vehicleTurnRadius * 2;
-	self.cp.turnDiameterAutoMode = true;
 
 
 	--Offset
@@ -446,17 +443,13 @@ function courseplay:onUpdate(dt)
 	end
 
 	if self.cp.postInitDone == nil then 
-		--- Reset the current mode, as all implements are now attached.
-		--- If the vehicle is new, then cp.loadedMode is nil
-		if g_server then 
-			self.cp.settings.driverMode:postInit()
-		end
 		if self.cp.driver then 
 			---Post init function, as not all giants variables are
 			---set correctly at the first courseplay:setAIDriver() call.
 			self.cp.driver:postInit()
-			self.cp.postInitDone = true
 		end
+		self.cp.settings.driverMode:postInit()
+		self.cp.postInitDone = true
 	end
 
 	-- we are in record mode
@@ -685,8 +678,8 @@ function courseplay:onReadStream(streamId, connection)
 	self.cp.courseGeneratorSettings:onReadStream(streamId)
 -------------------	
 
-	local copyCourseFromDriverId = streamDebugReadInt32(streamId)
-	if copyCourseFromDriverId then
+	local copyCourseFromDriverId = streamReadInt32(streamId)
+	if copyCourseFromDriverId and copyCourseFromDriverId~=-1 then
 		self.cp.copyCourseFromDriver = NetworkUtil.getObject(copyCourseFromDriverId) 
 	end
 
@@ -694,18 +687,18 @@ function courseplay:onReadStream(streamId, connection)
 
 
 	-- kurs daten
-	local courses = streamDebugReadString(streamId) -- 60.
-	if courses ~= nil then
+	local courses = streamReadString(streamId) -- 60.
+	if courses ~= nil and courses~=-1 then
 		self.cp.loadedCourses = StringUtil.splitString(",", courses);
 		courseplay:reloadCourses(self, true)
 	end
 	
-	self.cp.numCourses = streamDebugReadInt32(streamId)
+	self.cp.numCourses = streamReadInt32(streamId)
 	
 	--print(string.format("%s:read: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
 	if self.cp.numCourses > #self.cp.loadedCourses then
 		self.Waypoints = {}
-		local wp_count = streamDebugReadInt32(streamId)
+		local wp_count = streamReadInt32(streamId)
 		for w = 1, wp_count do
 			table.insert(self.Waypoints, CourseEvent:readWaypoint(streamId))
 		end
@@ -718,7 +711,7 @@ function courseplay:onReadStream(streamId, connection)
 	-- SETUP 2D COURSE DRAW DATA
 	self.cp.course2dUpdateDrawData = true;
 	
-	local debugChannelsString = streamDebugReadString(streamId)
+	local debugChannelsString = streamReadString(streamId)
 	for k,v in pairs(StringUtil.splitString(",", debugChannelsString)) do
 		courseplay:toggleDebugChannel(self, k, v == 'true');
 	end;
@@ -734,7 +727,7 @@ function courseplay:onReadStream(streamId, connection)
 	--Make sure every vehicle has same AIDriver as the Server
 
 	self.cp.driver:onReadStream(streamId)
-	
+	courseplay.debugFormat("driver mode: %s",self.cp.settings.driverMode:get())
 	courseplay:debug("id: "..tostring(self.id).."  base: readStream end", courseplay.DBG_MULTIPLAYER)
 end
 
@@ -752,23 +745,23 @@ function courseplay:onWriteStream(streamId, connection)
 	self.cp.courseGeneratorSettings:onWriteStream(streamId)
 -------------
 
-	local copyCourseFromDriverID;
+	local copyCourseFromDriverID = -1; 
 	if self.cp.copyCourseFromDriver ~= nil then
 		copyCourseFromDriverID = NetworkUtil.getObjectId(self.cp.copyCourseFromDriver)
 	end
-	streamDebugWriteInt32(streamId, copyCourseFromDriverID)
+	streamWriteInt32(streamId, copyCourseFromDriverID)
 	
-	local loadedCourses;
+	local loadedCourses = "";
 	if #self.cp.loadedCourses then
 		loadedCourses = table.concat(self.cp.loadedCourses, ",")
 	end
-	streamDebugWriteString(streamId, loadedCourses) -- 60.
-	streamDebugWriteInt32(streamId, self.cp.numCourses)
+	streamWriteString(streamId, loadedCourses)
+	streamWriteInt32(streamId, self.cp.numCourses)
 	
 	--print(string.format("%s:write: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
 	if self.cp.numCourses > #self.cp.loadedCourses then
 		courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  sync temp course", courseplay.DBG_MULTIPLAYER)
-		streamDebugWriteInt32(streamId, #(self.Waypoints))
+		streamWriteInt32(streamId, #(self.Waypoints))
 		for w = 1, #(self.Waypoints) do
 			--print("writing point "..tostring(w))
 			CourseEvent:writeWaypoint(streamId, self.Waypoints[w])
@@ -776,7 +769,7 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 
 	local debugChannelsString = table.concat(table.map(courseplay.debugChannels, tostring), ",");
-	streamDebugWriteString(streamId, debugChannelsString) 
+	streamWriteString(streamId, debugChannelsString) 
 		
 	if self.cp.timeRemaining then 
 		streamWriteBool(streamId,true)
@@ -793,7 +786,7 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 
 	self.cp.driver:onWriteStream(streamId)
-	
+	courseplay.debugFormat("driver mode: %s",self.cp.settings.driverMode:get())
 	courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  base: write stream end", courseplay.DBG_MULTIPLAYER)
 end
 
@@ -801,11 +794,9 @@ end
 
 function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 	 if connection:getIsServer() then
-		if self.cp.driver ~= nil then 
-			self.cp.driver:readUpdateStream(streamId, timestamp, connection)
-		end 
 		--only sync while cp is drivin!
 		if streamReadBool(streamId) then
+			self.cp.driver:readUpdateStream(streamId, timestamp, connection)
 			if streamReadBool(streamId) then 
 				self.cp.waypointIndex = streamReadInt32(streamId)
 			else 
@@ -839,10 +830,9 @@ end
 
 function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
 	 if not connection:getIsServer() then
-		if self.cp.driver ~= nil then 
+		streamWriteBool(streamId, self:getIsCourseplayDriving() or false)
+		if self:getIsCourseplayDriving() then
 			self.cp.driver:writeUpdateStream(streamId, connection, dirtyMask)
-		end 
-		if streamWriteBool(streamId, self:getIsCourseplayDriving() or false) then
 			if self.cp.waypointIndex then
 				streamWriteBool(streamId,true)
 				streamWriteInt32(streamId,self.cp.waypointIndex)
@@ -904,12 +894,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		curKey = key .. '.courseplay.HUD';
 		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
 		
-
-		
-		curKey = key .. '.courseplay.driving';
-		self.cp.turnDiameter		  = Utils.getNoNil(  getXMLInt(xmlFile, curKey .. '#turnDiameter'),			 self.cp.vehicleTurnRadius * 2);
-		self.cp.turnDiameterAutoMode  = Utils.getNoNil( getXMLBool(xmlFile, curKey .. '#turnDiameterAutoMode'),	 true);
-	
 	
 		-- MODES 4 / 6
 		curKey = key .. '.courseplay.fieldWork';
@@ -965,11 +949,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
 
-	
-	
-	--driving settings
-	setXMLInt(xmlFile, newKey..".driving #turnDiameter", self.cp.turnDiameter)
-	setXMLBool(xmlFile, newKey..".driving #turnDiameterAutoMode", self.cp.turnDiameterAutoMode)
 	
 	--field work settings
 	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, 0, 0, 0, 0, 0, self.cp.laneNumber);

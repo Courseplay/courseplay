@@ -154,7 +154,7 @@ function BaleCollectorAIDriver:findClosestBale(bales)
 		if bale:isStillValid() then
 			local _, _, _, d = bale:getPositionInfoFromNode(AIDriverUtil.getDirectionNode(self.vehicle))
 			self:debug('%d. bale (%d, %s) in %.1f m', i, bale:getId(), bale:getBaleObject(), d)
-			if d < self.vehicle.cp.turnDiameter * 2 then
+			if d < self.settings.turnDiameter:get() * 2 then
 				-- if it is really close, check the length of the Dubins path
 				-- as we may need to drive a loop first to get to it
 				d = self:getDubinsPathLengthToBale(bale)
