@@ -39,7 +39,7 @@ function TriggerShovelAIDriver:driveUnloadingCourse(dt)
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
 	--- Only allow loading near the first waypoint.
-	if self:isNearFillPoint() then
+	if self:isNearFillPointAtFirstWP() then
 		self.triggerHandler:enableFillTypeLoading()
 		self:setSpeed(self.MAX_SPEED_IN_LOADING_TRIGGER)
 	else 

@@ -952,17 +952,18 @@ function AIDriver:slowDownForWaitPoints()
 	end
 end
 
--- TODO: review this whole fillpoint/filltrigger thing.
-function AIDriver:isNearFillPoint()
-	if self.course == nil then
-		return false
-	else
-		return self.course:havePhysicallyPassedWaypoint(self:getDirectionNode(),#self.course.waypoints) and self.ppc:getCurrentWaypointIx() <= 5;
-	end
-end
+--- For loading at the first waypoint.
+--- Checks if the vehicle combo is at a loading point.
+--- From the first wp until roughly 1.5 times the length of the complete vehicle combo
 
-function AIDriver:getIsInFilltrigger()
-	return self.vehicle.cp.fillTrigger ~= nil or self:isNearFillPoint()
+function AIDriver:isNearFillPointAtFirstWP()
+	
+	local ix = self.ppc:getRelevantWaypointIx()
+	--- Adds a default offset for small trailers, so no unloading at the same loading trigger is possible.
+	local smallTrailerOffset = 3
+	--- Adds a small factor for same padding to make sure no  unloading at the same loading trigger is possible.
+	local trailerOffsetFactor = 1.5
+	return self.course:getDistanceFromFirstWaypoint(ix) < (trailerOffsetFactor*self.triggerSensor.totalVehicleLength+smallTrailerOffset)
 end
 
 --- Is an alignment course needed to reach waypoint ix in the current course?
@@ -1392,7 +1393,7 @@ function AIDriver:onUnLoadCourse(allowedToDrive, dt)
 
 	-- tipper is not empty and tractor reaches TipTrigger
 	--if self.vehicle.cp.totalFillLevel > 0 then
-	if self:hasTipTrigger() and not self:isNearFillPoint() then
+	if self:hasTipTrigger() and not self:isNearFillPointAtFirstWP() then
 		self:setSpeed(self.vehicle.cp.speeds.approach)
 		allowedToDrive, takeOverSteering = self:dischargeAtTipTrigger(dt)
 	end
