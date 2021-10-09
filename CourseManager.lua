@@ -116,6 +116,10 @@ function FileSystemEntityView:getName()
 	return self.name
 end
 
+function FileSystemEntityView:getFullPath()
+	return self.entity:getFullPath()
+end
+
 function FileSystemEntityView:getLevel()
 	return self.level
 end
@@ -261,6 +265,10 @@ function CourseManager:init(courseDirFullPath)
 	self.courseDir = Directory(courseDirFullPath)
 	self.courseDirView = DirectoryView(self.courseDir)
 	self.currentEntry = 1
+	-- normal (non-fieldwork) courses, will create entry when the course is loaded into the vehicle
+	self.courses = {}
+	-- fieldwork courses, will create entry when the course is loaded into the vehicle
+	self.fieldworkCourses = {}
 end
 
 -- wrapper to create a global instance.
@@ -301,6 +309,48 @@ function CourseManager:fold(index)
 	self:debug('%s folded', dir:getName())
 end
 
+function CourseManager:loadCourse(vehicle, index)
+	self:getCurrentEntry()
+	local file = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+	local course = Course.createFromFile(vehicle, file)
+	if course:isFieldworkCourse() then
+		self.fieldworkCourses[vehicle] = course
+		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s', file:getName())
+	else
+		self.courses[vehicle] = course
+		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s', file:getName())
+	end
+	-- TODO: get rid of this global variable
+	vehicle:setCpVar('canDrive', true, courseplay.isClient);
+end
+
+function CourseManager:getCourse(vehicle)
+	return self.courses[vehicle]
+end
+
+function CourseManager:getFieldworkCourse(vehicle)
+	return self.fieldworkCourses[vehicle]
+end
+
+function CourseManager:hasCourse(vehicle)
+	-- a vehicle has a course assigned if either a normal or a fieldwork course (or both) is assigned
+	return self.courses[vehicle] or self.fieldworkCourses[vehicle]
+end
+
+function CourseManager:getCourseName(vehicle)
+	local name = ''
+	if self.fieldworkCourses[vehicle] then
+		name = self.fieldworkCourses[vehicle]:getName()
+		if self.courses[vehicle] then
+			-- if there is a fieldwork course and an unload/refill course, show both
+			name = name .. ' + ' .. self.courses[vehicle]:getName()
+		end
+	else
+		name = self.courses[vehicle]:getName()
+	end
+	return name
+end
+
 function CourseManager:migrateOldCourses(folders, courses)
 	local levels = {}
 	for _, folder in pairs(folders) do
@@ -329,6 +379,16 @@ end
 
 function CourseManager:debug(...)
 	courseplay.debugFormat(courseplay.DBG_COURSES, string.format(...))
+end
+
+function CourseManager:dump()
+	for v, c in pairs(self.courses) do
+		courseplay.debugVehicle(courseplay.DBG_COURSES, v, 'course: %s', c:getName())
+	end
+	for v, c in pairs(self.fieldworkCourses) do
+		courseplay.debugVehicle(courseplay.DBG_COURSES, v, 'fieldwork course: %s', c:getName())
+	end
+	return 'courses dumped.'
 end
 
 -- Recreate if already exists. This is only for development to recreate the global instance if this

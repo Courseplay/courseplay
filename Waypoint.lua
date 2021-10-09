@@ -243,8 +243,8 @@ Course = CpObject()
 --- Course constructor
 ---@param waypoints Waypoint[] table of waypoints of the course
 ---@param temporary boolean optional, default false is this a temporary course?
--- @param first number optional, index of first waypoint to use
--- @param last number optional, index of last waypoint to use to construct of the course
+---@param first number optional, index of first waypoint to use
+---@param last number optional, index of last waypoint to use to construct of the course
 function Course:init(vehicle, waypoints, temporary, first, last)
 	-- add waypoints from current vehicle course
 	---@type Waypoint[]
@@ -260,6 +260,7 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	self.temporaryOffsetX, self.temporaryOffsetZ = CpSlowChangingObject(0, 0), CpSlowChangingObject(0, 0)
 	self.numberOfHeadlands = 0
 	self.workWidth = 0
+	self.name = ''
 	-- only for logging purposes
 	self.vehicle = vehicle
 	self.temporary = temporary or false
@@ -270,13 +271,12 @@ function Course:init(vehicle, waypoints, temporary, first, last)
 	self:enrichWaypointData()
 end
 
-function Course.createFromGeneratedCourse(vehicle, waypoints, temporary, first, last)
-	local course = Course(vehicle, {}, temporary)
-	for i = first or 1, last or #waypoints do
-		table.insert(course.waypoints, Waypoint.initFromGeneratedWp(waypoints[i], i))
-	end
-	course:enrichWaypointData()
-	return course
+function Course:isFieldworkCourse()
+	return (self.workWidth and self.workWidth > 0) or (self.numberOfHeadlands and self.numberOfHeadlands > 0)
+end
+
+function Course:getName()
+	return self.name
 end
 
 function Course:initWaypoints()
@@ -426,7 +426,7 @@ function Course:enrichWaypointData()
 			turnFound = true
 		end
 	end
-	courseplay.debugFormat(courseplay.DBG_COURSES, 'Course with %d waypoints created/updated, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
+	courseplay.debugVehicle(courseplay.DBG_COURSES, self.vehicle, 'Course with %d waypoints created/updated, %.1f meters, %d turns', #self.waypoints, self.length, self.totalTurns)
 end
 
 function Course:calculateRadius(ix)
@@ -1784,6 +1784,28 @@ function Course.deserializeWaypoints(serializedWaypoints)
 			table.insert(waypoints, p)
 		end
 	end
-	courseplay.debugFormat(courseplay.DBG_COURSES, 'Loaded %d waypoints from %d lines', #waypoints, #lines)
 	return waypoints
 end
+
+---@param vehicle : table
+---@param file : FileView
+function Course.createFromFile(vehicle, file)
+	local courseXml = loadXMLFile("courseXml", file:getFullPath())
+	local courseKey = "course";
+	local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
+	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
+	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
+	local serializedWaypoints = getXMLString(courseXml, courseKey .. '.waypoints')
+
+	local course = Course(vehicle, Course.deserializeWaypoints(serializedWaypoints))
+	course.workWidth = workWidth
+	course.numHeadlands = numHeadlandLanes
+	course.multiTools = multiTools
+	course.name = file:getName()
+
+	delete(courseXml);
+
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
+	return course
+end
+

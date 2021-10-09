@@ -169,7 +169,7 @@ function CombineUnloadAIDriver:start(startingPoint)
 
 	self.state = self.states.RUNNING
 
-	self.unloadCourse = Course(self.vehicle, self.vehicle.Waypoints)
+	self.unloadCourse = g_courseManager:getCourse(self.vehicle)
 	self.ppc:setNormalLookaheadDistance()
 	self:setDriveUnloadNow(false)
 	

@@ -34,7 +34,6 @@ function TestSettings:setUp()
 	self.vehicle.Waypoints = th.waypoints
 	self.vehicle.cp = {}
 	self.vehicle.cp.ppc = PurePursuitController(self.vehicle)
-	self.vehicle.cp.ppc:enable()
 	--self.vehicle.cp.ppc:initialize(1)
 end
 

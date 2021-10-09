@@ -392,8 +392,9 @@ function courseplay:resetTipTrigger(vehicle, changeToForward)
 			vehicle.cp.backupUnloadSpeed = nil;
 		end;
 		if changeToForward and vehicle.Waypoints[vehicle.cp.waypointIndex].rev then
-			courseplay:setWaypointIndex(vehicle, courseplay:getNextFwdPoint(vehicle));
-			vehicle.cp.ppc:initialize()
+			local ix = courseplay:getNextFwdPoint(vehicle)
+			courseplay:setWaypointIndex(vehicle, ix);
+			vehicle.cp.ppc:initialize(ix)
 		end;
 	end
 end;

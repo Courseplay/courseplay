@@ -44,10 +44,7 @@ HOW TO USE
 1. add a PPC to the vehicle with new()
 2. when the vehicle starts driving, call initialize()
 3. in every update cycle, call update(). This will calculate the goal point and the current waypoint
-4. this PPC can not reverse with a trailer (but it it fine without a trailer) We rely on the code in reverse.lua
-   to do that. Therefore, use setReverseActive(true) to tell the PPC that now reverse is driving, so it
-   can deactivate itself. When reverse is done, call initialize with the first forward waypoint and setReverseActive(false).waypoint
-5. use the convenience functions getCurrentWaypointPosition(), shouldChangeWaypoint(), reachedLastWaypoint() and switchToNextWaypoint()
+4. use the convenience functions getCurrentWaypointPosition(), reachedLastWaypoint()
    in your code instead of directly checking and manipulating vehicle.Waypoints. These provide the legacy behavior when
    the PPC is not active (for example due to reverse driving) or when disabled
 6. you can use enable() and disable() to enable/disable the PPC. When disabled and you are using the above functions,
@@ -88,9 +85,6 @@ function PurePursuitController:init(vehicle)
 	self.goalWpNode = WaypointNode( self.name .. '-goalWpNode', false)
 	-- vehicle position projected on the path, not used for anything other than debug display
 	self.projectedPosNode = courseplay.createNode( self.name .. '-projectedPosNode', 0, 0, 0)
-	self.isReverseActive = false
-	-- enable PPC by default for developers only
-	self.enabled = CpManager.isDeveloper
 	-- index of the first node of the path (where PPC is initialized and starts driving
 	self.firstIx = 1
 	self.crossTrackError = 0
@@ -153,9 +147,7 @@ function PurePursuitController:initialize(ix)
 	if not self.course then
 		self.course = Course(self.vehicle, self.vehicle.Waypoints)
 	end
-	-- if we use the legacy waypointIndex then we need the original index (in case of combined courses)
-	-- TODO: always require to pass in the index, don't use global variable
-	self.firstIx = ix and ix or self.course:findOriginalIx(self.vehicle.cp.waypointIndex)
+	self.firstIx = ix
 	-- relevantWpNode always points to the point where the relevant path segment starts
 	self.relevantWpNode:setToWaypoint(self.course, self.firstIx )
 	self.nextWpNode:setToWaypoint(self.course, self.firstIx)
@@ -164,7 +156,6 @@ function PurePursuitController:initialize(ix)
 	self.course:setCurrentWaypointIx(self.firstIx)
 	self.course:setLastPassedWaypointIx(nil)
 	self:debug('initialized to waypoint %d of %d', self.firstIx, self.course:getNumberOfWaypoints())
-	self.isReverseActive = false
 	self.lastPassedWaypointIx = nil
 	self.sendWaypointChange = nil
 	self.sendWaypointPassed = nil
@@ -535,47 +526,6 @@ function PurePursuitController:showGoalpointDiag(case, ...)
 	end
 end
 
--- is the code in reverse.lua driving? This happens when the
--- tractor has a trailer or some attachment. We can't handle that
--- here as then we have to control the trailer and not the tractor
--- so let that code do the waypoint switching
-function PurePursuitController:setReverseActive(isReverseActive)
-	self.isReverseActive = isReverseActive
-end
-
-function PurePursuitController:disable()
-	if self.enabled then
-		self:debug('disabled.', self.currentWpNode.ix)
-	end
-	self.enabled = false
-end
-
-function PurePursuitController:enable()
-	if not self.enabled then
-		self:debug('enabled.', self.currentWpNode.ix)
-	end
-	self.enabled = true
-end
-
-function PurePursuitController:toggleEnable()
-	if self.enabled then
-		self:disable()
-	else
-		self:enable()
-	end
-end
-
-function PurePursuitController:isEnabled()
-	return self.enabled
-end
-
-function PurePursuitController:isActive()
-	-- Let the code in reverse.lua do its magic when reversing.
-	-- That code seems to be robust against circling anyway
-	-- we only control when the user enabled us and not reverse.lua is driving
-	return self.enabled and not self.isReverseActive
-end
-
 --- Should we be driving in reverse based on the current position on course
 function PurePursuitController:isReversing()
 	if self.course then
@@ -614,48 +564,11 @@ function PurePursuitController:getGoalPointPosition()
 end
 
 function PurePursuitController:getCurrentWaypointPosition()
-	local cx, cy, cz
-	if self:isActive() then
-		cx, cy, cz = self:getGoalPointPosition()
-	else
-		cy = 0
-		cx, cz = self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cx, self.vehicle.Waypoints[self.vehicle.cp.waypointIndex].cz
-	end
-	return cx, cy, cz
-end
-
-function PurePursuitController:switchToNextWaypoint()
-	if self:isActive() then
-		courseplay:setWaypointIndex(self.vehicle, self:getCurrentOriginalWaypointIx());
-	else
-		courseplay:setWaypointIndex(self.vehicle, self.vehicle.cp.waypointIndex + 1);
-	end
-end
-
--- This is to be used in drive.lua in place of the dist < distToChange check, that is, when we
--- reached the next waypoint.
-function PurePursuitController:shouldChangeWaypoint(distToChange)
-	local shouldChangeWaypoint
-	if self:isActive() then
-		-- true when the current waypoint calculated by PPC does not match the CP waypoint anymore, or
-		-- true when at the last waypoint (to trigger the last waypoint processing in drive.lua (which was triggered by
-		-- the distToChange condition before PPC)
-		-- TODO: remove that reachedLastWaypoint() when not needed anymore for backward compatibility
-		shouldChangeWaypoint = self:getCurrentWaypointIx() ~= self.vehicle.cp.waypointIndex or self:reachedLastWaypoint()
-	else
-		shouldChangeWaypoint = self.vehicle.cp.distanceToTarget <= distToChange
-	end
-	return shouldChangeWaypoint
+	return self:getGoalPointPosition()
 end
 
 function PurePursuitController:reachedLastWaypoint()
-	local atLastWaypoint
-	if self:isActive() then
-		atLastWaypoint = self.relevantWpNode.ix >= self.course:getNumberOfWaypoints()
-	else
-		atLastWaypoint = self.vehicle.cp.waypointIndex >= self.vehicle.cp.numWaypoints			
-	end
-	return atLastWaypoint
+	return self.relevantWpNode.ix >= self.course:getNumberOfWaypoints()
 end
 
 function PurePursuitController:haveJustPassedWaypoint(ix)

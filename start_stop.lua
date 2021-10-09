@@ -12,7 +12,7 @@ function courseplay:start(self)
 
 	self.cp.numWayPoints = #self.Waypoints;
 	if self.cp.numWaypoints < 1 then
-		return
+		--return
 	end
 	--setEngineState needed or AIDriver handling this ??
 	courseplay:setEngineState(self, true);
@@ -28,20 +28,11 @@ function courseplay:start(self)
 		courseplay:setWaypointIndex(self, 1);
 	end
 
-	-- show arrow
---	self.cp.distanceCheck = true
-	-- current position
-	local ctx, cty, ctz = getWorldTranslation(self.cp.directionNode);
-
 	-- TODO: temporary bandaid here for the case when the legacy waypointIndex isn't set correctly
 	if self.cp.waypointIndex > #self.Waypoints then
 		courseplay.infoVehicle(self, 'Waypoint index %d reset to %d', self.cp.waypointIndex, #self.Waypoints)
 		self.cp.waypointIndex = #self.Waypoints
 	end
-	-- position of next waypoint
-	local cx, cz = self.Waypoints[self.cp.waypointIndex].cx, self.Waypoints[self.cp.waypointIndex].cz
-	-- distance (in any direction)
-	local dist = courseplay:distance(ctx, ctz, cx, cz)
 
 	local numWaitPoints = 0
 	local numUnloadPoints = 0
@@ -85,7 +76,7 @@ function courseplay:start(self)
 		self.cp.driver:delete()
 		self.cp.driver = BunkerSiloAIDriver.create(self)
 	end
-
+	print('starting ----- ')
 	self.cp.driver:start(self.cp.settings.startingPoint)
 end;
 

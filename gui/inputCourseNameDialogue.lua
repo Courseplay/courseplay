@@ -83,9 +83,6 @@ function inputCourseNameDialogue:onSaveClick()
 		if vehicle.cp.courseNumHeadlandLanes then
 			course.numHeadlandLanes = vehicle.cp.courseNumHeadlandLanes;
 		end;
-		if vehicle.cp.courseHeadlandDirectionCW ~= nil then
-			course.headlandDirectionCW = vehicle.cp.courseHeadlandDirectionCW;
-		end;
 		if vehicle.cp.courseGeneratorSettings.multiTools:get() ~= 1 then
 			course.multiTools = vehicle.cp.courseGeneratorSettings.multiTools:get()
 		end;

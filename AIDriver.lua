@@ -168,7 +168,6 @@ function AIDriver:init(vehicle)
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
 	self.ppc:registerListeners(self, 'onWaypointPassed', 'onWaypointChange')
-	self.ppc:enable()
 	self.nextWpIx = 1
 	self.acceleration = 1
 	self.state = self.states.STOPPED
@@ -324,7 +323,8 @@ function AIDriver:start(startingPoint)
 	self:enableCollisionDetection()
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
-	self.mainCourse = Course(self.vehicle, self.vehicle.Waypoints)
+	self.mainCourse = g_courseManager:getCourse(self.vehicle)
+	print(self.mainCourse:getName())
 	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
 			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
@@ -755,7 +755,6 @@ function AIDriver:getReverseDrivingDirection()
 	local lx, lz = self:getDirectionToGoalPoint()
 	-- take care of reversing
 	if self.ppc:isReversing() then
-		-- TODO: currently goReverse() calls ppc:initialize(), this is not really transparent,
 		-- should be refactored so it returns a status telling us to drive forward from waypoint x instead.
 		lx, lz, moveForwards, isReverseActive = courseplay:goReverse(self.vehicle, lx, lz)
 		-- as of now we need to invert the direction from goReverse to work correctly with

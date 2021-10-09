@@ -207,7 +207,6 @@ function courseGenerator.generate(vehicle)
 		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
 	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
-	vehicle.cp.courseHeadlandDirectionCW = vehicle.cp.courseGeneratorSettings.headlandDirection:is(courseGenerator.HEADLAND_CLOCKWISE)
 
 	vehicle.cp.hasGeneratedCourse = true;
 	courseplay:validateCanSwitchMode(vehicle);

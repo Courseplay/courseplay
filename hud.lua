@@ -429,11 +429,11 @@ end
 function courseplay.hud:setContent(vehicle)
 	-- self = courseplay.hud
 
-	
 	-- course name
-	if vehicle.cp.currentCourseName ~= nil then
-		vehicle.cp.hud.content.bottomInfo.courseNameText = vehicle.cp.currentCourseName;
-	elseif vehicle.Waypoints[1] ~= nil then
+	if g_courseManager:hasCourse(vehicle) then
+		vehicle.cp.hud.content.bottomInfo.courseNameText = g_courseManager:getCourseName(vehicle)
+	elseif false then
+		-- TODO: figure out when to show temporary course
 		vehicle.cp.hud.content.bottomInfo.courseNameText = courseplay:loc('COURSEPLAY_TEMP_COURSE');
 	else
 		vehicle.cp.hud.content.bottomInfo.courseNameText = courseplay:loc('COURSEPLAY_NO_COURSE_LOADED');

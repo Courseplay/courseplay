@@ -953,7 +953,6 @@ TourIcons.showTourDialog = Utils.overwrittenFunction(TourIcons.showTourDialog, c
 
 function courseplay:setWaypointIndex(vehicle, number,isRecording)
 	if vehicle.cp.waypointIndex ~= number then
-		vehicle.cp.course.hasChangedTheWaypointIndex = true
 		if isRecording then
 			vehicle.cp.waypointIndex = number
 		else

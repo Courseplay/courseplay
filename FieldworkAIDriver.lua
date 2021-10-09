@@ -796,39 +796,13 @@ function FieldworkAIDriver:areFillLevelsOk()
 end
 
 --- Set up the main (fieldwork) course and the unload/refill course and initial state
--- Currently, the legacy CP code just dumps all loaded courses to vehicle.Waypoints so
--- now we have to figure out which of that is the actual fieldwork course and which is the
--- refill/unload part.
--- This should better be handled by the course management though and should be refactored.
 function FieldworkAIDriver:setUpCourses()
-	local nWaits = 0
-	local endFieldCourseIx = 0
-	for i, wp in ipairs(self.vehicle.Waypoints) do
-		if wp.wait then
-			nWaits = nWaits + 1
-			-- the second wp with the wait attribute is the end of the field course (assuming
-			-- the field course has been loaded first.
-			if nWaits == 2 then
-				endFieldCourseIx = i
-				break
-			end
-		end
-	end
-	if #self.vehicle.Waypoints > endFieldCourseIx and endFieldCourseIx ~= 0 then
-		self:debug('Course with %d waypoints set up, there seems to be an unload/refill course starting at waypoint %d',
-			#self.vehicle.Waypoints, endFieldCourseIx + 1)
-		---@type Course
-		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, endFieldCourseIx)
-		---@type Course
-		if #self.vehicle.Waypoints - endFieldCourseIx > 2 then
-			self.unloadRefillCourse = Course(self.vehicle, self.vehicle.Waypoints, false, endFieldCourseIx + 1, #self.vehicle.Waypoints)
-		else
-			self:debug('Unload/refill course too short, ignoring')
-		end
+	self.unloadRefillCourse = g_courseManager:getCourse(self.vehicle)
+	self.fieldworkCourse = g_courseManager:getFieldworkCourse(self.vehicle)
+	if self.unloadRefillCourse then
+		self:debug('Fieldwork course with unload/refill course loaded.')
 	else
-		self:debug('Course with %d waypoints set up, there seems to be no unload/refill course', #self.vehicle.Waypoints)
-		self.fieldworkCourse = Course(self.vehicle, self.vehicle.Waypoints, false, 1, #self.vehicle.Waypoints)
-		self.unloadRefillCourse = nil
+		self:debug('Fieldwork course loaded (no unload/refill course).')
 	end
 	-- get a signature of the course now, before offsetting it so can compare for the convoy
 	self.fieldworkCourseHash = self.fieldworkCourse:getHash()

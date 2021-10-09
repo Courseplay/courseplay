@@ -89,9 +89,8 @@ end
 
 function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
-		local id = vehicle.cp.hud.courses[index].id
-		courseplay:loadCourse(vehicle, id, true)
-	end	
+		g_courseManager:loadCourse(vehicle, index)
+	end
 end
 
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
@@ -156,7 +155,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			-- for turn maneuver
 			vehicle.cp.courseWorkWidth = course.workWidth;
 			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
-			vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
 			course.multiTools = course.multiTools or 1
 			vehicle.cp.courseGeneratorSettings.multiTools:set(course.multiTools)
 
@@ -284,10 +282,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			if not vehicle.cp.courseNumHeadlandLanes then
 				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
 			end;
-			if vehicle.cp.courseHeadlandDirectionCW == nil then
-				vehicle.cp.courseHeadlandDirectionCW = course.headlandDirectionCW;
-			end;
-
 
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), courseplay.DBG_COURSES);
 		end;
@@ -325,7 +319,6 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
 		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
-		vehicle.cp.courseHeadlandDirectionCW = src.cp.courseHeadlandDirectionCW
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
@@ -392,7 +385,6 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	-- for turn maneuver
 	vehicle.cp.courseWorkWidth = nil;
 	vehicle.cp.courseNumHeadlandLanes = nil;
-	vehicle.cp.courseHeadlandDirectionCW = nil;
 
 	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCanSwitchMode(vehicle);
@@ -695,9 +687,6 @@ function courseplay.courses:writeCourseFile(courseXmlFilePath, cp_course)
 	end;
 	if cp_course.numHeadlandLanes then
 		setXMLInt(courseXml, "course#numHeadlandLanes", cp_course.numHeadlandLanes);
-	end;
-	if cp_course.headlandDirectionCW ~= nil then
-		setXMLBool(courseXml, "course#headlandDirectionCW", cp_course.headlandDirectionCW);
 	end;
 	if cp_course.multiTools ~= nil then
 		setXMLInt(courseXml, "course#multiTools", cp_course.multiTools);
@@ -1591,9 +1580,6 @@ function courseplay.courses:loadCourseFromFile(course)
 	-- course numHeadlandLanes
 	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
 
-	-- course headlandDirectionCW
-	local headlandDirectionCW = getXMLBool(courseXml, courseKey .. "#headlandDirectionCW");
-
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 
 	-- Version 2 course files use the new format
@@ -1679,7 +1665,6 @@ function courseplay.courses:loadCourseFromFile(course)
 	course.waypoints =			  waypoints
 	course.workWidth =			  workWidth
 	course.numHeadlandLanes =	  numHeadlandLanes
-	course.headlandDirectionCW =  headlandDirectionCW
 	course.multiTools = 		  multiTools
 	delete(courseXml);
 
