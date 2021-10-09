@@ -67,7 +67,7 @@
 		<text name="COURSEPLAY_REACHED_WAITING_POINT" 						text="hat Wartepunkt erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT" 							text="hat den Trigger/das Ende der Route erreicht" />
 		<text name="COURSEPLAY_REACHED_END_POINT_MODE_1" 					text="Transport beendet." />
-		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="Flüssigkeitstransport beendet." />
+		<text name="COURSEPLAY_REACHED_END_POINT_MODE_8" 					text="Feldversorgungskurs beendet." />
 		<text name="COURSEPLAY_WORK_END" 									text="hat die Aufgabe erledigt." />
 		<text name="COURSEPLAY_NEEDS_UNLOADING" 							text=": Gerät muss entladen werden." />
 		<text name="COURSEPLAY_NEEDS_REFILLING" 							text=": Gerät muss aufgefüllt werden" />
@@ -202,13 +202,13 @@
 		<text name="COURSEPLAY_DIRECTION_6" 								text="längste Kante" />
 		<text name="COURSEPLAY_DIRECTION_7" 								text="Manuell" />
         <text name="COURSEPLAY_DIRECTION_N"                             	text="N"/>
-        <text name="COURSEPLAY_DIRECTION_NNE"                           	text="NNE"/>
-        <text name="COURSEPLAY_DIRECTION_NE"                            	text="NE"/>
-        <text name="COURSEPLAY_DIRECTION_ENE"                           	text="ENE"/>
-        <text name="COURSEPLAY_DIRECTION_E"                             	text="E"/>
-        <text name="COURSEPLAY_DIRECTION_ESE"                           	text="ESE"/>
-        <text name="COURSEPLAY_DIRECTION_SE"                            	text="SE"/>
-        <text name="COURSEPLAY_DIRECTION_SSE"                           	text="SSE"/>
+        <text name="COURSEPLAY_DIRECTION_NNE"                           	text="NNO"/>
+        <text name="COURSEPLAY_DIRECTION_NE"                            	text="NO"/>
+        <text name="COURSEPLAY_DIRECTION_ENE"                           	text="ONO"/>
+        <text name="COURSEPLAY_DIRECTION_E"                             	text="O"/>
+        <text name="COURSEPLAY_DIRECTION_ESE"                           	text="OSO"/>
+        <text name="COURSEPLAY_DIRECTION_SE"                            	text="SO"/>
+        <text name="COURSEPLAY_DIRECTION_SSE"                           	text="SSO"/>
         <text name="COURSEPLAY_DIRECTION_S"                             	text="S"/>
         <text name="COURSEPLAY_DIRECTION_SSW"                           	text="SSW"/>
         <text name="COURSEPLAY_DIRECTION_SW"                            	text="SW"/>
@@ -226,12 +226,12 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  				text="weich" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="scharf"/>
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="rund" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Feldmitte (experimental)" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Feldmitte (experimentell)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="hoch/runter" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="kreisförmig" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiralförmig" />
-		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Lands" />
-		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Number of rows per land" />
+		<text name="COURSEPLAY_CENTER_MODE_LANDS"						    text="Beete (innen nach aussen)" />
+		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND"					    text="Bahnen pro Beet" />
 		<text name="COURSEPLAY_NUMBER_OF_ROWS_PER_LAND_TOOLTIP"			    text="When working in lands, how many rows are per land" />
 		<text name="COURSEPLAY_ACTIVATED" 									text="aktiviert" />
 		<text name="COURSEPLAY_NAME_ONLY" 									text="nur Name" />
@@ -249,7 +249,7 @@
 		<text name="COURSEPLAY_FERTILIZERFUNCTION"							text="Düngefunktion der Sämaschine" />
 		<text name="COURSEPLAY_COMBINE_CONVOY"						 		text="Fahrzeugverband" />
 		<text name="COURSEPLAY_CONVOY_MAX_DISTANCE"					 		text="maximale Entfernung" />
-		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minmale Entfernung" />
+		<text name="COURSEPLAY_CONVOY_MIN_DISTANCE"						 	text="minimale Entfernung" />
 		<text name="COURSEPLAY_COMBINE_IN_FRUIT"							text="Drescher-Rohr ist in der Frucht" />
 		<text name="COURSEPLAY_MODESPECIFIC_SETTINGS"						text="Modusabhängige Einstellungen" />
     	<text name="COURSEPLAY_KEEP_CURRENT_STEERING" 			    		text="Lenkungsart beibehalten" />
@@ -459,7 +459,7 @@
 		<text name="COURSEPLAY_RUNCOUNTER_ERROR_FOR_TRIGGER"                text="letzter Durchlauf = 0" />
         <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES"                  text="verschiedene Ladegüter" />
         <text name="COURSEPLAY_LOADING_SEPARATE_FILLTYPES_TRAILERS"         text="verschiedene Trailer: " />
-		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d of %d" />
+		<text name="COURSEPLAY_UNLOADING_AMOUNT"							text="Entladen %d von %d" />
 		<text name="COURSEPLAY_MANUAL_LOADING"								text="manuelles laden" />
 
 		<text name="COURSEPLAY_WAITING_FOR_UNLOADERS"						text="Warte auf Abfahrer" />
