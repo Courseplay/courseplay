@@ -226,7 +226,7 @@
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SMOOTH"  				text="weich" />
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_SHARP"  				text="scharf"/>
 		<text name="COURSEPLAY_HEADLAND_CORNER_TYPE_ROUND"  				text="rund" />
-		<text name="COURSEPLAY_CENTER_MODE"									text="Feldmitte" />
+		<text name="COURSEPLAY_CENTER_MODE"									text="Feldmitte (experimentell)" />
 		<text name="COURSEPLAY_CENTER_MODE_UP_DOWN"							text="hoch/runter" />
 		<text name="COURSEPLAY_CENTER_MODE_CIRCULAR"						text="kreisförmig" />
 		<text name="COURSEPLAY_CENTER_MODE_SPIRAL"						    text="spiralförmig" />
