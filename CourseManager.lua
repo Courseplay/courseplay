@@ -1,6 +1,28 @@
+--[[
+This file is part of Courseplay (https://github.com/Courseplay/courseplay)
+Copyright (C) 2021 Peter Vaiko
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]
+
+--- An entity (file or directory) in the file system
 ---class FileSystemEntity
 FileSystemEntity = CpObject()
 
+---@param fullPath : string
+---@param parent : FileSystemEntity
+---@param name : string
 function FileSystemEntity:init(fullPath, parent, name)
 	self.fullPath = fullPath
 	self.parent = parent
@@ -37,7 +59,8 @@ File = CpObject(FileSystemEntity)
 function File:__tostring()
 	return 'File: ' .. FileSystemEntity.__tostring(self) .. '\n'
 end
---- Represents a file system directory
+
+--- A directory on the file system. This can recursively traversed to all subdirectories.
 ---@class Directory : FileSystemEntity
 Directory = CpObject(FileSystemEntity)
 
@@ -52,6 +75,7 @@ function Directory:isDirectory()
 	return true
 end
 
+--- Refresh from disk
 function Directory:refresh()
 	self.entriesToRemove = {}
 	for key, _ in pairs(self.entries) do
@@ -98,8 +122,10 @@ function Directory:__tostring()
 	return str
 end
 
-
+--- A view representing a file system entity (file or directory). The view knows how to display an entity on the UI.
+---@class FileSystemEntityView
 FileSystemEntityView = CpObject()
+
 function FileSystemEntityView:init(entity, level)
 	self.name = entity:getName()
 	self.level = level or 0
@@ -161,6 +187,7 @@ function FileSystemEntityView:showAddButton()
 	return false
 end
 
+---@class FileView : FileSystemEntityView
 FileView = CpObject(FileSystemEntityView)
 function FileView:init(file, level)
 	FileSystemEntityView.init(self, file, level)
@@ -311,6 +338,7 @@ function CourseManager:fold(index)
 	self:debug('%s folded', dir:getName())
 end
 
+--- Load the course shown in the HUD at index
 function CourseManager:loadCourse(vehicle, index)
 	self:getCurrentEntry()
 	local file = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
@@ -322,9 +350,21 @@ function CourseManager:loadCourse(vehicle, index)
 		self.courses[vehicle] = course
 		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s', file:getName())
 	end
-	-- TODO: get rid of this global variable
-	vehicle:setCpVar('canDrive', true, courseplay.isClient);
-	self:updateLegacyCourseData(vehicle);
+	self:updateLegacyCourseData(vehicle)
+end
+
+--- Unload all courses for this vehicle
+function CourseManager:unloadCourse(vehicle)
+	self.courses[vehicle] = nil
+	self.fieldworkCourses[vehicle] = nil
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'unloaded all courses')
+	self:updateLegacyCourseData(vehicle)
+end
+
+function CourseManager:setFieldworkCourse(vehicle, course)
+	self.fieldworkCourses[vehicle] = course
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'fieldwork course set')
+	self:updateLegacyCourseData(vehicle)
 end
 
 --- For backwards compatibility, create all waypoints of all loaded courses for this vehicle, as it
@@ -351,13 +391,15 @@ function CourseManager:getLegacyWaypoints(vehicle)
 end
 
 --- Update all the legacy (as usual global) data structures related to a vehicle's loaded course
--- TODO: once someone has the time and motivation, refactor those legacy structures like the course plot
+-- TODO: once someone has the time and motivation, refactor those legacy structures
 function CourseManager:updateLegacyCourseData(vehicle)
 	-- force reload of the 2D plot
 	vehicle.cp.course2dDrawData = nil;
 	vehicle.cp.course2dUpdateDrawData = true;
 	self:updateLegacyWaypoints(vehicle);
 	courseplay.signs:updateWaypointSigns(vehicle);
+	-- TODO: get rid of this global variable
+	vehicle:setCpVar('canDrive', self:hasCourse(vehicle), courseplay.isClient);
 end
 
 function CourseManager:getCourse(vehicle)
@@ -496,7 +538,7 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 	end
 end
 
-
+--- All course management related HUD callbacks
 function courseplay:unfold(vehicle, index)
 	g_courseManager:unfold(index)
 	courseplay.hud:setReloadPageOrder(vehicle, courseplay.hud.PAGE_MANAGE_COURSES, true);
@@ -507,3 +549,6 @@ function courseplay:fold(vehicle, index)
 	courseplay.hud:setReloadPageOrder(vehicle, courseplay.hud.PAGE_MANAGE_COURSES, true);
 end
 
+function courseplay:clearCurrentLoadedCourse(vehicle)
+	g_courseManager:unloadCourse(vehicle)
+end

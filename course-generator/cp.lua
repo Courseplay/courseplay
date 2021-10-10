@@ -179,23 +179,15 @@ function courseGenerator.generate(vehicle)
 	removeRidgeMarkersFromLastTrack(field.course,
 		vehicle.cp.courseGeneratorSettings.startOnHeadland:is(courseGenerator.HEADLAND_START_ON_UP_DOWN_ROWS))
 
-	writeCourseToVehicleWaypoints(vehicle, field.course)
-
-	vehicle.cp.numWaypoints = #vehicle.Waypoints
-
-	if vehicle.cp.numWaypoints == 0 then
+	if #field.course == 0 then
 		courseplay:debug('ERROR: #vehicle.Waypoints == 0 -> cancel and return', courseplay.DBG_COURSES);
 		return status, ok;
 	end ;
 
-	courseplay:setWaypointIndex(vehicle, 1);
-	vehicle:setCpVar('canDrive', true, courseplay.isClient);
-	vehicle.Waypoints[1].wait = true;
-	vehicle.Waypoints[1].crossing = true;
-	vehicle.Waypoints[vehicle.cp.numWaypoints].wait = true;
-	vehicle.Waypoints[vehicle.cp.numWaypoints].crossing = true;
-	vehicle.cp.numCourses = 1;
-	courseplay.signs:updateWaypointSigns(vehicle);
+	local course = Course.createFromGeneratedCourse(vehicle, field.course, workWidth, #field.headlandTracks,
+		vehicle.cp.courseGeneratorSettings.multiTools:get())
+
+	g_courseManager:setFieldworkCourse(vehicle, course)
 
 	-- extra data for turn maneuver
 	vehicle.cp.courseWorkWidth = workWidth;
@@ -207,12 +199,6 @@ function courseGenerator.generate(vehicle)
 		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
 	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
-
-	vehicle.cp.hasGeneratedCourse = true;
-	courseplay:validateCanSwitchMode(vehicle);
-
-	-- SETUP 2D COURSE DRAW DATA
-	vehicle.cp.course2dUpdateDrawData = true;
 
 	if CpManager.isMP then
 		CourseEvent.sendEvent(vehicle, vehicle.Waypoints)

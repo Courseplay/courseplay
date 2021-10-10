@@ -232,10 +232,6 @@ function courseplay:onLoad(savegame)
 	self.cp.copyCourseFromDriver = nil;
 	self.cp.selectedDriverNumber = 0;
 
-	--Course generation	
-	self.cp.hasGeneratedCourse = false;
-
-
 	self.cp.mouseCursorActive = false;
 
 	-- 2D pda map background -- TODO: MP?

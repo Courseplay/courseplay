@@ -292,8 +292,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		courseplay:setWaypointIndex(vehicle, 1);
 		courseplay.signs:updateWaypointSigns(vehicle, "current");
 
-		vehicle.cp.hasGeneratedCourse = false;
-
 		courseplay:validateCanSwitchMode(vehicle);
 
 		-- SETUP 2D COURSE DRAW DATA
@@ -358,8 +356,9 @@ function courseplay:copyCourse(vehicle)
 	end;
 end;
 
+-- TODO: remove once we understand what this was doing
 -- clears current course -- just setting variables
-function courseplay:clearCurrentLoadedCourse(vehicle)
+function courseplay:clearCurrentLoadedCourseDeprecated(vehicle)
 	
 	if vehicle.cp.settings.searchCombineOnField:get() > 0 then
 		vehicle.cp.settings.searchCombineOnField:set(0);
@@ -386,7 +385,6 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	vehicle.cp.courseWorkWidth = nil;
 	vehicle.cp.courseNumHeadlandLanes = nil;
 
-	vehicle.cp.hasGeneratedCourse = false;
 	courseplay:validateCanSwitchMode(vehicle);
 
 	courseplay.signs:updateWaypointSigns(vehicle, "current");

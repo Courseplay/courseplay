@@ -1809,3 +1809,15 @@ function Course.createFromFile(vehicle, file)
 	return course
 end
 
+function Course.createFromGeneratedCourse(vehicle, generatedCourse, workWidth, numHeadlandLanes, multiTools)
+	local waypoints = {}
+	for i, wp in ipairs(generatedCourse) do
+		table.insert(waypoints, Waypoint.initFromGeneratedWp(wp, i))
+	end
+	local course = Course(vehicle, waypoints)
+	course.workWidth = workWidth
+	course.numHeadlands = numHeadlandLanes
+	course.multiTools = multiTools
+	course.name = courseplay:loc('COURSEPLAY_TEMP_COURSE')
+	return course
+end

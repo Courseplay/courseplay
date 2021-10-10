@@ -61,10 +61,11 @@ function CourseGeneratorScreen:updateMap()
 end
 
 function CourseGeneratorScreen:showCourse()
-	if self.vehicle.Waypoints and #self.vehicle.Waypoints > 0 and self.coursePlot then
-		self.coursePlot:setWaypoints( self.vehicle.Waypoints )
-		self.coursePlot:setStartPosition(self.vehicle.Waypoints[1].cx, self.vehicle.Waypoints[1].cz)
-		self.coursePlot:setStopPosition(self.vehicle.Waypoints[#self.vehicle.Waypoints].cx, self.vehicle.Waypoints[#self.vehicle.Waypoints].cz)
+	if g_courseManager:hasCourse(self.vehicle) and self.coursePlot then
+		local waypoints = g_courseManager:getLegacyWaypoints(self.vehicle)
+		self.coursePlot:setWaypoints(waypoints)
+		self.coursePlot:setStartPosition(waypoints[1].x, waypoints[1].z)
+		self.coursePlot:setStopPosition(waypoints[#waypoints].x, waypoints[#waypoints].z)
 	end
 end
 

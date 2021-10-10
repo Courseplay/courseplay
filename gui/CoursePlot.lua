@@ -129,16 +129,16 @@ function CoursePlot:draw()
 			wp = reducedWaypoints[ i ]
 			np = reducedWaypoints[ i + 1 ]
 
-			startX, startY = self:worldToScreen( wp.cx, wp.cz )
-			endX, endY	   = self:worldToScreen( np.cx, np.cz )
+			startX, startY = self:worldToScreen( wp.x, wp.z )
+			endX, endY	   = self:worldToScreen( np.x, np.z )
 			-- render only if it is on the plot area
 			if startX and startY and endX and endY then
 				dx2D = endX - startX;
 				dy2D = ( endY - startY ) / g_screenAspectRatio;
 				width = MathUtil.vector2Length(dx2D, dy2D);
 
-				dx = np.cx - wp.cx;
-				dz = np.cz - wp.cz;
+				dx = np.x - wp.x;
+				dz = np.z - wp.z;
 				rotation = MathUtil.getYRotationFromDirection(dx, dz) - math.pi * 0.5;
 
 				r, g, b = courseplay.utils:getColorFromPct( 100 * wp.origIndex / #self.waypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep )
