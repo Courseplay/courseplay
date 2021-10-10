@@ -2146,6 +2146,14 @@ end
 
 ---@class TurnDiameterSetting : OffsetSetting 
 TurnDiameterSetting = CpObject(OffsetSetting)
+--- Only use the manuel tool turn diameter in these driver modes.
+TurnDiameterSetting.changableDriverModes = {
+	[DriverModeSetting.COMBINE_UNLOAD] = true,
+	[DriverModeSetting.OVERLOAD] = true,
+	[DriverModeSetting.FILLABLE_FIELDWORK] = true,
+	[DriverModeSetting.FIELDWORK] = true,
+	[DriverModeSetting.BALE_COLLECTOR] = true
+}
 function TurnDiameterSetting:init(vehicle,driverMode)
 	OffsetSetting.init(self,"turnDiameter","COURSEPLAY_TURN_RADIUS","COURSEPLAY_TURN_RADIUS",vehicle,0)
 	self.disabledText = courseplay:loc("COURSEPLAY_AUTOMATIC")
@@ -2158,12 +2166,9 @@ function TurnDiameterSetting:getAutoTurnDiameter()
 	local turnDiameter = self.vehicle.cp.vehicleTurnRadius * 2
 	local toolTurnDiameter = AIDriverUtil.getTurningRadius(self.vehicle) * 2
 
+	
 	-- Check if we have worktools and if we are in a valid mode
-	if self.driverMode == courseplay.MODE_COMBI 
-		or self.driverMode == courseplay.MODE_OVERLOADER 
-		or self.driverMode == courseplay.MODE_SEED_FERTILIZE 
-		or self.driverMode == courseplay.MODE_FIELDWORK then
-
+	if self:isChangeable() then
 		if toolTurnDiameter > turnDiameter then
 			turnDiameter = toolTurnDiameter
 		end
@@ -2195,11 +2200,10 @@ function TurnDiameterSetting:onWriteStream(stream)
 end
 
 function TurnDiameterSetting:get()
-	local value = OffsetSetting.get(self)
-	if value == 0 then 
+	if self:isAutomaticActive() then 
 		return self.autoTurnDiameter:get()
 	end
-	return value
+	return self.value
 end
 
 function TurnDiameterSetting:setAutoTurnDiameterFromNetwork(value)
@@ -2220,7 +2224,7 @@ function TurnDiameterSetting:getText()
 end
 
 function TurnDiameterSetting:isAutomaticActive()
-	return self.value == 0
+	return self.value == 0 or not self:isChangeable()
 end
 
 function TurnDiameterSetting:set(value,noEventSend)
@@ -2233,6 +2237,11 @@ end
 
 function TurnDiameterSetting:changeByX(changeBy,noEventSend)
 	self:changeBy(changeBy,noEventSend)
+end
+
+function TurnDiameterSetting:isChangeable()
+	local driverModeValue = self.driverMode:get()
+	return self.changableDriverModes[driverModeValue]
 end
 
 --- Setting to select a field

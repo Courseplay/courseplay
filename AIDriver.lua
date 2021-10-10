@@ -154,7 +154,16 @@ function AIDriver:init(vehicle)
 	end
 	self.aiDriverData = vehicle.cp.aiDriverData
 	self:debug('creating AIDriver')
-	self.maxDrivingVectorLength = self.vehicle.cp.settings.turnDiameter:get()
+
+	self.settings = self.vehicle.cp.settings
+	self.courseGeneratorSettings = self.vehicle.cp.courseGeneratorSettings
+
+	-- make sure all vehicle settings are valid for this mode
+	if self.settings then
+		self:debug('Validating current settings...')
+		self.settings:validateCurrentValues()
+	end
+
 	---@type PurePursuitController
 	self.ppc = PurePursuitController(self.vehicle)
 	self.vehicle.cp.ppc = self.ppc
@@ -175,14 +184,6 @@ function AIDriver:init(vehicle)
 	self.collisionDetector = nil
 	-- list of active messages to display
 	self.activeMsgReferences = {}
-
-	self.settings = self.vehicle.cp.settings
-	self.courseGeneratorSettings = self.vehicle.cp.courseGeneratorSettings
-	-- make sure all vehicle settings are valid for this mode
-	if self.settings then
-		self:debug('Validating current settings...')
-		self.settings:validateCurrentValues()
-	end
 	self:setHudContent()
 	---@type TriggerHandler
 	self.triggerHandler = TriggerHandler(self,self.vehicle,self:getSiloSelectedFillTypeSetting())
@@ -551,10 +552,11 @@ function AIDriver:driveVehicleToLocalPosition(dt, allowedToDrive, moveForwards, 
 	-- we adjust these coordinates to make sure the vehicle turns towards the point as soon as possible.
 	local ax, az = gx, gz
 	local l = MathUtil.vector2Length(gx, gz)
-	if l > self.maxDrivingVectorLength then
+	local maxDrivingVectorLength = self.settings.turnDiameter:get()
+	if l > maxDrivingVectorLength then
 		-- point too far, bring it closer so the AI driver will start steer towards it
-		ax = gx * self.maxDrivingVectorLength / l
-		az = gz * self.maxDrivingVectorLength / l
+		ax = gx * maxDrivingVectorLength / l
+		az = gz * maxDrivingVectorLength / l
 	end
 	if (moveForwards and gz < 0) or (not moveForwards and gz > 0) then
 		-- make sure point is not behind us (no matter if driving reverse or forward)
@@ -2267,6 +2269,17 @@ function AIDriver:closeCovers(object)
 		self:closeCovers(impl.object)
 	end
 end
+
+---  This function fixes cover handling in MP.
+local function fixCoverMP(self,superFunc,state,noEventSend)
+	local rootVehicle = self.getRootVehicle and self:getRootVehicle()
+	if g_server and courseplay:isAIDriverActive(rootVehicle) then 
+		superFunc(self,state)
+	else 
+		superFunc(self,state,noEventSend)
+	end
+end
+Cover.setCoverState = Utils.overwrittenFunction(Cover.setCoverState,fixCoverMP)
 
 --disable detaching, while CP is driving
 function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
