@@ -8,7 +8,6 @@ reload/venv
 reload.xml
 .vscode
 
-
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

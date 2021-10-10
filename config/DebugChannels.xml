@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+	This is the debug setup file.
+	All debug channel setup can be changed here.
+	active : can be changed to enable it on startup.
+	name : corresponds to the call name, for example courseplay.DBG_MODE_1.
+	text : is the tooltip shown in the hud.
+-->
+<DebugChannels>
+	<DebugChannel active="false" name="DBG_MODE_1" text="Debug: mode 1 - grain transport"/>
+	<DebugChannel active="false" name="DBG_MODE_2" text="Debug: mode 2 - unload combine"/>
+	<DebugChannel active="false" name="DBG_MODE_3" text="Debug: mode 3 - overloader"/>
+	<DebugChannel active="false" name="DBG_MODE_4" text="Debug: mode 4 - fertilizing and seeding"/>
+	<DebugChannel active="false" name="DBG_MODE_5" text="Debug: mode 5 - transport"/>
+	<DebugChannel active="false" name="DBG_MODE_6" text="Debug: mode 6 - fieldwork"/>
+	<DebugChannel active="false" name="DBG_MODE_7" text="Debug: mode 7 - bale collector"/>
+	<DebugChannel active="false" name="DBG_MODE_8" text="Debug: mode 8 - field supply"/>
+	<DebugChannel active="false" name="DBG_MODE_9" text="Debug: mode 9 - shovel fill/empty"/>
+	<DebugChannel active="false" name="DBG_MODE_10" text="Debug: mode 10 - bunker silo compacter"/>
+	<DebugChannel active="false" name="DBG_PATHFINDER" text="Debug: pathfinder"/>
+	<DebugChannel active="false" name="DBG_TRIGGERS" text="Debug: triggers"/>
+	<DebugChannel active="false" name="DBG_REVERSE" text="Debug: reverse driving"/>
+	<DebugChannel active="false" name="DBG_TURN" text="Debug: turns"/>
+	<DebugChannel active="false" name="DBG_PPC" text="Debug: pure pursuit controller"/>
+	<DebugChannel active="false" name="DBG_LOAD_UNLOAD" text="Debug: load and unload tippers"/>
+	<DebugChannel active="false" name="DBG_TRAFFIC" text="Debug: traffic collision/proximity"/>
+	<DebugChannel active="false" name="DBG_HUD" text="Debug: hud action"/>
+	<DebugChannel active="false" name="DBG_COURSES" text="Debug: course save/load/generation"/>
+	<DebugChannel active="false" name="DBG_MULTIPLAYER" text="Debug: multiplayer"/>
+	<DebugChannel active="false" name="DBG_IMPLEMENTS" text="Debug: implements"/>
+	<DebugChannel active="false" name="DBG_UNCATEGORIZED" text="Debug: other"/>
+	<DebugChannel active="false" name="DBG_AI_DRIVER" text="Debug: AIDriver common"/>
+	<!-- this is to prevent spamming the log if not necessary (e.g. raycasts)-->
+	<DebugChannel active="false" name="DBG_CYCLIC" text="Debug: activate cyclic prints"/>
+</DebugChannels>

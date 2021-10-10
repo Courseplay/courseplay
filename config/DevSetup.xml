@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!--
+	This is a dev setup file, where individual setup can be applied.
+	The isDeveloper state can be set with "isDev = true".
+	For example custom debug channel setups can be set on startup.
+	id : is the debug channel number 1-24.
+	name : corresponds to the call name, for example courseplay.DBG_MODE_1.
+-->
+
+<DevSetup isDev = "false">
+	<DebugChannels>
+		<DebugChannel id="1">false</DebugChannel>
+		<DebugChannel name="DBG_MODE_2">false</DebugChannel>
+	</DebugChannels>
+</DevSetup>

@@ -600,13 +600,6 @@ function courseplay:expandFolder(vehicle, index)
 	end
 end
 
-function courseplay:toggleDebugChannel(self, channel, force)
-	if courseplay.debugChannels[channel] ~= nil then
-		courseplay.debugChannels[channel] = Utils.getNoNil(force, not courseplay.debugChannels[channel]);
-		courseplay.hud:updateDebugChannelButtons(self);
-	end;
-end;
-
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and
 		not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
@@ -667,23 +660,23 @@ function courseplay:setMouseCursor(self, show)
 	end;
 end;
 
+--- Changes the line of debug channels visible in the hud.
+--- For example changes dbg channels 1-12 to 13-24 in the hud.
 function courseplay:changeDebugChannelSection(vehicle, changeBy)
-	courseplay.debugChannelSection = MathUtil.clamp(courseplay.debugChannelSection + changeBy, 1, ceil(courseplay.numAvailableDebugChannels / courseplay.numDebugChannelButtonsPerLine));
-	courseplay.debugChannelSectionEnd = courseplay.numDebugChannelButtonsPerLine * courseplay.debugChannelSection;
-	courseplay.debugChannelSectionStart = courseplay.debugChannelSectionEnd - courseplay.numDebugChannelButtonsPerLine + 1;
-
-
-	-- update buttons' functions, toolTips and disabled status
-	for channel = courseplay.debugChannelSectionStart, courseplay.debugChannelSectionEnd do
-		local col = ((channel-1) % courseplay.numDebugChannelButtonsPerLine) + 1;
-		local button = vehicle.cp.hud.debugChannelButtons[col];
-		button:setParameter(channel);
-		button:setToolTip(courseplay.debugChannelsDesc[channel]);
-	end;
+	local debugChannelData = courseplay.hud.debugChannelData
+	--- Changes the visible debug channels in the hud.
+	debugChannelData.lineSelected = MathUtil.clamp(debugChannelData.lineSelected + changeBy, 1, debugChannelData.lines)
+	debugChannelData.lineLastChannel = debugChannelData.buttonsPerLine * debugChannelData.lineSelected
+	debugChannelData.lineFirstChannel = debugChannelData.lineLastChannel - debugChannelData.buttonsPerLine + 1
 	
-	--courseplay.buttons:setActiveEnabled(vehicle, 'debug');
-end;
-
+	--- Sets the buttons to the correct debug channel after a line change.
+	for channel = debugChannelData.lineFirstChannel, debugChannelData.lineLastChannel do
+		local col = ((channel-1) % debugChannelData.buttonsPerLine) + 1
+		local button = vehicle.cp.hud.debugChannelButtons[col]
+		button:setParameter(channel)
+		button:setToolTip(debugChannelData.toolTips[channel])
+	end
+end
 
 
 --FIELD EDGE PATHS
@@ -997,6 +990,10 @@ end
 
 function Setting:getGuiElement()
 	return self.guiElement
+end
+
+function Setting:hasGuiElement()
+	return self.guiElement~=nil
 end
 
 --- Should this setting be disabled on the GUI?
@@ -3570,7 +3567,7 @@ function WorkingToolPositionsSetting:init(name, label, toolTip, vehicle,totalPos
 	--- for direct access to update their manual tool positions.
 	table.insert(WorkingToolPositionsSetting.Settings,self)
 
-	self.PLAY_POSITION_EVENT = self:registerIntEvent(self.playPosition)
+	self.PLAY_POSITION_EVENT = self:registerIntEvent(self.setPlayPositionFromNetwork)
 	self.SET_OR_CLEAR_POSITION_EVENT = self:registerIntEvent(self.setFromNetwork)
 end
 
@@ -3609,7 +3606,7 @@ function WorkingToolPositionsSetting:setOrClearPostion(x,noEventSend)
 			self:savePosition(self.vehicle,x)
 		end
 	end
-	if not noEventSend then
+	if noEventSend == false or noEventSend == nil then
 		self:raiseEvent(self.SET_OR_CLEAR_POSITION_EVENT,x)
 	end
 	self.vehicle.cp.driver:refreshHUD()
@@ -3662,14 +3659,18 @@ end
 
 --- Moves a tool position manually.
 ---@param posX number position index to move.
-function WorkingToolPositionsSetting:playPosition(x)
+function WorkingToolPositionsSetting:playPosition(x,noEventSend)
 	if g_server then
 		if self.hasPosition[x] then
 			self.playTestPostion = x
 		end
-	else 
+	elseif noEventSend == false or noEventSend == nil then 
 		self:raiseEvent(self.PLAY_POSITION_EVENT,x)
 	end
+end
+
+function WorkingToolPositionsSetting:setPlayPositionFromNetwork(x)
+	self:playPosition(x,true)
 end
 
 --- Called every frame to update tool positions.
@@ -4334,21 +4335,6 @@ function SettingsContainer:debug(channel)
 		end
 	end
 end
-
-function SettingsContainer.createGlobalSettings()
-	local container = SettingsContainer("globalSettings")
-	container:addSetting(LoadCoursesAtStartupSetting)
-	container:addSetting(AutoFieldScanSetting)
-	container:addSetting(WorkerWagesSetting)
-	container:addSetting(ClickToSwitchSetting)
-	container:addSetting(ShowMiniHudSetting)
-	container:addSetting(EnableOpenHudWithMouseGlobalSetting)
-	container:addSetting(AutoRepairSetting)
-	container:addSetting(ShowMapHotspotSetting)
-	container:addSetting(ShowActionEventTextsSetting)
-	return container
-end
-
 
 function SettingsContainer.createGlobalPathfinderSettings()
 	local container = SettingsContainer('globalPathfinderSettings')

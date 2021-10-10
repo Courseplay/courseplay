@@ -46,7 +46,7 @@ end
 
 function GlobalSettingsPage:onClickOk()
 	for _, setting in pairs(courseplay.globalSettings) do
-		if setting.getGuiElement then 
+		if setting.getGuiElement and setting:hasGuiElement() then 
 			setting:setToIx(setting:getGuiElement():getState())
 		end
 	end
@@ -54,7 +54,7 @@ end
 
 function GlobalSettingsPage:onClickReset()
 	for _, setting in pairs(courseplay.globalSettings) do
-		if setting.getGuiElement then 
+		if setting.getGuiElement and setting:hasGuiElement() then 
 			setting:getGuiElement():setState(setting:getGuiElementState(), false)
 		end
 	end
@@ -77,7 +77,7 @@ end
 
 function GlobalSettingsPage:updateMyGUISettings()
     for _, setting in pairs(courseplay.globalSettings) do
-		if setting.getGuiElement then 
+		if setting.getGuiElement and setting:hasGuiElement() then 
 			local element = setting:getGuiElement()
 			if element then 
 				local state = setting:getGuiElementState()

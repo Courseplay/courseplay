@@ -5,6 +5,55 @@ addModEventListener(CpManager);
 
 local modDirectory = g_currentModDirectory
 
+--- Setups dev settings.
+local function loadDevSetup()
+	local filePath = Utils.getFilename('config/DevSetup.xml', courseplay.path)
+	local xmlFile = loadXMLFile('devSetup', filePath)
+	local baseKey = "DevSetup"
+	CpManager.preDebugSetup = {
+		nameToChannel = {},
+		idToChannel = {}
+	}
+	CpManager.isDeveloper = false
+	if xmlFile then 
+		CpManager.isDeveloper = Utils.getNoNil(getXMLBool(xmlFile,baseKey.."#isDev"),false)
+		if CpManager.isDeveloper then 
+			print('Special dev magic for Courseplay developer unlocked. You go, girl!');
+		end
+
+		--- Checks if any debug channel should be active immediately.
+		baseKey = string.format("%s.%s",baseKey,"DebugChannels") 
+		if hasXMLProperty(xmlFile, baseKey) then 
+			CpManager.preDebugSetup = {
+				nameToChannel = {},
+				idToChannel = {}
+			}
+			local i = 0
+			while true do 
+				local key = string.format("%s.%s(%d)",baseKey,"DebugChannel",i)
+				if not hasXMLProperty(xmlFile, key) then
+					break
+				end
+				local id = getXMLInt(xmlFile, key.."#id")
+				local name = getXMLString(xmlFile, key.."#name")
+				local active = getXMLBool(xmlFile, key)
+				if id then 
+					CpManager.preDebugSetup.idToChannel[id] = active
+				end
+				if name then 
+					CpManager.preDebugSetup.nameToChannel[name] = active
+				end
+				i = i + 1
+				if active then
+					print(string.format("Debug channel id: %s, name: %s is activated for dev.",tostring(id),tostring(name)))
+				end
+			end
+		end
+		delete(xmlFile)
+	end
+end
+loadDevSetup()
+
 function CpManager:loadMap(name)
 	--print("CpManager:loadMap(name)")
 	self.isCourseplayManager = true;
@@ -54,7 +103,6 @@ function CpManager:loadMap(name)
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- SETUP (continued)
 	courseplay.hud:setup(); -- NOTE: hud has to be set up after the xml settings have been loaded, as almost all its values are based on basePosX/Y
-	self:setUpDebugChannels(); -- NOTE: debugChannels have to be set up after the hud, as they rely on some hud values [positioning]
 	g_globalInfoTextHandler:setup() -- NOTE: globalInfoText has to be set up after the hud, as they rely on some hud values [colors, function]
 	courseplay.courses:setup(); -- NOTE: load the courses and folders from the XML
 	self:setup2dCourseData(true); -- NOTE: setup2dCourseData is called a second time, now we actually create the data and overlays

@@ -37,15 +37,6 @@ courseplay.generation = {};
 courseplay.lights = {};
 courseplay.clock = 0;
 
-	local sonOfaBangSonOfaBoom = {
-	['56bb4a8d3f72d5a31aee0c317302dde5'] = true; -- Thomas
-	['9a9f028043394ff9de1cf6c905b515c1'] = true; -- Satis
-	['3e701b6620453edcd4c170543e72788b'] = true; -- Peter
-	['0d8e45a8ed916c1cd40820165b81e12d'] = true; -- Tensuko
-	['97c8e6d0d14f4e242c3c37af68cc376c'] = true; -- Dan
-	['8f5e9e8fb5a23375afbb3b7abbc6335c'] = true; -- Goof
-};
-
 local function initialize()
 	local fileList = {
 		'CpObject',
@@ -265,15 +256,6 @@ setVersionData();
 
 initialize();
 
-CpManager.isDeveloper = sonOfaBangSonOfaBoom[getMD5(g_gameSettings:getValue("nickname"))];
-
-if CpManager.isDeveloper then
-	print('Special dev magic for Courseplay developer unlocked. You go, girl!');
-else
-	--print('No cookies for you! (please wait until we have some limited form of a working version...)');
-	--courseplay.houstonWeGotAProblem = true;
-	--return;
-end;
 
 courseplay.inputBindings.updateInputButtonData();
 

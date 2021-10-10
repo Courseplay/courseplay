@@ -120,10 +120,6 @@ function courseplay.button:setSpecialButtonUVs()
 
 	elseif fn == 'generateCourse' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[courseplay.hud.PAGE_COURSE_GENERATION], txtSizeX, txtSizeY);
-
-	elseif fn == 'toggleDebugChannel' then
-		self:setSpriteSectionUVs('recordingStop');
-
 	-- CpManager buttons
 	elseif fn == 'goToVehicle' then
 		courseplay.utils:setOverlayUVsPx(self.overlay, courseplay.hud.pageButtonsUVsPx[courseplay.hud.PAGE_DRIVING_SETTINGS], txtSizeX, txtSizeY);
