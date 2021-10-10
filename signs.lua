@@ -128,7 +128,8 @@ function courseplay.signs:setWaypointSignLine(sign, distance, vis)
 end;
 
 function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
-	local waypoints = vehicle.Waypoints
+	local waypoints = g_courseManager:getLegacyWaypoints(vehicle)
+	if not waypoints then return end
 	section = section or 'all'; --section: 'all', 'crossing', 'current'
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Updating waypoint display for %s', section)
 	vehicle.cp.numWaitPoints = 0;
@@ -160,24 +161,19 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     				neededSignType = 'unload';
     			end;
 
-				-- TODO: remove this once we get rid of the terrible cx/cz notation
-				-- make sure we have cx and cz
-				wp.cx = wp.cx or wp.x wp.cy = wp.cy or wp.y wp.cz = wp.cz or wp.z
     			-- direction + angle
     			if wp.rotX == nil then wp.rotX = 0; end;
-    			if wp.cy == nil or wp.cy == 0 then
-    				wp.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.cx, 0, wp.cz);
+    			if wp.y == nil or wp.cy == 0 then
+    				wp.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, wp.x, 0, wp.z);
     			end;
 
     			if i < #waypoints then
     				np = waypoints[i + 1];
-					-- TODO: remove this once we get rid of the terrible cx/cz notation
-					np.cx = np.cx or np.x np.cy = np.cy or np.y np.cz = np.cz or np.z
-    				if np.cy == nil or np.cy == 0 then
-    					np.cy = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.cx, 0, np.cz);
+    				if np.y == nil or np.y == 0 then
+    					np.y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, np.x, 0, np.z);
     				end;
 
-    				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.cx, wp.cy, wp.cz, np.cx, np.cy, np.cz);
+    				wp.dirX, wp.dirY, wp.dirZ, wp.distToNextPoint = courseplay:getWorldDirection(wp.x, wp.y, wp.z, np.x, np.y, np.z);
     				if wp.distToNextPoint <= 0.01 and i > 1 then
     					local pp = waypoints[i - 1];
     					wp.dirX, wp.dirY, wp.dirZ = pp.dirX, pp.dirY, pp.dirZ;
@@ -185,8 +181,8 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     				wp.rotY = MathUtil.getYRotationFromDirection(wp.dirX, wp.dirZ);
     				wp.angle = deg(wp.rotY);
 
-    				local dy = np.cy - wp.cy;
-    				local dist2D = MathUtil.vector2Length(np.cx - wp.cx, np.cz - wp.cz);
+    				local dy = np.y - wp.y;
+    				local dist2D = MathUtil.vector2Length(np.x - wp.x, np.z - wp.z);
     				wp.rotX = -MathUtil.getYRotationFromDirection(dy, dist2D);
     			else
     				local pp = waypoints[i - 1];
@@ -207,7 +203,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     			local existingSignData = vehicle.cp.signs.current[i];
     			if existingSignData ~= nil then
     				if existingSignData.type == neededSignType then
-    					self:setTranslation(existingSignData.sign, existingSignData.type, wp.cx, wp.cz);
+    					self:setTranslation(existingSignData.sign, existingSignData.type, wp.x, wp.z);
     					if wp.rotX and wp.rotY then
     						setRotation(existingSignData.sign, wp.rotX, wp.rotY, 0);
     						if neededSignType == 'normal' or neededSignType == 'start' or neededSignType == 'wait' or neededSignType == 'unload' then
@@ -223,10 +219,10 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
     					end;
     				else
     					self:moveToBuffer(vehicle, i, existingSignData);
-    					self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
+    					self:addSign(vehicle, neededSignType, wp.x, wp.z, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
     				end;
     			else
-    				self:addSign(vehicle, neededSignType, wp.cx, wp.cz, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
+    				self:addSign(vehicle, neededSignType, wp.x, wp.z, deg(wp.rotX), wp.angle, i, wp.distToNextPoint, diamondColor);
     			end;
 
     			if wp.wait then
@@ -254,7 +250,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 				if course.waypoints then
 					for _,wp in pairs(course.waypoints) do
 						if wp.crossing then
-							self:addSign(vehicle, 'cross', wp.cx, wp.cz, nil, wp.angle);
+							self:addSign(vehicle, 'cross', wp.cx, wp.z, nil, wp.angle);
 						end;
 					end;
 				end;

@@ -269,6 +269,8 @@ function CourseManager:init(courseDirFullPath)
 	self.courses = {}
 	-- fieldwork courses, will create entry when the course is loaded into the vehicle
 	self.fieldworkCourses = {}
+	-- representation of all waypoints loaded for a vehicle as needed by the legacy functions
+	self.legacyWaypoints = {}
 end
 
 -- wrapper to create a global instance.
@@ -322,6 +324,40 @@ function CourseManager:loadCourse(vehicle, index)
 	end
 	-- TODO: get rid of this global variable
 	vehicle:setCpVar('canDrive', true, courseplay.isClient);
+	self:updateLegacyCourseData(vehicle);
+end
+
+--- For backwards compatibility, create all waypoints of all loaded courses for this vehicle, as it
+--- used to be stored in the terrible global Waypoints variable
+function CourseManager:updateLegacyWaypoints(vehicle)
+	self.legacyWaypoints[vehicle] = {}
+	local n = 1
+	if self.courses[vehicle] then
+		for i = 1, self.courses[vehicle]:getNumberOfWaypoints() do
+			table.insert(self.legacyWaypoints[vehicle], Waypoint(self.courses[vehicle]:getWaypoint(i), n))
+			n = n +1
+		end
+	end
+	if self.fieldworkCourses[vehicle] then
+		for i = 1, self.fieldworkCourses[vehicle]:getNumberOfWaypoints() do
+			table.insert(self.legacyWaypoints[vehicle], Waypoint(self.fieldworkCourses[vehicle]:getWaypoint(i), n))
+			n = n +1
+		end
+	end
+end
+
+function CourseManager:getLegacyWaypoints(vehicle)
+	return self.legacyWaypoints[vehicle]
+end
+
+--- Update all the legacy (as usual global) data structures related to a vehicle's loaded course
+-- TODO: once someone has the time and motivation, refactor those legacy structures like the course plot
+function CourseManager:updateLegacyCourseData(vehicle)
+	-- force reload of the 2D plot
+	vehicle.cp.course2dDrawData = nil;
+	vehicle.cp.course2dUpdateDrawData = true;
+	self:updateLegacyWaypoints(vehicle);
+	courseplay.signs:updateWaypointSigns(vehicle);
 end
 
 function CourseManager:getCourse(vehicle)
@@ -394,7 +430,12 @@ end
 -- Recreate if already exists. This is only for development to recreate the global instance if this
 -- file is reloaded while the game is running
 if g_courseManager then
+	local old_courseManager = g_courseManager
 	g_courseManager = CourseManager.create()
+	-- preserve the existing vehicle/course assignments
+	g_courseManager.courses = old_courseManager.courses
+	g_courseManager.fieldworkCourses = old_courseManager.fieldworkCourses
+	g_courseManager.legacyWaypoints = old_courseManager.legacyWaypoints
 end
 
 

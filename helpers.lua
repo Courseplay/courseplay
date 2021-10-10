@@ -826,10 +826,10 @@ function courseplay.utils:getCourseDimensions(poly)
 	local xMin, yMin = huge, huge;
 	local xMax, yMax = -huge, -huge;
 	for _,point in pairs(poly) do
-		xMin = min(xMin, point.x or point.cx);
-		yMin = min(yMin, point.z or point.cz);
-		xMax = max(xMax, point.x or point.cx);
-		yMax = max(yMax, point.z or point.cz);
+		xMin = min(xMin, point.x or point.x);
+		yMin = min(yMin, point.z or point.z);
+		xMax = max(xMax, point.x or point.x);
+		yMax = max(yMax, point.z or point.z);
 	end;
 	local span = max(xMax-xMin,yMax-yMin);
 
@@ -848,7 +848,7 @@ end;
 
 function courseplay.utils:removeCollinearPoints(poly, epsilon)
 	local function pointsAreCollinear(p, q, r, eps)
-		return abs(self:det(q.cx-p.cx, q.cz-p.cz,    r.cx-p.cx, r.cz-p.cz)) <= (eps or 1e-32)
+		return abs(self:det(q.x-p.x, q.z-p.z,    r.x-p.x, r.z-p.z)) <= (eps or 1e-32)
 	end
 
 	local res = self.table.copy(poly);
@@ -922,9 +922,12 @@ end;
 
 function courseplay:setupCourse2dData(vehicle)
 	vehicle.cp.course2dDrawData = nil;
-	if vehicle.cp.numWaypoints < 1 then return; end;
 
-	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(vehicle.Waypoints);
+	local waypoints = g_courseManager:getLegacyWaypoints(vehicle)
+
+	if not waypoints or #waypoints < 1 then return; end;
+
+	vehicle.cp.course2dDimensions = courseplay.utils:getCourseDimensions(waypoints);
 	local bBox = vehicle.cp.course2dDimensions;
 	local pxSize = 2;  -- thickness of line in pixels
 	local height = pxSize / g_screenHeight;
@@ -959,25 +962,25 @@ function courseplay:setupCourse2dData(vehicle)
 
 	vehicle.cp.course2dDrawData = {};
 	local epsilon = 2; -- orig: 0.001, also ok: 0.5
-	local reducedWaypoints = courseplay.utils:removeCollinearPoints(vehicle.Waypoints, epsilon);
+	local reducedWaypoints = courseplay.utils:removeCollinearPoints(waypoints, epsilon);
 	local numReducedPoints = #reducedWaypoints;
 
 	local np, startX, startY, endX, endY, dx, dz, dx2D, dy2D, width, rotation, r, g, b;
 	for i,wp in ipairs(reducedWaypoints) do
 		np = i < numReducedPoints and reducedWaypoints[i + 1] or reducedWaypoints[1];
 
-		startX, startY = courseplay.utils:worldCoordsTo2D(vehicle, wp.cx, wp.cz);
-		endX, endY	   = courseplay.utils:worldCoordsTo2D(vehicle, np.cx, np.cz);
+		startX, startY = courseplay.utils:worldCoordsTo2D(vehicle, wp.x, wp.z);
+		endX, endY	   = courseplay.utils:worldCoordsTo2D(vehicle, np.x, np.z);
 
 		dx2D = endX - startX;
 		dy2D = (endY - startY) / g_screenAspectRatio;
 		width = MathUtil.vector2Length(dx2D, dy2D);
 
-		dx = np.cx - wp.cx;
-		dz = np.cz - wp.cz;
+		dx = np.x - wp.x;
+		dz = np.z - wp.z;
 		rotation = MathUtil.getYRotationFromDirection(dx, dz) - pi * 0.5;
 
-		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / vehicle.cp.numWaypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
+		r, g, b = courseplay.utils:getColorFromPct(100 * wp.origIndex / #waypoints, CpManager.course2dColorTable, CpManager.course2dColorPctStep);
 
 		vehicle.cp.course2dDrawData[i] = {
 			x = startX;
@@ -1180,7 +1183,7 @@ end;
 
 function courseplay:getPointDirection(cp, np)
 	-- TODO get rid of cx/cz
-	local dx, dz = (np.x or np.cx) - (cp.x or cp.cx), (np.z or np.cz) - (cp.z or cp.cz)
+	local dx, dz = (np.x or np.x) - (cp.x or cp.x), (np.z or np.z) - (cp.z or cp.z)
 	local vl = MathUtil.vector2Length(dx, dz);
 	if vl and vl > 0.0001 then
 		dx = dx / vl;
@@ -1195,7 +1198,7 @@ function courseplay:getClosestPolyPoint(poly, x, z)
 
 	for i=1, #(poly) do
 		local cp = poly[i];
-		local distanceToPoint = courseplay:distance(cp.cx, cp.cz, x, z);
+		local distanceToPoint = courseplay:distance(cp.x, cp.z, x, z);
 		if distanceToPoint < closestDistance then
 			closestDistance = distanceToPoint;
 			closestPointIndex = i;

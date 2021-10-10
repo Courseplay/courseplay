@@ -324,7 +324,6 @@ function AIDriver:start(startingPoint)
 	-- for now, initialize the course with the vehicle's current course
 	-- main course is the one generated/loaded/recorded
 	self.mainCourse = g_courseManager:getCourse(self.vehicle)
-	print(self.mainCourse:getName())
 	local ix = self.mainCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:info('AI driver in mode %d starting at %d/%d waypoints (%s)',
 			self:getMode(), ix, self.mainCourse:getNumberOfWaypoints(), tostring(startingPoint))
