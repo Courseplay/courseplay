@@ -61,7 +61,8 @@ function BalerAIDriver:startTurn(ix)
 	if self.isCombine then
 		self:debug('This vehicle is also a harvester, check check for special headland turns.')
 		self:setMarkers()
-		self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+		
+		self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self:getWorkWidth(),
 			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 

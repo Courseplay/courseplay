@@ -614,3 +614,94 @@ function courseplay.fields:getClosestDistanceToFieldEdge(fieldNum, x, z)
 	end
 	return closestDistance
 end
+
+
+CpFieldUtil = {}
+
+--- Generates a custom field edge path, relative to the current vehicle position.
+---@param vehicle table
+---@return table data custom field edge path.
+function CpFieldUtil.generateCustomFieldEdgePath(vehicle)
+	local field = {}
+	local x,y,z = getWorldTranslation(vehicle.rootNode)
+	local isField = x and z and courseplay:isField(x, z, 0, 0) --TODO: use width/height of 0.1 ?
+	courseplay.fields:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad')
+	if isField then
+		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, courseplay.fields.scanStep, 2000, 10, nil, true, 'customLoad')
+		field.points = edgePoints
+		field.numPoints =  edgePoints ~= nil and #edgePoints or 0
+	end;
+	return field
+end;
+
+--- Saves a custom field edge path as custom field.
+---@param data table field edge path data.
+---@param ix number field number to save as.
+---@return table customField that was added.
+function CpFieldUtil.saveCustomFieldEdgePathAsField(data,ix)
+	data.fieldNum = ix
+	data.name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), data.fieldNum, courseplay:loc('COURSEPLAY_USER'))
+	data.isCustom = true
+	local area, _, dimensions = courseplay.fields:getPolygonData(data.points, nil, nil, true)
+	data.areaSqm = area
+	data.areaHa = area / 10000
+	data.dimensions = dimensions
+	courseplay.fields.fieldData[data.fieldNum] = data
+	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData)
+	return data
+end
+
+--- Displays a custom field edge path.
+---@param vehicle table
+---@param fieldData table field edge path data.
+function CpFieldUtil.showFieldEdgePath(vehicle,fieldData)
+
+	local function show(points,numPoints)
+		if numPoints > 0 then
+			local pointHeight = 3;
+			for i,point in pairs(points) do
+				if i < numPoints then
+					local nextPoint = points[i + 1]
+					cpDebug:drawLine(point.cx,point.cy+pointHeight,point.cz, 0,0,1, nextPoint.cx,nextPoint.cy+pointHeight,nextPoint.cz)
+	
+					if i == 1 then
+						cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 0,1,0)
+					else
+						cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,1,0)
+					end
+				else
+					cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,0,0)
+				end
+			end
+		end
+	end
+
+	if fieldData then 
+		show(fieldData.points,fieldData.numPoints)
+	else 
+		local points,numPoints = nil,0
+		points = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].points
+		numPoints = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].numPoints
+		show(points,numPoints)
+	end
+end
+
+--- Does a field with the number exist ?
+---@param num number
+---@return boolean
+function CpFieldUtil.isFieldNumberValid(num)
+	return courseplay.fields.fieldData[num] ~= nil
+end
+
+--- Saves a field send from the server.
+---@param field courseplay.fields.fieldData
+function CpFieldUtil.saveFieldFromNetwork(field)
+	courseplay.fields.fieldData[field.fieldNum] = field 
+end
+
+function CpFieldUtil.getFieldName(ix)
+	local field = courseplay.fields.fieldData[ix]
+	if field then 
+		return field.isCustom and string.format("%d(%s)",ix,courseplay:loc("COURSEPLAY_USER")) or string.format("%d",ix)
+	end
+end

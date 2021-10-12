@@ -135,12 +135,6 @@ function courseplay:stop(self)
 	courseplay:resetCustomTimer(self, 'slippingStage2');
 
 	
-	if self.cp.manualWorkWidth ~= nil then
-		courseplay:changeWorkWidth(self, nil, self.cp.manualWorkWidth, true)
-		if self.cp.hud.currentPage == courseplay.hud.PAGE_COURSE_GENERATION then
-			courseplay.hud:setReloadPageOrder(self, self.cp.hud.currentPage, true);
-		end
-	end
 	
 	self.cp.totalLength, self.cp.totalLengthOffset = 0, 0;
 	self.cp.numWorkTools = 0;

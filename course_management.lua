@@ -352,9 +352,7 @@ function courseplay:copyCourse(vehicle)
 		
 		--MultiTools
 		if src.cp.courseGeneratorSettings.multiTools:get() > 1 then
-			vehicle.cp.workWidth = src.cp.workWidth
 			vehicle.cp.courseWorkWidth = src.cp.courseWorkWidth
-			vehicle.cp.manualWorkWidth = src.cp.manualWorkWidth
 			vehicle.cp.courseGeneratorSettings.multiTools:set(src.cp.courseGeneratorSettings.multiTools:get())
 		else
 			vehicle.cp.courseGeneratorSettings.multiTools:set(1)

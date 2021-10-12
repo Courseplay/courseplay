@@ -235,6 +235,7 @@ function CpManager:deleteMap()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- delete fields data and overlays
+	---@class courseplay.fields.fieldData
 	courseplay.fields.fieldData = {};
 	courseplay.fields.curFieldScanIndex = 0;
 	courseplay.fields.allFieldsScanned = false;

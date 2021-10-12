@@ -235,32 +235,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 		print(string.format("\t### CourseplayMultiplayer: writing %d custom fields ", fieldsCount))
 		for id, field in pairs(courseplay.fields.fieldData) do
 			if field.isCustom then
-				streamDebugWriteString(streamId, field.name)
-				self:debugWrite(field.name,"field name")
-				streamDebugWriteInt32(streamId, field.numPoints)
-				self:debugWrite(field.numPoints,"field numPoints")
-				streamDebugWriteBool(streamId, field.isCustom)
-				self:debugWrite(field.isCustom,"field isCustom")
-				streamDebugWriteInt32(streamId, field.fieldNum)
-				self:debugWrite(field.fieldNum,"field fieldNum")
-				streamDebugWriteInt32(streamId, field.dimensions.minX)
-				self:debugWrite(field.dimensions.min,"field minX")
-				streamDebugWriteInt32(streamId, field.dimensions.maxX)
-				self:debugWrite(field.dimensions.maxX,"field maxX")
-				streamDebugWriteInt32(streamId, field.dimensions.minZ)
-				self:debugWrite(field.dimensions.minZ,"field minZ")
-				streamDebugWriteInt32(streamId, field.dimensions.maxZ)
-				self:debugWrite(field.dimensions.maxZ,"field maxZ")
-				streamDebugWriteInt32(streamId, #(field.points))
-				self:debugWrite(field.points,"field points")
-				for p = 1, #(field.points) do
-					streamDebugWriteFloat32(streamId, field.points[p].cx)
-					self:debugWrite(field.points[p].cx,"field cx")
-					streamDebugWriteFloat32(streamId, field.points[p].cy)
-					self:debugWrite(field.points[p].cy,"field cy")
-					streamDebugWriteFloat32(streamId, field.points[p].cz)
-					self:debugWrite(field.points[p].cz,"field cz")
-				end
+				CustomFieldEvent.writeField(field,streamId)
 			end
 		end
 	end;
@@ -327,37 +302,8 @@ function CourseplayJoinFixEvent:readStream(streamId, connection)
 		print(string.format("\t### CourseplayMultiplayer: reading %d custom fields ", fieldsCount))
 		courseplay.fields.fieldData = {}
 		for i = 1, fieldsCount do
-			local name = streamReadString(streamId)
-			self:debugRead(name,"field name")
-			local numPoints = streamReadInt32(streamId)
-			self:debugRead(numPoints,"field numPoints")
-			local isCustom = streamReadBool(streamId)
-			self:debugRead(isCustom,"field isCustom")
-			local fieldNum = streamReadInt32(streamId)
-			self:debugRead(fieldNum,"field fieldNum")
-			local minX = streamReadInt32(streamId)
-			self:debugRead(minX,"field minX")
-			local maxX = streamReadInt32(streamId)
-			self:debugRead(maxX,"field maxX")
-			local minZ = streamReadInt32(streamId)
-			self:debugRead(minZ,"field minZ")
-			local maxZ = streamReadInt32(streamId)
-			self:debugRead(maxZ,"field maxZ")
-			local ammountPoints = streamReadInt32(streamId)
-			self:debugRead(ammountPoints,"field numPoints")
-			local waypoints = {}
-			for w = 1, ammountPoints do 
-				local cx = streamReadFloat32(streamId)
-				self:debugRead(cx,"field cx")
-				local cy = streamReadFloat32(streamId)
-				self:debugRead(cy,"field cy")
-				local cz = streamReadFloat32(streamId)
-				self:debugRead(cz,"field cz")
-				local wp = { cx = cx, cy = cy, cz = cz}
-				table.insert(waypoints, wp)
-			end
-			local field = { name = name, numPoints = numPoints, isCustom = isCustom, fieldNum = fieldNum, points = waypoints, dimensions = {minX = minX, maxX = maxX, minZ = minZ, maxZ = maxZ}}
-			courseplay.fields.fieldData[fieldNum] = field
+			local field = CustomFieldEvent.readField(streamId)
+			courseplay.fields.fieldData[field.fieldNum] = field
 		end
 		print("\t### CourseplayMultiplayer: courses/folders reading end")
 	end;

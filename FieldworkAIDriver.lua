@@ -323,6 +323,14 @@ function FieldworkAIDriver:writeUpdateStream(streamId, connection, dirtyMask)
 	else 
 		streamWriteBool(streamId,false)
 	end
+	if self.timeRemaining ~= nil and self.timeRemaining ~= self.timeRemainingSend  then 
+		streamWriteBool(streamId,true)
+		streamWriteFloat32(streamId,self.timeRemaining)
+		self.timeRemainingSend = self.timeRemaining
+	else 
+		streamWriteBool(streamId,false)
+	end
+
 	AIDriver.writeUpdateStream(self,streamId, connection, dirtyMask)
 end 
 
@@ -336,6 +344,10 @@ function FieldworkAIDriver:readUpdateStream(streamId, timestamp, connection)
 		local nameState = streamReadString(streamId)
 		self.fieldworkState = self.states[nameState]
 	end	
+	if streamReadBool(streamId) then
+		self.timeRemaining = streamReadFloat32(streamId)
+	end	
+
 	AIDriver.readUpdateStream(self,streamId, timestamp, connection)
 end
 
@@ -346,6 +358,12 @@ function FieldworkAIDriver:onWriteStream(streamId)
 	else 
 		streamWriteBool(streamId,false)
 	end
+	if self.timeRemaining ~= nil then 
+		streamWriteBool(streamId,true)
+		streamWriteFloat32(streamId,self.timeRemaining)
+	else 
+		streamWriteBool(streamId,false)
+	end
 	AIDriver.onWriteStream(self,streamId)
 end
 
@@ -353,6 +371,9 @@ function FieldworkAIDriver:onReadStream(streamId)
 	if streamReadBool(streamId) then
 		local nameState = streamReadString(streamId)
 		self.fieldworkState = self.states[nameState]
+	end
+	if streamReadBool(streamId) then
+		self.timeRemaining =  streamReadFloat32(streamId)
 	end
 	AIDriver.onReadStream(self,streamId)
 end
@@ -815,11 +836,12 @@ function FieldworkAIDriver:setUpCourses()
 	self.fieldworkCourse:setOffset(self.vehicle.cp.settings.toolOffsetX:get(), self.vehicle.cp.settings.toolOffsetZ:get())
 	-- TODO: consolidate the working width calculation and usage, this is currently an ugly mess
 	self.fieldworkCourse:setWorkWidth(self.vehicle.cp.courseWorkWidth or self.courseGeneratorSettings.workWidth:getAutoWorkWidth())
+	local laneNumber = self.courseGeneratorSettings.multiTools.laneNumber:get()
 	if self.vehicle.cp.courseGeneratorSettings.multiTools:get() > 1 then
-		self:debug('Calculating offset course for position %d of %d', self.vehicle.cp.laneNumber,
+		self:debug('Calculating offset course for position %d of %d', laneNumber,
 			self.vehicle.cp.courseGeneratorSettings.multiTools:get())
 		self.fieldworkCourse = self.fieldworkCourse:calculateOffsetCourse(
-			self.vehicle.cp.courseGeneratorSettings.multiTools:get(), self.vehicle.cp.laneNumber,
+			self.vehicle.cp.courseGeneratorSettings.multiTools:get(), laneNumber,
 			self.fieldworkCourse.workWidth / self.vehicle.cp.courseGeneratorSettings.multiTools:get(),
 			self.vehicle.cp.settings.symmetricLaneChange:is(true))
 	end
@@ -939,15 +961,19 @@ function FieldworkAIDriver:foldImplements()
 end
 
 function FieldworkAIDriver:clearRemainingTime()
-	self.vehicle.cp.timeRemaining = nil
+	self.timeRemaining = nil
+end
+
+function FieldworkAIDriver:getRemainingTime()
+	return self.timeRemaining
 end
 
 function FieldworkAIDriver:updateRemainingTime(ix)
 	if self.state == self.states.ON_FIELDWORK_COURSE then
 		local dist, turns = self.course:getRemainingDistanceAndTurnsFrom(ix)
 		local turnTime = turns * self.turnDurationMs / 1000
-		self.vehicle.cp.timeRemaining = math.max(0, dist / (self:getWorkSpeed() / 3.6) + turnTime)
-		self:debug('Distance to go: %.1f; Turns left: %d; Time left: %ds', dist, turns, self.vehicle.cp.timeRemaining)
+		self.timeRemaining = math.max(0, dist / (self:getWorkSpeed() / 3.6) + turnTime)
+		self:debug('Distance to go: %.1f; Turns left: %d; Time left: %ds', dist, turns, self.timeRemaining)
 	else
 		self:clearRemainingTime()
 	end
@@ -1123,7 +1149,7 @@ end
 
 function FieldworkAIDriver:finishRow(ix)
 	self:setMarkers()
-	self.turnContext = RowFinishingContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+	self.turnContext = RowFinishingContext(self.course, ix, self.aiDriverData, self:getWorkWidth(),
 			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	self.aiTurn = FinishRowOnly(self.vehicle, self, self.turnContext)
@@ -1136,7 +1162,7 @@ function FieldworkAIDriver:startTurn(ix)
 	-- this should help returning to the course faster.
 	self.ppc:setShortLookaheadDistance()
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self:getWorkWidth(),
 			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 	if self.vehicle.cp.settings.useAITurns:is(true) then
@@ -1204,27 +1230,7 @@ function FieldworkAIDriver:getMarkers()
 end
 
 function FieldworkAIDriver:getAIMarkers(object, suppressLog)
-	local aiLeftMarker, aiRightMarker, aiBackMarker
-	if object.getAIMarkers then
-		aiLeftMarker, aiRightMarker, aiBackMarker = object:getAIMarkers()
-	end
-	if not aiLeftMarker or not aiRightMarker or not aiBackMarker then
-		-- use the root node if there are no AI markers
-		if not suppressLog then
-			self:debug('%s has no AI markers, try work areas', nameNum(object))
-		end
-		aiLeftMarker, aiRightMarker, aiBackMarker = self:getAIMarkersFromWorkAreas(object)
-		if not aiLeftMarker or not aiRightMarker or not aiLeftMarker then
-			if not suppressLog then
-				self:debug('%s has no work areas, giving up', nameNum(object))
-			end
-			return nil, nil, nil
-		else
-			return aiLeftMarker, aiRightMarker, aiBackMarker
-		end
-	else
-		return aiLeftMarker, aiRightMarker, aiBackMarker
-	end
+	return WorkWidthUtil.getAIMarkers(object)
 end
 
 --- When finishing a turn, is it time to lower all implements here?
@@ -1379,27 +1385,6 @@ function FieldworkAIDriver:onDraw()
 	AIDriver.onDraw(self)
 end
 
-function FieldworkAIDriver:isValidWorkArea(area)
-	return area.start and area.height and area.width and
-		area.type ~= WorkAreaType.RIDGEMARKER and
-		area.type ~= WorkAreaType.COMBINESWATH and
-		area.type ~= WorkAreaType.COMBINECHOPPER
-end
-
---- Calculate the front and back marker nodes of a work area
-function FieldworkAIDriver:getAIMarkersFromWorkAreas(object)
-	-- work areas are defined by three nodes: start, width and height. These nodes
-	-- define a rectangular work area which you can make visible with the
-	-- gsVehicleDebugAttributes console command and then pressing F5
-	for _, area in courseplay:workAreaIterator(object) do
-		if self:isValidWorkArea(area) then
-			-- for now, just use the first valid work area we find
-			self:debug('%s: Using %s work area markers as AIMarkers', nameNum(object), g_workAreaTypeManager.workAreaTypes[area.type].name)
-			return area.start, area.width, area.height
-		end
-	end
-end
-
 function FieldworkAIDriver:getAllAIImplements(object, implements)
 	if not implements then implements = {} end
 	for _, implement in ipairs(object:getAttachedImplements()) do
@@ -1414,7 +1399,7 @@ end
 
 -- Is this and implement we should consider when deciding when to lift/raise implements at the end/start of a row?
 function FieldworkAIDriver:isValidAIImplement(object)
-	if courseplay:hasWorkAreas(object) then
+	if WorkWidthUtil.hasWorkAreas(object) then
 		-- has work areas, good.
 		return true
 	else
@@ -1502,4 +1487,8 @@ end
 
 function FieldworkAIDriver:getAllFillLevels(object, fillLevelInfo)
 	AIDriverUtil.getAllFillLevels(object, fillLevelInfo, self)
+end
+
+function FieldworkAIDriver:getWorkWidth()
+	return self.courseGeneratorSettings.workWidth:get()
 end

@@ -172,3 +172,11 @@ function PlowAIDriver:getTurnEndSideOffset()
 		return 0
 	end
 end
+
+function PlowAIDriver:stop(msg)
+	--- Make sure after the driver has finished.
+	--- Clients and server values are synced,
+	--- as the server updates the value locally during driving.
+	self.settings.toolOffsetX:set(self.settings.toolOffsetX:get())
+	FieldworkAIDriver.stop(self,msg)
+end

@@ -27,8 +27,7 @@ function courseplay:turn(vehicle, dt, turnContext)
 
 	--- This is in case we use manually recorded fieldswork course and not generated.
 	if not vehicle.cp.courseWorkWidth then
-		courseplay:calculateWorkWidth(vehicle, true);
-		vehicle.cp.courseWorkWidth = vehicle.cp.workWidth;
+		vehicle.cp.courseWorkWidth = vehicle.cp.courseGeneratorSettings.workWidth:getAutoWorkWidth();
 	end;
 
 	--- Get front and back markers
@@ -1217,7 +1216,8 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	-- drive forward until our implement reaches the headland after the turn
 	fromPoint.x, _, fromPoint.z = localToWorld( helperNode, 0, 0, 0 )
 	-- drive forward only until our implement reaches the headland area after the turn so we leave an unworked area here at the corner
-	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerStart((vehicle.cp.workWidth / 2) + turnInfo.frontMarker - turnInfo.wpChangeDistance)
+	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get()
+	toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerStart((workWidth / 2) + turnInfo.frontMarker - turnInfo.wpChangeDistance)
 	-- is this now in front of us? We may not need to drive forward
 	local dx, dy, dz = worldToLocal( helperNode, toPoint.x, toPoint.y, toPoint.z )
 	-- at which waypoint we have to raise the implement
@@ -1238,7 +1238,7 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 	_, _, dz = worldToLocal( helperNode, toPoint.x, toPoint.y, toPoint.z )
 	courseplay.destroyNode(helperNode)
 	courseplay:debug(("%s:(Turn) courseplay:generateTurnTypeHeadlandCornerReverseStraightTractor(), from ( %.2f %.2f ), to ( %.2f %.2f) workWidth: %.1f, dz = %.1f"):format(
-		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, vehicle.cp.workWidth, dz ), 14)
+		nameNum(vehicle), fromPoint.x, fromPoint.z, toPoint.x, toPoint.z, workWidth, dz ), 14)
 	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, dz < 0);
 
 	-- Generate turn circle (Forward)
@@ -1259,9 +1259,9 @@ function courseplay.generateTurnTypeHeadlandCornerReverseStraightTractor(vehicle
 
 	if turnInfo.reversingWorkTool and turnInfo.reversingWorkTool.cp.realTurningNode then
 		-- with towed reversing tools the reference point is the tool, not the tractor so don't care about frontMarker and such
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.reverseWPChangeDistance - 10)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(workWidth / 2) - turnInfo.reverseWPChangeDistance - 10)
 	else
-		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(vehicle.cp.workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 10)
+		toPoint = vehicle.cp.turnCorner:getPointAtDistanceFromCornerEnd(-(workWidth / 2) - turnInfo.frontMarker - turnInfo.reverseWPChangeDistance - 10)
 	end
 
 	courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, true, true, turnInfo.reverseWPChangeDistance);

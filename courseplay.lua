@@ -32,6 +32,7 @@ courseplay.courses = {};
 courseplay.settings = {};
 courseplay.hud = {};
 courseplay.buttons = {};
+---@class courseplay.fields
 courseplay.fields = {};
 courseplay.generation = {};
 courseplay.lights = {};
@@ -138,6 +139,7 @@ local function initialize()
 		'Events/CourseEvent',
 		'Events/InfoTextEvent',
 		'Events/CommandEvents',
+		'Events/CustomFieldEvent',
 		'Generic/LinkedList'
 	};
 
@@ -229,23 +231,19 @@ local function setGlobalData()
 
 	[1]={name='self.cp.canDrive',dataFormat='Bool'},
 	[2]={name='self.cp.drivingDirReverse',dataFormat='Bool'},
-	[3]={name='self.cp.fieldEdge.customField.isCreated',dataFormat='Bool'},
-	[4]={name='self.cp.fieldEdge.customField.fieldNum',dataFormat='Int'},
-	[5]={name='self.cp.fieldEdge.customField.selectedFieldNumExists',dataFormat='Bool'},
-	[6]={name='self.cp.fieldEdge.selectedField.fieldNum',dataFormat='Int'},
-	[7]={name='self.cp.isDriving',dataFormat='Bool'},
-	[8]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
-	[9]={name='self.cp.workWidth',dataFormat='Float'},
-	[10]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
-	[11]={name='self.cp.laneOffset',dataFormat='Float'},
-	[12]={name='self.cp.hud.currentPage',dataFormat='Int'},
-	[13]={name='self.cp.waypointIndex',dataFormat='Int'},
-	[14]={name='self.cp.isRecording',dataFormat='Bool'},
-	[15]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
+	[3]={name='self.cp.isDriving',dataFormat='Bool'},
+	[4]={name='self.cp.hud.openWithMouse',dataFormat='Bool'},
+	[5]={name='self.cp.coursePlayerNum',dataFormat='Int'}, --??
+	[6]={name='self.cp.hud.currentPage',dataFormat='Int'},
+	[7]={name='self.cp.waypointIndex',dataFormat='Int'},
+	[8]={name='self.cp.isRecording',dataFormat='Bool'},
+	[9]={name='self.cp.recordingIsPaused',dataFormat='Bool'},
 	}
-	
+	---@type SettingsContainer
 	courseplay.globalSettings = SettingsContainer.createGlobalSettings()
+	---@type SettingsContainer
 	courseplay.globalCourseGeneratorSettings = SettingsContainer.createGlobalCourseGeneratorSettings()
+	---@type SettingsContainer
 	courseplay.globalPathfinderSettings = SettingsContainer.createGlobalPathfinderSettings()
 end;
 

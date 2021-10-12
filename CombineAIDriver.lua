@@ -88,7 +88,7 @@ function CombineAIDriver:init(vehicle)
 	self:checkMarkers()
 
 	-- distance to keep to the right (>0) or left (<0) when pulling back to make room for the tractor
-	self.pullBackRightSideOffset = math.abs(self.pipeOffsetX) - self.vehicle.cp.workWidth / 2 + 5
+	self.pullBackRightSideOffset = math.abs(self.pipeOffsetX) - self:getWorkWidth() / 2 + 5
 	self.pullBackRightSideOffset = self.pipeOnLeftSide and self.pullBackRightSideOffset or -self.pullBackRightSideOffset
 	-- should be at pullBackRightSideOffset to the right or left at pullBackDistanceStart
 	self.pullBackDistanceStart = self.settings.turnDiameter:get() --* 0.7
@@ -200,7 +200,7 @@ function CombineAIDriver:start(startingPoint)
 	-- we work with the traffic conflict detector and the proximity sensors instead
 	self:disableCollisionDetection()
 	self:fixMaxRotationLimit()
-	local total, pipeInFruit = self.fieldworkCourse:setPipeInFruitMap(self.pipeOffsetX, self.vehicle.cp.workWidth)
+	local total, pipeInFruit = self.fieldworkCourse:setPipeInFruitMap(self.pipeOffsetX, self:getWorkWidth())
 	local ix = self.fieldworkCourse:getStartingWaypointIx(AIDriverUtil.getDirectionNode(self.vehicle), startingPoint)
 	self:shouldStrawSwathBeOn(ix)
 	self.fillLevelFullPercentage = self.normalFillLevelFullPercentage
@@ -580,9 +580,10 @@ function CombineAIDriver:checkFruit()
 	else
 		self.fruitLeft, self.fruitRight = AIVehicleUtil.getValidityOfTurnDirections(self.vehicle)
 	end
-	local x, _, z = localToWorld(self:getDirectionNode(), self.vehicle.cp.workWidth, 0, 0)
+	local workWidth = self:getWorkWidth()
+	local x, _, z = localToWorld(self:getDirectionNode(), workWidth, 0, 0)
 	self.fieldOnLeft = courseplay:isField(x, z, 1, 1)
-	x, _, z = localToWorld(self:getDirectionNode(), -self.vehicle.cp.workWidth, 0, 0)
+	x, _, z = localToWorld(self:getDirectionNode(), -workWidth, 0, 0)
 	self.fieldOnRight = courseplay:isField(x, z, 1, 1)
 	self:debug('Fruit left: %.2f right %.2f, field on left %s, right %s',
 		self.fruitLeft, self.fruitRight, tostring(self.fieldOnLeft), tostring(self.fieldOnRight))
@@ -904,7 +905,7 @@ end
 --- from node.
 function CombineAIDriver:getAreaToAvoid()
 	if self:isWaitingForUnloadAfterPulledBack() then
-		local xOffset = self.vehicle.cp.workWidth / 2
+		local xOffset = self:getWorkWidth() / 2
 		local zOffset = 0
 		local length = self.pullBackDistanceEnd
 		local width = self.pullBackRightSideOffset
@@ -1028,7 +1029,7 @@ function CombineAIDriver:startTurn(ix)
 	self:debug('Starting a combine turn.')
 
 	self:setMarkers()
-	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self.vehicle.cp.workWidth,
+	self.turnContext = TurnContext(self.course, ix, self.aiDriverData, self:getWorkWidth(),
 			self.frontMarkerDistance, self.backMarkerDistance,
 			self:getTurnEndSideOffset(), self:getTurnEndForwardOffset())
 
@@ -1083,10 +1084,6 @@ end
 
 function CombineAIDriver:getFieldworkCourse()
 	return self.fieldworkCourse
-end
-
-function CombineAIDriver:getWorkWidth()
-	return self.vehicle.cp.workWidth
 end
 
 function CombineAIDriver:isChopper()
@@ -1759,7 +1756,7 @@ end
 function CombineAIDriver:addForwardProximitySensor()
 	self:setFrontMarkerNode(self.vehicle)
 	self.forwardLookingProximitySensorPack = WideForwardLookingProximitySensorPack(
-			self.vehicle, self.ppc, self:getFrontMarkerNode(self.vehicle), self.proximitySensorRange, 1, self.vehicle.cp.workWidth)
+			self.vehicle, self.ppc, self:getFrontMarkerNode(self.vehicle), self.proximitySensorRange, 1, self:getWorkWidth())
 end
 
 --- Check the vehicle in the proximity sensor's range. If it is player driven, don't slow them down when hitting this

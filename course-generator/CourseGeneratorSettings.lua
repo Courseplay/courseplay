@@ -219,6 +219,7 @@ end
 
 function WorkWidthSetting:setAutoWorkWidthFromNetwork(value)
 	self.automaticValue:set(value,true)
+	self.value:set(value,true)
 end
 
 function WorkWidthSetting:setNext()
@@ -233,13 +234,27 @@ end
 --- so we update it on a attach/detach of an implement and 
 --- send the changed value with an event to the client.
 function WorkWidthSetting:updateAutoWorkWidth()
-	local value = courseplay:getWorkWidth(self.vehicle) or 0
+	local value = WorkWidthUtil.getAutomaticWorkWidth(self.vehicle) or 0
 	self.automaticValue:set(value,true)
+	self.value:set(value,true)
 	self:sendAutoWorkWidthEvent(value)
 end
 
 function WorkWidthSetting:getAutoWorkWidth()
 	return self.automaticValue:get()
+end
+
+function WorkWidthSetting:changeByX(x)
+	if x>0 then 
+		self:setNext()
+	else 
+		self:setPrevious()
+	end
+	self:onChange()
+end
+
+function WorkWidthSetting:onChange()
+	courseplay:setCustomTimer(self.vehicle, 'showWorkWidth', 2);
 end
 
 --- Course gen center mode setting
@@ -377,26 +392,94 @@ end
 
 ---@class MultiToolsSetting : SettingList
 MultiToolsSetting = CpObject(SettingList)
-
+MultiToolsSetting.MAX_DRIVERS = 8
 function MultiToolsSetting:init(vehicle)
 	self.values = {}
 	self.texts = {}
-	for i = 1, 8 do
+	for i = 1, self.MAX_DRIVERS do
 		table.insert(self.values, i)
 		table.insert(self.texts, i)
 	end
 	SettingList.init(self, 'multiTools', 'COURSEPLAY_MULTI_TOOLS', 'COURSEPLAY_MULTI_TOOLS',
 		vehicle, self.values, self.texts)
+	self.laneNumber = LaneNumberSetting(vehicle,self)
+	self.LANE_NUMBER_EVENT = self:registerIntEvent(self.setLaneNumberFromNetwork)
+end
+
+function MultiToolsSetting:loadFromXml(xml,parentKey)
+	SettingList.loadFromXml(self,xml,parentKey)
+	self.laneNumber:loadFromXml(xml,parentKey)
+end
+function MultiToolsSetting:saveToXml(xml,parentKey)
+	SettingList.saveToXml(self,xml,parentKey)
+	self.laneNumber:saveToXml(xml,parentKey)
+end
+
+function MultiToolsSetting:onReadStream(streamId)
+	SettingList.onReadStream(self,streamId)
+	self.laneNumber:onReadStream(streamId)
+	
+end
+function MultiToolsSetting:onWriteStream(streamId)
+	SettingList.onWriteStream(self,streamId)
+	self.laneNumber:onWriteStream(streamId)
+end
+
+function MultiToolsSetting:setLaneNumberFromNetwork(value)
+	self.laneNumber:set(value)
+end
+
+function MultiToolsSetting:changeLaneNumber(changeBy,noEventSend)
+	self.laneNumber:changeByX(changeBy)
+	if noEventSend == nil or noEventSend == false then
+		self:raiseEvent(self.LANE_NUMBER_EVENT,self.laneNumber:get())
+	end
 end
 
 function MultiToolsSetting:onChange()
+	self.laneNumber:refresh(self:get())
 	-- TODO: consolidate the (poorly named) laneNumber and laneOffset and this into a single setting as they
 	-- can only change together (instead of having logic all over the place according to the good old CP practices)
 	if self:get() % 2 == 0 then
-		courseplay:changeLaneNumber(self.vehicle, 1)
+		self.laneNumber:set(1)
 	else
-		courseplay:changeLaneNumber(self.vehicle, 0, true)
+		self.laneNumber:set(0)
 	end
+end
+
+---@class LaneNumberSetting : SettingList
+LaneNumberSetting = CpObject(SettingList)
+function LaneNumberSetting:init(vehicle,multiToolsSetting)
+	self.multiToolsSetting = multiToolsSetting
+	self:refresh(multiToolsSetting:get())
+	SettingList.init(self, 'laneNumber', 'COURSEPLAY_LANE_OFFSET', 'COURSEPLAY_LANE_OFFSET',
+		vehicle, self.values, self.texts)
+end
+
+function LaneNumberSetting:refresh(numDrivers)
+	local evenNumOfDrivers = numDrivers % 2 == 0
+	local maxLeft,maxRight = self:getMaxValues(numDrivers)
+	self.texts = {}
+	self.values = {}
+	for i = maxLeft, maxRight do
+		if not evenNumOfDrivers or i ~= 0 and evenNumOfDrivers then 
+			table.insert(self.values, i)
+			local text = ""
+			if i>0 then 
+				text = string.format("%d %s",i,courseplay:loc('COURSEPLAY_RIGHT'))
+			elseif i<0 then 
+				text = string.format("%d %s",i,courseplay:loc('COURSEPLAY_LEFT'))
+			else 
+				text = courseplay:loc('COURSEPLAY_CENTER')
+			end
+			table.insert(self.texts, text)
+		end
+	end
+end
+
+function LaneNumberSetting:getMaxValues(numDrivers)
+	local maxRight = math.floor(numDrivers/2)
+	return -maxRight,maxRight
 end
 
 ---@class IslandBypassModeSetting : SettingList
@@ -507,6 +590,138 @@ function HeadlandPassesSetting:init(vehicle)
 		vehicle, self.values, self.texts)
 end
 
+---@class FieldEdgePathSetting : IntSetting
+FieldEdgePathSetting = CpObject(IntSetting)
+FieldEdgePathSetting.EMPTY = 0
+FieldEdgePathSetting.MAX_FIELDS = 250
+function FieldEdgePathSetting:init(vehicle,selectedFieldSetting)
+	self.selectedFieldSetting = selectedFieldSetting
+	IntSetting.init(self,"fieldEdgePath","","",vehicle,0,self.MAX_FIELDS,self.EMPTY)
+	self.visible = false
+	self.customFieldPath = nil
+	self.currentFieldNumExists = false
+	-- All the labels, tooltips.
+	self.labels = {
+		["create"] = courseplay:loc('COURSEPLAY_SCAN_CURRENT_FIELD_EDGES'),
+		["currentNr"] = courseplay:loc('COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER'),
+		["overwritePath"] = courseplay:loc('COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST'),
+		["addNewPath"] = courseplay:loc('COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST'),
+		["clear"] = courseplay:loc('COURSEPLAY_CLEAR_CUSTOM_FIELD_EDGE_PATH'),
+		["visibility"] =  courseplay:loc('COURSEPLAY_CHANGE_VISIBILITY_CUSTOM_FIELD_EDGE_PATH'),
+	}
+end
+
+--- After a change, check if the current selected field is already existing.
+function FieldEdgePathSetting:onChange()
+	local value = self:get() 
+	if value > 0 then 
+		self.currentFieldNumExists = CpFieldUtil.isFieldNumberValid(value)
+	end
+end
+
+--- Generates a new field edge path.
+function FieldEdgePathSetting:createPath()
+	if not self.customFieldPath then
+		local customField = CpFieldUtil.generateCustomFieldEdgePath(self.vehicle)
+		if customField.numPoints > 0 then 
+			self.customFieldPath = customField
+			self.visible = true
+		end
+	end
+end
+
+--- Converts a generated field edge path to a field and saves it.
+function FieldEdgePathSetting:savePath()
+	if self.customFieldPath ~= nil then 
+		local field = CpFieldUtil.saveCustomFieldEdgePathAsField(self.customFieldPath,self:get())
+		self:sendEvent(field)
+		self:clearPath()
+	end
+end
+
+---@param field table
+function FieldEdgePathSetting:sendEvent(field)
+	CustomFieldEvent.sendEvent(field)
+end
+
+--- Clears the generated field edge path-
+function FieldEdgePathSetting:clearPath()
+	self.customFieldPath = nil 
+	self.visible = false
+	self.currentFieldNumExists = false
+	self:set(self.EMPTY,true)
+end
+
+--- Changes the visibility of a generated field edge path.
+function FieldEdgePathSetting:toggleVisibility()
+	if self.customFieldPath then
+		self.visible = not self.visible
+	end
+end
+
+--- Is a field edge path generated ?
+function FieldEdgePathSetting:hasUnsavedCustomFieldPath()
+	return self.customFieldPath~=nil
+end
+
+--- Is the field number ~=0 ?
+function FieldEdgePathSetting:isValidNumber()
+	return self:get() ~= self.EMPTY
+end
+
+--- Is the generated field edge visible ?
+function FieldEdgePathSetting:isUnsavedCustomFieldPathVisible()
+	return self:hasUnsavedCustomFieldPath() and self.visible
+end
+
+--- Displays the generated field edge path.
+function FieldEdgePathSetting:showCustomFieldEdgePath()
+	if self:isUnsavedCustomFieldPathVisible() then 
+		CpFieldUtil.showFieldEdgePath(self.vehicle,self.customFieldPath)
+	end
+end
+
+function FieldEdgePathSetting:isDisabled()
+	return self.vehicle:getIsCourseplayDriving() 
+	or self.vehicle.cp.canDrive
+	or self.vehicle.cp.isRecording 
+	or self.vehicle.cp.recordingIsPaused
+end
+
+function FieldEdgePathSetting:getCreateLabel()
+	return self.labels.create
+end
+
+function FieldEdgePathSetting:getCurrentNrLabel()
+	return self.labels.currentNr
+end
+
+function FieldEdgePathSetting:getClearLabel()
+	return self.labels.clear
+end
+
+function FieldEdgePathSetting:getVisibilityLabel()
+	return self.labels.visibility
+end
+
+--- This is a tooltip for the save button.
+--- The text changes if the field is already generated or not.
+function FieldEdgePathSetting:getSaveLabel()
+	local str = self.currentFieldNumExists and self.labels.overwritePath or self.labels.addNewPath
+	return self:isValidNumber() and string.format(str,self:get()) or ""
+end
+
+function FieldEdgePathSetting:isSyncAllowed()
+	return false
+end	
+
+function FieldEdgePathSetting:getText()
+	if not self:isValidNumber() then 
+		return "---"
+	end
+	return CpFieldUtil.getFieldName(self:get())	or IntSetting.getText(self)
+end
+
 --- Global course generator settings (read from the XML, may be added to the UI later when needed):
 ---
 --- Minimum radius in meters where a lane change on the headland is allowed. This is to ensure that
@@ -573,6 +788,7 @@ function SettingsContainer.createCourseGeneratorSettings(vehicle)
 	container:addSetting(IslandBypassModeSetting, vehicle)
 	container:addSetting(HeadlandOverlapPercent, vehicle)
 	container:addSetting(ShowSeedCalculatorSetting, vehicle)
+	container:addSetting(FieldEdgePathSetting,vehicle,container.selectedField)
 	return container
 end
 
