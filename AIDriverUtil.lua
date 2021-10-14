@@ -228,6 +228,30 @@ function AIDriverUtil.hasImplementsOnTheBack(vehicle)
 	return false
 end
 
+--- Is the object attached at the front of the vehicle.
+---@param vehicle table
+---@param object table
+---@return boolean
+function AIDriverUtil.isObjectAttachedOnTheFront(vehicle,object)
+	local _, _, dz = localToLocal(object.rootNode, vehicle.rootNode, 0, 0, 0)
+	if dz > 0 then
+		return true
+	end
+	return false
+end
+
+--- Is the object attached at the back of the vehicle.
+---@param vehicle table
+---@param object table
+---@return boolean
+function AIDriverUtil.isObjectAttachedOnTheBack(vehicle,object)
+	local _, _, dz = localToLocal(object.rootNode, vehicle.rootNode, 0, 0, 0)
+	if dz < 0 then
+		return true
+	end
+	return false
+end
+
 function AIDriverUtil.getAllAttachedImplements(object, implements)
 	if not implements then implements = {} end
 	for _, implement in ipairs(object:getAttachedImplements()) do
@@ -524,3 +548,11 @@ function AIDriverUtil.getVehicleAndImplementsTotalLength(vehicle)
 	end
 	return totalLength
 end 
+
+function AIDriverUtil.getShieldWorkWidth(object,logPrefix)
+	if object.spec_leveler then 
+		local width = object.spec_leveler.nodes[1].maxDropWidth * 2
+		courseplay.debugFormat(courseplay.DBG_IMPLEMENTS,'%s%s: Is a shield with work width: %.1f', logPrefix, nameNum(object), width)
+		return width
+	end
+end

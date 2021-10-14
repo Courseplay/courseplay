@@ -23,6 +23,7 @@ ShieldAIDriver = CpObject(CompactingAIDriver)
 
 function ShieldAIDriver:start(startingPoint)
 	self.leveler = AIDriverUtil.getImplementWithSpecialization(self.vehicle, Leveler) or self.vehicle
+	self.hasFrontAttachedShield = self:isShieldAttachedAtFront()
 	CompactingAIDriver.start(self,startingPoint)
 end
 
@@ -178,3 +179,19 @@ function ShieldAIDriver.actionEventAttacherJointControl(object,superFunc, action
 	superFunc(object,actionName, inputValue, callbackState, isAnalog)
 end
 AttacherJointControl.actionEventAttacherJointControl = Utils.overwrittenFunction(AttacherJointControl.actionEventAttacherJointControl,ShieldAIDriver.actionEventAttacherJointControl)
+
+--- Is the shield attached at the front ?
+--- make sure the logic gets inverted for reverse driving vehicles, 
+--- for example a tractor with a rotated cabin.
+function ShieldAIDriver:isShieldAttachedAtFront()
+	local isReverseDriving = AIDriverUtil.isReverseDriving(self.vehicle) 
+	local isAttachedAtFront = AIDriverUtil.isObjectAttachedOnTheFront(self.vehicle,self.leveler)
+	return isReverseDriving and not isAttachedAtFront or isAttachedAtFront
+end
+
+--- The direction from which to drive into the silo depends,
+--- if the shield is attached at the front, then drive forwards into the silo
+--- or if the shield is attached at the back, then drive backwards into the silo.
+function ShieldAIDriver:isDriveDirectionReverse()
+	return not self.hasFrontAttachedShield
+end

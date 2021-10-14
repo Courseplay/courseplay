@@ -421,6 +421,12 @@ function courseplay:getWorkWidth(thing, logPrefix)
 	courseplay.debugFormat(courseplay.DBG_IMPLEMENTS,'%s%s: getting working width...', logPrefix, nameNum(thing))
 	-- check if we have a manually configured working width
 	local width = g_vehicleConfigurations:get(thing, 'workingWidth')
+
+	if not width then
+		--- Gets the work width if the object is a shield.
+		width = AIDriverUtil.getShieldWorkWidth(thing,logPrefix)
+	end
+
 	if not width then
 		-- no manual config, check AI markers
 		width = courseplay:getAIMarkerWidth(thing, logPrefix)

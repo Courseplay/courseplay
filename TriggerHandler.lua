@@ -1162,7 +1162,7 @@ function TriggerHandler.onUpdateDischargeable(object,dt, isActiveForInput, isAct
 			if spec:getCanDischargeToObject(currentDischargeNode) and not triggerHandler:isDriveNowActivated() then 
 				triggerHandler:setUnloadingState(object,currentDischargeNode.fillUnitIndex,spec:getDischargeFillType(currentDischargeNode))
 				triggerHandler:debugSparse(object,"getCanDischargeToObject")
-				spec:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
+				object:setDischargeState(Dischargeable.DISCHARGE_STATE_OBJECT)				
 			end
 		end
 		if currentDischargeNode.dischargeFailedReason and currentDischargeNode.dischargeFailedReason == Dischargeable.DISCHARGE_REASON_NO_FREE_CAPACITY then 

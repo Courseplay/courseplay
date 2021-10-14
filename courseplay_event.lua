@@ -154,7 +154,7 @@ end
 
 CourseplayJoinFixEvent = {};
 CourseplayJoinFixEvent_mt = Class(CourseplayJoinFixEvent, Event);
-CourseplayJoinFixEvent.mpDebugActive = true
+CourseplayJoinFixEvent.mpDebugActive = false
 
 InitEventClass(CourseplayJoinFixEvent, "CourseplayJoinFixEvent");
 
@@ -202,8 +202,7 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 			else
 				streamDebugWriteInt32(streamId, -1)
 			end
-		end
-		self:debug("Stream write folders")		
+		end	
 		local folderCount = 0
 		for _,_ in pairs(g_currentMission.cp_folders) do
 			folderCount = folderCount + 1

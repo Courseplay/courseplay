@@ -285,7 +285,7 @@ function BunkerSiloAIDriver:getBestTarget()
 		if self.lastDrivenColumnRight then 
 			nextColumn = self.lastDrivenColumn+1
 			if nextColumn > numColumns then 
-				nextColumn = math.floor(self.bunkerSiloManager:getNumberOfColumns()/2) 
+				nextColumn = math.max(math.floor(self.bunkerSiloManager:getNumberOfColumns()/2),1)
 				self.lastDrivenColumnRight = false
 			end
 		else
