@@ -275,6 +275,10 @@ function Course:isFieldworkCourse()
 	return (self.workWidth and self.workWidth > 0) or (self.numberOfHeadlands and self.numberOfHeadlands > 0)
 end
 
+function Course:setName(name)
+	self.name = name
+end
+
 function Course:getName()
 	return self.name
 end
@@ -1720,7 +1724,7 @@ end
 --- readability only.
 --- The attributes of individual waypoints are separated by a ';', the order of the attributes can be read from the
 --- code below.
-function Course.serializeWaypoints(waypoints)
+function Course:serializeWaypoints()
 	local function serializeBool(bool)
 		return bool and 'Y' or 'N'
 	end
@@ -1730,7 +1734,7 @@ function Course.serializeWaypoints(waypoints)
 	end
 
 	local serializedWaypoints = '\n' -- (pure cosmetic)
-	for _, p in ipairs(waypoints) do
+	for _, p in ipairs(self.waypoints) do
 		-- we are going to celebrate once we get rid of the cx, cz variables!
 		local x, z = p.x or p.cx, p.z or p.cz
 		local y = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x, 0, z)
@@ -1787,11 +1791,19 @@ function Course.deserializeWaypoints(serializedWaypoints)
 	return waypoints
 end
 
+function Course:saveToXml(courseXml, courseKey)
+	setXMLString(courseXml, courseKey .. '#name', self.name)
+	setXMLString(courseXml, courseKey .. '#test', 'kakukk')
+	setXMLFloat(courseXml, courseKey .. '#workdWidth', self.workWidth or 0)
+	setXMLInt(courseXml, courseKey .. '#numHeadlandLanes', self.numHeadlandLanes or 0 )
+	setXMLInt(courseXml, courseKey .. '#multiTools', self.multiTools or 0)
+	setXMLString(courseXml, courseKey .. '.waypoints', self:serializeWaypoints())
+end
+
 ---@param vehicle : table
----@param file : FileView
-function Course.createFromFile(vehicle, file)
-	local courseXml = loadXMLFile("courseXml", file:getFullPath())
-	local courseKey = "course";
+---@param courseXml : XML file
+---@param courseKey : key to the course in the XML
+function Course.createFromXml(vehicle, courseXml, courseKey)
 	local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
 	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
@@ -1801,9 +1813,6 @@ function Course.createFromFile(vehicle, file)
 	course.workWidth = workWidth
 	course.numHeadlands = numHeadlandLanes
 	course.multiTools = multiTools
-	course.name = file:getName()
-
-	delete(courseXml);
 
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
 	return course

@@ -287,9 +287,14 @@ end
 ---@class CourseManager
 CourseManager = CpObject()
 
-function CourseManager:init(courseDirFullPath)
-	self.courseDirFullPath = courseDirFullPath
-	self.courseDir = Directory(courseDirFullPath)
+function CourseManager:init()
+	local baseDir = getUserProfileAppPath() .. "/modsSettings/Courseplay"
+	-- create subfolders one by one, seems like createFolder() can't recursively create subfolders
+	createFolder(baseDir)
+	baseDir = baseDir .. "/Courses/"
+	createFolder(baseDir)
+	self.courseDirFullPath = baseDir .. g_currentMission.missionInfo.mapId
+	self.courseDir = Directory(self.courseDirFullPath)
 	self.courseDirView = DirectoryView(self.courseDir)
 	self.currentEntry = 1
 	-- normal (non-fieldwork) courses, will create entry when the course is loaded into the vehicle
@@ -298,12 +303,14 @@ function CourseManager:init(courseDirFullPath)
 	self.fieldworkCourses = {}
 	-- representation of all waypoints loaded for a vehicle as needed by the legacy functions
 	self.legacyWaypoints = {}
+	self.savegameFolderPath = ('%ssavegame%d'):format(getUserProfileAppPath(), g_careerScreen.selectedIndex)
+	-- file where we save the courses assigned to each vehicle
+	self.assignedCoursesXmlFilePath = self.savegameFolderPath .. '/courseplayAssignedCourses.xml'
 end
 
 -- wrapper to create a global instance.
 function CourseManager.create()
-	return CourseManager(("%s%s/%s"):format(getUserProfileAppPath(),"modsSettings/Courseplay",
-		g_currentMission.missionInfo.mapId))
+	return CourseManager()
 end
 
 function CourseManager:refresh()
@@ -338,11 +345,25 @@ function CourseManager:fold(index)
 	self:debug('%s folded', dir:getName())
 end
 
+function CourseManager:saveCourse(fullPath, course)
+	local courseXml = createXMLFile("courseXml", fullPath, 'course');
+	course:saveToXml(courseXml, 'course')
+	saveXMLFile(courseXml);
+	delete(courseXml);
+	self:debug('Course %s saved.', course:getName())
+end
+
 --- Load the course shown in the HUD at index
 function CourseManager:loadCourse(vehicle, index)
 	self:getCurrentEntry()
 	local file = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
-	local course = Course.createFromFile(vehicle, file)
+
+	local courseXml = loadXMLFile("courseXml", file:getFullPath())
+	local courseKey = "course";
+	local course = Course.createFromXml(vehicle, courseXml, courseKey)
+	course:setName(file:getName())
+	delete(courseXml);
+
 	if course:isFieldworkCourse() then
 		self.fieldworkCourses[vehicle] = course
 		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s', file:getName())
@@ -365,6 +386,65 @@ function CourseManager:setFieldworkCourse(vehicle, course)
 	self.fieldworkCourses[vehicle] = course
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'fieldwork course set')
 	self:updateLegacyCourseData(vehicle)
+end
+
+--- This is just the (zero based) index of the vehicle's assigned course in the self.courses array. Vehicles
+--- write this in the savegame so on game load they can pick and load their assigned courses.
+function CourseManager:getCourseAssignmentId(vehicle)
+	local assignmentId = 0
+	for v, _ in pairs(self.courses) do
+		if vehicle == v then
+			return assignmentId
+		end
+	end
+	return nil
+end
+
+function CourseManager:loadAssignedCourse(vehicle, assignmentId)
+
+end
+
+--- Save the courses currently assigned to each vehicle
+function CourseManager:saveAssignedCourses()
+	createFolder(self.savegameFolderPath)
+	local assignedCoursesXml = createXMLFile("assignedCoursesXml", self.assignedCoursesXmlFilePath, 'assignedCourses')
+	-- this token will be saved with the vehicle in the savegame and can be used to find the courses
+	-- for that vehicle when loading
+	local assignmentId = 0
+	for vehicle, course in pairs(self.courses) do
+		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'saving assigned course %s', course:getName())
+		local key = string.format('assignedCourses.assignment(%d)', assignmentId)
+		setXMLInt(assignedCoursesXml, key .. '#id', assignmentId)
+		setXMLString(assignedCoursesXml, key .. '#vehicle', nameNum(vehicle))
+		course:saveToXml(assignedCoursesXml, key .. '.course')
+		if self.fieldworkCourses[vehicle] then
+			fieldworkCourse:saveToXml(assignedCoursesXml, key .. '.fieldworkCourse')
+		end
+		assignmentId = assignmentId + 1
+	end
+	saveXMLFile(assignedCoursesXml);
+	delete(assignedCoursesXml);
+end
+
+--- Reload the courses what were assigned to each vehicle at the time of the last savegame
+function CourseManager:loadAssignedCourses()
+	createFolder(self.savegameFolderPath);
+	local assignedCoursesXml;
+	if fileExists(self.assignedCoursesXmlFilePath) then
+		assignedCoursesXml = loadXMLFile('assignedCoursesXml', self.assignedCoursesXmlFilePath);
+		local assignmentId = 0
+		while true do
+			local key = string.format('assignedCourses.assignment(%d)', assignmentId)
+			if not hasXMLProperty(assignedCoursesXml, key) then
+				-- no more assignments left
+				break
+			end
+			local vehicleName = getXMLString()
+			assignmentId = assignmentId + 1
+		end
+	else
+		self:debug('No assigned courses in savegame.')
+	end
 end
 
 --- For backwards compatibility, create all waypoints of all loaded courses for this vehicle, as it
@@ -448,11 +528,16 @@ function CourseManager:migrateOldCourses(folders, courses)
 	for _, course in pairs(courses) do
 		if not course.virtual then
 			self:debug('Loading course %s...', course.name)
-			courseplay.courses:loadCourseFromFile(course)
+			local courseXml = loadXMLFile("courseXml", course.xmlFilePath)
+			local courseKey = "course";
+			local dummyVehicle = {}
+			local newCourse = Course.createFromXml(dummyVehicle, courseXml, courseKey)
+			newCourse:setName(course.name)
 			self:debug('Migrating course %s to %s', course.name, foldersById[course.parent]:getFullPath())
-			courseplay.courses:writeCourseFile(foldersById[course.parent]:getFullPath() .. '/' .. course.name, course)
+			self:saveCourse(foldersById[course.parent]:getFullPath() .. '/' .. course.name, newCourse)
 		end
 	end
+	self:refresh()
 end
 
 function CourseManager:debug(...)

@@ -825,19 +825,13 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	end
 	newKey = newKey..'.courseplay'
 
-	
-	--CP basics
-	if #self.cp.loadedCourses == 0 and self.cp.currentCourseId ~= 0 then
-		-- this is the case when a course has been generated and than saved, it is not in loadedCourses (should probably
-		-- fix it there), so make sure it is in the savegame
-		setXMLString(xmlFile, newKey..".basics #courses", tostring(self.cp.currentCourseId))
-	else
-		setXMLString(xmlFile, newKey..".basics #courses", tostring(table.concat(self.cp.loadedCourses, ",")))
+	local courseAssignmentId = g_courseManager:getCourseAssignmentId(self)
+	if courseAssignmentId then
+		setXMLInt(xmlFile, newKey..".courseAssignment #id", courseAssignmentId)
 	end
 
 	--HUD
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
-	
 
 	self.cp.settings:saveToXML(xmlFile, newKey)
 	self.cp.courseGeneratorSettings:saveToXML(xmlFile, newKey)
