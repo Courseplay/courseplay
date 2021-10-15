@@ -215,7 +215,7 @@ end
 
 function CombineAIDriver:setHudContent()
 	UnloadableFieldworkAIDriver.setHudContent(self)
-	courseplay.hud:setCombineAIDriverContent(self.vehicle)
+	courseplay.hud:setCombineAIDriverContent(self.vehicle,self)
 end
 
 function CombineAIDriver:drive(dt)

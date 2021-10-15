@@ -473,6 +473,11 @@
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Keep unloading until end of row" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Don't stop unloading the combine when it is empty, follow it until the end of the row" />
 
+		<text name="COURSEPLAY_FILL_TYPE_LIST_DELETE"						text="Deletes a fill type." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_UP"						text="Moves a fill type up." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_DOWN"					text="Moves a fill type down." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_CLEAN_OLD_FILL_TYPES"			text="Removes invalid fill types." />
+
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Show Keybinds" />
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Activate/Deactivate the Keybinds shown in F1 menu" />
 		

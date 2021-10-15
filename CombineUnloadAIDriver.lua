@@ -140,7 +140,7 @@ end
 
 function CombineUnloadAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self.assignedCombinesSetting)
+	courseplay.hud:setCombineUnloadAIDriverContent(self.vehicle,self,self.assignedCombinesSetting)
 end
 
 function CombineUnloadAIDriver:onWriteStream(streamId)

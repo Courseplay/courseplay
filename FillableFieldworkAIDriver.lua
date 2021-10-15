@@ -44,7 +44,7 @@ end
 
 function FillableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
-	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle)
+	courseplay.hud:setFillableFieldworkAIDriverContent(self.vehicle,self)
 end
 
 function FillableFieldworkAIDriver:changeToUnloadOrRefill()
@@ -284,7 +284,7 @@ function FillableFieldworkAIDriver:setLightsMask(vehicle)
 end
 
 function FillableFieldworkAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver
+	return self.vehicle.cp.fillTypeListSettings.fillableFieldWorkAIDriver
 end
 
 function FillableFieldworkAIDriver:notAllowedToLoadNextFillType()

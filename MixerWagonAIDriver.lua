@@ -34,7 +34,7 @@ end
 
 function MixerWagonAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
-	courseplay.hud:setMixerWagonAIDriverContent(self.vehicle)
+	courseplay.hud:setMixerWagonAIDriverContent(self.vehicle,self)
 end
 
 function MixerWagonAIDriver:beforeDriveIntoSilo()
@@ -151,7 +151,7 @@ end
 ---Gets the silo selected fillType setting
 ---@return setting SiloSelectedFillTypeMixerWagonAIDriverSetting
 function MixerWagonAIDriver:getSiloSelectedFillTypeSetting()
-	return self.settings.siloSelectedFillTypeMixerWagonAIDriver
+	return self.vehicle.cp.fillTypeListSettings.mixerWagonAIDriver
 end
 
 --- If max silo fillLevel is reached, then continue with the main course.

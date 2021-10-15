@@ -28,7 +28,7 @@ end
 
 function TriggerShovelAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
-	courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(self.vehicle)
+	courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(self.vehicle,self)
 end
 
 function TriggerShovelAIDriver:driveUnloadingCourse(dt)
@@ -39,7 +39,7 @@ function TriggerShovelAIDriver:driveUnloadingCourse(dt)
 		self:clearInfoText('NO_SELECTED_FILLTYPE')
 	end
 	--- Only allow loading near the first waypoint.
-	if self:isNearFillPoint() then
+	if self:isNearFillPointAtFirstWP() then
 		self.triggerHandler:enableFillTypeLoading()
 		self:setSpeed(self.MAX_SPEED_IN_LOADING_TRIGGER)
 	else 
@@ -62,6 +62,6 @@ function TriggerShovelAIDriver:shouldStopAtEndOfCourse()
 end
 
 function TriggerShovelAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeShovelModeDriver
+	return self.vehicle.cp.fillTypeListSettings.shovelModeAIDriver
 end
 

@@ -33,7 +33,7 @@ end
 
 function BunkerSiloLoaderAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
-	courseplay.hud:setBunkerSiloLoaderAIDriverContent(self.vehicle)
+	courseplay.hud:setBunkerSiloLoaderAIDriverContent(self.vehicle,self)
 end
 
 function BunkerSiloLoaderAIDriver:start(startingPoint)

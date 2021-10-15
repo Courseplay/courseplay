@@ -729,19 +729,9 @@ function courseplay.hud:updatePageContent(vehicle, page)
 					--AutomaticCoverHandlingSetting
 					vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings.automaticCoverHandling:getLabel()
 					vehicle.cp.hud.content.pages[page][line][2].text = vehicle.cp.settings.automaticCoverHandling:getText()
-				elseif string.find(entry.functionToCall, "siloSelectedFillType") then 
-					--SiloSelectedFillTypeSetting
-					if string.find(entry.functionToCall, "GrainTransportDriver") then 
-						self:updateSiloSelectedFillTypeList(vehicle,page,3,7,"GrainTransportDriver",line)	
-					elseif string.find(entry.functionToCall, "FillableFieldWorkDriver") then 
-						self:updateSiloSelectedFillTypeList(vehicle,page,6,7,"FillableFieldWorkDriver",line)	
-					elseif string.find(entry.functionToCall, "FieldSupplyDriver") then --FieldSupplyDriver
-						self:updateSiloSelectedFillTypeList(vehicle,page,3,4,"FieldSupplyDriver",line)	
-					elseif string.find(entry.functionToCall, "ShovelModeDriver") then --ShovelModeDriver
-						self:updateSiloSelectedFillTypeList(vehicle,page,6,8,"ShovelModeDriver",line)	
-					elseif string.find(entry.functionToCall, "MixerWagonAIDriver") then --MixerWagonAIDriver
-						self:updateSiloSelectedFillTypeList(vehicle,page,2,8,"MixerWagonAIDriver",line)	
-					end			
+				elseif entry.functionToCall == "fillTypeList" then 
+					--- FillTypeListSetting
+					self:updateFillTypeListButtonsAndTexts(vehicle,page,line)
 				elseif entry.functionToCall == 'switchDriverCopy' then
 					if not vehicle.cp.canDrive and not vehicle.cp.isRecording and not vehicle.cp.recordingIsPaused then
 						self:enableButtonWithFunction(vehicle,page, 'switchDriverCopy')
@@ -1668,8 +1658,9 @@ function courseplay.hud:setupToolPositionButtons(vehicle,setting,page,line)
 	
 end
 
-function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,startLine,stopLine, column,runCounterActive)
-	--self:debug(vehicle,"  setupSiloSelectedFillTypeList: "..tostring(funct))
+function courseplay.hud:setupFillTypeListButtons(vehicle,driver, hudPage,line)
+	local setting = driver:getSiloSelectedFillTypeSetting()
+
 	local mouseWheelAreaRUNCOUNTER = {
 		x = self.col2posX[hudPage],
 		w = getTextWidth(self.fontSizes.contentValue,"123456")
@@ -1682,18 +1673,40 @@ function courseplay.hud:setupSiloSelectedFillTypeList(vehicle,setting, hudPage,s
 		x = mouseWheelAreaMAX.x+getTextWidth(self.fontSizes.contentValue,"123456"),
 		w = getTextWidth(self.fontSizes.contentValue,"123456")
 	}
-	local diff = startLine-1
-	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'refresh' }, "cleanUpOldFillTypes",   1, self.buttonPosX[1], self.linesButtonPosY[diff], self.buttonSize.small.w, self.buttonSize.small.h, diff, -5, false):setSetting(setting);
-	for i=startLine,stopLine do 
-		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navUp' }, "moveUpByIndex",   i-diff, self.buttonPosX[3], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i, -5, false):setSetting(setting);
-		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navDown' },  "moveDownByIndex",    i-diff, self.buttonPosX[2], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false):setSetting(setting);
-		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'delete' },  "deleteByIndex",    i-diff, self.buttonPosX[1], self.linesButtonPosY[i], self.buttonSize.small.w, self.buttonSize.small.h, i,  5, false):setSetting(setting);
-		if runCounterActive then 
-			courseplay.button:new(vehicle, hudPage, nil, "changeRunCounter", i-diff, mouseWheelAreaRUNCOUNTER.x, self.linesButtonPosY[i], mouseWheelAreaRUNCOUNTER.w, self.lineHeight, i, 1, true, true):setSetting(setting);
-		end
-		courseplay.button:new(vehicle, hudPage, nil, "changeMaxFillLevel", i-diff, mouseWheelAreaMAX.x, self.linesButtonPosY[i], mouseWheelAreaMAX.w, self.lineHeight, i, 1, true, true):setSetting(setting);
-		courseplay.button:new(vehicle, hudPage, nil, "changeMinFillLevel", i-diff, mouseWheelAreaMIN.x, self.linesButtonPosY[i], mouseWheelAreaMIN.w, self.lineHeight, i, 1, true, true):setSetting(setting);
-		--vehicle.cp.hud.content.pages[hudPage][i][column].functionToCall = funct
+
+	self:addRowButton(vehicle,setting,'addFilltype', hudPage, line, 1
+						):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_ADD"))
+	vehicle.cp.hud.content.pages[hudPage][line][1].functionToCall = "fillTypeList"
+	courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'refresh' }, "cleanUpOldFillTypes",
+				   1, self.buttonPosX[1], self.linesButtonPosY[line], self.buttonSize.small.w,
+				   self.buttonSize.small.h,line, 1, false
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_CLEAN_OLD_FILL_TYPES"))
+	local maxFillTypes = setting:getMaxFillTypes()
+	for i=1,maxFillTypes do 
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navUp' }, "moveUpByIndex",
+					   i, self.buttonPosX[3], self.linesButtonPosY[line+i], self.buttonSize.small.w,
+					    self.buttonSize.small.h, line+i, 1, false
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_MOVE_UP"))
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'navDown' },  "moveDownByIndex",
+					    i, self.buttonPosX[2], self.linesButtonPosY[line+i], self.buttonSize.small.w,
+						 self.buttonSize.small.h, line+i,  1, false
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_MOVE_DOWN"))
+		courseplay.button:new(vehicle, hudPage, { 'iconSprite.png', 'delete' },  "deleteByIndex",
+		   				 i, self.buttonPosX[1], self.linesButtonPosY[line+i], self.buttonSize.small.w,
+			 			self.buttonSize.small.h, line+i,  1, false
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_DELETE"))
+		courseplay.button:new(vehicle, hudPage, nil, "changeRunCounter", i,
+		 				mouseWheelAreaRUNCOUNTER.x, self.linesButtonPosY[line+i], mouseWheelAreaRUNCOUNTER.w,
+						self.lineHeight, line+i, 1, true, true
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_CHANGE_RUN_COUNTER"))
+		courseplay.button:new(vehicle, hudPage, nil, "changeMaxFillLevel", i,
+						 mouseWheelAreaMAX.x, self.linesButtonPosY[line+i], mouseWheelAreaMAX.w, self.lineHeight,
+						 line+i, 1, true, true
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_CHANGE_MAX_FILL_LEVEL"))
+		courseplay.button:new(vehicle, hudPage, nil, "changeMinFillLevel", i,
+						 mouseWheelAreaMIN.x, self.linesButtonPosY[line+i], mouseWheelAreaMIN.w, self.lineHeight,
+						 line+i,1, true, true
+						):setSetting(setting):setToolTip(courseplay:loc("COURSEPLAY_FILL_TYPE_LIST_CHANGE_MIN_FILL_LEVEL"))
 	end
 end
 
@@ -1834,27 +1847,25 @@ function courseplay.hud:updateCourseButtonsVisibilty(vehicle)
 	
 end	
 
-function courseplay.hud:updateSiloSelectedFillTypeList(vehicle,page,startLine,stopLine,mode,line)
-	--text 
-	local key = "siloSelectedFillType"..mode
-	if not vehicle.cp.settings[key]:isFull() then 
-		vehicle.cp.hud.content.pages[page][line][1].text = vehicle.cp.settings[key]:getLabel()
+function courseplay.hud:updateFillTypeListButtonsAndTexts(vehicle,page,line)
+	local setting = vehicle.cp.driver:getSiloSelectedFillTypeSetting()
+	if not setting:isFull() then 
+		vehicle.cp.hud.content.pages[page][line][1].text = setting:getLabel()
 	end
-	if not vehicle.cp.settings[key]:isEmpty() then
+	if not setting:isEmpty() then
 		vehicle.cp.hud.content.pages[page][line][2].text = string.format("%6s  %6s  %6s","count","max","min")
 	end
-	local diff = startLine-1
-	for i= startLine, stopLine do
-		vehicle.cp.hud.content.pages[page][i][1].text = vehicle.cp.settings[key]:getText(i-diff)
-	--	vehicle.cp.hud.content.pages[page][i][2].text = vehicle.cp.settings[key]:getRunCounterText(i-diff).."   "..vehicle.cp.settings[key]:getMinFillLevelText(i-diff).."   "..vehicle.cp.settings[key]:getMaxFillLevelText(i-diff)
-		vehicle.cp.hud.content.pages[page][i][2].text = string.format("% 6s  % 6s  % 6s",vehicle.cp.settings[key]:getTexts(i-diff))
+	local maxFillTypes = setting:getMaxFillTypes()
+	for i= 1, maxFillTypes do
+		vehicle.cp.hud.content.pages[page][line+i][1].text = setting:getText(i)
+		vehicle.cp.hud.content.pages[page][line+i][2].text = string.format("%6s  %6s  %6s",setting:getTexts(i))
 	end
 	--button
-	local size = vehicle.cp.settings[key]:getSize()
+	local size = setting:getSize()
 	for _,button in pairs(vehicle.cp.buttons[page]) do
 		local found = nil
 		if button.settingCall then
-			found = string.find(button.settingCall:getName(), "siloSelectedFillType")
+			found = button.settingCall == setting
 		end
 		local foundAddButton = string.find(button.functionToCall, "addFilltype")
 		if found and not foundAddButton then 
@@ -2075,7 +2086,7 @@ end
 ---ActionEvents.actionEventStartStopRecording(self, actionName, inputValue, callbackState, isAnalog) and so on ...
 
 --call the setup for the different modes
-function courseplay.hud:setAIDriverContent(vehicle)
+function courseplay.hud:setAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setAIDriverContent")
 	self:clearHudPageContent(vehicle)
 	self:disablePageButtons(vehicle)
@@ -2127,19 +2138,19 @@ function courseplay.hud:setAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
+function courseplay.hud:setGrainTransportAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setGrainTransportAIDriverContent")
 	--page 3 
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.driveOnAtFillLevel,'changeByX', 3, 1, 1 )
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.separateFillTypeLoading,'changeByX', 3, 1, 3)
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver,'addFilltype', 3, 2, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver, 3, 3, 7, 1,true)
+	
+	self:setupFillTypeListButtons(vehicle,driver,3,2)
 	--page 7 
 	self:addSettingsRow(vehicle,vehicle.cp.settings.loadUnloadOffsetX,'changeByX', 7, 6, 1 )
 	self:addSettingsRow(vehicle,vehicle.cp.settings.loadUnloadOffsetZ,'changeByX', 7, 7, 1 )
 	
-	if vehicle.cp.driver:hasSugarCaneTrailerToolPositions() then 
+	if driver:hasSugarCaneTrailerToolPositions() then 
 		self:enablePageButton(vehicle,9)
 		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.sugarCaneTrailerToolPositions,9,1)
 	end
@@ -2148,7 +2159,7 @@ function courseplay.hud:setGrainTransportAIDriverContent(vehicle)
 end
 
 
-function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
+function courseplay.hud:setFieldWorkAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setFieldWorkAIDriverContent")
 	--self:setupCourseGeneratorButton(vehicle)
 	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'changeByX', 1, 3, 1 )
@@ -2186,7 +2197,7 @@ function courseplay.hud:setFieldWorkAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
+function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setUnloadableFieldworkAIDriverContent")
 	
 	self:addSettingsRow(vehicle,vehicle.cp.settings.refillUntilPct,'changeByX', 3, 5, 1 )
@@ -2194,7 +2205,7 @@ function courseplay.hud:setUnloadableFieldworkAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setCombineAIDriverContent(vehicle)
+function courseplay.hud:setCombineAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setCombineAIDriverContent")
 	--page 0 
 	self:enablePageButton(vehicle, 0)
@@ -2219,7 +2230,7 @@ function courseplay.hud:setCombineAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombinesSetting)
+function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,driver,assignedCombinesSetting)
 	self:debug(vehicle,"setCombineUnloadAIDriverContent")
 	-- page 2
 	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'changeByX', 1, 3, 1 )
@@ -2245,7 +2256,7 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	self:addRowButton(vehicle,vehicle.cp.settings.useRealisticDriving,'toggle', 8, 4, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.turnOnField,'toggle', 8, 3, 1 )
 	
-	if vehicle.cp.driver:hasSugarCaneTrailerToolPositions() then 
+	if driver:hasSugarCaneTrailerToolPositions() then 
 		self:enablePageButton(vehicle,9)
 		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.sugarCaneTrailerToolPositions,9,1)
 	end
@@ -2253,7 +2264,7 @@ function courseplay.hud:setCombineUnloadAIDriverContent(vehicle,assignedCombines
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setOverloaderAIDriverContent(vehicle)
+function courseplay.hud:setOverloaderAIDriverContent(vehicle,driver)
 	local settings = vehicle.cp.settings
 	-- page 3
 	self:addSettingsRowWithArrows(vehicle,settings.driveOnAtFillLevel,'changeByX', 3, 2, 1 )
@@ -2268,18 +2279,18 @@ function courseplay.hud:setOverloaderAIDriverContent(vehicle)
 	self:addSettingsRowWithArrows(vehicle,settings.moveOnAtFillLevel,'changeByX', 3, 4, 1 )
 end
 
-function courseplay.hud:setFieldSupplyAIDriverContent(vehicle)
+function courseplay.hud:setFieldSupplyAIDriverContent(vehicle,driver)
 	self:enablePageButton(vehicle, 3)
 	self:addSettingsRowWithArrows(vehicle,vehicle.cp.settings.moveOnAtFillLevel,'changeByX', 3, 1, 1 )
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver,'addFilltype', 3, 2, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver, 3, 3, 4, 1)
+	
+	self:setupFillTypeListButtons(vehicle,driver,3,2)
 	if vehicle.cp.settings.pipeToolPositions:getHasMoveablePipe() then 
 		self:setupToolPositionButtons(vehicle,vehicle.cp.settings.pipeToolPositions, 3, 5)
 	end
 end
 
 
-function courseplay.hud:setShovelModeAIDriverContent(vehicle)
+function courseplay.hud:setShovelModeAIDriverContent(vehicle,driver)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
@@ -2290,16 +2301,16 @@ function courseplay.hud:setShovelModeAIDriverContent(vehicle)
 	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 9, 7, 1 )
 end
 
-function courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(vehicle)
+function courseplay.hud:setTriggerHandlerShovelModeAIDriverContent(vehicle,driver)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.frontloaderToolPositions,9,1)
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeShovelModeDriver,'addFilltype', 9, 5, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeShovelModeDriver, 9, 6, 8, 1,true)
+	
+	self:setupFillTypeListButtons(vehicle,driver,9,5)
 	self:addRowButton(vehicle,vehicle.cp.settings.shovelModeAIDriverTriggerHandlerIsActive,'toggle', 9, 8, 1 )
 end
 
-function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
+function courseplay.hud:setLevelCompactAIDriverContent(vehicle,driver)
 	--page10
 	self:enablePageButton(vehicle, 10)
 
@@ -2314,7 +2325,7 @@ function courseplay.hud:setLevelCompactAIDriverContent(vehicle)
 end
 
 
-function courseplay.hud:setBaleCollectorAIDriverContent(vehicle)
+function courseplay.hud:setBaleCollectorAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setBaleCollectorAIDriverContent")
 	self:addRowButton(vehicle,vehicle.cp.settings.autoDriveMode,'changeByX', 1, 3, 1 )
 	self:addSettingsRow(vehicle, vehicle.cp.settings.baleCollectionField,'changeByX', 1, 4, 1 )
@@ -2334,21 +2345,21 @@ function courseplay.hud:setBaleCollectorAIDriverContent(vehicle)
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle)
+function courseplay.hud:setFillableFieldworkAIDriverContent(vehicle,driver)
 	self:debug(vehicle,"setFillableFieldworkAIDriverContent")
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver,'addFilltype', 3, 5, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeFillableFieldWorkDriver, 3, 6, 7, 1)
+
+	self:setupFillTypeListButtons(vehicle,driver,3,5)
 	
 	self:addRowButton(vehicle,vehicle.cp.settings.ridgeMarkersAutomatic,'toggle', 6, 2, 1 )
 	self:addRowButton(vehicle,vehicle.cp.settings.sowingMachineFertilizerEnabled,'toggle', 6, 3, 1 )
 	self:setReloadPageOrder(vehicle, -1, true)
 end
 
-function courseplay.hud:setMixerWagonAIDriverContent(vehicle)
+function courseplay.hud:setMixerWagonAIDriverContent(vehicle,driver)
 	--page 3 
 	self:enablePageButton(vehicle, 3)
-	self:addRowButton(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver,'addFilltype', 3, 1, 1 )
-	self:setupSiloSelectedFillTypeList(vehicle,vehicle.cp.settings.siloSelectedFillTypeMixerWagonAIDriver, 3, 2, 8, 1)
+	
+	self:setupFillTypeListButtons(vehicle,driver,3,1)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:setupToolPositionButtons(vehicle,vehicle.cp.settings.mixerWagonToolPositions,9,1)
@@ -2357,7 +2368,7 @@ function courseplay.hud:setMixerWagonAIDriverContent(vehicle)
 	self:addSettingsRow(vehicle,vehicle.cp.settings.bunkerSpeed,'changeByX', 9, 8, 1 )
 end
 
-function courseplay.hud:setBunkerSiloLoaderAIDriverContent(vehicle)
+function courseplay.hud:setBunkerSiloLoaderAIDriverContent(vehicle,driver)
 	--page 9
 	self:enablePageButton(vehicle, 9)
 	self:addSettingsRow(vehicle,nil,'changeWorkWidth',9,1,1, 0.1)

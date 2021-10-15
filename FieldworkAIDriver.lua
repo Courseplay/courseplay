@@ -71,7 +71,7 @@ end
 
 function FieldworkAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setFieldWorkAIDriverContent(self.vehicle)
+	courseplay.hud:setFieldWorkAIDriverContent(self.vehicle,self)
 end
 
 function FieldworkAIDriver.register()

@@ -268,6 +268,9 @@ function courseplay:onLoad(savegame)
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
+	---@type FillTypeListsSettingsContainer
+	self.cp.fillTypeListSettings = FillTypeListsSettingsContainer.create(self,self.cp.settings.driverMode)
+
 	---@type SettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
 
@@ -449,6 +452,7 @@ function courseplay:onUpdate(dt)
 			self.cp.driver:postInit()
 		end
 		self.cp.settings.driverMode:postInit()
+		self.cp.fillTypeListSettings:postInit()
 		self.cp.postInitDone = true
 	end
 
@@ -676,6 +680,8 @@ function courseplay:onReadStream(streamId, connection)
 	self.cp.settings:onReadStream(streamId)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onReadStream(streamId)
+
+	self.cp.fillTypeListSettings:onReadStream(streamId)
 -------------------	
 
 	local copyCourseFromDriverId = streamReadInt32(streamId)
@@ -739,6 +745,8 @@ function courseplay:onWriteStream(streamId, connection)
 	self.cp.settings:onWriteStream(streamId)
 	-- courseGeneratorSettingsContainer:
 	self.cp.courseGeneratorSettings:onWriteStream(streamId)
+
+	self.cp.fillTypeListSettings:onWriteStream(streamId)
 -------------
 
 	local copyCourseFromDriverID = -1; 
@@ -908,6 +916,7 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		
 		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
 		self.cp.courseGeneratorSettings:loadFromXML(xmlFile, key .. '.courseplay')
+		self.cp.fillTypeListSettings:loadFromXML(xmlFile, key .. '.courseplay')
 
 		courseplay:validateCanSwitchMode(self);
 	end;
@@ -953,7 +962,7 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	
 	self.cp.settings:saveToXML(xmlFile, newKey)
 	self.cp.courseGeneratorSettings:saveToXML(xmlFile, newKey)
-
+	self.cp.fillTypeListSettings:saveToXML(xmlFile, newKey)
 end
 
 ---Is this one still used as cp.isTurning isn't getting set to true ??

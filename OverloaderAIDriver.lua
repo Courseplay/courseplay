@@ -83,7 +83,7 @@ end
 function OverloaderAIDriver:setHudContent()
     self:setupTrailerData()
 	CombineUnloadAIDriver.setHudContent(self)
-	courseplay.hud:setOverloaderAIDriverContent(self.vehicle)
+	courseplay.hud:setOverloaderAIDriverContent(self.vehicle,self)
 end
 
 function OverloaderAIDriver:start(startingPoint)

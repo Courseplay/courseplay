@@ -67,7 +67,7 @@ end
 
 function ShovelAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
-	courseplay.hud:setShovelModeAIDriverContent(self.vehicle)
+	courseplay.hud:setShovelModeAIDriverContent(self.vehicle,self)
 end
 
 function ShovelAIDriver:start(startingPoint)

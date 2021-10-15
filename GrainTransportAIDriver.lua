@@ -30,7 +30,7 @@ end
 
 function GrainTransportAIDriver:setHudContent()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle)
+	courseplay.hud:setGrainTransportAIDriverContent(self.vehicle,self)
 end
 
 function GrainTransportAIDriver:start(startingPoint)
@@ -95,7 +95,7 @@ function GrainTransportAIDriver:drive(dt)
 		end	
 	end
 
-	if self:isNearFillPoint() then
+	if self:isNearFillPointAtFirstWP() then
 		if not self:getSiloSelectedFillTypeSetting():isEmpty() then
 			self.triggerHandler:enableFillTypeLoading()
 		else 
@@ -173,7 +173,7 @@ function GrainTransportAIDriver:getMaxFillLevel()
 end
 
 function GrainTransportAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeGrainTransportDriver
+	return self.vehicle.cp.fillTypeListSettings.grainTransportAIDriver
 end
 
 function GrainTransportAIDriver:getSeparateFillTypeLoadingSetting()

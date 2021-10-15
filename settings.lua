@@ -1554,17 +1554,36 @@ function BooleanSetting:saveToXml(xml, parentKey)
 	setXMLBool(xml, self:getKey(parentKey), self:get())
 end
 
---- Generic Percentage setting from 1% to 100%
+--- Generic Percentage setting from 1% to 100% or 
+--- min value to 100%.
 ---@class PercentageSettingList : SettingList
 PercentageSettingList = CpObject(SettingList)
-function PercentageSettingList:init(name, label, toolTip, vehicle)
+---@param name string
+---@param label string
+---@param toolTip string
+---@param vehicle table
+---@param value number
+---@param minValue number
+function PercentageSettingList:init(name, label, toolTip, vehicle,value,minValue)
 	local values = {}
 	local texts = {}
-	for i=1,100 do 
-		values[i] = i
-		texts[i] = i.."%"
+	if minValue ~= nil then 
+		local ix = 1
+		for i=minValue,100 do 
+			values[ix] = i
+			texts[ix] = i.."%"
+			ix = ix + 1
+		end
+	else
+		for i=1,100 do 
+			values[i] = i
+			texts[i] = i.."%"
+		end
 	end
 	SettingList.init(self, name, label, toolTip, vehicle,values, texts)
+	if value then 
+		self:set(value)
+	end
 end
 
 function PercentageSettingList:checkAndSetValidValue(new)
@@ -2625,424 +2644,6 @@ function KeepUnloadingUntilEndOfRow:isDisabled()
 	return self.vehicle.cp.driver and not self.vehicle.cp.driver:is_a(CombineUnloadAIDriver)
 end
 
----@class SiloSelectedFillTypeSetting : LinkedListSetting
-SiloSelectedFillTypeSetting = CpObject(LinkedListSetting)
-SiloSelectedFillTypeSetting.NetworkTypes = {}
-SiloSelectedFillTypeSetting.NetworkTypes.ADD_ELEMENT = 0
-SiloSelectedFillTypeSetting.NetworkTypes.DELETE_X = 1
-SiloSelectedFillTypeSetting.NetworkTypes.MOVE_UP_X = 2
-SiloSelectedFillTypeSetting.NetworkTypes.MOVE_DOWN_X = 3
-SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MAX_FILLLEVEL = 4
-SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_RUNCOUNTER = 5
-SiloSelectedFillTypeSetting.NetworkTypes.CLEANUP_OLD_FILLTYPES = 6
-SiloSelectedFillTypeSetting.NetworkTypes.CHANGE_MIN_FILLEVEL = 7
-function SiloSelectedFillTypeSetting:init(vehicle, mode)
-	LinkedListSetting.init(self, 'siloSelectedFillType'..mode, 'COURSEPLAY_ADD_FILLTYPE', 'COURSEPLAY_ADD_FILLTYPE', vehicle)
-	self.mode = mode
-	self.MAX_RUNS = 20
-	self.MAX_PERCENT = 100
-	self.MIN_PERCENT = 0
-	self.runCounterActive = true
-	self.MAX_FILLTYPES = 2
-	self.disallowedFillTypes = nil
-	self.xmlKey = 'siloSelectedFillType'..mode
-	self.xmlAttributeSize = '#size'
-	self.xmlAttributeRunCounter = '#runCounter'
-	self.xmlAttributeFillType = '#fillType'
-	self.xmlAttributeMaxFillLevel = '#maxFillLevel'	
-	self.xmlAttributeMinFillLevel = '#minFillLevel'	
-end
-
-function SiloSelectedFillTypeSetting:getMaxFillTypes()
-	return self.MAX_FILLTYPES
-end
-
-function SiloSelectedFillTypeSetting:addFilltype()
-	if self:isFull() then 
-		return
-	end
-	local supportedFillTypes = {}
-	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
-	self:checkSelectedFillTypes(supportedFillTypes)
-	if supportedFillTypes then
-		g_gui:showSiloDialog({title="Filltype Selection", fillLevels=supportedFillTypes, capacity=100, callback=self.onFillTypeSelection, target=self, hasInfiniteCapacity = true})
-	end
-end
-
-function SiloSelectedFillTypeSetting:isFull()
-	if self:getSize() >= self.MAX_FILLTYPES then 
-		return true
-	end
-end
-
-function SiloSelectedFillTypeSetting:sendEvent(NetworkType, index , value)
-	SiloSelectedFillTypeEvent.sendEvent(self.vehicle,self.name,NetworkType, index, value)
-end
-
-function SiloSelectedFillTypeSetting:onFillTypeSelection(selectedFillType,noEventSend)
-	if selectedFillType and selectedFillType ~= FillType.UNKNOWN then 
-		self:addLast(self:fillTypeDataToAdd(selectedFillType))
-		if not noEventSend then
-			self:sendEvent(self.NetworkTypes.ADD_ELEMENT,nil,selectedFillType)
-		end
-	end
-end  
-
-function SiloSelectedFillTypeSetting:fillTypeDataToAdd(selectedfillType,counter,maxLevel,minLevel)
-	local data = nil
-	if self.runCounterActive then
-		data = {
-			fillType = selectedfillType,
-			text = g_fillTypeManager:getFillTypeByIndex(selectedfillType).title,
-			runCounter = counter or self.MAX_RUNS,
-			maxFillLevel = maxLevel or self.MAX_PERCENT,
-			minFillLevel = minLevel or self.MIN_PERCENT
-		}	
-	else
-		data = {
-			fillType = selectedfillType,
-			text = g_fillTypeManager:getFillTypeByIndex(selectedfillType).title,
-			maxFillLevel = maxLevel or self.MAX_PERCENT,
-			minFillLevel = minLevel or self.MIN_PERCENT
-		}	
-	end
-	return data
-end
-
---deletes not supported fillTypes
-function SiloSelectedFillTypeSetting:cleanUpOldFillTypes(noEventSend)
-	local supportedFillTypes = {}
-	self:getSupportedFillTypes(self.vehicle,supportedFillTypes)
-	self:checkSelectedFillTypes(supportedFillTypes,true, noEventSend)
-	if not noEventSend then
-		self:sendEvent(self.NetworkTypes.CLEANUP_OLD_FILLTYPES)
-	end
-end
-
-function SiloSelectedFillTypeSetting:validateCurrentValue()
-	self:cleanUpOldFillTypes(true)
-end
-
-
-function SiloSelectedFillTypeSetting:checkSelectedFillTypes(supportedFillTypes, cleanUp, noEventSend)
-	totalData = self:getData()
-	for index,data in ipairs(totalData) do 
-		if supportedFillTypes[data.fillType] then --already selected fillTypes disable multi select
-			supportedFillTypes[data.fillType]=0
-		elseif cleanUp then	--delete not supported fillTypes 
-			self:deleteByIndex(index, noEventSend)
-			return self:checkSelectedFillTypes(supportedFillTypes, cleanUp, noEventSend)
-		end
-	end
-end 
-
-function SiloSelectedFillTypeSetting:getSupportedFillTypes(object,supportedFillTypes)  
-	if object and object.spec_fillUnit and object.getFillUnits then
-		if supportedFillTypes ~= nil then 
-			for fillUnitIndex, fillUnit in pairs(object:getFillUnits()) do
-				for fillType,bool in pairs(object:getFillUnitSupportedFillTypes(fillUnitIndex)) do 
-					local found = false
-					local specMotor = object.spec_motorized
-					--disable motor consumer fillTypes as they get loaded seperatly 
-					if specMotor then 
-						local consumer = specMotor.consumersByFillType[fillType] 
-						if consumer then 
-							if consumer.fillUnitIndex == fillUnitIndex then 
-								found = true
-							end							
-						end
-					end
-					--disabled FillTypes(AIR, sometimes DEF or DIESEL)
-					if self.disallowedFillTypes then		
-						for _,_fillType in pairs(self.disallowedFillTypes) do 
-							if fillType == _fillType then
-								found = true
-							end
-						end
-					end	
-					--all okay and fillType is new add it to spported
-					if bool and not found then 
-						if supportedFillTypes[fillType] == nil then
-							supportedFillTypes[fillType]=100
-						end
-					end
-				end		
-			end
-		end
-	end
-	-- get all attached implements recursively
-	for _,impl in pairs(object:getAttachedImplements()) do
-		self:getSupportedFillTypes(impl.object,supportedFillTypes)
-	end
-end
-
---check if at least one fillType in list and if runCounterActive then check sepreate counters
-function SiloSelectedFillTypeSetting:isActive()  
-	if self:getSize() == 0 then 
-		return false
-	end
-	if not self.runCounterActive then 
-		return true
-	end	
-	local data = self:getData()
-	local runCounterCheck = false
-	for _,data in ipairs(data) do 
-		if data.runCounter > 0 then 
-			runCounterCheck=true
-		end
-	end
-	return runCounterCheck
-end
-
-function SiloSelectedFillTypeSetting:isRunCounterActive()
-	return self.runCounterActive
-end
-
-function SiloSelectedFillTypeSetting:getTexts(index)
-	local data = self:getDataByIndex(index)
-	
-	if data then
-		local runCounterText = data.runCounter and data.runCounter.."/"..self.MAX_RUNS or ""
-		local maxFillLevelText = data.maxFillLevel and data.maxFillLevel.."%" or ""
-		local minFillLevelText = data.minFillLevel and data.minFillLevel.."%" or ""
-		return runCounterText,maxFillLevelText,minFillLevelText
-	else
-		return "","",""
-	end
-end
-
-function SiloSelectedFillTypeSetting:incrementRunCounter(index)
-	local data = self:getDataByIndex(index)
-	if data and data.runCounter then 
-		if not (data.runCounter >= self.MAX_RUNS) then 
-			data.runCounter = data.runCounter+1
-			self:sendEvent(self.NetworkTypes.CHANGE_RUNCOUNTER,index,1)
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:decrementRunCounterByFillType(lastFillTypes)
-	local totalData = self:getData()
-	for index,data in ipairs(totalData) do 
-		for fillType,_ in pairs(lastFillTypes) do
-			if data.fillType == fillType then
-				self:decrementRunCounter(index)		
-			end
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:getMaxFillLevelByFillType(fillType)
-	local totalData = self:getData()
-	for index,data in ipairs(totalData) do 
-		if data.fillType == fillType then
-			return data.maxFillLevel		
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:decrementRunCounter(index)
-	local data = self:getDataByIndex(index)
-	if data and data.runCounter then 
-		if not (data.runCounter <= 0) then 
-			data.runCounter = data.runCounter-1
-			self:sendEvent(self.NetworkTypes.CHANGE_RUNCOUNTER,index,-1)
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:changeMaxFillLevel(index)
-	local diff = nil
-	if index < 0 then 
-		diff=-1
-		index = index*(-1)
-	else
-		diff = 1
-	end
-	local data = self:getDataByIndex(index)
-	if data and data.maxFillLevel then 
-		local newDiff = data.maxFillLevel+diff 
-		if newDiff >0 and newDiff <=100 then
-			data.maxFillLevel = newDiff
-			self:sendEvent(self.NetworkTypes.CHANGE_MAX_FILLLEVEL,index,diff)
-		end
-	end	
-end
-
-function SiloSelectedFillTypeSetting:changeMinFillLevel(index)
-	local diff = nil
-	if index < 0 then 
-		diff=-1
-		index = index*(-1)
-	else
-		diff = 1
-	end
-	local data = self:getDataByIndex(index)
-	if data and data.minFillLevel then 
-		local newDiff = data.minFillLevel+diff 
-		if newDiff >=0 and newDiff <=100 then
-			data.minFillLevel = newDiff
-			self:sendEvent(self.NetworkTypes.CHANGE_MIN_FILLEVEL,index,diff)
-		end
-	end	
-end
-
-function SiloSelectedFillTypeSetting:changeRunCounter(index)
-	local diff = nil
-	if index < 0 then 
-		diff=-1
-		index = index*(-1)
-	else
-		diff = 1
-	end
-	local data = self:getDataByIndex(index)
-	if data and data.runCounter then 
-		local newDiff = data.runCounter+diff 
-		if newDiff >=0 and newDiff <=self.MAX_RUNS then
-			data.runCounter = newDiff
-			self:sendEvent(self.NetworkTypes.CHANGE_RUNCOUNTER,index,diff)
-		end
-	end	
-end
-
-function SiloSelectedFillTypeSetting:setRunCounterFromNetwork(index,value)
-	local data = self:getDataByIndex(index)
-	if data and data.runCounter then 
-		local diff = data.runCounter+value
-		if diff >= 0 and diff <=20 then 
-			data.runCounter = diff
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:setMaxFillLevelFromNetwork(index,value)
-	local data = self:getDataByIndex(index)
-	if data and data.maxFillLevel then 
-		local diff = data.maxFillLevel+value
-		if diff >= 1 and diff <=100 then 
-			data.maxFillLevel = diff
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:setMinFillLevelFromNetwork(index,value)
-	local data = self:getDataByIndex(index)
-	if data and data.minFillLevel then 
-		local diff = data.minFillLevel+value
-		if diff >= 0 and diff <=100 then 
-			data.minFillLevel = diff
-		end
-	end
-end
-
-
-function SiloSelectedFillTypeSetting:moveUpByIndex(index,noEventSend)
-	LinkedListSetting.moveUpByIndex(self,index)
-	if not noEventSend then
-		self:sendEvent(self.NetworkTypes.MOVE_UP_X,index)
-	end
-end
-
-function SiloSelectedFillTypeSetting:moveDownByIndex(index,noEventSend)
-	LinkedListSetting.moveDownByIndex(self,index)
-	if not noEventSend then
-		self:sendEvent(self.NetworkTypes.MOVE_DOWN_X,index)
-	end
-end
-
-function SiloSelectedFillTypeSetting:deleteByIndex(index, noEventSend)
-	LinkedListSetting.deleteByIndex(self,index)
-	if not noEventSend then
-		self:sendEvent(self.NetworkTypes.DELETE_X,index)
-	end
-end
-
-function SiloSelectedFillTypeSetting:getKey(parentKey)
-	return parentKey .. '.' .. self.xmlKey
-end
-
-function SiloSelectedFillTypeSetting:loadFromXml(xml, parentKey)
-	local size = Utils.getNoNil(getXMLInt(xml, self:getKey(parentKey)..self.xmlAttributeSize),0)
-	if size and size>0 then
-		for key=1,size do 
-			local elementKey = string.format("%s.element(%d)", self:getKey(parentKey), key-1)
-			local selectedFillType = Utils.getNoNil(getXMLInt(xml, elementKey..self.xmlAttributeFillType), 0)
-			local counter
-			if self.runCounterActive then
-				counter = Utils.getNoNil(getXMLInt(xml, elementKey..self.xmlAttributeRunCounter), self.MAX_RUNS)
-			end
-			local maxLevel = Utils.getNoNil(getXMLInt(xml, elementKey..self.xmlAttributeMaxFillLevel), 100)
-			local minLevel = Utils.getNoNil(getXMLInt(xml, elementKey..self.xmlAttributeMinFillLevel), 1)
-			if selectedFillType then 
-				self:addLast(self:fillTypeDataToAdd(selectedFillType,counter,maxLevel,minLevel))
-			end
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:saveToXml(xml, parentKey)
-	local size = self:getSize()
-	setXMLInt(xml, self:getKey(parentKey)..self.xmlAttributeSize, Utils.getNoNil(size,0))
-	if size > 0 then 
-		for key,data in ipairs(self:getData()) do
-			local elementKey = string.format("%s.element(%d)", self:getKey(parentKey), key-1)
-			setXMLInt(xml, elementKey..self.xmlAttributeFillType, Utils.getNoNil(data.fillType,0))
-			if self.runCounterActive then
-				setXMLInt(xml, elementKey..self.xmlAttributeRunCounter, Utils.getNoNil(data.runCounter,self.MAX_RUNS))
-			end
-			setXMLInt(xml, elementKey..self.xmlAttributeMaxFillLevel, Utils.getNoNil(data.maxFillLevel,100))
-			setXMLInt(xml, elementKey..self.xmlAttributeMinFillLevel, Utils.getNoNil(data.minFillLevel,1))
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:onWriteStream(stream)
-	local size = self:getSize() or 0
-	self:debugWriteStream(size,"size")
-	streamWriteInt32(stream, size)
-	self:debugWriteStream(self.runCounterActive,"runCounterActive")
-	streamWriteBool(stream,self.runCounterActive)
-	if size > 0 then 
-		for key,data in ipairs(self:getData()) do
-			self:debugWriteStream( data.fillType,"fillType")
-			streamWriteInt32(stream, data.fillType)
-			if self.runCounterActive then
-				self:debugWriteStream( data.runCounter,"runCounter")
-				streamWriteInt32(stream, data.runCounter)
-			end
-			self:debugWriteStream( data.maxFillLevel,"maxFillLevel")
-			streamWriteInt32(stream, data.maxFillLevel)
-			self:debugWriteStream( data.minFillLevel,"minFillLevel")
-			streamWriteInt32(stream, data.minFillLevel)
-		end
-	end
-end
-
-function SiloSelectedFillTypeSetting:onReadStream(stream)
-	local size = streamReadInt32(stream)
-	self:debugReadStream(size,"size")
-	self.runCounterActive = streamReadBool(stream)
-	self:debugReadStream(self.runCounterActive,"runCounterActive")
-	if size and size>0 then
-		for key=1,size do 
-			local selectedFillType = streamReadInt32(stream)
-			self:debugReadStream(selectedFillType,"selectedFillType")
-			local counter
-			if self.runCounterActive then
-				counter = streamReadInt32(stream)
-				self:debugReadStream(counter,"counter")
-			end
-			local maxLevel = streamReadInt32(stream)
-			self:debugReadStream(maxLevel,"maxLevel")
-			local minLevel = streamReadInt32(stream)
-			self:debugReadStream(minLevel,"minLevel")
-			if selectedFillType then 
-				self:addLast(self:fillTypeDataToAdd(selectedFillType,counter,maxLevel,minLevel))
-			end
-		end
-	end
-end
-
 ---@class TurnOnFieldSetting : BooleanSetting
 TurnOnFieldSetting = CpObject(BooleanSetting)
 function TurnOnFieldSetting:init(vehicle)
@@ -3076,50 +2677,6 @@ MoveOnAtFillLevelSetting = CpObject(PercentageSettingList)
 function MoveOnAtFillLevelSetting:init(vehicle)
 	PercentageSettingList.init(self, 'moveOnAtFillLevel', 'COURSEPLAY_MOVE_ON_AT', 'COURSEPLAY_MOVE_ON_AT', vehicle)
 	self:set(5)
-end
-
---separate SiloSelectedFillTypeSettings to save their current state
---and disable runCounter for FillableFieldWorkDriver and FieldSupplyDriver
-
---TODO: figure out how to implement maxFillLevel for separate FillTypes in mode 1 
----@class GrainTransportDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
-GrainTransportDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
-function GrainTransportDriver_SiloSelectedFillTypeSetting:init(vehicle)
-	SiloSelectedFillTypeSetting.init(self, vehicle, "GrainTransportDriver")
-	self.MAX_FILLTYPES = 5
-	self.disallowedFillTypes = {FillType.AIR}
-end
-
----@class FillableFieldWorkDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
-FillableFieldWorkDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
-function FillableFieldWorkDriver_SiloSelectedFillTypeSetting:init(vehicle)
-	SiloSelectedFillTypeSetting.init(self, vehicle, "FillableFieldWorkDriver")
-	self.runCounterActive = false
-	self.disallowedFillTypes = {FillType.DIESEL, FillType.DEF,FillType.AIR}
-end
-
----@class FieldSupplyDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
-FieldSupplyDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
-function FieldSupplyDriver_SiloSelectedFillTypeSetting:init(vehicle)
-	SiloSelectedFillTypeSetting.init(self, vehicle, "FieldSupplyDriver")
-	self.runCounterActive = false
-	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
-end
-
----@class ShovelModeDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
-ShovelModeDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
-function ShovelModeDriver_SiloSelectedFillTypeSetting:init(vehicle)
-	SiloSelectedFillTypeSetting.init(self, vehicle, "ShovelModeDriver")
-	self.MAX_FILLTYPES = 1
-	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
-end
-
----@class MixerWagonAIDriver_SiloSelectedFillTypeSetting : SiloSelectedFillTypeSetting
-MixerWagonAIDriver_SiloSelectedFillTypeSetting = CpObject(SiloSelectedFillTypeSetting)
-function MixerWagonAIDriver_SiloSelectedFillTypeSetting:init(vehicle)
-	SiloSelectedFillTypeSetting.init(self, vehicle, "MixerWagonAIDriver")
-	self.MAX_FILLTYPES = 7
-	self.disallowedFillTypes = {FillType.DEF,FillType.AIR}
 end
 
 ---@class ShovelModeAIDriverTriggerHandlerIsActive : BooleanSetting
@@ -4280,11 +3837,12 @@ function SettingsContainer:addSetting(settingClass, ...)
 	s.syncValue = true -- Only sync values that are part of a SettingsContainer
 	s:setParent(self.name)
 	self[s.name] = s
+	return s
 end
 
 function SettingsContainer:saveToXML(xml, parentKey)
 	for _, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self:validateSetting(setting) then 
 			setting:saveToXml(xml, parentKey)
 		end
 	end
@@ -4292,7 +3850,7 @@ end
 
 function SettingsContainer:loadFromXML(xml, parentKey)
 	for _, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self:validateSetting(setting) then 
 			setting:loadFromXml(xml, parentKey)
 		end
 	end
@@ -4300,7 +3858,7 @@ end
 
 function SettingsContainer:validateCurrentValues()
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) then 
+		if self:validateSetting(setting) then 
 			setting:validateCurrentValue()
 		end
 	end
@@ -4312,7 +3870,7 @@ end
 
 function SettingsContainer:onReadStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) and setting.syncValue then 
+		if self:validateSetting(setting) and setting.syncValue then 
 			setting:onReadStream(stream)
 		end
 	end
@@ -4320,7 +3878,7 @@ end
 
 function SettingsContainer:onWriteStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) and setting.syncValue then 
+		if self:validateSetting(setting) and setting.syncValue then 
 			setting:onWriteStream(stream)
 		end
 	end
@@ -4389,10 +3947,6 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(DriveUnloadNowSetting, vehicle)
 	container:addSetting(RequestUnloaderSetting, vehicle)
 	container:addSetting(TurnOnFieldSetting, vehicle)
-	container:addSetting(GrainTransportDriver_SiloSelectedFillTypeSetting, vehicle)
-	container:addSetting(FillableFieldWorkDriver_SiloSelectedFillTypeSetting, vehicle)
-	container:addSetting(FieldSupplyDriver_SiloSelectedFillTypeSetting, vehicle)
-	container:addSetting(ShovelModeDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(ShovelModeAIDriverTriggerHandlerIsActive, vehicle,container.driverMode)
 	container:addSetting(DriveOnAtFillLevelSetting, vehicle)
 	container:addSetting(MoveOnAtFillLevelSetting, vehicle)
@@ -4427,7 +3981,6 @@ function SettingsContainer.createVehicleSpecificSettings(vehicle)
 	container:addSetting(CombineOffsetXSetting, vehicle)
 	container:addSetting(CombineOffsetZSetting, vehicle)
 	container:addSetting(WaitTimeSetting, vehicle)
-	container:addSetting(MixerWagonAIDriver_SiloSelectedFillTypeSetting, vehicle)
 	container:addSetting(MixerWagonToolPositionsSetting, vehicle)
 	container:addSetting(CourseDrawModeSetting,vehicle)
 	container:addSetting(SugarCaneTrailerToolPositionsSetting, vehicle)

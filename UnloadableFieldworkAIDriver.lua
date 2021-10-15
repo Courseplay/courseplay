@@ -45,7 +45,7 @@ end
 
 function UnloadableFieldworkAIDriver:setHudContent()
 	FieldworkAIDriver.setHudContent(self)
-	courseplay.hud:setUnloadableFieldworkAIDriverContent(self.vehicle)
+	courseplay.hud:setUnloadableFieldworkAIDriverContent(self.vehicle,self)
 end
 
 function UnloadableFieldworkAIDriver.create(vehicle)

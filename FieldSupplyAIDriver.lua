@@ -53,7 +53,7 @@ end
 function FieldSupplyAIDriver:setHudContent()
 	self:findPipe()
 	AIDriver.setHudContent(self)
-	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle)
+	courseplay.hud:setFieldSupplyAIDriverContent(self.vehicle,self)
 end
 --this one is should be better derived!!
 function FieldSupplyAIDriver:start(startingPoint)
@@ -184,7 +184,7 @@ function FieldSupplyAIDriver:closePipeIfNeeded(isInWaitPointRange)
 end
 
 function FieldSupplyAIDriver:getSiloSelectedFillTypeSetting()
-	return self.vehicle.cp.settings.siloSelectedFillTypeFieldSupplyDriver
+	return self.vehicle.cp.fillTypeListSettings.fieldSupplyAIDriver
 end
 
 function FieldSupplyAIDriver:getCanShowDriveOnButton()

@@ -51,7 +51,7 @@ end
 
 function CompactingAIDriver:setHudContent()
 	BunkerSiloAIDriver.setHudContent(self)
-	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle)
+	courseplay.hud:setLevelCompactAIDriverContent(self.vehicle,self)
 end
 
 function CompactingAIDriver:start(startingPoint)

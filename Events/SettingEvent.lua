@@ -79,7 +79,7 @@ end
 --- Runs the event on the receiving end of the event.
 function SettingEvent:run(connection) -- wir fuehren das empfangene event aus
 	self.debug("SettingEvent:run()")
-	self.eventData.eventFunc(self.setting,self.value)
+	self.eventData.eventFunc(self.setting,self.value,true)
 	
 	--- If the receiver was the client make sure every clients gets also updated.
 	if not connection:getIsServer() then

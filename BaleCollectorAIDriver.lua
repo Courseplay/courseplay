@@ -52,7 +52,7 @@ end
 function BaleCollectorAIDriver:setHudContent()
 	-- skip the inheritance from fieldwork/bale loader as this is very special
 	AIDriver.setHudContent(self)
-	courseplay.hud:setBaleCollectorAIDriverContent(self.vehicle)
+	courseplay.hud:setBaleCollectorAIDriverContent(self.vehicle,self)
 end
 
 function BaleCollectorAIDriver:setUpAndStart(startingPoint)

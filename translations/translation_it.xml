@@ -473,6 +473,11 @@
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"				text="Continuare a scaricare fino alla fine della fila" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"		text="Non smettere di scaricare la mietitrebbia quando è vuota, seguila fino alla fine della fila" />
 
+		<text name="COURSEPLAY_FILL_TYPE_LIST_DELETE"						text="Deletes a fill type." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_UP"						text="Moves a fill type up." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_DOWN"					text="Moves a fill type down." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_CLEAN_OLD_FILL_TYPES"			text="Removes invalid fill types." />
+
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"					text="Mostra combinazioni di tasti" />
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"			text="Attiva/Disattiva visualizza combianzione tasti in F1 menu" />
 		

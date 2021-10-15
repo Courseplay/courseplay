@@ -287,6 +287,7 @@ function courseplay.button:setToolTip(text)
 	if self.toolTip ~= text then
 		self.toolTip = text;
 	end;
+	print(text)
 end;
 
 function courseplay.button:setActive(active)

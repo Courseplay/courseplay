@@ -49,6 +49,10 @@ end
 
 -- this is called when the ray hits something
 function clickToSwitch:vehicleClickToSwitchRaycastCallback(hitObjectId, x, y, z, distance)
+    if g_gui:getIsDialogVisible() then 
+        return
+    end
+    
     if hitObjectId ~= nil then
     local objectType = getRigidBodyType(hitObjectId)
         local object = g_currentMission:getNodeObject(hitObjectId)    

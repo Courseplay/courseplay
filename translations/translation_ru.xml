@@ -473,7 +473,12 @@
 
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW"								text="Продолжать разгрузку до конца прохода" />
 		<text name="COURSEPLAY_KEEP_UNLOADING_UNTIL_END_OF_ROW_TOOLTIP"						text="Не прекращать разгрузку комбайна, когда он пустой, а следовать за ним до конца прохода." />
-		
+
+		<text name="COURSEPLAY_FILL_TYPE_LIST_DELETE"										text="Deletes a fill type." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_UP"										text="Moves a fill type up." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_MOVE_DOWN"									text="Moves a fill type down." />
+		<text name="COURSEPLAY_FILL_TYPE_LIST_CLEAN_OLD_FILL_TYPES"							text="Removes invalid fill types." />
+
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS"									text="Отображение клавиш" />
 		<text name="COURSEPLAY_SHOW_ACTION_EVENTS_TEXTS_TOOLTIP"							text="Отображать или нет сочетания клавиш в меню F1." />
 		
