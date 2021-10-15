@@ -120,7 +120,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 						vehicle.cp.driver:clearInfoText("WAITING_FOR_LEVELCOMPACTAIDRIVER")
 						vehicle.cp.driver:enableTrafficConflictDetection()
 					end
-					self:debugSparse("found cp driver : %s",nameNum(vehicle))
+					self:debugSparse("found cp driver(%s), setWaiting: %s, isOkayToStop: %s",nameNum(vehicle),tostring(setWaiting),tostring(isOkayToStop))
 					return isOkayToStop
 				elseif autodriveSpec and autodriveSpec.HoldDriving and vehicle.ad.stateModule and vehicle.ad.stateModule:isActive() then 
 					--- Autodrive 
@@ -129,7 +129,7 @@ function CompactingAIDriver:foundUnloaderInRadius(r,setWaiting)
 						autodriveSpec:HoldDriving(vehicle)
 					end
 					
-					self:debugSparse("found autodrive driver : %s",nameNum(vehicle))
+					self:debugSparse("found autodrive driver(%s), setWaiting: %s, isOkayToStop: %s",nameNum(vehicle),tostring(setWaiting),tostring(isOkayToStop))
 					return isOkayToStop
 				elseif vehicle.getIsEntered and (vehicle:getIsEntered() or vehicle:getIsControlled()) and (AIDriverUtil.hasImplementWithSpecialization(vehicle, Trailer) or vehicle.spec_trailer) then 
 					--Player controlled vehicle
