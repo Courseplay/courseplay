@@ -788,12 +788,11 @@ end
 function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 	
 	if not resetVehicles and g_server ~= nil then
-		-- COURSEPLAY
-		local curKey = key .. '.courseplay.basics';
 
-		local courses 			  = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#courses'), '');
-		self.cp.loadedCourses = StringUtil.splitString(",", courses);
-		courseplay:reloadCourses(self, true);
+		local courseAssignmentId = getXMLInt(xmlFile, key .. '.courseplay.courseAssignment#id')
+		if courseAssignmentId then
+			g_courseManager:loadAssignedCourse(self, courseAssignmentId)
+		end
 
 		--HUD
 		curKey = key .. '.courseplay.HUD';

@@ -279,6 +279,10 @@ function Course:setName(name)
 	self.name = name
 end
 
+function Course:setVehicle(vehicle)
+	self.vehicle = vehicle
+end
+
 function Course:getName()
 	return self.name
 end
@@ -1793,7 +1797,6 @@ end
 
 function Course:saveToXml(courseXml, courseKey)
 	setXMLString(courseXml, courseKey .. '#name', self.name)
-	setXMLString(courseXml, courseKey .. '#test', 'kakukk')
 	setXMLFloat(courseXml, courseKey .. '#workdWidth', self.workWidth or 0)
 	setXMLInt(courseXml, courseKey .. '#numHeadlandLanes', self.numHeadlandLanes or 0 )
 	setXMLInt(courseXml, courseKey .. '#multiTools', self.multiTools or 0)
@@ -1804,12 +1807,14 @@ end
 ---@param courseXml : XML file
 ---@param courseKey : key to the course in the XML
 function Course.createFromXml(vehicle, courseXml, courseKey)
+	local name = getXMLString(courseXml, courseKey .. "#name");
 	local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
 	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 	local serializedWaypoints = getXMLString(courseXml, courseKey .. '.waypoints')
 
 	local course = Course(vehicle, Course.deserializeWaypoints(serializedWaypoints))
+	course.name = name
 	course.workWidth = workWidth
 	course.numHeadlands = numHeadlandLanes
 	course.multiTools = multiTools
