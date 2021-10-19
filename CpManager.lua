@@ -63,7 +63,7 @@ function CpManager:loadMap(name)
 	CpManager.isMP = g_currentMission.missionDynamicInfo.isMultiplayer;
 	courseplay.isClient = not g_server; -- TODO JT: not needed, as every vehicle always has self.isServer and self.isClient
 
-	g_courseManager = CourseManager.create()
+	g_courseManager = CourseManager()
 
 	-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	-- XML PATHS

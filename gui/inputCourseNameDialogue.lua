@@ -9,7 +9,15 @@
 inputCourseNameDialogue = {};
 inputCourseNameDialogue.firstTimeRun = true;
 local inputCourseNameDialogue_mt = Class(inputCourseNameDialogue, ScreenElement)
-inputCourseNameDialogue.types = { "course", "folder", "filter" };
+
+inputCourseNameDialogue.MODE_COURSE = 1
+inputCourseNameDialogue.MODE_FOLDER = 2
+inputCourseNameDialogue.MODE_FILTER = 3
+inputCourseNameDialogue.modeTexts = {
+	'COURSEPLAY_COURSE_NAME',
+	'COURSEPLAY_FOLDER_NAME',
+	'COURSEPLAY_FILTER_COURSES'
+}
 
 inputCourseNameDialogue.CONTROLS = {
 	titleTextElement = 'titleTextElement',
@@ -25,22 +33,32 @@ function inputCourseNameDialogue:new(target, custom_mt)
 	self:registerControls(inputCourseNameDialogue.CONTROLS)
 	-- needed for onClickBack to work.
 	self.returnScreenName = "";
+	self.mode = self.MODE_COURSE
+	self.index = 1
 	return self
 end; --END new()
 
+---@param index number selected entry in the HUD, to pass on to the course manager
+function inputCourseNameDialogue:setCourseMode(index)
+	self.mode = self.MODE_COURSE
+	self.index = index
+end
+
+---@param index number selected entry in the HUD, to pass on to the course manager
+function inputCourseNameDialogue:setFolderMode(index)
+	self.mode = self.MODE_FOLDER
+	self.index = index
+end
+
+function inputCourseNameDialogue:setFilterMode()
+	self.mode = self.MODE_FILTER
+end
 
 function inputCourseNameDialogue:onOpen(element)
 	g_currentMission.isPlayerFrozen = true;
 	g_inputBinding:setShowMouseCursor(true);
 
-	local saveWhat = courseplay.vehicleToSaveCourseIn.cp.saveWhat
-	if saveWhat == 'course' then
-		self.titleTextElement.text = courseplay:loc('COURSEPLAY_COURSE_NAME')
-	elseif saveWhat == 'folder' then
-		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FOLDER_NAME')
-	elseif saveWhat == 'filter' then
-		self.titleTextElement.text = courseplay:loc('COURSEPLAY_FILTER_COURSES')
-	end
+	self.titleTextElement.text = courseplay:loc(self.modeTexts[self.mode])
 
 	self:validateCourseName();
 
@@ -60,7 +78,7 @@ end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
 	local vehicle = courseplay.vehicleToSaveCourseIn
-	if vehicle.cp.saveWhat == 'course' then
+	if self.mode == self.MODE_COURSE then
 		if self.textInputElement ~= nil then
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			vehicle:setCpVar('currentCourseName',self.textInputElement.text);
@@ -88,7 +106,6 @@ function inputCourseNameDialogue:onSaveClick()
 		end;
 
 		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
-		--courseplay:dopairs(g_currentMission.cp_courses,1) replace it by tableshow
 
 		g_currentMission.cp_sorted = courseplay.courses:sort()
 		if not courseplay.isClient then
@@ -97,42 +114,14 @@ function inputCourseNameDialogue:onSaveClick()
 		courseplay.settings.setReloadCourseItems()
 		courseplay.signs:updateWaypointSigns(vehicle);
 
-	elseif vehicle.cp.saveWhat == 'folder' then
+	elseif self.mode == self.MODE_FOLDER then
+		-- TODO: implement MP event (in g_courseManager, not here!)
 		if self.textInputElement ~= nil then
-			vehicle.cp.saveFolderName = self.textInputElement.text
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
 			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
 		end
 
-		local maxID = courseplay.courses:getMaxFolderID()
-		local folderID
-		if not maxID or maxID == 0 then
-			-- no folders yet
-			g_currentMission.cp_folders = {}
-			folderID = 1
-		elseif g_currentMission.cp_folders[maxID].virtual then
-			-- dirty trick: the last folder is virtual, make sure the virtual is always at the end of the folder list
-			-- so there are no gaps in the real folder IDs
-			-- so move up the virtual folder to the end
-			courseplay.courses:moveFolder(maxID, maxID + 1)
-			-- new folder goes where the virtual was before
-			folderID = maxID
-		else
-			-- folders already exist, use the nextID
-			folderID = maxID + 1
-		end
-
-		local folder = { id = folderID, uid = 'f'..folderID, type = 'folder', name = vehicle.cp.saveFolderName, nameClean = courseplay:normalizeUTF8(vehicle.cp.saveFolderName), parent = 0 }
-
-		g_currentMission.cp_folders[folderID] = folder
-		--courseplay:dopairs(g_currentMission.cp_folders,1)replace it by tableshow
-		g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
-		if g_server then
-			courseplay.courses:saveFolderToXml(folderID, nil, true);
-		end
-		courseplay.settings.add_folder(folderID)
-		courseplay.settings.setReloadCourseItems()
-		courseplay.signs:updateWaypointSigns(vehicle);
+		g_courseManager:createDirectory(self.index, self.textInputElement.text)
 
 	elseif vehicle.cp.saveWhat == 'filter' then
 		if self.textInputElement ~= nil then

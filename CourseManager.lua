@@ -60,7 +60,7 @@ function File:__tostring()
 	return 'File: ' .. FileSystemEntity.__tostring(self) .. '\n'
 end
 
---- A directory on the file system. This can recursively traversed to all subdirectories.
+--- A directory on the file system. This can recursively be traversed to all subdirectories.
 ---@class Directory : FileSystemEntity
 Directory = CpObject(FileSystemEntity)
 
@@ -138,6 +138,10 @@ function FileSystemEntityView:init(entity, level)
 	end
 end
 
+function FileSystemEntityView:getEntity()
+	return self.entity
+end
+
 function FileSystemEntityView:getName()
 	return self.name
 end
@@ -187,6 +191,7 @@ function FileSystemEntityView:showAddButton()
 	return false
 end
 
+--- View of a regular file (XML with a saved course
 ---@class FileView : FileSystemEntityView
 FileView = CpObject(FileSystemEntityView)
 function FileView:init(file, level)
@@ -201,6 +206,7 @@ function FileView:showAddButton()
 	return true
 end
 
+--- View of a directory of saved courses
 ---@class DirectoryView
 DirectoryView = CpObject(FileSystemEntityView)
 
@@ -254,7 +260,6 @@ function DirectoryView:__tostring()
 	return str
 end
 
-
 function DirectoryView:collectEntries(t)
 	if self.level > 0 then
 		table.insert(t, self)
@@ -269,6 +274,7 @@ function DirectoryView:collectEntries(t)
 	end
 end
 
+--- Entries according to the current folded/unfolded state of the directories.
 function DirectoryView:getEntries()
 	self.entries = {}
 	self:collectEntries(self.entries)
@@ -283,6 +289,11 @@ function DirectoryView:showFoldButton()
 	return not self:isFolded()
 end
 
+function DirectoryView:showMoveButton()
+	return true
+end
+
+--- Represents an assignment: the courses assigned (loaded) to a vehicle
 ---@class CourseAssignment
 CourseAssignment = CpObject()
 function CourseAssignment:init(vehicle, course, fieldworkCourse)
@@ -291,10 +302,15 @@ function CourseAssignment:init(vehicle, course, fieldworkCourse)
 	self.fieldworkCourse = fieldworkCourse
 end
 
+--- The CourseManager is responsible for loading/saving all courses and maintaining the vehicle - course
+--- assignments.
+--- Course folders shown in the HUD correspond actual file system folders.
+--- Courses shown in the HUD correspond actual files on the file system.
 ---@class CourseManager
 CourseManager = CpObject()
 
 function CourseManager:init()
+	-- courses are stored in a folder per map, under modsSettings/Courseplay/Courses/<map name>/
 	local baseDir = getUserProfileAppPath() .. "/modsSettings/Courseplay"
 	-- create subfolders one by one, seems like createFolder() can't recursively create subfolders
 	createFolder(baseDir)
@@ -319,11 +335,7 @@ function CourseManager:init()
 	self.savedAssignments = {}
 end
 
--- wrapper to create a global instance.
-function CourseManager.create()
-	return CourseManager()
-end
-
+--- Refresh everything from disk
 function CourseManager:refresh()
 	self.courseDir:refresh()
 	self.courseDirView:refresh()
@@ -333,6 +345,7 @@ function CourseManager:getEntries()
 	return self.courseDirView:getEntries()
 end
 
+--- The current entry is the one on the top of the HUD. Scrolling the HUD changes the current entry.
 function CourseManager:setCurrentEntry(num)
 	self.currentEntry = math.max(math.min(num, #self.courseDirView:getEntries()), 1)
 end
@@ -341,19 +354,31 @@ function CourseManager:getCurrentEntry()
 	return self.currentEntry
 end
 
+--- Return directory view displayed at index on the HUD
+function CourseManager:getDirViewAtIndex(index)
+	return self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+end
+
 -- Unfold (expand) a folder
 function CourseManager:unfold(index)
-	self:getCurrentEntry()
-	local dir = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+	local dir = self:getDirViewAtIndex(index)
 	dir:unfold()
 	self:debug('%s unfolded', dir:getName())
 end
 
 -- Fold (hide contents) a folder
 function CourseManager:fold(index)
-	local dir = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
+	local dir = self:getDirViewAtIndex(index)
 	dir:fold()
 	self:debug('%s folded', dir:getName())
+end
+
+function CourseManager:createDirectory(index, name)
+	-- if index is given, it points to a directory in the HUD, so create the new directory under that,
+	-- otherwise under the root
+	local dir = index and self:getDirViewAtIndex(index):getEntity() or self.courseDir
+	dir:createDirectory(name)
+	self:refresh()
 end
 
 function CourseManager:saveCourse(fullPath, course)
@@ -409,7 +434,8 @@ end
 
 --- Unload all courses for this vehicle
 function CourseManager:unloadCourse(vehicle)
-	local ix, _ = self:getAssignment(vehicle)
+	local ix, assignment = self:getAssignment(vehicle)
+	self.legacyWaypoints[assignment.vehicle] = {}
 	if ix then
 		table.remove(self.assignments, ix)
 		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'unloaded all courses')
@@ -423,7 +449,7 @@ function CourseManager:setFieldworkCourse(vehicle, course)
 	self:updateLegacyCourseData(vehicle)
 end
 
---- This is just the index of the vehicle's assigned course in the self.courses array. Vehicles
+--- This is just the index of the vehicle's assigned course in the self.assignments array. Vehicles
 --- write this in the savegame so on game load they can pick and load their assigned courses.
 function CourseManager:getCourseAssignmentId(vehicle)
 	local ix, _ = self:getAssignment(vehicle)
@@ -454,7 +480,8 @@ function CourseManager:loadAssignedCourse(vehicle, assignmentId)
 	self:updateLegacyCourseData(vehicle)
 end
 
---- Save the courses currently assigned to each vehicle
+--- Save the courses currently assigned to each vehicle. These are all saved in a single file under the
+--- savegame folder (the entire currently loaded course for each vehicle)
 function CourseManager:saveAssignedCourses()
 	createFolder(self.savegameFolderPath)
 	local savedAssignmentsXml = createXMLFile("savedAssignmentsXml", self.savedAssignmentsXmlFilePath, 'savedAssignments')
@@ -481,7 +508,7 @@ function CourseManager:saveAssignedCourses()
 	delete(savedAssignmentsXml);
 end
 
---- Reload the courses what were assigned to each vehicle at the time of the last savegame
+--- Reload the courses that were assigned to each vehicle at the time of the last savegame
 function CourseManager:loadAssignedCourses()
 	createFolder(self.savegameFolderPath);
 	local savedAssignmentsXml;
@@ -636,12 +663,11 @@ end
 -- file is reloaded while the game is running
 if g_courseManager then
 	local old_courseManager = g_courseManager
-	g_courseManager = CourseManager.create()
+	g_courseManager = CourseManager()
 	-- preserve the existing vehicle/course assignments
 	g_courseManager.assignments = old_courseManager.assignments
 	g_courseManager.legacyWaypoints = old_courseManager.legacyWaypoints
 end
-
 
 -- Relocated to this file so it can be reloaded while the game is running (hud.lua is not reloadable)
 function courseplay.hud:updateCourseList(vehicle, page)
@@ -713,4 +739,18 @@ end
 
 function courseplay:clearCurrentLoadedCourse(vehicle)
 	g_courseManager:unloadCourse(vehicle)
+end
+
+function courseplay:createFolder(vehicle)
+	courseplay.vehicleToSaveCourseIn = vehicle
+	courseplay:lockContext(false)
+	g_inputCourseNameDialogue:setFolderMode()
+	g_gui:showGui("inputCourseNameDialogue")
+end
+
+function courseplay:createSubFolder(vehicle, index)
+	courseplay.vehicleToSaveCourseIn = vehicle
+	courseplay:lockContext(false)
+	g_inputCourseNameDialogue:setFolderMode(index)
+	g_gui:showGui("inputCourseNameDialogue")
 end

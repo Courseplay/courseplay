@@ -1602,9 +1602,13 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse',
 			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
+		-- courses can be appended
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse',
 			i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
-		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'folderParentFrom' }, 'linkParent',
+		-- the same position is used for folders to create subfolders
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'folderNew' }, 'createSubFolder',
+			i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'save' }, 'linkParent',
 			i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_MOVE_TO_FOLDER'));
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'delete' }, 'deleteSortedItem',
 			i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_DELETE_COURSE'));
@@ -1612,7 +1616,7 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 			self.buttonCoursesPosX[4], self.linesButtonPosY[i], hoverAreaWidth, mouseWheelArea.h, i, nil, true, false);
 	end;
 	vehicle.cp.hud.filterButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'search' }, 'showSaveCourseForm', 'filter', topIconsX[1], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_SEARCH_FOR_COURSES_AND_FOLDERS'));
-	vehicle.cp.hud.newFolderButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'folderNew' }, 'showSaveCourseForm', 'folder', topIconsX[2], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CREATE_FOLDER'));
+	vehicle.cp.hud.newFolderButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'folderNew' }, 'createFolder', 'folder', topIconsX[2], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_CREATE_FOLDER'));
 	vehicle.cp.hud.reloadCourses = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'refresh' }, 'reloadCoursesFromXML', nil, topIconsX[0], self.topIconsY, wMiddle, hMiddle, nil, nil, false, false, false, courseplay:loc('COURSEPLAY_RELOAD_COURSE_LIST'));
 	vehicle.cp.hud.courseListPrevButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'navUp' },   'shiftHudCourses', -self.numLines, listArrowX, self.linesButtonPosY[1],			   wMiddle, hMiddle, nil, -self.numLines*2);
 	vehicle.cp.hud.courseListNextButton = courseplay.button:new(vehicle, 'global', { 'iconSprite.png', 'navDown' }, 'shiftHudCourses',  self.numLines, listArrowX, self.linesButtonPosY[self.numLines], wMiddle, hMiddle, nil,  self.numLines*2);
