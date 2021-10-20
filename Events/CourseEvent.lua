@@ -9,7 +9,7 @@ function CourseEvent:emptyNew()
 	return self;
 end
 
-function CourseEvent:new(vehicle,course)
+function CourseEvent:new(vehicle, course)
 	self.vehicle = vehicle;
 	self.course = course
 	return self;
@@ -17,46 +17,45 @@ end
 
 function CourseEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"readStream course event")
+	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
 	if streamReadBool(streamId) then
-		self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
+		self.course = Course.createFromStream(streamId, connection)
 	else
-		self.vehicle = nil
-	end
-	local wp_count = streamReadInt32(streamId)
-	self.course = {}
-	for w = 1, wp_count do
-		table.insert(self.course, CourseEvent:readWaypoint(streamId))
+		self.course = nil
 	end
 	self:run(connection);
 end
 
-function CourseEvent:writeStream(streamId, connection)  -- Wird aufgrufen wenn ich ein event verschicke (merke: reihenfolge der Daten muss mit der bei readStream uebereinstimmen 
+function CourseEvent:writeStream(streamId, connection)
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"writeStream course event")
-	if self.vehicle ~= nil then
+	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+	if self.course then
+		-- loading a course in a vehicle
 		streamWriteBool(streamId, true)
-		streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
+		course:writeStream()
 	else
+		-- unloading all courses from a vehicle
 		streamWriteBool(streamId, false)
-	end
-	streamWriteInt32(streamId, #(self.course))
-	for w = 1, #(self.course) do
-		CourseEvent:writeWaypoint(streamId, self.course[w])
 	end
 end
 
-function CourseEvent:run(connection) -- wir fuehren das empfangene event aus
+-- Process the received event
+function CourseEvent:run(connection)
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"run course event")
-	if self.vehicle then 
-		courseplay:setVehicleWaypoints(self.vehicle, self.course)
+	if self.course then
+		g_courseManager:loadCourseInVehicle(self.vehicle, self.course)
+	else
+		g_courseManager:unloadCourseFromVehicle(self.vehicle)
 	end
 	if not connection:getIsServer() then
+		-- event was received from a client, so we, the server broadcast it to all other clients now
 		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"broadcast course event feedback")
 		g_server:broadcastEvent(CourseEvent:new(self.vehicle,self.course), nil, connection, self.vehicle);
 	end;
 end
 
 function CourseEvent.sendEvent(vehicle,course)
-	if course and #course > 0 then
+	if course then
 		if g_server ~= nil then
 			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"broadcast course event")
 			g_server:broadcastEvent(CourseEvent:new(vehicle,course), nil, nil, vehicle);
@@ -68,54 +67,3 @@ function CourseEvent.sendEvent(vehicle,course)
 		courseplay.infoVehicle(vehicle, 'CourseEvent Error: course = nil or #course<1!!!')
 	end
 end
-
-
-function CourseEvent:writeWaypoint(streamId, waypoint)
-	streamDebugWriteFloat32(streamId, waypoint.cx)
-	streamDebugWriteFloat32(streamId, waypoint.cz)
-	streamDebugWriteFloat32(streamId, waypoint.angle)
-	streamDebugWriteBool(streamId, waypoint.wait)
-	streamDebugWriteBool(streamId, waypoint.rev)
-	streamDebugWriteBool(streamId, waypoint.crossing)
-	streamDebugWriteInt32(streamId, waypoint.speed)
-
-	streamDebugWriteBool(streamId, waypoint.generated)
-	
-	streamDebugWriteBool(streamId, waypoint.turnStart)
-	streamDebugWriteBool(streamId, waypoint.turnEnd)
-	streamDebugWriteInt32(streamId, waypoint.ridgeMarker)
-	streamDebugWriteInt32(streamId, waypoint.headlandHeightForTurn)
-end;
-
-function CourseEvent:readWaypoint(streamId)
-	local cx = streamDebugReadFloat32(streamId)
-	local cz = streamDebugReadFloat32(streamId)
-	local angle = streamDebugReadFloat32(streamId)
-	local wait = streamDebugReadBool(streamId)
-	local rev = streamDebugReadBool(streamId)
-	local crossing = streamDebugReadBool(streamId)
-	local speed = streamDebugReadInt32(streamId)
-
-	local generated = streamDebugReadBool(streamId)
-	--local dir = streamDebugReadString(streamId)
-	local turnStart = streamDebugReadBool(streamId)
-	local turnEnd = streamDebugReadBool(streamId)
-	local ridgeMarker = streamDebugReadInt32(streamId)
-	local headlandHeightForTurn = streamDebugReadInt32(streamId)
-
-	local wp = {
-		cx = cx, 
-		cz = cz, 
-		angle = angle, 
-		wait = wait, 
-		rev = rev, 
-		crossing = crossing, 
-		speed = speed,
-		generated = generated,
-		turnStart = turnStart,
-		turnEnd = turnEnd,
-		ridgeMarker = ridgeMarker,
-		headlandHeightForTurn = headlandHeightForTurn
-	};
-	return wp;
-end;

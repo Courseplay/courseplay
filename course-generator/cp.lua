@@ -199,13 +199,7 @@ function courseGenerator.generate(vehicle)
 		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
 	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
-
-	if CpManager.isMP then
-		CourseEvent.sendEvent(vehicle, vehicle.Waypoints)
-		CourseplayEvent.sendEvent(vehicle, "self.cp.courseWorkWidth", vehicle.cp.courseWorkWidth) -- need a setting for this one
-		--setMultiTools
-	end
-
+	
 	return status, ok
 end
 

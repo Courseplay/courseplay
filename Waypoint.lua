@@ -1774,8 +1774,6 @@ function Course.deserializeWaypoints(serializedWaypoints)
 		p.x, p.y, p.z = StringUtil.getVectorFromString(fields[1])
 		-- just skip empty lines
 		if p.x then
-			-- yes, it is going to be a big day!
-			p.cx, p.cy, p.cz = p.x, p.y, p.z
 			p.angle = tonumber(fields[2])
 			p.speed = tonumber(fields[3])
 			local turn = fields[4]
@@ -1803,6 +1801,14 @@ function Course:saveToXml(courseXml, courseKey)
 	setXMLString(courseXml, courseKey .. '.waypoints', self:serializeWaypoints())
 end
 
+function Course:writeStream(streamId, connection)
+	streamWriteString(streamId, self.name)
+	streamWriteFloat32(streamId, self.workWidth or 0)
+	streamWriteInt32(streamId, self.numHeadlandLanes or 0 )
+	streamWriteInt32(streamId, self.multiTools or 0)
+	streamWriteString(streamId, self:serializeWaypoints())
+end
+
 ---@param vehicle : table
 ---@param courseXml : XML file
 ---@param courseKey : key to the course in the XML
@@ -1822,6 +1828,23 @@ function Course.createFromXml(vehicle, courseXml, courseKey)
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
 	return course
 end
+
+function Course.createFromStream(streamId, connection)
+	local name = streamReadString(streamId)
+	local workWidth = streamReadFloat32(streamId)
+	local numHeadlandLanes = streamReadInt32(streamId)
+	local multiTools = streamReadInt32(streamId)
+	local serializedWaypoints = streamReadString(streamId)
+	local course = Course(vehicle, Course.deserializeWaypoints(serializedWaypoints))
+	course.name = name
+	course.workWidth = workWidth
+	course.numHeadlands = numHeadlandLanes
+	course.multiTools = multiTools
+
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
+	return course
+end
+
 
 function Course.createFromGeneratedCourse(vehicle, generatedCourse, workWidth, numHeadlandLanes, multiTools)
 	local waypoints = {}

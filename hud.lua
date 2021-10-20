@@ -1600,7 +1600,7 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navMinus' }, 'fold',
 			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
-		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadSortedCourse',
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadCourse',
 			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
 		-- courses can be appended
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse',
@@ -1819,14 +1819,14 @@ function courseplay.hud:updateCourseButtonsVisibilityDeprecated(vehicle)
 				end;
 			else
 				-- jeez what a mess...
-				if vehicle.cp.hud.courses[row].type == 'folder' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse') then
+				if vehicle.cp.hud.courses[row].type == 'folder' and (fn == 'loadCourse' or fn == 'addSortedCourse') then
 					show = false;
 				elseif vehicle.cp.hud.courses[row].virtual then
 					if vehicle.cp.hud.courses[row].type == 'folder' then
 						-- there's nothing you can do with virtual folders
 						show, enable = false, false
 					elseif vehicle.cp.hud.courses[row].type == 'course' then
-						if fn == 'loadSortedCourse' or fn == 'addSortedCourse' then
+						if fn == 'loadCourse' or fn == 'addSortedCourse' then
 							-- you can load and append virtual courses
 							show, enable = true, true
 						else
@@ -1842,7 +1842,7 @@ function courseplay.hud:updateCourseButtonsVisibilityDeprecated(vehicle)
 						if nofolders then
 							enable = false;
 						end;
-					elseif vehicle.cp.hud.courses[row].type == 'course' and (fn == 'loadSortedCourse' or fn == 'addSortedCourse' or fn == 'deleteSortedItem') and vehicle.cp.isDriving then
+					elseif vehicle.cp.hud.courses[row].type == 'course' and (fn == 'loadCourse' or fn == 'addSortedCourse' or fn == 'deleteSortedItem') and vehicle.cp.isDriving then
 						enable = false;
 					end;
 				else

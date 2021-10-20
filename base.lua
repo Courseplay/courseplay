@@ -626,34 +626,6 @@ function courseplay:onReadStream(streamId, connection)
 
 	courseplay.courses:reinitializeCourses()
 
-
-	-- kurs daten
-	local courses = streamReadString(streamId) -- 60.
-	if courses ~= nil and courses~=-1 then
-		self.cp.loadedCourses = StringUtil.splitString(",", courses);
-		courseplay:reloadCourses(self, true)
-	end
-	
-	self.cp.numCourses = streamReadInt32(streamId)
-	
-	--print(string.format("%s:read: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
-	if self.cp.numCourses > #self.cp.loadedCourses then
-		self.Waypoints = {}
-		local wp_count = streamReadInt32(streamId)
-		for w = 1, wp_count do
-			table.insert(self.Waypoints, CourseEvent:readWaypoint(streamId))
-		end
-		self.cp.numWaypoints = #self.Waypoints
-		
-		if self.cp.numCourses > 1 then
-			self.cp.currentCourseName = string.format("%d %s", self.cp.numCourses, courseplay:loc('COURSEPLAY_COMBINED_COURSES'));
-		end
-	end
-	-- SETUP 2D COURSE DRAW DATA
-	self.cp.course2dUpdateDrawData = true;
-	
-		
-	
 	if streamReadBool(streamId) then 
 		self.cp.infoText = streamReadString(streamId)
 	end
@@ -684,25 +656,7 @@ function courseplay:onWriteStream(streamId, connection)
 		copyCourseFromDriverID = NetworkUtil.getObjectId(self.cp.copyCourseFromDriver)
 	end
 	streamWriteInt32(streamId, copyCourseFromDriverID)
-	
-	local loadedCourses = "";
-	if #self.cp.loadedCourses then
-		loadedCourses = table.concat(self.cp.loadedCourses, ",")
-	end
-	streamWriteString(streamId, loadedCourses)
-	streamWriteInt32(streamId, self.cp.numCourses)
-	
-	--print(string.format("%s:write: numCourses: %s loadedCourses: %s",tostring(self.name),tostring(self.cp.numCourses),tostring(#self.cp.loadedCourses)))
-	if self.cp.numCourses > #self.cp.loadedCourses then
-		courseplay:debug("id: "..tostring(NetworkUtil.getObjectId(self)).."  sync temp course", courseplay.DBG_MULTIPLAYER)
-		streamWriteInt32(streamId, #(self.Waypoints))
-		for w = 1, #(self.Waypoints) do
-			--print("writing point "..tostring(w))
-			CourseEvent:writeWaypoint(streamId, self.Waypoints[w])
-		end
-	end
 
-		
 	if self.cp.infoText then 
 		streamWriteBool(streamId,true)
 		streamWriteString(streamId,self.cp.infoText)

@@ -87,11 +87,6 @@ function courseplay:addSortedCourse(vehicle, index) -- fn is in courseplay becau
 	courseplay:loadCourse(vehicle, id, true, true)
 end
 
-function courseplay:loadSortedCourse(vehicle, index) -- fn is in courseplay because it's vehicle based
-	if type(vehicle.cp.hud.courses[index]) ~= nil then
-		g_courseManager:loadCourse(vehicle, index)
-	end
-end
 
 function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is in courseplay because it's vehicle based
 	-- global array for courses, no refreshing needed any more
@@ -297,10 +292,6 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 		-- SETUP 2D COURSE DRAW DATA
 		vehicle.cp.course2dUpdateDrawData = true;
 		courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
-
-		if CpManager.isMP and g_server ~= nil then
-			CourseEvent.sendEvent(vehicle,vehicle.Waypoints)
-		end
 	end
 end
 

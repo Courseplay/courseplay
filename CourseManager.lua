@@ -412,7 +412,7 @@ function CourseManager:assign(vehicle, course, fieldworkCourse)
 end
 
 --- Load the course shown in the HUD at index
-function CourseManager:loadCourse(vehicle, index)
+function CourseManager:loadCourseSelectedInHud(vehicle, index)
 	self:getCurrentEntry()
 	local file = self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
 
@@ -421,19 +421,23 @@ function CourseManager:loadCourse(vehicle, index)
 	local course = Course.createFromXml(vehicle, courseXml, courseKey)
 	course:setName(file:getName())
 	delete(courseXml);
+	self:loadCourseInVehicle(vehicle, course)
+	CourseEvent.sendEvent(vehicle, course)
+end
 
+function CourseManager:loadCourseInVehicle(vehicle, course)
 	if course:isFieldworkCourse() then
 		self:assign(vehicle, nil, course)
-		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s', file:getName())
+		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s', course:getName())
 	else
 		self:assign(vehicle, course, nil)
-		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s', file:getName())
+		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s', course:getName())
 	end
 	self:updateLegacyCourseData(vehicle)
 end
 
 --- Unload all courses for this vehicle
-function CourseManager:unloadCourse(vehicle)
+function CourseManager:unloadCourseFromVehicle(vehicle)
 	local ix, assignment = self:getAssignment(vehicle)
 	self.legacyWaypoints[assignment.vehicle] = {}
 	if ix then
@@ -446,6 +450,7 @@ end
 function CourseManager:setFieldworkCourse(vehicle, course)
 	self:assign(vehicle, nil, course)
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'fieldwork course set')
+	CourseEvent.sendEvent(vehicle, course)
 	self:updateLegacyCourseData(vehicle)
 end
 
@@ -702,7 +707,7 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 	while row <= self.numLines do
 		local unfoldButton = buttonsByRow[row]['unfold']
 		local foldButton = buttonsByRow[row]['fold']
-		local loadButton = buttonsByRow[row]['loadSortedCourse']
+		local loadButton = buttonsByRow[row]['loadCourse']
 		local addButton = buttonsByRow[row]['addSortedCourse']
 		local deleteButton = buttonsByRow[row]['deleteSortedItem']
 		local moveButton = buttonsByRow[row]['linkParent']
@@ -738,7 +743,14 @@ function courseplay:fold(vehicle, index)
 end
 
 function courseplay:clearCurrentLoadedCourse(vehicle)
-	g_courseManager:unloadCourse(vehicle)
+	g_courseManager:unloadCourseFromVehicle(vehicle)
+	CourseEvent.sendEvent(vehicle, nil)
+end
+
+function courseplay:loadCourse(vehicle, index)
+	if type(vehicle.cp.hud.courses[index]) ~= nil then
+		g_courseManager:loadCourseSelectedInHud(vehicle, index)
+	end
 end
 
 function courseplay:createFolder(vehicle)
