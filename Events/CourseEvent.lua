@@ -32,7 +32,7 @@ function CourseEvent:writeStream(streamId, connection)
 	if self.course then
 		-- loading a course in a vehicle
 		streamWriteBool(streamId, true)
-		self.course:writeStream()
+		self.course:writeStream(streamId, connection)
 	else
 		-- unloading all courses from a vehicle
 		streamWriteBool(streamId, false)
