@@ -130,10 +130,15 @@ local courses = {
 
 -- mocking out everything for load/save XML courses in migrateOldCourses
 loadXMLFile = noOp
+
+-- this normally returns an XML handle which is used later in saveXMLFile. We just
+-- return the full path, so when saveXMLFile is called with this, we know the file name.
 createXMLFile = function(_, fullPath, _)
 	return fullPath
 end
 
+-- instead of the original XML handle we get the full path returned by the mocked createXMLFile so we know
+-- what file to create
 saveXMLFile = function(fullPath)
 	os.execute('echo x > "' .. fullPath .. '"')
 end
