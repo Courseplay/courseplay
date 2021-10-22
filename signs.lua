@@ -250,7 +250,7 @@ function courseplay.signs:updateWaypointSigns(vehicle, section, idx)
 				if course.waypoints then
 					for _,wp in pairs(course.waypoints) do
 						if wp.crossing then
-							self:addSign(vehicle, 'cross', wp.cx, wp.z, nil, wp.angle);
+							self:addSign(vehicle, 'cross', wp.x, wp.z, nil, wp.angle);
 						end;
 					end;
 				end;
