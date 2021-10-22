@@ -173,58 +173,6 @@ function CourseplayJoinFixEvent:writeStream(streamId, connection)
 
 	if not connection:getIsServer() then
 		courseplay.globalSettings:onWriteStream(streamId)
-		--transfer courses
-		local course_count = 0
-		for _,_ in pairs(g_currentMission.cp_courses) do
-			course_count = course_count + 1
-		end
-		print(string.format("\t### CourseplayMultiplayer: writing %d courses ", course_count ))
-		streamDebugWriteInt32(streamId, course_count)
-		for id, course in pairs(g_currentMission.cp_courses) do
-			streamDebugWriteString(streamId, course.name)
-			self:debugWrite(course.name,"course name")
-			streamDebugWriteString(streamId, course.uid)
-			self:debugWrite(course.uid,"course uid")
-			streamDebugWriteString(streamId, course.type)
-			self:debugWrite(course.type,"course type")
-			streamDebugWriteInt32(streamId, course.id)
-			self:debugWrite(course.id,"course id")
-			streamDebugWriteInt32(streamId, course.parent)
-			self:debugWrite(course.parent,"course parent")
-			streamDebugWriteInt32(streamId, course.multiTools)
-			self:debugWrite(course.multiTools,"course multiTools")
-			if course.waypoints then
-				streamDebugWriteInt32(streamId, #(course.waypoints))
-				self:debugWrite(#(course.waypoints),"course numWaypoints")
-				for w = 1, #(course.waypoints) do
-					CourseEvent:writeWaypoint(streamId, course.waypoints[w])
-				end
-			else
-				streamDebugWriteInt32(streamId, -1)
-			end
-		end	
-		local folderCount = 0
-		for _,_ in pairs(g_currentMission.cp_folders) do
-			folderCount = folderCount + 1
-		end
-		streamDebugWriteInt32(streamId, folderCount)
-		print(string.format("\t### CourseplayMultiplayer: writing %d folders ", folderCount ))
-		for id, folder in pairs(g_currentMission.cp_folders) do
-			streamDebugWriteString(streamId, folder.name)
-			self:debugWrite(folder.name,"folder name")
-			streamDebugWriteString(streamId, folder.uid)
-			self:debugWrite(folder.uid,"folder uid")
-			streamDebugWriteString(streamId, folder.type)
-			self:debugWrite(folder.type,"folder type")
-			streamDebugWriteInt32(streamId, folder.id)
-			self:debugWrite(folder.id,"folder id")
-			streamDebugWriteInt32(streamId, folder.parent)
-			self:debugWrite(folder.parent,"folder parent")
-			streamDebugWriteBool(streamId, folder.virtual)
-			self:debugWrite(folder.virtual,"folder virtual")
-			streamDebugWriteBool(streamId, folder.autodrive)
-			self:debugWrite(folder.autodrive,"folder autodrive")
-		end		
 		local fieldsCount = 0
 		for _, field in pairs(courseplay.fields.fieldData) do
 			if field.isCustom then
@@ -244,61 +192,7 @@ end
 function CourseplayJoinFixEvent:readStream(streamId, connection)
 	if connection:getIsServer() then
 		courseplay.globalSettings:onReadStream(streamId)
-		local course_count = streamReadInt32(streamId)
-		print(string.format("\t### CourseplayMultiplayer: reading %d couses ", course_count ))
-		g_currentMission.cp_courses = {}
-		for i = 1, course_count do
-			--courseplay:debug("got course", courseplay.DBG_COURSES);
-			local course_name = streamReadString(streamId)
-			self:debugRead(course_name,"course name")
-			local courseUid = streamReadString(streamId)
-			self:debugRead(courseUid,"course uid")
-			local courseType = streamReadString(streamId)
-			self:debugRead(courseType,"course type")
-			local course_id = streamReadInt32(streamId)
-			self:debugRead(course_id,"course id")
-			local courseParent = streamReadInt32(streamId)
-			self:debugRead(courseParent,"course parent")
-			local courseMultiTools = streamReadInt32(streamId)
-			self:debugRead(courseMultiTools,"course multi tools")
-			local wp_count = streamReadInt32(streamId)
-			self:debugRead(wp_count,"course waypoint amount")
-			local waypoints = {}
-			if wp_count >= 0 then
-				for w = 1, wp_count do
-					--courseplay:debug("got waypoint", courseplay.DBG_COURSES);
-					table.insert(waypoints, CourseEvent:readWaypoint(streamId))
-				end
-			else
-				waypoints = nil
-			end
-			local course = { id = course_id, uid = courseUid, type = courseType, name = course_name, nameClean = courseplay:normalizeUTF8(course_name), waypoints = waypoints, parent = courseParent, multiTools = courseMultiTools  }
-			g_currentMission.cp_courses[course_id] = course
-			g_currentMission.cp_sorted = courseplay.courses:sort()
-		end
-		local folderCount = streamReadInt32(streamId)
-		print(string.format("\t### CourseplayMultiplayer: reading %d folders ", folderCount ))
-		g_currentMission.cp_folders = {}
-		for i = 1, folderCount do
-			local folderName = streamReadString(streamId)
-			self:debugRead(folderName,"folder name")
-			local folderUid = streamReadString(streamId)
-			self:debugRead(folderUid,"folder uid")
-			local folderType = streamReadString(streamId)
-			self:debugRead(folderType,"folder type")
-			local folderId = streamReadInt32(streamId)
-			self:debugRead(folderId,"folder id")
-			local folderParent = streamReadInt32(streamId)
-			self:debugRead(folderParent,"folder parent")
-			local folderVirtual = streamReadBool(streamId)
-			self:debugRead(folderVirtual,"folder virtual")
-			local folderAutoDrive = streamReadBool(streamId)
-			self:debugRead(folderAutoDrive,"folder is auto drive")
-			local folder = { id = folderId, uid = folderUid, type = folderType, name = folderName, nameClean = courseplay:normalizeUTF8(folderName), parent = folderParent, virtual = folderVirtual, autodrive = folderAutoDrive }
-			g_currentMission.cp_folders[folderId] = folder
-			g_currentMission.cp_sorted = courseplay.courses:sort(g_currentMission.cp_courses, g_currentMission.cp_folders, 0, 0)
-		end
-		local fieldsCount = streamReadInt32(streamId)		
+		local fieldsCount = streamReadInt32(streamId)
 		print(string.format("\t### CourseplayMultiplayer: reading %d custom fields ", fieldsCount))
 		courseplay.fields.fieldData = {}
 		for i = 1, fieldsCount do
