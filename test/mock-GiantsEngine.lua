@@ -25,7 +25,7 @@ function getName(node)
 end
 
 function noOp() end
-
+delete = noOp
 setTranslation = noOp
 setRotation = noOp
 function getRotation() return 0 end
@@ -84,6 +84,9 @@ g_currentMission.missionInfo.mapId = 'MockMap'
 giantsVehicle = {}
 giantsVehicle.lastSpeedReal = 10
 
+g_careerScreen = {}
+g_careerScreen.selectedIndex = 1
+
 courseplay = {}
 courseplay.hud = {}
 
@@ -104,7 +107,7 @@ function giantsVehicle.setCruiseControlMaxSpeed() end
 g_time = 0
 
 function getUserProfileAppPath()
-	return ''
+	return './'
 end
 
 function createFolder(folder)
@@ -120,8 +123,17 @@ function getFiles(folder, callback, object)
 	end
 end
 
-function delete(fullPath)
+function getfenv()
+	return _G
+end
+
+function deleteFile(fullPath)
 	os.execute('del "' .. fullPath .. '"')
+end
+
+function deleteFolder(fullPath)
+	os.execute('del /s /q "' .. fullPath .. '\\*"')
+	os.execute('for /d %i in ("' .. fullPath .. '\\*") do rd /s /q "%i"')
 end
 
 function fileExists(fullPath)

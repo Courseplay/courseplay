@@ -7,25 +7,28 @@ require('CourseManager')
 
 -- clean up
 local workingDir = io.popen"cd":read'*l'
-os.execute('rmdir /s /q Courses')
-
+deleteFolder(workingDir .. '\\modsSettings')
+local coursesDir = 'modsSettings\\Courseplay\\Courses'
+os.execute('mkdir ' .. coursesDir)
+local mapCoursesDir = workingDir .. '\\' .. coursesDir .. '\\' .. g_currentMission.missionInfo.mapId
 ------------------------------------------------------------------------------------------------------------------------
 -- Directory
----------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
 
 -- creates directory and figures out name correctly
-local dir = Directory(workingDir .. '\\Courses')
-assert(dir.name == 'Courses')
-assert(dir:getFullPath() == workingDir .. '\\Courses')
+local dir = Directory(mapCoursesDir)
+print(dir.name)
+assert(dir.name == g_currentMission.missionInfo.mapId)
+assert(dir:getFullPath() == mapCoursesDir)
 
 -- create subdirectory
 local test1 = dir:createDirectory('test1')
 assert(test1.name == 'test1' )
-assert(test1:getFullPath() == workingDir .. '\\Courses\\test1')
+assert(test1:getFullPath() == mapCoursesDir .. '\\test1')
 assert(test1:getParent() == dir)
 
 -- create a file
-os.execute('touch "' .. test1:getFullPath() .. '\\file1"')
+os.execute('echo x > "' .. test1:getFullPath() .. '\\file1"')
 dir:refresh()
 assert(dir.entries['test1'].entries['file1'].name == 'file1')
 assert(test1.entries['file1'].name == 'file1')
@@ -92,8 +95,7 @@ file1
 ------------------------------------------------------------------------------------------------------------------------
 -- CourseManager
 ---------------------------------------------------------------------------------------------------------------------------
-local cm = CourseManager(workingDir .. '\\Courses')
-
+local cm = CourseManager(coursesDir)
 assert(cm:getCurrentEntry() == 1)
 assert(#cm:getEntries() == 2)
 
@@ -104,11 +106,12 @@ cm:setCurrentEntry(-1)
 assert(cm:getCurrentEntry() == 1)
 
 cm:unfold(1)
-assert(cm:getEntries()[2] == 'test2')
+assert(tostring(cm:getEntries()[2]) == FileSystemEntityView.indentString .. 'test2\n')
 
-os.execute('del /s /q Courses\\*')
-os.execute('for /d %i in ("Courses\\*") do rd /s /q %i')
+deleteFolder(mapCoursesDir)
 cm:refresh()
+print(tostring(cm.courseDirView))
+
 assert(#cm:getEntries() == 0)
 
 -- Migration
@@ -125,13 +128,64 @@ local courses = {
 	{parent = 3, name = 'Course Four Under 1-1'},
 }
 
+-- mocking out everything for load/save XML courses in migrateOldCourses
+loadXMLFile = noOp
+createXMLFile = function(_, fullPath, _)
+	return fullPath
+end
+
+saveXMLFile = function(fullPath)
+	os.execute('echo x > "' .. fullPath .. '"')
+end
+
+MockCourse = CpObject()
+function MockCourse:init()
+	self.name = 'mock'
+end
+function MockCourse:setName(name)
+	self.name = name
+end
+function MockCourse:getName()
+	return self.name
+end
+function MockCourse:saveToXml()
+end
+
+Course = {}
+Course.createFromXml = function () return MockCourse() end
+
 cm:migrateOldCourses(folders, courses)
 cm:refresh()
 local entries = cm:getEntries()
 assert(entries[1].name == 'Level0-1')
 assert(entries[2].name == 'Level0-2')
-assert(entries[3].name == 'Course One')entries[1]:unfold()
+assert(entries[3].name == 'Course One')
+entries[1]:unfold()
 entries = cm:getEntries()
 assert(entries[2].name == 'Level1-1')
 assert(entries[3].name == 'Course Two Under 0-1')
 assert(entries[5].name == 'Course One')
+
+-- no folders
+deleteFolder(mapCoursesDir)
+folders = {}
+courses = {
+	{parent = 0, name = 'Course One'},
+	{parent = 0, name = 'Course Two'},
+	{parent = 0, name = 'Course Three'},
+	{parent = 0, name = 'Course Four'},
+}
+cm:migrateOldCourses(folders, courses)
+cm:refresh()
+entries = cm:getEntries()
+assert(entries[1].name == 'Course Four')
+assert(entries[4].name == 'Course Two')
+
+-- no folders, no courses
+deleteFolder(mapCoursesDir)
+folders = {}
+courses = {}
+cm:migrateOldCourses(folders, courses)
+cm:refresh()
+entries = cm:getEntries()
+assert(#entries == 0)

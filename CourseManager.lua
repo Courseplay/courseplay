@@ -26,7 +26,7 @@ FileSystemEntity = CpObject()
 function FileSystemEntity:init(fullPath, parent, name)
 	self.fullPath = fullPath
 	self.parent = parent
-	self.name = name or string.match(fullPath, '.*\\(.+)')
+	self.name = name or string.match(fullPath, '.*[\\/](.+)')
 end
 
 function FileSystemEntity:isDirectory()
@@ -103,7 +103,7 @@ function Directory:fileCallback(name, isDirectory)
 end
 
 function Directory:deleteFile(name)
-	delete(self.entries[name]:getFullPath())
+	getfenv(0).deleteFile(self.entries[name]:getFullPath())
 	self.entries[name] = nil
 end
 
@@ -125,6 +125,7 @@ end
 --- A view representing a file system entity (file or directory). The view knows how to display an entity on the UI.
 ---@class FileSystemEntityView
 FileSystemEntityView = CpObject()
+FileSystemEntityView.indentString = '  '
 
 function FileSystemEntityView:init(entity, level)
 	self.name = entity:getName()
@@ -134,7 +135,7 @@ function FileSystemEntityView:init(entity, level)
 	-- indent only from level 2. level 0 is never shown, as it is the root directory, level 1
 	-- has no indent.
 	for i = 2, self.level do
-		self.indent = self.indent .. '  '
+		self.indent = self.indent .. FileSystemEntityView.indentString
 	end
 end
 
@@ -618,6 +619,9 @@ function CourseManager:getCourseName(vehicle)
 end
 
 function CourseManager:migrateOldCourses(folders, courses)
+	local foldersById = {}
+	foldersById[0] = self.courseDir
+
 	local levels = {}
 	for _, folder in pairs(folders) do
 		if not levels[folder.level] then
@@ -625,11 +629,11 @@ function CourseManager:migrateOldCourses(folders, courses)
 		end
 		table.insert(levels[folder.level], folder)
 	end
-	local foldersById = {}
-	foldersById[0] = self.courseDir
-	for level = 0, #levels do
-		for _, folder in ipairs(levels[level]) do
-			foldersById[folder.id] = foldersById[folder.parent]:createDirectory(folder.name)
+	if #levels > 0 then
+		for level = 0, #levels do
+			for _, folder in ipairs(levels[level]) do
+				foldersById[folder.id] = foldersById[folder.parent]:createDirectory(folder.name)
+			end
 		end
 	end
 
