@@ -625,13 +625,16 @@ function CourseManager:migrateOldCourses(folders, courses)
 	foldersById[0] = self.courseDir
 
 	local levels = {}
+	local nLevels = 0
 	for _, folder in pairs(folders) do
 		if not levels[folder.level] then
 			levels[folder.level] = {}
 		end
+		self:debug('Reading folder %s (level %d)', folder.name, folder.level)
 		table.insert(levels[folder.level], folder)
+		nLevels = nLevels + 1  -- ipairs won't work on levels as it is 0 indexed
 	end
-	if #levels > 0 then
+	if nLevels > 0 then
 		for level = 0, #levels do
 			for _, folder in ipairs(levels[level]) do
 				foldersById[folder.id] = foldersById[folder.parent]:createDirectory(folder.name)
