@@ -582,7 +582,9 @@ function CourseManager:updateLegacyCourseData(vehicle)
 	vehicle.cp.course2dDrawData = nil;
 	vehicle.cp.course2dUpdateDrawData = true;
 	self:updateLegacyWaypoints(vehicle);
-	courseplay.signs:updateWaypointSigns(vehicle);
+	if g_client then
+		courseplay.signs:updateWaypointSigns(vehicle);
+	end
 	-- TODO: get rid of this global variable
 	vehicle:setCpVar('canDrive', self:hasCourse(vehicle), courseplay.isClient);
 end
