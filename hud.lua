@@ -1597,11 +1597,12 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 	end;
 	for i=1, self.numLines do
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navPlus' }, 'unfold',
-			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
+			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, nil, true);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navMinus' }, 'fold',
-			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false);
+			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, nil, true);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadCourse',
-			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_LOAD_COURSE'));
+			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false,
+			courseplay:loc('COURSEPLAY_LOAD_COURSE'), true);
 		-- courses can be appended
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseAdd' }, 'addSortedCourse',
 			i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
