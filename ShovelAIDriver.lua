@@ -440,7 +440,7 @@ function ShovelAIDriver:searchForUnloadingObjectRaycast()
 		if self:isWaitingForTrailer() then
 			local x,y,z = localToWorld(node.node,0,8,i/2);
 			raycastAll(x, y, z, lx, ly, lz, "searchForUnloadingObjectRaycastCallback", 10, self);
-			if self:isShovelDebugActive() then
+			if self:isShovelDebugActive() and courseplay.debugChannels[courseplay.DBG_CYCLIC] then
 				cpDebug:drawLine(x, y, z, 1, 0, 0, x+lx*10, y+ly*10, z+lz*10);
 			end;
 		end
@@ -465,6 +465,7 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 			--check if the vehicle is stopped 
 			local rootVehicle = object:getRootVehicle()
 			if not AIDriverUtil.isStopped(rootVehicle) then 
+				self:shovelDebugSparse("Vehicle not stopped!")
 				return
 			end
 			--object supports filltype, bassicly trailer and so on
@@ -476,7 +477,6 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 					--object supports fillType
 					local supportedFillType = object:getFillUnitSupportsFillType(fillUnitIndex,fillType)
 					if allowedToFillByShovel then 
-						self:shovelDebug("allowedToFillByShovel")
 						if supportedFillType then 
 							--valid trailer/ fillableObject found
 							local exactFillRootNode = object:getFillUnitExactFillRootNode(fillUnitIndex) or object.rootNode
@@ -485,14 +485,14 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 							self:setupDrivingToTrailerCourse(object,exactFillRootNode)
 							return
 						else
-							self:shovelDebug("not  supportedFillType")
+							self:shovelDebugSparse("not  supportedFillType")
 						end
 					else
-						self:shovelDebug("not  allowedToFillByShovel")
+						self:shovelDebugSparse("not  allowedToFillByShovel")
 					end
 				end
 			else
-				self:shovelDebug("FillUnit not found!")
+				self:shovelDebugSparse("FillUnit not found!")
 			end
 			return
 		elseif trigger then
@@ -507,7 +507,7 @@ function ShovelAIDriver:searchForUnloadingObjectRaycastCallback(transformId, x, 
 		end
 
 	else
-		self:shovelDebug("Nothing found!")
+		self:shovelDebugSparse("Nothing found!")
 		return
 	end
 end
@@ -525,6 +525,12 @@ end
 
 function ShovelAIDriver:shovelDebug(...)
 	courseplay.debugVehicle(self.shovelDebugChannel, self.vehicle,...)
+end
+
+function ShovelAIDriver:shovelDebugSparse(...)
+	if g_updateLoopIndex % self.debugTicks == 0 then
+		courseplay.debugVehicle(self.shovelDebugChannel, self.vehicle, ...)
+	end
 end
 
 function ShovelAIDriver:getWorkingToolPositionsSetting()
