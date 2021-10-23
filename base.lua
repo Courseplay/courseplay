@@ -224,37 +224,17 @@ function courseplay:onLoad(savegame)
 
 
 	--Offset
-	self.cp.laneOffset = 0;
 	self.cp.totalOffsetX = 0;
 	self.cp.skipOffsetX = false;
-
-	self.cp.workWidth = 3
 
 	--Copy course
 	self.cp.hasFoundCopyDriver = false;
 	self.cp.copyCourseFromDriver = nil;
 	self.cp.selectedDriverNumber = 0;
 
-	self.cp.laneNumber = 0;
-
 	--Course generation	
 	self.cp.hasGeneratedCourse = false;
 
-	self.cp.fieldEdge = {
-	selectedField = {
-	fieldNum = 0;
-	numPoints = 0;
-	buttonsCreated = false;
-	};
-	customField = {
-	points = nil;
-	numPoints = 0;
-	isCreated = false;
-	show = false;
-	fieldNum = 0;
-	selectedFieldNumExists = false;
-	};
-	};
 
 	self.cp.mouseCursorActive = false;
 
@@ -268,7 +248,7 @@ function courseplay:onLoad(savegame)
 	---@type SettingsContainer
 	self.cp.settings = SettingsContainer.createVehicleSpecificSettings(self)
 
-	---@type SettingsContainer
+	---@type CourseGeneratorSettingsContainer
 	self.cp.courseGeneratorSettings = SettingsContainer.createCourseGeneratorSettings(self)
 
 	-- HUD
@@ -399,38 +379,11 @@ function courseplay:renderHud(isDriving)
 end
 
 function courseplay:showWorkWidth(vehicle)
-	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.settings.toolOffsetZ:get() or 0;
-
-	local left =  (vehicle.cp.workWidth *  0.5) + offsX;
-	local right = (vehicle.cp.workWidth * -0.5) + offsX;
-
-	-- TODO: refactor this, move showWorkWidth into the AIDriver?
-	if vehicle.cp.directionNode and vehicle.cp.driver.getMarkers then
-		local f, b = vehicle.cp.driver:getMarkers()
-		local p1x, p1y, p1z = localToWorld(vehicle.cp.directionNode, left,  1.6, b - offsZ);
-		local p2x, p2y, p2z = localToWorld(vehicle.cp.directionNode, right, 1.6, b - offsZ);
-		local p3x, p3y, p3z = localToWorld(vehicle.cp.directionNode, right, 1.6, f - offsZ);
-		local p4x, p4y, p4z = localToWorld(vehicle.cp.directionNode, left,  1.6, f - offsZ);
-
-		cpDebug:drawPoint(p1x, p1y, p1z, 1, 1, 0);
-		cpDebug:drawPoint(p2x, p2y, p2z, 1, 1, 0);
-		cpDebug:drawPoint(p3x, p3y, p3z, 1, 1, 0);
-		cpDebug:drawPoint(p4x, p4y, p4z, 1, 1, 0);
-
-		cpDebug:drawLine(p1x, p1y, p1z, 1, 0, 0, p2x, p2y, p2z);
-		cpDebug:drawLine(p2x, p2y, p2z, 1, 0, 0, p3x, p3y, p3z);
-		cpDebug:drawLine(p3x, p3y, p3z, 1, 0, 0, p4x, p4y, p4z);
-		cpDebug:drawLine(p4x, p4y, p4z, 1, 0, 0, p1x, p1y, p1z);
-	else
-		local lX, lY, lZ = localToWorld(vehicle.rootNode, left,  1.6, -6 - offsZ);
-		local rX, rY, rZ = localToWorld(vehicle.rootNode, right, 1.6, -6 - offsZ);
-
-		cpDebug:drawPoint(lX, lY, lZ, 1, 1, 0);
-		cpDebug:drawPoint(rX, rY, rZ, 1, 1, 0);
-
-		cpDebug:drawLine(lX, lY, lZ, 1, 0, 0, rX, rY, rZ);
-	end;
-end;
+	local offsX, offsZ = vehicle.cp.settings.toolOffsetX:get() or 0, vehicle.cp.settings.toolOffsetZ:get() or 0
+	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get()
+	
+	WorkWidthUtil.showWorkWidth(vehicle,workWidth,offsX,offsZ)	
+end
 
 function courseplay:onUpdate(dt)	
 	--if the vehicle is attached to another vehicle, disable cp
@@ -487,11 +440,6 @@ function courseplay:onUpdate(dt)
 	if self.cp.collidingVehicleId ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId] ~= nil and g_currentMission.nodeToObject[self.cp.collidingVehicleId].isCpPathvehicle then
 		courseplay:setPathVehiclesSpeed(self,dt)
 	end
-
-	--reset selected field num, when field doesn't exist anymone (contracts)
-	if courseplay.fields.fieldData[self.cp.fieldEdge.selectedField.fieldNum] == nil then
-		self.cp.fieldEdge.selectedField.fieldNum = 0;
-	end	
 	
 	-- this really should be only done in one place.
 	self.cp.curSpeed = self.lastSpeedReal * 3600;
@@ -512,9 +460,6 @@ function courseplay:onUpdateTick(dt)
 	if not courseplay.isEnabled(self) then
 		return 
 	end
-	if not self.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
-		courseplay:createFieldEdgeButtons(self);
-	end;
 
 	if self.cp.toolsDirty then
 		courseplay:updateOnAttachOrDetach(self)
@@ -712,9 +657,6 @@ function courseplay:onReadStream(streamId, connection)
 	self.cp.course2dUpdateDrawData = true;
 	
 		
-	if streamReadBool(streamId) then 
-		self.cp.timeRemaining = streamReadFloat32(streamId)
-	end		
 	
 	if streamReadBool(streamId) then 
 		self.cp.infoText = streamReadString(streamId)
@@ -765,13 +707,6 @@ function courseplay:onWriteStream(streamId, connection)
 	end
 
 		
-	if self.cp.timeRemaining then 
-		streamWriteBool(streamId,true)
-		streamWriteFloat32(streamId,self.cp.timeRemaining)
-	else 
-		streamWriteBool(streamId,false)
-	end
-	
 	if self.cp.infoText then 
 		streamWriteBool(streamId,true)
 		streamWriteString(streamId,self.cp.infoText)
@@ -809,13 +744,6 @@ function courseplay:onReadUpdateStream(streamId, timestamp, connection)
 				end
 			else 
 				self.cp.currentCourseName = nil
-			end
-			if streamReadBool(streamId) then -- is timeRemaining~=nil ?
-				if streamReadBool(streamId) then -- has timeRemaining changed
-					self.cp.timeRemaining = streamReadFloat32(streamId)
-				end
-			else 
-				self.cp.timeRemaining = nil
 			end
 			--gitAdditionalText ?
 		end 
@@ -857,19 +785,6 @@ function courseplay:onWriteUpdateStream(streamId, connection, dirtyMask)
 			else 
 				streamWriteBool(streamId,false)
 			end
-			if self.cp.timeRemaining then -- is timeRemaining~=nil ?
-				streamWriteBool(streamId,true)
-				if self.cp.timeRemaining~=self.cp.timeRemainingSend then -- has timeRemaining changed
-					streamWriteBool(streamId,true)
-					streamWriteFloat32(streamId,self.cp.timeRemaining)
-					self.cp.timeRemainingSend = self.cp.timeRemaining
-				else 
-					streamWriteBool(streamId,false)
-				end
-			else 
-				streamWriteBool(streamId,false)
-			end
-			--gitAdditionalText ?
 		end 
 	end
 end
@@ -889,21 +804,6 @@ function courseplay:loadVehicleCPSettings(xmlFile, key, resetVehicles)
 		self.cp.hud.show = Utils.getNoNil(  getXMLBool(xmlFile, curKey .. '#showHud'), false);
 		
 	
-		-- MODES 4 / 6
-		curKey = key .. '.courseplay.fieldWork';
-		self.cp.workWidth 							= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#workWidth'),				3);
-		self.cp.manualWorkWidth						= Utils.getNoNil(getXMLFloat(xmlFile, curKey .. '#manualWorkWidth'),		0);
-		if self.cp.manualWorkWidth ~= 0 then
-			self.cp.workWidth = self.cp.manualWorkWidth
-		else
-			self.cp.manualWorkWidth = nil
-		end;	
-		
-		local offsetData = Utils.getNoNil(getXMLString(xmlFile, curKey .. '#offsetData'), '0;0;0;false;0;0;0'); -- 1=laneOffset, 2=toolOffsetX, 3=toolOffsetZ, 4=symmetricalLaneChange
-		offsetData = StringUtil.splitString(';', offsetData);
-		courseplay:changeLaneOffset(self, nil, tonumber(offsetData[1]));
-
-		if offsetData[7] ~= nil then self.cp.laneNumber = tonumber(offsetData[7]) end;
 
 		
 		self.cp.settings:loadFromXML(xmlFile, key .. '.courseplay')
@@ -943,14 +843,6 @@ function courseplay:saveToXMLFile(xmlFile, key, usedModNames)
 	setXMLBool(xmlFile, newKey..".HUD #showHud", self.cp.hud.show)
 	
 
-	
-	--field work settings
-	local offsetData = string.format('%.1f;%.1f;%.1f;%s;%.1f;%.1f;%d', self.cp.laneOffset, 0, 0, 0, 0, 0, self.cp.laneNumber);
-	setXMLString(xmlFile, newKey..".fieldWork #workWidth", string.format("%.1f",self.cp.workWidth))
-	setXMLString(xmlFile, newKey..".fieldWork #offsetData", offsetData)
-	setXMLString(xmlFile, newKey..".fieldWork #manualWorkWidth", string.format("%.1f",Utils.getNoNil(self.cp.manualWorkWidth,0)))
-
-	
 	self.cp.settings:saveToXML(xmlFile, newKey)
 	self.cp.courseGeneratorSettings:saveToXML(xmlFile, newKey)
 

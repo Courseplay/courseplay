@@ -133,7 +133,8 @@ end
 ---@return boolean, number True if there's enough space to make a forward turn on the field. Also return the
 ---distance to reverse in order to be able to just make the turn on the field
 function AITurn.canTurnOnField(turnContext, vehicle)
-	local spaceNeededOnFieldForTurn = AIDriverUtil.getTurningRadius(vehicle) + vehicle.cp.workWidth / 2
+	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get()
+	local spaceNeededOnFieldForTurn = AIDriverUtil.getTurningRadius(vehicle) + workWidth / 2
 	local distanceToFieldEdge = turnContext:getDistanceToFieldEdge(turnContext.vehicleAtTurnStartNode)
 	courseplay.debugVehicle(AITurn.debugChannel, vehicle, 'Space needed to turn on field %.1f m', spaceNeededOnFieldForTurn)
 	if distanceToFieldEdge then
@@ -635,9 +636,10 @@ function CombinePocketHeadlandTurn:generatePocketHeadlandTurn(turnContext)
 	local turnDiameter = self.vehicle.cp.settings.turnDiameter:get()
 	local turnRadius = turnDiameter / 2
 	-- this is how far we have to cut into the next headland (the position where the header will be after the turn)
-	local offset = math.min(turnRadius + turnContext.frontMarkerDistance,  self.vehicle.cp.workWidth)
+	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get()
+	local offset = math.min(turnRadius + turnContext.frontMarkerDistance,  workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
-	local d = -self.vehicle.cp.workWidth / 2 + turnContext.frontMarkerDistance
+	local d = -workWidth / 2 + turnContext.frontMarkerDistance
 	local wp = corner:getPointAtDistanceFromCornerStart(d + 2)
 	wp.speed = self.vehicle.cp.speeds.turn * 0.75
 	table.insert(cornerWaypoints, wp)

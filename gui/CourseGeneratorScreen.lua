@@ -33,6 +33,7 @@ function CourseGeneratorScreen:new(vehicle)
 	self.returnScreenName = "";
 	self.state = CourseGeneratorScreen.SHOW_NOTHING
 	self.vehicle = vehicle
+	---@type CourseGeneratorSettingsContainer
 	self.settings = vehicle.cp.courseGeneratorSettings
 	self.directions = {}
 	-- map to look up gui element state from angle
@@ -88,7 +89,6 @@ end
 function CourseGeneratorScreen:onOpen()
 
 	g_currentMission.isPlayerFrozen = true
-
 	self.settings.selectedField:refresh()
 	-- work width not set
 	if self.settings.workWidth:is(0) then
@@ -447,6 +447,8 @@ end
 function courseplay:openAdvancedCourseGeneratorSettings( vehicle )
 	--- Prevent Dialog from locking up mouse and keyboard when closing it.
 	courseplay:lockContext(false);
+	--- This settings needs to be refreshed here, as there are problems in MP otherwise.
+	vehicle.cp.courseGeneratorSettings.selectedField:refresh()
 	g_courseGeneratorScreen = CourseGeneratorScreen:new(vehicle)
 	g_gui:loadProfiles( self.path .. "gui/guiProfiles.xml" )
 	g_gui:loadGui( self.path .. "gui/CourseGeneratorScreen.xml", "CourseGeneratorScreen", g_courseGeneratorScreen)

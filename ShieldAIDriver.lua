@@ -167,7 +167,7 @@ function ShieldAIDriver:getTargetNode()
 end
 
 function ShieldAIDriver:getWorkWidth()
-	return math.max(self.vehicle.cp.workWidth,3)
+	return math.max(CompactingAIDriver.getWorkWidth(self),3)
 end
 
 --- Overrides the player shield controls, while a cp driver is driving.

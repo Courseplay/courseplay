@@ -296,6 +296,8 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="フィールド境界線番号" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="リストに %d番のエッジパスを追加します" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="リストの %d番のエッジパスを上書きします" />
+		<text name="COURSEPLAY_CLEAR_CUSTOM_FIELD_EDGE_PATH"				text="Clear current field edge path" />
+		<text name="COURSEPLAY_CHANGE_VISIBILITY_CUSTOM_FIELD_EDGE_PATH"	text="Change current field edge path visibility" />
 		<text name="COURSEPLAY_USER" 										text="ユーザー" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="すぐに修理する必要があります" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="修理する必要があります" />

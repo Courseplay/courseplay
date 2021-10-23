@@ -455,7 +455,7 @@ end
 
 function CombineUnloadManager:getPipeOffset(combine)
 	if self:getIsChopper(combine) then
-		return (combine.cp.workWidth / 2) + 3
+		return (combine.cp.driver:getWorkWidth() / 2) + 3
 	elseif self:getIsCombine(combine) then
 		local pipeOffsetX, _ = combine.cp.driver:getPipeOffset()
 		return pipeOffsetX
@@ -531,7 +531,7 @@ function CombineUnloadManager:getOnFieldSituation(combine)
 	local rightDirX,_,rightDirZ = localDirectionToWorld(node, -1, 0, 0);
 	--set measurements of the box to check
 	local boxWidth = 3;
-	local boxLength = 6 + combine.cp.workWidth/2;
+	local boxLength = 6 + combine.cp.driver:getWorkWidth()/2;
 	--to get the box centered divide the measurements by 2
 	local boxWidthCenter = boxWidth/2
 

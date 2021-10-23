@@ -183,6 +183,7 @@ function DebugChannelsSetting:load(xmlFilePath)
 	self.numChannels = 0
 	self.toolTips = {}
 	if xmlFile and hasXMLProperty(xmlFile, baseKey) then 
+		print("Loading debug channel setup!")
 		local i = 0
 		while true do
 			local key = string.format("%s.%s(%d)",baseKey,"DebugChannel",i)
@@ -211,19 +212,23 @@ function DebugChannelsSetting:load(xmlFilePath)
 		end
 		self.numChannels = i
 		delete(xmlFile)
+	else 
+		print("Couldn't load debug channel setup!")
 	end
 	courseplay.debugChannels = self.channels --- Old code 
 end
 
 function DebugChannelsSetting:onWriteStream(streamID)
+	streamWriteUInt8(streamID,self.numChannels)
 	for ix,value in ipairs(self.channels) do 
 		streamWriteBool(streamID,value)
 	end
 end
 
 function DebugChannelsSetting:onReadStream(streamID)
-	for ix,_ in ipairs(self.channels) do 
-		self.channels[ix] = streamReadBool(streamID)
+	self.numChannels = streamReadUInt8(streamID)
+	for i= 1, self.numChannels do 
+		self.channels[i] = streamReadBool(streamID)
 	end
 end
 

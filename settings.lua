@@ -97,48 +97,6 @@ function courseplay:setHudPage(vehicle, pageNum)
 	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
 end;
 
-function courseplay:changeLaneOffset(vehicle, changeBy, force)
-	vehicle.cp.laneOffset = force or (courseplay:round(vehicle.cp.laneOffset, 1) + changeBy*0.1);
-	if abs(vehicle.cp.laneOffset) < 0.1 then
-		vehicle.cp.laneOffset = 0;
-	end;
-end;
-
-function courseplay:changeLaneNumber(vehicle, changeBy, reset)
-	-- This function takes input from the hud. And calculates laneOffset by dividing tool workwidth and multiplying that
-	-- by the lane number counting outwards.
-	local toolsIsEven = vehicle.cp.courseGeneratorSettings.multiTools:get() % 2 == 0
-	
-	if reset then
-		vehicle.cp.laneNumber = 0;
-		vehicle.cp.laneOffset = 0
-	else
-		-- skip zero if multiTools is even
-		if toolsIsEven then
-			if vehicle.cp.laneNumber == -1 and changeBy > 0 then
-				changeBy = 2
-			elseif vehicle.cp.laneNumber == 1 and changeBy < 0 then
-				changeBy = -2
-			end
-		end
-		vehicle.cp.laneNumber = MathUtil.clamp(vehicle.cp.laneNumber + changeBy,
-			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2) * -1,
-			math.floor(vehicle.cp.courseGeneratorSettings.multiTools:get() / 2));
-		local newOffset = 0
-		if toolsIsEven then
-			if vehicle.cp.laneNumber > 0 then
-				newOffset = vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber-1))
-			else
-				newOffset = -vehicle.cp.workWidth/2 + (vehicle.cp.workWidth*(vehicle.cp.laneNumber+1))
-			end
-		else
-			newOffset = vehicle.cp.workWidth * vehicle.cp.laneNumber
-		end
-		courseplay:changeLaneOffset(vehicle, nil , newOffset)
-	end;
-
-end;
-
 --- These three tool offset function should be handled by the setting.
 function courseplay:changeToolOffsetX(vehicle, changeBy)
 	vehicle.cp.settings.toolOffsetX:changeBy(changeBy * 0.1,true)
@@ -155,70 +113,6 @@ function courseplay:changeToolOffsetZ(vehicle, changeBy, force, noDraw)
 	vehicle.cp.settings.toolOffsetZ:changeBy(changeBy * 0.1,true)
 	-- show new setting for a few seconds on the screen
 	courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-end;
-
-function courseplay:calculateWorkWidth(vehicle, noDraw)
-	
-	if vehicle.cp.manualWorkWidth and noDraw ~= nil then
-		--courseplay:changeWorkWidth(vehicle, nil, vehicle.cp.manualWorkWidth, noDraw); 
-		return
-	end
-
-	courseplay:changeWorkWidth(vehicle, nil,vehicle.cp.courseGeneratorSettings.workWidth:getAutoWorkWidth(), noDraw);
-
-end;
-
-function courseplay:changeBladeWorkWidth(vehicle, changeBy, force, noDraw)
-	courseplay:changeWorkWidth(vehicle, changeBy/10, force, noDraw)
-end
-
-function courseplay:changeWorkWidth(vehicle, changeBy, force, noDraw)
-	local isSetManually = false
-	if force == nil and noDraw == nil then
-		--print("is set manually")
-		isSetManually = true
-	elseif force ~= nil and noDraw ~= nil then
-		--print("is set by script")
-		if not vehicle.cp.isDriving and vehicle.cp.manualWorkWidth then
-			return
-		end
-	elseif force ~= nil and noDraw == nil then
-		vehicle.cp.manualWorkWidth = nil
-		courseplay:changeLaneNumber(vehicle, 0, true)
-		vehicle.cp.courseGeneratorSettings.multiTools:set(1)
-		--print("is set by calculate button")
-	end
-	if force then
-		if force == 0 then
-			return
-		end
-		local newWidth = max(courseplay:round(abs(force), 1), 0.1)
-		--vehicle.cp.workWidth = min(vehicle.cp.workWidth,newWidth); --TODO: check what is better:the smallest or the widest work width to consider
-		vehicle.cp.workWidth = newWidth
-	else
-		if vehicle.cp.workWidth + changeBy > 10 then
-			if abs(changeBy) == 0.1 and not (Input.keyPressedState[Input.KEY_lalt]) then -- pressing left Alt key enables to have small 0.1 steps even over 10.0 
-				changeBy = 0.5 * MathUtil.sign(changeBy);
-			elseif abs(changeBy) == 0.5 then
-				changeBy = 2 * MathUtil.sign(changeBy);
-			end;
-		end;
-
-		if (vehicle.cp.workWidth < 10 and vehicle.cp.workWidth + changeBy > 10) or (vehicle.cp.workWidth > 10 and vehicle.cp.workWidth + changeBy < 10) then
-			vehicle.cp.workWidth = 10;
-		else
-			vehicle.cp.workWidth = max(vehicle.cp.workWidth + changeBy, 0.1);
-		end;
-	end;
-	if isSetManually then
-		vehicle.cp.manualWorkWidth = vehicle.cp.workWidth
-	end
-	if not noDraw then
-		courseplay:setCustomTimer(vehicle, 'showWorkWidth', 2);
-	end;
-
-	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true);
-	
 end;
 
 --legancy Code in toolManager still using it!
@@ -602,10 +496,10 @@ end
 
 function courseplay:validateCanSwitchMode(vehicle)
 	vehicle:setCpVar('canSwitchMode', not vehicle:getIsCourseplayDriving() and not vehicle.cp.isRecording and
-		not vehicle.cp.recordingIsPaused and not vehicle.cp.fieldEdge.customField.isCreated,courseplay.isClient);
-	courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s, customField.isCreated=%s ==> canSwitchMode=%s'):format(
+		not vehicle.cp.recordingIsPaused ,courseplay.isClient);
+	courseplay:debug(('%s: validateCanSwitchMode(): isDriving=%s, isRecording=%s, recordingIsPaused=%s ==> canSwitchMode=%s'):format(
 		nameNum(vehicle), tostring(vehicle:getIsCourseplayDriving()), tostring(vehicle.cp.isRecording),
-		tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.fieldEdge.customField.isCreated), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_UNCATEGORIZED);
+		tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_UNCATEGORIZED);
 end;
 
 function courseplay:reloadCoursesFromXML(vehicle)
@@ -677,135 +571,6 @@ function courseplay:changeDebugChannelSection(vehicle, changeBy)
 		button:setToolTip(debugChannelData.toolTips[channel])
 	end
 end
-
-
---FIELD EDGE PATHS
-function courseplay:createFieldEdgeButtons(vehicle)
-	if not vehicle.cp.fieldEdge.selectedField.buttonsCreated and courseplay.fields.numAvailableFields > 0 then
-		local w, h = courseplay.hud.buttonSize.small.w, courseplay.hud.buttonSize.small.h;
-		local mouseWheelArea = {
-			x = courseplay.hud.contentMinX,
-			w = courseplay.hud.contentMaxWidth,
-			h = courseplay.hud.lineHeight
-		};
-		vehicle.cp.hud.showSelectedFieldEdgePathButton = courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'eye' }, 'toggleSelectedFieldEdgePathShow', nil, courseplay.hud.buttonPosX[3], courseplay.hud.linesButtonPosY[1], w, h, 1, nil, false);
-		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navUp' }, 'setFieldEdgePath',  1, courseplay.hud.buttonPosX[1], courseplay.hud.linesButtonPosY[1], w, h, 1,  5, false);
-		courseplay.button:new(vehicle, 8, { 'iconSprite.png', 'navDown' }, 'setFieldEdgePath', -1, courseplay.hud.buttonPosX[2], courseplay.hud.linesButtonPosY[1], w, h, 1, -5, false);
-		courseplay.button:new(vehicle, 8, nil, 'setFieldEdgePath', 1, mouseWheelArea.x, courseplay.hud.linesButtonPosY[1], mouseWheelArea.w, mouseWheelArea.h, 1, 5, true, true);
-		vehicle.cp.fieldEdge.selectedField.buttonsCreated = true;
-	end;
-end;
-
-function courseplay:setFieldEdgePath(vehicle, changeDir, force)
-	vehicle.cp.courseGeneratorSettings.selectedField:changeByX(changeDir)
-
-	--courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
-	if vehicle.cp.fieldEdge.customField.show then
-		courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
-	end;
-end;
-
-function courseplay:toggleSelectedFieldEdgePathShow(vehicle, force)
-	vehicle.cp.fieldEdge.selectedField.show = Utils.getNoNil(force, not vehicle.cp.fieldEdge.selectedField.show);
-	--print(string.format("%s: selectedField.show=%s", nameNum(vehicle), tostring(vehicle.cp.fieldEdge.selectedField.show)));
-	--courseplay.buttons:setActiveEnabled(vehicle, "selectedFieldShow");
-end;
-
---CUSTOM SINGLE FIELD EDGE PATH
-function courseplay:setCustomSingleFieldEdge(vehicle)
-	--print(string.format("%s: call setCustomSingleFieldEdge()", nameNum(vehicle)));
-
-	local x,y,z = getWorldTranslation(vehicle.rootNode);
-	local isField = x and z and courseplay:isField(x, z, 0, 0); --TODO: use width/height of 0.1 ?
-	courseplay.fields:dbg(string.format("Custom field scan: x,z=%.1f,%.1f, isField=%s", x, z, tostring(isField)), 'customLoad');
-	vehicle.cp.fieldEdge.customField.points = nil;
-	if isField then
-		local edgePoints = courseplay.fields:setSingleFieldEdgePath(vehicle.rootNode, x, z, courseplay.fields.scanStep, 2000, 10, nil, true, 'customLoad');
-		vehicle.cp.fieldEdge.customField.points = edgePoints;
-		vehicle.cp.fieldEdge.customField.numPoints = edgePoints ~= nil and #edgePoints or 0;
-	end;
-
-	--print(tableShow(vehicle.cp.fieldEdge.customField.points, nameNum(vehicle) .. " fieldEdge.customField.points"));
-	vehicle.cp.fieldEdge.customField.isCreated = vehicle.cp.fieldEdge.customField.points ~= nil;
-	courseplay:toggleCustomFieldEdgePathShow(vehicle, vehicle.cp.fieldEdge.customField.isCreated);
-	courseplay:validateCanSwitchMode(vehicle);
-end;
-
-function courseplay:clearCustomFieldEdge(vehicle)
-	vehicle.cp.fieldEdge.customField.points = nil;
-	vehicle.cp.fieldEdge.customField.numPoints = 0;
-	vehicle.cp.fieldEdge.customField.isCreated = false;
-	courseplay:setCustomFieldEdgePathNumber(vehicle, nil, 0);
-	courseplay:toggleCustomFieldEdgePathShow(vehicle, false);
-	courseplay:validateCanSwitchMode(vehicle);
-end;
-
-function courseplay:toggleCustomFieldEdgePathShow(vehicle, force)
-	vehicle.cp.fieldEdge.customField.show = Utils.getNoNil(force, not vehicle.cp.fieldEdge.customField.show);
-	--print(string.format("%s: customField.show=%s", nameNum(vehicle), tostring(vehicle.cp.fieldEdge.customField.show)));
-	--courseplay.buttons:setActiveEnabled(vehicle, "customFieldShow");
-end;
-
-function courseplay:setCustomFieldEdgePathNumber(vehicle, changeBy, force)
-	vehicle.cp.fieldEdge.customField.fieldNum = force or MathUtil.clamp(vehicle.cp.fieldEdge.customField.fieldNum + changeBy, 0, courseplay.fields.customFieldMaxNum);
-	vehicle.cp.fieldEdge.customField.selectedFieldNumExists = courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] ~= nil;
-	--print(string.format("%s: customField.fieldNum=%d, selectedFieldNumExists=%s", nameNum(vehicle), vehicle.cp.fieldEdge.customField.fieldNum, tostring(vehicle.cp.fieldEdge.customField.selectedFieldNumExists)));
-end;
-
-function courseplay:addCustomSingleFieldEdgeToList(vehicle)
-	--print(string.format("%s: call addCustomSingleFieldEdgeToList()", nameNum(vehicle)));
-	local data = {
-		fieldNum = vehicle.cp.fieldEdge.customField.fieldNum;
-		points = vehicle.cp.fieldEdge.customField.points;
-		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
-		name = string.format("%s %d (%s)", courseplay:loc('COURSEPLAY_FIELD'), vehicle.cp.fieldEdge.customField.fieldNum, courseplay:loc('COURSEPLAY_USER'));
-		isCustom = true;
-	};
-	local area, _, dimensions = courseplay.fields:getPolygonData(data.points, nil, nil, true);
-	data.areaSqm = area;
-	data.areaHa = area / 10000;
-	data.dimensions = dimensions;
-	
-	courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum] = data;
-	courseplay.fields.numAvailableFields = table.maxn(courseplay.fields.fieldData);
-
-	--print(string.format("\tfieldNum=%d, name=%s, #points=%d", courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].fieldNum, courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].name, #courseplay.fields.fieldData[vehicle.cp.fieldEdge.customField.fieldNum].points));
-
-	--RESET
-	courseplay:setCustomFieldEdgePathNumber(vehicle, nil, 0);
-	courseplay:clearCustomFieldEdge(vehicle);
-	courseplay:toggleSelectedFieldEdgePathShow(vehicle, false);
-	--print(string.format("\t[AFTER RESET] fieldNum=%d, points=%s, fieldEdge.customField.isCreated=%s", vehicle.cp.fieldEdge.customField.fieldNum, tostring(vehicle.cp.fieldEdge.customField.points), tostring(vehicle.cp.fieldEdge.customField.isCreated)));
-end;
-
-function courseplay:showFieldEdgePath(vehicle, pathType)
-	local points, numPoints = nil, 0;
-	if pathType == "customField" then
-		points = vehicle.cp.fieldEdge.customField.points;
-		numPoints = vehicle.cp.fieldEdge.customField.numPoints;
-	elseif pathType == "selectedField" then
-		points = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].points;
-		numPoints = courseplay.fields.fieldData[vehicle.cp.courseGeneratorSettings.selectedField:get()].numPoints;
-	end;
-
-	if numPoints > 0 then
-		local pointHeight = 3;
-		for i,point in pairs(points) do
-			if i < numPoints then
-				local nextPoint = points[i + 1];
-				cpDebug:drawLine(point.cx,point.cy+pointHeight,point.cz, 0,0,1, nextPoint.cx,nextPoint.cy+pointHeight,nextPoint.cz);
-
-				if i == 1 then
-					cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 0,1,0);
-				else
-					cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,1,0);
-				end;
-			else
-				cpDebug:drawPoint(point.cx, point.cy + pointHeight, point.cz, 1,0,0);
-			end;
-		end;
-	end;
-end;
 
 function courseplay:setEngineState(vehicle, on)
 	if vehicle == nil or on == nil or vehicle.spec_motorized.isMotorStarted == on then
@@ -1060,7 +825,11 @@ end
 function Setting:raiseEvent(eventIx,value)
 	local event = self:getEvent(eventIx)
 	value = event.getValueFunc and event.getValueFunc(self) or value
-	SettingEvent.sendEvent(self.vehicle,self,event,value)
+	if self.vehicle ~= nil then
+		VehicleSettingEvent.sendEvent(self.vehicle,self,event,value)
+	else
+		GlobalSettingEvent.sendEvent(self,event,value)
+	end
 end
 
 --- Setting debug.
@@ -1093,6 +862,11 @@ function Setting:debugReadStream(value,valueName)
 	if self:isMpDebugActive() then
 		self:debugMp("Read, container: %s, setting: %s, %s: %s",self.parentName,self.name,valueName or "value",tostring(value))
 	end
+end
+
+--- Is synchronizing of this setting allowed.
+function Setting:isSyncAllowed()
+	return self.syncValue
 end
 
 ---@class FloatSetting :Setting
@@ -1139,7 +913,7 @@ end
 function FloatSetting:set(value,noEventSend)
 	self.value = value
 	if noEventSend == nil or noEventSend == false then
-		if self.syncValue then
+		if self:isSyncAllowed() then
 			self:sendEvent(value)
 		end
 	end
@@ -1201,7 +975,7 @@ function IntSetting:set(value,noEventSend)
 	if minOk and maxOk and value then 
 		self.value = value
 		if noEventSend == nil or noEventSend == false then
-			if self.syncValue then
+			if self:isSyncAllowed() then
 				self:sendEvent(value)
 			end
 		end
@@ -1299,7 +1073,7 @@ function SettingList:setToIx(ix, noEventSend)
 		self:onChange()
 		self.lastChangeTimeMilliseconds = g_time
 		if noEventSend == nil or noEventSend == false then
-			if self.syncValue then
+			if self:isSyncAllowed() then
 				self:sendEvent()
 			end
 		end
@@ -2262,7 +2036,7 @@ function FieldNumberSetting:loadFields()
 	table.sort( values, function( a, b ) return a < b end )
 	-- then convert to text
 	for _, fieldNumber in ipairs(values) do
-		table.insert(texts, tostring(fieldNumber))
+		table.insert(texts, CpFieldUtil.getFieldName(fieldNumber))
 	end
 	return values, texts
 end
@@ -3494,11 +3268,14 @@ function ShowVisualWaypointsSetting:init(vehicle)
 		}
 		)
 	self:set(1)
-	self.syncValue = false
 end
 
 function ShowVisualWaypointsSetting:onChange()
 	courseplay.signs:setSignsVisibility(self.vehicle)
+end
+
+function ShowVisualWaypointsSetting:isSyncAllowed()
+	return false
 end
 
 ---@class ShowVisualWaypointsCrossPointSetting : BooleanSetting
@@ -3506,10 +3283,13 @@ ShowVisualWaypointsCrossPointSetting = CpObject(BooleanSetting)
 function ShowVisualWaypointsCrossPointSetting:init(vehicle)
 	BooleanSetting.init(self, 'showVisualWaypointsCrossPoint','-', '-', vehicle) 
 	self:set(false)
-	self.syncValue = false
 end
 function ShowVisualWaypointsCrossPointSetting:onChange()
 	courseplay.signs:setSignsVisibility(self.vehicle)
+end
+
+function ShowVisualWaypointsCrossPointSetting:isSyncAllowed()
+	return false
 end
 
 ---@class ConvoyActiveSetting : BooleanSetting
@@ -4236,7 +4016,10 @@ function CourseDrawModeSetting:init(vehicle)
 	}
 	SettingList.init(self,"courseDrawMode","","",vehicle,values,texts)
 	self:set(self.COURSE_2D_DISPLAY_OFF)
-	self.syncValue = false
+end
+
+function CourseDrawModeSetting:isSyncAllowed() 
+	return false
 end
 
 function CourseDrawModeSetting:isDeactivated()
@@ -4312,7 +4095,7 @@ end
 
 function SettingsContainer:onReadStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) and setting.syncValue then 
+		if self.validateSetting(setting) and setting:isSyncAllowed() then 
 			setting:onReadStream(stream)
 		end
 	end
@@ -4320,7 +4103,7 @@ end
 
 function SettingsContainer:onWriteStream(stream)
 	for k, setting in pairs(self) do
-		if self.validateSetting(setting) and setting.syncValue then 
+		if self.validateSetting(setting) and setting:isSyncAllowed() then 
 			setting:onWriteStream(stream)
 		end
 	end

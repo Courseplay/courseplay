@@ -297,6 +297,8 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 								text="Выбрать поле:" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 							text="Добавить поле в список" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"					text="Переписать поле в списке" />
+		<text name="COURSEPLAY_CLEAR_CUSTOM_FIELD_EDGE_PATH"								text="Clear current field edge path" />
+		<text name="COURSEPLAY_CHANGE_VISIBILITY_CUSTOM_FIELD_EDGE_PATH"					text="Change current field edge path visibility" />
 		<text name="COURSEPLAY_USER" 														text="пользовательская" /> <!-- при ручной перезаписи границы добавляется эта пометка к номеру поля -->
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 									text="скоро развалится от повреждений" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 									text="нуждается в ремонте" />

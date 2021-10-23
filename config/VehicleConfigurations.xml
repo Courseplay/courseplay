@@ -101,6 +101,10 @@ You can define the following custom settings:
     <Vehicle name="kuhnMetris4102.xml"
              ignoreCollisionBoxesWhenFolded="true"
     />
+	<!--\vehicles\poettinger-->
+	<Vehicle name="poettingerNovaCatX8.xml"
+			workingWidth = "8.4"
+	/>
     <!--\vehicles\hardi-->
     <Vehicle name="navigator6000.xml"
              ignoreCollisionBoxesWhenFolded="true"
