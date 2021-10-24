@@ -636,7 +636,7 @@ function CombinePocketHeadlandTurn:generatePocketHeadlandTurn(turnContext)
 	local turnDiameter = self.vehicle.cp.settings.turnDiameter:get()
 	local turnRadius = turnDiameter / 2
 	-- this is how far we have to cut into the next headland (the position where the header will be after the turn)
-	local workWidth = vehicle.cp.courseGeneratorSettings.workWidth:get()
+	local workWidth = self.vehicle.cp.courseGeneratorSettings.workWidth:get()
 	local offset = math.min(turnRadius + turnContext.frontMarkerDistance,  workWidth)
 	local corner = turnContext:createCorner(self.vehicle, turnRadius)
 	local d = -workWidth / 2 + turnContext.frontMarkerDistance
