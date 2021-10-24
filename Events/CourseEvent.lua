@@ -9,19 +9,19 @@ function CourseEvent:emptyNew()
 	return self;
 end
 
-function CourseEvent:new(vehicle, course)
+function CourseEvent:new(vehicle, courses)
 	self.vehicle = vehicle;
-	self.course = course
+	self.courses = courses
 	return self;
 end
 
 function CourseEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"readStream course event")
 	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
-	if streamReadBool(streamId) then
-		self.course = Course.createFromStream(streamId, connection)
-	else
-		self.course = nil
+	local nCourses = NetworkUtil.getObject(streamReadInt32(streamId))
+	self.courses = {}
+	for _ = 1, nCourses do
+		table.insert(self.courses, Course.createFromStream(streamId, connection))
 	end
 	self:run(connection);
 end
@@ -29,39 +29,37 @@ end
 function CourseEvent:writeStream(streamId, connection)
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"writeStream course event")
 	streamWriteInt32(streamId, NetworkUtil.getObjectId(self.vehicle))
-	if self.course then
-		-- loading a course in a vehicle
-		streamWriteBool(streamId, true)
-		self.course:writeStream(streamId, connection)
-	else
-		-- unloading all courses from a vehicle
-		streamWriteBool(streamId, false)
+	streamWriteInt32(streamId, #self.courses)
+	for _, course in ipairs(self.courses) do
+		course:writeStream(streamId, connection)
 	end
 end
 
 -- Process the received event
 function CourseEvent:run(connection)
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"run course event")
-	if self.course then
-		g_courseManager:loadCourseInVehicle(self.vehicle, self.course)
+	if #self.courses > 0 then
+		for _, course in ipairs(self.courses) do
+			g_courseManager:assignCourseToVehicle(self.vehicle, course)
+		end
 	else
-		g_courseManager:unloadCourseFromVehicle(self.vehicle)
+		g_courseManager:unloadAllCoursesFromVehicle(self.vehicle)
 	end
 	if not connection:getIsServer() then
 		-- event was received from a client, so we, the server broadcast it to all other clients now
 		courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"broadcast course event feedback")
-		g_server:broadcastEvent(CourseEvent:new(self.vehicle,self.course), nil, connection, self.vehicle);
+		g_server:broadcastEvent(CourseEvent:new(self.vehicle, self.courses), nil, connection, self.vehicle);
 	end;
 end
 
-function CourseEvent.sendEvent(vehicle,course)
-	if course then
+function CourseEvent.sendEvent(vehicle, courses)
+	if courses then
 		if g_server ~= nil then
-			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"broadcast course event")
-			g_server:broadcastEvent(CourseEvent:new(vehicle,course), nil, nil, vehicle);
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER, vehicle, "broadcast course event")
+			g_server:broadcastEvent(CourseEvent:new(vehicle, courses), nil, nil, vehicle);
 		else
-			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,vehicle,"send course event")
-			g_client:getServerConnection():sendEvent(CourseEvent:new(vehicle,course));
+			courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER, vehicle, "send course event")
+			g_client:getServerConnection():sendEvent(CourseEvent:new(vehicle, courses));
 		end;
 	else 
 		courseplay.infoVehicle(vehicle, 'CourseEvent Error: course = nil or #course<1!!!')

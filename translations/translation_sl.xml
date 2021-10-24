@@ -315,6 +315,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="Vžiganje %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Iskanje prve točke" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="Shrani trenutno pot" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 								text="Ustavi snemanje" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="Pavziraj snemanje" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Nadaljuj s snemanjem" />

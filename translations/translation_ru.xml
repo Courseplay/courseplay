@@ -316,6 +316,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 											text="Запущено %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 									text="Показать первую точку" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 										text="Сохранить маршрут" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 												text="остановить запись" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 											text="приостановить запись" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 										text="продолжить запись" />

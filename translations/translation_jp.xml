@@ -315,6 +315,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="起動 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="最初のウェイポイントをサーチします" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="現在のコースを保存" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 								text="コースのレコーディングを停止" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="レコーディングの一時停止" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="レコーディングを再開" />

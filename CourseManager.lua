@@ -180,7 +180,7 @@ function FileSystemEntityView:showDeleteButton()
 	return false
 end
 
-function FileSystemEntityView:showMoveButton()
+function FileSystemEntityView:showSaveButton()
 	return false
 end
 
@@ -297,11 +297,16 @@ end
 --- Represents an assignment: the courses assigned (loaded) to a vehicle
 ---@class CourseAssignment
 CourseAssignment = CpObject()
-function CourseAssignment:init(vehicle, course, fieldworkCourse)
+function CourseAssignment:init(vehicle, course)
 	self.vehicle = vehicle
-	self.course = course
-	self.fieldworkCourse = fieldworkCourse
+	self.courses = {}
+	self:add(course)
 end
+
+function CourseAssignment:add(course)
+	table.insert(self.courses, course)
+end
+
 
 --- The CourseManager is responsible for loading/saving all courses and maintaining the vehicle - course
 --- assignments.
@@ -399,16 +404,19 @@ function CourseManager:getAssignment(vehicle)
 	return nil, nil
 end
 
----@param assignment CourseAssignment
-function CourseManager:assign(vehicle, course, fieldworkCourse)
-	local ix, _ = self:getAssignment(vehicle)
-	if ix then
-		-- keep existing assignments if the new does not have one
-		self.assignments[ix].course = course or self.assignments[ix].course
-		self.assignments[ix].fieldworkCourse = fieldworkCourse or self.assignments[ix].fieldworkCourse
+function CourseManager:getAssignedCourses(vehicle)
+	local _, assignment = self:getAssignment(vehicle)
+	return assignment and assignment.courses or {}
+end
+
+---@param vehicle : table
+---@param course : Course
+function CourseManager:assign(vehicle, course)
+	local _, assignment = self:getAssignment(vehicle)
+	if assignment then
+		assignment:add(course)
 	else
-		table.insert(self.assignments, CourseAssignment(vehicle, course, fieldworkCourse
-		))
+		table.insert(self.assignments, CourseAssignment(vehicle, course))
 	end
 end
 
@@ -422,37 +430,32 @@ function CourseManager:loadCourseSelectedInHud(vehicle, index)
 	local course = Course.createFromXml(vehicle, courseXml, courseKey)
 	course:setName(file:getName())
 	delete(courseXml);
-	self:loadCourseInVehicle(vehicle, course)
-	CourseEvent.sendEvent(vehicle, course)
+	self:assignCourseToVehicle(vehicle, course)
+	CourseEvent.sendEvent(vehicle, self:getAssignedCourses())
 end
 
-function CourseManager:loadCourseInVehicle(vehicle, course)
-	if course:isFieldworkCourse() then
-		self:assign(vehicle, nil, course)
-		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s', course:getName())
-	else
-		self:assign(vehicle, course, nil)
-		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s', course:getName())
-	end
+function CourseManager:assignCourseToVehicle(vehicle, course)
+	self:assign(vehicle, course)
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'course %s assigned', course:getName())
 	self:updateLegacyCourseData(vehicle)
 end
 
 --- Unload all courses for this vehicle
-function CourseManager:unloadCourseFromVehicle(vehicle)
+function CourseManager:unloadAllCoursesFromVehicle(vehicle)
 	local ix, assignment = self:getAssignment(vehicle)
-	self.legacyWaypoints[assignment.vehicle] = {}
 	if ix then
+		self.legacyWaypoints[assignment.vehicle] = {}
 		table.remove(self.assignments, ix)
 		courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'unloaded all courses')
 	end
 	self:updateLegacyCourseData(vehicle)
 end
 
-function CourseManager:setFieldworkCourse(vehicle, course)
-	self:assign(vehicle, nil, course)
-	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'fieldwork course set')
-	CourseEvent.sendEvent(vehicle, course)
-	self:updateLegacyCourseData(vehicle)
+function CourseManager:loadGeneratedCourse(vehicle, course)
+	-- for now, when loading a generated course, remove all other courses from the vehicle
+	self:unloadAllCoursesFromVehicle(vehicle)
+	self:assignCourseToVehicle(vehicle, course)
+	CourseEvent.sendEvent(vehicle, self:getAssignedCourses())
 end
 
 --- This is just the index of the vehicle's assigned course in the self.assignments array. Vehicles
@@ -467,27 +470,20 @@ end
 function CourseManager:loadAssignedCourse(vehicle, assignmentId)
 	if #self.savedAssignments == 0 then
 		-- have not loaded them yet
-		self:loadAssignedCourses()
+		self:loadAssignments()
 	end
 	if self.savedAssignments[assignmentId] then
 		self.savedAssignments[assignmentId].vehicle = vehicle
-		local course = self.savedAssignments[assignmentId].course
-		if course then
-			course:setVehicle(vehicle)
-			courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded course %s on start', course:getName())
+		for _, course in ipairs(self.savedAssignments[assignmentId].courses) do
+			courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loading assigned course %s from savegame', course:getName())
+			g_courseManager:assignCourseToVehicle(vehicle, course)
 		end
-		local fieldworkCourse = self.savedAssignments[assignmentId].fieldworkCourse
-		if fieldworkCourse then
-			fieldworkCourse:setVehicle(vehicle)
-			courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'loaded fieldwork course %s on start', fieldworkCourse:getName())
-		end
-		self:assign(vehicle, course, fieldworkCourse)
 	end
 	self:updateLegacyCourseData(vehicle)
 end
 
 --- Save the courses currently assigned to each vehicle. These are all saved in a single file under the
---- savegame folder (the entire currently loaded course for each vehicle)
+--- savegame folder (all currently loaded course for each vehicle)
 function CourseManager:saveAssignedCourses()
 	createFolder(self.savegameFolderPath)
 	local savedAssignmentsXml = createXMLFile("savedAssignmentsXml", self.savedAssignmentsXmlFilePath, 'savedAssignments')
@@ -498,15 +494,10 @@ function CourseManager:saveAssignedCourses()
 		local key = string.format('savedAssignments.assignment(%d)', assignmentId - 1)
 		setXMLInt(savedAssignmentsXml, key .. '#id', assignmentId)
 		setXMLString(savedAssignmentsXml, key .. '#vehicle', nameNum(assignment.vehicle))
-		if assignment.course then
-			courseplay.debugVehicle(courseplay.DBG_COURSES, assignment.vehicle, 'saving assigned course %s',
-				assignment.course:getName())
-			assignment.course:saveToXml(savedAssignmentsXml, key .. '.course')
-		end
-		if assignment.fieldworkCourse then
-			assignment.fieldworkCourse:saveToXml(savedAssignmentsXml, key .. '.fieldworkCourse')
-			courseplay.debugVehicle(courseplay.DBG_COURSES, assignment.vehicle, 'saving assigned fieldwork course %s',
-				assignment.fieldworkCourse:getName())
+		for i, course in ipairs(assignment.courses) do
+			local courseKey = string.format('%s.course(%d)', key, i - 1)
+			courseplay.debugVehicle(courseplay.DBG_COURSES, assignment.vehicle, 'saving assigned course %s', course:getName())
+			course:saveToXml(savedAssignmentsXml, courseKey)
 		end
 		assignmentId = assignmentId + 1
 	end
@@ -515,7 +506,7 @@ function CourseManager:saveAssignedCourses()
 end
 
 --- Reload the courses that were assigned to each vehicle at the time of the last savegame
-function CourseManager:loadAssignedCourses()
+function CourseManager:loadAssignments()
 	createFolder(self.savegameFolderPath);
 	local savedAssignmentsXml;
 	if fileExists(self.savedAssignmentsXmlFilePath) then
@@ -532,15 +523,19 @@ function CourseManager:loadAssignedCourses()
 			local vehicleName = getXMLString(savedAssignmentsXml, key .. '#vehicle')
 			self:debug('loading assigned courses for vehicle %s', vehicleName)
 			local assignment = CourseAssignment(dummyVehicle, nil, nil)
-			if hasXMLProperty(savedAssignmentsXml, key .. '.course') then
-				assignment.course = Course.createFromXml(dummyVehicle, savedAssignmentsXml, key .. '.course')
-				self:debug('loaded assigned course %s for %s', assignment.course:getName(), vehicleName)
+			local courseNum = 0
+			while true do
+				local courseKey = string.format('%s.course(%d)', key, courseNum)
+				if not hasXMLProperty(savedAssignmentsXml, courseKey) then
+					-- no more courses left
+					break
+				end
+				local course = Course.createFromXml(dummyVehicle, savedAssignmentsXml, courseKey)
+				self:debug('loaded assigned course %s for %s', course:getName(), vehicleName)
+				assignment:add(course)
+				courseNum = courseNum + 1
 			end
-			if hasXMLProperty(savedAssignmentsXml, key .. '.fieldworkCourse') then
-				assignment.fieldworkCourse = Course.createFromXml(dummyVehicle, savedAssignmentsXml, key .. '.fieldworkCourse')
-				self:debug('loaded assigned fieldwork course %s for %s', assignment.fieldworkCourse:getName(), vehicleName)
-			end
-			if (assignment.course or assignment.fieldworkCourse) then
+			if #assignment.courses > 0 then
 				table.insert(self.savedAssignments, assignment)
 			end
 			assignmentId = assignmentId + 1
@@ -557,15 +552,9 @@ function CourseManager:updateLegacyWaypoints(vehicle)
 	if not assignment then return end
 	self.legacyWaypoints[assignment.vehicle] = {}
 	local n = 1
-	if assignment.course then
-		for i = 1, assignment.course:getNumberOfWaypoints() do
-			table.insert(self.legacyWaypoints[vehicle], Waypoint(assignment.course:getWaypoint(i), n))
-			n = n +1
-		end
-	end
-	if assignment.fieldworkCourse then
-		for i = 1, assignment.fieldworkCourse:getNumberOfWaypoints() do
-			table.insert(self.legacyWaypoints[vehicle], Waypoint(assignment.fieldworkCourse:getWaypoint(i), n))
+	for _, course in ipairs(assignment.courses) do
+		for i = 1, course:getNumberOfWaypoints() do
+			table.insert(self.legacyWaypoints[vehicle], Waypoint(course:getWaypoint(i), n))
 			n = n +1
 		end
 	end
@@ -591,12 +580,17 @@ end
 
 function CourseManager:getCourse(vehicle)
 	local _, assignment = self:getAssignment(vehicle)
-	return assignment.course
+	-- for now, just return the first loaded course
+	return assignment.courses[1]
 end
 
 function CourseManager:getFieldworkCourse(vehicle)
 	local _, assignment = self:getAssignment(vehicle)
-	return assignment.fieldworkCourse
+	for _, course in ipairs(assignment.courses) do
+		if course:isFieldworkCourse() then
+			return course
+		end
+	end
 end
 
 function CourseManager:hasCourse(vehicle)
@@ -608,14 +602,10 @@ end
 function CourseManager:getCourseName(vehicle)
 	local name = ''
 	local _, assignment = self:getAssignment(vehicle)
-	if assignment.fieldworkCourse then
-		name = assignment.fieldworkCourse:getName()
-		if assignment.course then
-			-- if there is a fieldwork course and an unload/refill course, show both
-			name = name .. ' + ' .. assignment.course:getName()
-		end
-	else
-		name = assignment.course:getName()
+	name = assignment.courses[1]:getName()
+	if #assignment.courses > 1 then
+		-- more than one course loaded
+		name = string.format('%s + %d', name, #assignment.courses - 1)
 	end
 	return name
 end
@@ -663,11 +653,8 @@ end
 
 function CourseManager:dump()
 	for _, assignment in ipairs(self.assignments) do
-		if assignment.course then
-			courseplay.debugVehicle(courseplay.DBG_COURSES, v, 'course: %s', assignment.course:getName())
-		end
-		if assignment.fieldworkCourse then
-			courseplay.debugVehicle(courseplay.DBG_COURSES, v, 'fieldwork course: %s', assignment.fieldworkCourse:getName())
+		for _, course in ipairs(assignment.courses) do
+			courseplay.debugVehicle(courseplay.DBG_COURSES, assignment.vehicle, 'course: %s', course:getName())
 		end
 	end
 	return 'courses dumped.'
@@ -719,21 +706,21 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 		local loadButton = buttonsByRow[row]['loadCourse']
 		local addButton = buttonsByRow[row]['addSortedCourse']
 		local deleteButton = buttonsByRow[row]['deleteSortedItem']
-		local moveButton = buttonsByRow[row]['linkParent']
+		local saveButton = buttonsByRow[row]['saveCourseToFolder']
 		if entryId <= #entries then
 			unfoldButton:setShow(entries[entryId]:showUnfoldButton())
 			foldButton:setShow(entries[entryId]:showFoldButton())
 			loadButton:setShow(entries[entryId]:showLoadButton())
 			addButton:setShow(entries[entryId]:showAddButton())
 			deleteButton:setShow(entries[entryId]:showDeleteButton())
-			moveButton:setShow(entries[entryId]:showMoveButton())
+			saveButton:setShow(entries[entryId]:showSaveButton())
 		else
 			foldButton:setShow(false)
 			unfoldButton:setShow(false)
 			loadButton:setShow(false)
 			addButton:setShow(false)
 			deleteButton:setShow(false)
-			moveButton:setShow(false)
+			saveButton:setShow(false)
 		end
 		row = row + 1
 		entryId = entryId + 1
@@ -752,7 +739,7 @@ function courseplay:fold(vehicle, index)
 end
 
 function courseplay:clearCurrentLoadedCourse(vehicle)
-	g_courseManager:unloadCourseFromVehicle(vehicle)
+	g_courseManager:unloadAllCoursesFromVehicle(vehicle)
 	CourseEvent.sendEvent(vehicle, nil)
 end
 
@@ -760,6 +747,12 @@ function courseplay:loadCourse(vehicle, index)
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
 		g_courseManager:loadCourseSelectedInHud(vehicle, index)
 	end
+end
+
+function courseplay:saveCourseToFolder(vehicle, index)
+	courseplay.vehicleToSaveCourseIn = vehicle
+	courseplay:lockContext(false)
+	g_inputCourseNameDialogue:setCourseMode(index)
 end
 
 function courseplay:createFolder(vehicle)

@@ -187,7 +187,7 @@ function courseGenerator.generate(vehicle)
 	local course = Course.createFromGeneratedCourse(vehicle, field.course, workWidth, #field.headlandTracks,
 		vehicle.cp.courseGeneratorSettings.multiTools:get())
 
-	g_courseManager:setFieldworkCourse(vehicle, course)
+	g_courseManager:loadGeneratedCourse(vehicle, course)
 
 	-- extra data for turn maneuver
 	vehicle.cp.courseWorkWidth = workWidth;
@@ -198,8 +198,8 @@ function courseGenerator.generate(vehicle)
 		-- one on the short edge
 		vehicle.cp.courseGeneratorSettings.headlandPasses:set(#field.headlandTracks)
 	end
-	vehicle.cp.courseNumHeadlandLanes = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
-	
+	vehicle.cp.coursenumHeadlands = vehicle.cp.courseGeneratorSettings.headlandPasses:get()
+
 	return status, ok
 end
 

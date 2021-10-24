@@ -315,7 +315,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="启动 %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="指向起始点" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="保存当前任务" />
-		<text name="COURSEPLAY_RECORDING_STOP" 								text="停止录制" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="暂停录制" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="继续录制" />
 		<text name="COURSEPLAY_RECORDING_DELETE" 							text="删除上个路径点" />

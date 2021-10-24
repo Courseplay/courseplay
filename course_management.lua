@@ -149,7 +149,7 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 			vehicle.cp.currentCourseName = course.name
 			-- for turn maneuver
 			vehicle.cp.courseWorkWidth = course.workWidth;
-			vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			vehicle.cp.coursenumHeadlands = course.numHeadlands;
 			course.multiTools = course.multiTools or 1
 			vehicle.cp.courseGeneratorSettings.multiTools:set(course.multiTools)
 
@@ -274,8 +274,8 @@ function courseplay:loadCourse(vehicle, id, useRealId, addCourseAtEnd) -- fn is 
 				course.multiTools = course.multiTools or 1
 				vehicle.cp.courseGeneratorSettings.multiTools:set(course.multiTools)
 			end;
-			if not vehicle.cp.courseNumHeadlandLanes then
-				vehicle.cp.courseNumHeadlandLanes = course.numHeadlandLanes;
+			if not vehicle.cp.coursenumHeadlands then
+				vehicle.cp.coursenumHeadlands = course.numHeadlands;
 			end;
 
 			courseplay:debug(string.format('%s: adding course done -> numWaypoints=%d, numCourses=%s, currentCourseName=%q', nameNum(vehicle), vehicle.cp.numWaypoints, vehicle.cp.numCourses, vehicle.cp.currentCourseName), courseplay.DBG_COURSES);
@@ -307,7 +307,7 @@ function courseplay:copyCourse(vehicle)
 		vehicle.cp.numWayPoints = #vehicle.Waypoints;
 		vehicle.cp.numWaitPoints = src.cp.numWaitPoints;
 		vehicle.cp.numCrossingPoints = src.cp.numCrossingPoints;
-		vehicle.cp.courseNumHeadlandLanes = src.cp.courseNumHeadlandLanes
+		vehicle.cp.coursenumHeadlands = src.cp.coursenumHeadlands
 
 		courseplay:setIsRecording(vehicle, false);
 		courseplay:setRecordingIsPaused(vehicle, false);
@@ -374,7 +374,7 @@ function courseplay:clearCurrentLoadedCourseDeprecated(vehicle)
 
 	-- for turn maneuver
 	vehicle.cp.courseWorkWidth = nil;
-	vehicle.cp.courseNumHeadlandLanes = nil;
+	vehicle.cp.coursenumHeadlands = nil;
 
 	courseplay:validateCanSwitchMode(vehicle);
 
@@ -674,8 +674,8 @@ function courseplay.courses:writeCourseFile(courseXmlFilePath, cp_course)
 	if cp_course.workWidth then
 		setXMLFloat(courseXml, "course#workWidth", cp_course.workWidth);
 	end;
-	if cp_course.numHeadlandLanes then
-		setXMLInt(courseXml, "course#numHeadlandLanes", cp_course.numHeadlandLanes);
+	if cp_course.numHeadlands then
+		setXMLInt(courseXml, "course#numHeadlands", cp_course.numHeadlands);
 	end;
 	if cp_course.multiTools ~= nil then
 		setXMLInt(courseXml, "course#multiTools", cp_course.multiTools);
@@ -1566,8 +1566,8 @@ function courseplay.courses:loadCourseFromFile(course)
 	-- course workWidth
 	local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
 
-	-- course numHeadlandLanes
-	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
+	-- course numHeadlands
+	local numHeadlands = getXMLInt(courseXml, courseKey .. "#numHeadlands");
 
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 
@@ -1653,7 +1653,7 @@ function courseplay.courses:loadCourseFromFile(course)
 	end; -- END while true (waypoints)
 	course.waypoints =			  waypoints
 	course.workWidth =			  workWidth
-	course.numHeadlandLanes =	  numHeadlandLanes
+	course.numHeadlands =	  numHeadlands
 	course.multiTools = 		  multiTools
 	delete(courseXml);
 

@@ -315,6 +315,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="%s startet" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Nach erstem Wegpunkt suchen" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="Aktuellen Kurs speichern" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 								text="Aufnahme beenden" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="Aufnahme pausieren" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Aufnahme fortsetzen" />

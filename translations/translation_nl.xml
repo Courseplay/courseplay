@@ -311,6 +311,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="Opstarten %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Eerste markering zoeken" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="Huidige route opslaan" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 								text="Vastleggen stoppen" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="Vastleggen pauzeren" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Vastleggen hervatten" />

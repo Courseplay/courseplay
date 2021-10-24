@@ -98,8 +98,8 @@ function inputCourseNameDialogue:onSaveClick()
 		if vehicle.cp.courseWorkWidth then -- data for turn maneuver
 			course.workWidth = vehicle.cp.courseWorkWidth;
 		end;
-		if vehicle.cp.courseNumHeadlandLanes then
-			course.numHeadlandLanes = vehicle.cp.courseNumHeadlandLanes;
+		if vehicle.cp.coursenumHeadlands then
+			course.numHeadlands = vehicle.cp.coursenumHeadlands;
 		end;
 		if vehicle.cp.courseGeneratorSettings.multiTools:get() ~= 1 then
 			course.multiTools = vehicle.cp.courseGeneratorSettings.multiTools:get()

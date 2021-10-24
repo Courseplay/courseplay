@@ -118,9 +118,9 @@ function courseplay:turn(vehicle, dt, turnContext)
 	turnInfo.haveHeadlands 					= courseplay:haveHeadlands(vehicle);
 
 	-- find out the headland height to figure out if we have enough room on the headland to make turns
-	if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0 then
+	if vehicle.cp.courseWorkWidth and vehicle.cp.courseWorkWidth > 0 and vehicle.cp.coursenumHeadlands and vehicle.cp.coursenumHeadlands > 0 then
 		-- First headland is only half the work width
-		turnInfo.headlandHeight = vehicle.cp.courseWorkWidth / 2 + ((vehicle.cp.courseNumHeadlandLanes - 1) * vehicle.cp.courseWorkWidth)
+		turnInfo.headlandHeight = vehicle.cp.courseWorkWidth / 2 + ((vehicle.cp.coursenumHeadlands - 1) * vehicle.cp.courseWorkWidth)
 	else
 		turnInfo.headlandHeight = 0
 	end
@@ -1326,7 +1326,7 @@ function courseplay:getLaneInfo(vehicle)
 end;
 
 function courseplay:haveHeadlands(vehicle)
-	return vehicle.cp.courseNumHeadlandLanes and vehicle.cp.courseNumHeadlandLanes > 0;
+	return vehicle.cp.coursenumHeadlands and vehicle.cp.coursenumHeadlands > 0;
 end;
 
 function courseplay:generateTurnStraightPoints(vehicle, fromPoint, toPoint, reverse, turnEnd, secondaryReverseDistance, changeDirectionWhenAligned, doNotAddLastPoint)

@@ -1796,7 +1796,7 @@ end
 function Course:saveToXml(courseXml, courseKey)
 	setXMLString(courseXml, courseKey .. '#name', self.name)
 	setXMLFloat(courseXml, courseKey .. '#workdWidth', self.workWidth or 0)
-	setXMLInt(courseXml, courseKey .. '#numHeadlandLanes', self.numHeadlandLanes or 0 )
+	setXMLInt(courseXml, courseKey .. '#numHeadlands', self.numHeadlands or 0 )
 	setXMLInt(courseXml, courseKey .. '#multiTools', self.multiTools or 0)
 	setXMLString(courseXml, courseKey .. '.waypoints', self:serializeWaypoints())
 end
@@ -1804,7 +1804,7 @@ end
 function Course:writeStream(streamId, connection)
 	streamWriteString(streamId, self.name)
 	streamWriteFloat32(streamId, self.workWidth or 0)
-	streamWriteInt32(streamId, self.numHeadlandLanes or 0 )
+	streamWriteInt32(streamId, self.numHeadlands or 0 )
 	streamWriteInt32(streamId, self.multiTools or 0)
 	streamWriteString(streamId, self:serializeWaypoints())
 end
@@ -1815,14 +1815,14 @@ end
 function Course.createFromXml(vehicle, courseXml, courseKey)
 	local name = getXMLString(courseXml, courseKey .. "#name");
 	local workWidth = getXMLFloat(courseXml, courseKey .. "#workWidth");
-	local numHeadlandLanes = getXMLInt(courseXml, courseKey .. "#numHeadlandLanes");
+	local numHeadlands = getXMLInt(courseXml, courseKey .. "#numHeadlands");
 	local multiTools = getXMLInt(courseXml, courseKey .. "#multiTools");
 	local serializedWaypoints = getXMLString(courseXml, courseKey .. '.waypoints')
 
 	local course = Course(vehicle, Course.deserializeWaypoints(serializedWaypoints))
 	course.name = name
 	course.workWidth = workWidth
-	course.numHeadlands = numHeadlandLanes
+	course.numHeadlands = numHeadlands
 	course.multiTools = multiTools
 
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
@@ -1832,13 +1832,13 @@ end
 function Course.createFromStream(streamId, connection)
 	local name = streamReadString(streamId)
 	local workWidth = streamReadFloat32(streamId)
-	local numHeadlandLanes = streamReadInt32(streamId)
+	local numHeadlands = streamReadInt32(streamId)
 	local multiTools = streamReadInt32(streamId)
 	local serializedWaypoints = streamReadString(streamId)
 	local course = Course(vehicle, Course.deserializeWaypoints(serializedWaypoints))
 	course.name = name
 	course.workWidth = workWidth
-	course.numHeadlands = numHeadlandLanes
+	course.numHeadlands = numHeadlands
 	course.multiTools = multiTools
 
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'Course with %d waypoints loaded.', #course.waypoints)
@@ -1846,14 +1846,14 @@ function Course.createFromStream(streamId, connection)
 end
 
 
-function Course.createFromGeneratedCourse(vehicle, generatedCourse, workWidth, numHeadlandLanes, multiTools)
+function Course.createFromGeneratedCourse(vehicle, generatedCourse, workWidth, numHeadlands, multiTools)
 	local waypoints = {}
 	for i, wp in ipairs(generatedCourse) do
 		table.insert(waypoints, Waypoint.initFromGeneratedWp(wp, i))
 	end
 	local course = Course(vehicle, waypoints)
 	course.workWidth = workWidth
-	course.numHeadlands = numHeadlandLanes
+	course.numHeadlands = numHeadlands
 	course.multiTools = multiTools
 	course.name = courseplay:loc('COURSEPLAY_TEMP_COURSE')
 	return course

@@ -259,7 +259,7 @@ function courseplay.hud:setup()
 		close              = { 148,216, 180,184 };
 		copy               = { 184,180, 216,148 };
 		courseAdd          = {  40,252,  72,220 };
-		courseLoadAppend   = {   4,252,  36,220 };
+		loadCourse   = {   4,252,  36,220 };
 		courseClear        = { 184,360, 216,328 };
 		eye                = { 148,180, 180,148 };
 		delete             = { 184,216, 216,184 };
@@ -1600,7 +1600,7 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, nil, true);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'navMinus' }, 'fold',
 			i, self.buttonCoursesPosX[0], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, nil, true);
-		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'courseLoadAppend' }, 'loadCourse',
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'loadCourse' }, 'loadCourse',
 			i, self.buttonCoursesPosX[4], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false,
 			courseplay:loc('COURSEPLAY_LOAD_COURSE'), true);
 		-- courses can be appended
@@ -1609,8 +1609,8 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 		-- the same position is used for folders to create subfolders
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'folderNew' }, 'createSubFolder',
 			i, self.buttonCoursesPosX[3], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_APPEND_COURSE'));
-		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'save' }, 'linkParent',
-			i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_MOVE_TO_FOLDER'));
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'save' }, 'saveCourseToFolder',
+			i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER'));
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'delete' }, 'deleteSortedItem',
 			i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false, courseplay:loc('COURSEPLAY_DELETE_COURSE'));
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, nil, nil, nil,

@@ -316,6 +316,7 @@
 		<text name="COURSEPLAY_STARTING_UP_TOOL" 							text="Starting up %s!" />
 		<text name="COURSEPLAY_SEARCH_FOR_FIRST_WAYPOINT" 					text="Search for first waypoint" />
 		<text name="COURSEPLAY_SAVE_CURRENT_COURSE" 						text="Save current course" />
+		<text name="COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER"				text="Save current course to this folder"/>
 		<text name="COURSEPLAY_RECORDING_STOP" 								text="Stop the recording" />
 		<text name="COURSEPLAY_RECORDING_PAUSE" 							text="Pause the recording" />
 		<text name="COURSEPLAY_RECORDING_PAUSE_RESUME" 						text="Resume the recording" />
