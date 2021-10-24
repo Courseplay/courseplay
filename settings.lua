@@ -389,25 +389,6 @@ function courseplay:validateCanSwitchMode(vehicle)
 		tostring(vehicle.cp.recordingIsPaused), tostring(vehicle.cp.canSwitchMode)), courseplay.DBG_UNCATEGORIZED);
 end;
 
-function courseplay:reloadCoursesFromXML(vehicle)
-	courseplay:debug("reloadCoursesFromXML()", courseplay.DBG_COURSES);
-	if g_server ~= nil then
-		courseplay.courses:loadCoursesAndFoldersFromXml();
-
-		--courseplay:debug(tableShow(g_currentMission.cp_courses, "g_cM cp_courses", 8), courseplay.DBG_COURSES);
-		courseplay:debug("g_currentMission.cp_courses = courseplay.courses:loadCoursesAndFoldersFromXml()", courseplay.DBG_COURSES);
-		if not vehicle:getIsCourseplayDriving() then
-			local loadedCoursesBackup = vehicle.cp.loadedCourses;
-			courseplay:clearCurrentLoadedCourse(vehicle);
-			vehicle.cp.loadedCourses = loadedCoursesBackup;
-			courseplay:reloadCourses(vehicle, true);
-		end;
-		courseplay.settings.update_folders()
-		courseplay.settings.setReloadCourseItems()
-		--courseplay.hud.reloadCourses()
-	end
-end;
-
 function courseplay:setMouseCursor(self, show)
 	self.cp.mouseCursorActive = show;
 	g_inputBinding:setShowMouseCursor(show);

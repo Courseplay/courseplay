@@ -290,7 +290,7 @@ function DirectoryView:showFoldButton()
 	return not self:isFolded()
 end
 
-function DirectoryView:showMoveButton()
+function DirectoryView:showSaveButton()
 	return true
 end
 
@@ -345,6 +345,7 @@ end
 function CourseManager:refresh()
 	self.courseDir:refresh()
 	self.courseDirView:refresh()
+	self:setCurrentEntry(self:getCurrentEntry())
 end
 
 function CourseManager:getEntries()
@@ -384,6 +385,20 @@ function CourseManager:createDirectory(index, name)
 	-- otherwise under the root
 	local dir = index and self:getDirViewAtIndex(index):getEntity() or self.courseDir
 	dir:createDirectory(name)
+	self:refresh()
+end
+
+--- Take all the courses currently assigned to the vehicle and concatenate them into a single course
+--- and then save this course to the directory at index in the HUD
+function CourseManager:saveCourseFromVehicle(index, vehicle, name)
+	local dir = index and self:getDirViewAtIndex(index):getEntity() or self.courseDir
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'saving course %s in folder %s', name, dir:getName())
+	local courses = self:getAssignedCourses(vehicle)
+	local course = courses[1]:copy()
+	for i = 2, #courses do
+		course:append(courses[i])
+	end
+	self:saveCourse(dir:getFullPath() .. '/' .. name, course)
 	self:refresh()
 end
 
@@ -431,7 +446,7 @@ function CourseManager:loadCourseSelectedInHud(vehicle, index)
 	course:setName(file:getName())
 	delete(courseXml);
 	self:assignCourseToVehicle(vehicle, course)
-	CourseEvent.sendEvent(vehicle, self:getAssignedCourses())
+	CourseEvent.sendEvent(vehicle, self:getAssignedCourses(vehicle))
 end
 
 function CourseManager:assignCourseToVehicle(vehicle, course)
@@ -455,7 +470,7 @@ function CourseManager:loadGeneratedCourse(vehicle, course)
 	-- for now, when loading a generated course, remove all other courses from the vehicle
 	self:unloadAllCoursesFromVehicle(vehicle)
 	self:assignCourseToVehicle(vehicle, course)
-	CourseEvent.sendEvent(vehicle, self:getAssignedCourses())
+	CourseEvent.sendEvent(vehicle, self:getAssignedCourses(vehicle))
 end
 
 --- This is just the index of the vehicle's assigned course in the self.assignments array. Vehicles
@@ -750,21 +765,23 @@ function courseplay:loadCourse(vehicle, index)
 end
 
 function courseplay:saveCourseToFolder(vehicle, index)
-	courseplay.vehicleToSaveCourseIn = vehicle
 	courseplay:lockContext(false)
-	g_inputCourseNameDialogue:setCourseMode(index)
+	g_inputCourseNameDialogue:setCourseMode(vehicle, index)
+	g_gui:showGui("inputCourseNameDialogue")
 end
 
 function courseplay:createFolder(vehicle)
-	courseplay.vehicleToSaveCourseIn = vehicle
 	courseplay:lockContext(false)
-	g_inputCourseNameDialogue:setFolderMode()
+	g_inputCourseNameDialogue:setFolderMode(vehicle)
 	g_gui:showGui("inputCourseNameDialogue")
 end
 
 function courseplay:createSubFolder(vehicle, index)
-	courseplay.vehicleToSaveCourseIn = vehicle
 	courseplay:lockContext(false)
-	g_inputCourseNameDialogue:setFolderMode(index)
+	g_inputCourseNameDialogue:setFolderMode(vehicle, index)
 	g_gui:showGui("inputCourseNameDialogue")
+end
+
+function courseplay:reloadCoursesFromDisk(vehicle)
+	g_courseManager:refresh()
 end

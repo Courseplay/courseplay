@@ -422,7 +422,8 @@ function courseplay:onUpdate(dt)
 	end
 	 
 	if self.cp.onSaveClick and not self.cp.doNotOnSaveClick then
-		if courseplay.vehicleToSaveCourseIn == self then
+		-- TODO: figure out what this nonsense is supposed to do.
+		if inputCourseNameDialogue.vehicle == self then
 			inputCourseNameDialogue:onSaveClick()
 		end
 		self.cp.onSaveClick = false

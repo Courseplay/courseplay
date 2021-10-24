@@ -39,13 +39,15 @@ function inputCourseNameDialogue:new(target, custom_mt)
 end; --END new()
 
 ---@param index number selected entry in the HUD, to pass on to the course manager
-function inputCourseNameDialogue:setCourseMode(index)
+function inputCourseNameDialogue:setCourseMode(vehicle, index)
+	self.vehicle = vehicle
 	self.mode = self.MODE_COURSE
 	self.index = index
 end
 
 ---@param index number selected entry in the HUD, to pass on to the course manager
-function inputCourseNameDialogue:setFolderMode(index)
+function inputCourseNameDialogue:setFolderMode(vehicle, index)
+	self.vehicle = vehicle
 	self.mode = self.MODE_FOLDER
 	self.index = index
 end
@@ -77,50 +79,12 @@ function inputCourseNameDialogue:onIsUnicodeAllowed(unicode)
 end; --END onIsUnicodeAllowed()
 
 function inputCourseNameDialogue:onSaveClick()
-	local vehicle = courseplay.vehicleToSaveCourseIn
 	if self.mode == self.MODE_COURSE then
 		if self.textInputElement ~= nil then
-			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
-			vehicle:setCpVar('currentCourseName',self.textInputElement.text);
-			vehicle.cp.doNotOnSaveClick = true
+			g_courseManager:saveCourseFromVehicle(self.index, self.vehicle, self.textInputElement.text)
 		end
-
-		local maxID = courseplay.courses:getMaxCourseID()
-		if maxID == nil then
-			g_currentMission.cp_courses = {};
-			maxID = 0
-		end
-
-		vehicle.cp.currentCourseId = maxID + 1;
-		vehicle.cp.numCourses = 1;
-
-		local course = { id = vehicle.cp.currentCourseId, uid = 'c'..vehicle.cp.currentCourseId, type = 'course', name = vehicle.cp.currentCourseName, nameClean = courseplay:normalizeUTF8(vehicle.cp.currentCourseName), waypoints = vehicle.Waypoints, parent = 0 }
-		if vehicle.cp.courseWorkWidth then -- data for turn maneuver
-			course.workWidth = vehicle.cp.courseWorkWidth;
-		end;
-		if vehicle.cp.coursenumHeadlands then
-			course.numHeadlands = vehicle.cp.coursenumHeadlands;
-		end;
-		if vehicle.cp.courseGeneratorSettings.multiTools:get() ~= 1 then
-			course.multiTools = vehicle.cp.courseGeneratorSettings.multiTools:get()
-		end;
-
-		g_currentMission.cp_courses[vehicle.cp.currentCourseId] = course
-
-		g_currentMission.cp_sorted = courseplay.courses:sort()
-		if not courseplay.isClient then
-			courseplay.courses:saveCourseToXml(vehicle.cp.currentCourseId, nil, true)
-		end
-		courseplay.settings.setReloadCourseItems()
-		courseplay.signs:updateWaypointSigns(vehicle);
 
 	elseif self.mode == self.MODE_FOLDER then
-		-- TODO: implement MP event (in g_courseManager, not here!)
-		if self.textInputElement ~= nil then
-			CourseplayEvent.sendEvent(vehicle, "self.cp.saveWhat", vehicle.cp.saveWhat)
-			CourseplayEvent.sendEvent(vehicle, "self.cp.saveFolderName", self.textInputElement.text)
-		end
-
 		g_courseManager:createDirectory(self.index, self.textInputElement.text)
 
 	elseif vehicle.cp.saveWhat == 'filter' then
@@ -136,7 +100,7 @@ function inputCourseNameDialogue:onSaveClick()
 	end
 
 	if self.textInputElement ~= nil then
-		CourseplayEvent.sendEvent(courseplay.vehicleToSaveCourseIn, "self.cp.onSaveClick",true)
+		-- TODO: WTF is this? Why are we calling cancel after we save?
 		self:onCancelClick();
 	else
 		vehicle.cp.saveFolderName = nil
@@ -149,8 +113,6 @@ function inputCourseNameDialogue:onCancelClick()
 	self.textInputElement.cursorPosition = 1;
 	self.textInputElement.cursorBlinkTime = 0;
 
-	courseplay.vehicleToSaveCourseIn.cp.saveFolderName = nil
-	courseplay.vehicleToSaveCourseIn = nil;
 	-- call the stock back handling
 	self:onClickBack()
 end;
