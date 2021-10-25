@@ -16,6 +16,26 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
+--[[
+
+The Course Manager is responsible for:
+	- managing all saved courses, in particular:
+		* maintaining a directory/file structure on the disk
+		* saving courses to XML files
+		* loading courses from files when the user selects them in the HUD
+		* creating directories on the disk when the user creates a folder in the HUD
+	- keeping track of courses assigned to a vehicle:
+		* courses are assigned to a vehicle when the users selects them in the HUD
+		* the Course Manager provides the assigned courses to the AIDriver on start
+		* assignments are saved with the savegame and loaded on game start
+	- synchronizing course assignments in multiplayer
+		* courses are saved/loaded on the client only
+		* the Course Manager on the server only holds the assignments and provides the courses to the AIDriver
+		* whenever an assignment changes, all assigned courses of the vehicle are sent to
+		  the server (as a CourseEvent), which then also broadcasts them to the other clients
+
+]]--
+
 --- An entity (file or directory) in the file system
 ---class FileSystemEntity
 FileSystemEntity = CpObject()
@@ -299,6 +319,7 @@ end
 CourseAssignment = CpObject()
 function CourseAssignment:init(vehicle, course)
 	self.vehicle = vehicle
+	---@type Course[]
 	self.courses = {}
 	self:add(course)
 end
@@ -326,10 +347,9 @@ function CourseManager:init()
 	self.courseDir = Directory(self.courseDirFullPath)
 	self.courseDirView = DirectoryView(self.courseDir)
 	self.currentEntry = 1
-	-- one entry per vehicle, each entry can hold two courses:
-	-- * a normal (non-fieldwork) courses
-	-- * a fieldwork course
+	-- one entry per vehicle, each entry can hold a list of courses:
 	-- an entry is created once at least one course is loaded to the vehicle on the HUD
+	---@type CourseAssignment[]
 	self.assignments = {}
 	-- representation of all waypoints loaded for a vehicle as needed by the legacy functions
 	self.legacyWaypoints = {}
@@ -593,10 +613,17 @@ function CourseManager:updateLegacyCourseData(vehicle)
 	vehicle:setCpVar('canDrive', self:hasCourse(vehicle), courseplay.isClient);
 end
 
-function CourseManager:getCourse(vehicle)
+--- Get all courses assigned to the vehicle. These will be concatenated into a single course
+--- in the order they were added to the vehicle in the HUD
+function CourseManager:getCourse(vehicle, excludeFieldworkCourses)
 	local _, assignment = self:getAssignment(vehicle)
-	-- for now, just return the first loaded course
-	return assignment.courses[1]
+	local course = assignment.courses[1]:copy()
+	for i = 2, #assignment.courses do
+		if not excludeFieldworkCourses or (excludeFieldworkCourses and not course:isFieldworkCourse()) then
+			course:append(assignment.courses[i])
+		end
+	end
+	return course
 end
 
 function CourseManager:getFieldworkCourse(vehicle)

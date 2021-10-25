@@ -797,7 +797,7 @@ end
 
 --- Set up the main (fieldwork) course and the unload/refill course and initial state
 function FieldworkAIDriver:setUpCourses()
-	self.unloadRefillCourse = g_courseManager:getCourse(self.vehicle)
+	self.unloadRefillCourse = g_courseManager:getCourse(self.vehicle, true)
 	self.fieldworkCourse = g_courseManager:getFieldworkCourse(self.vehicle)
 	if self.unloadRefillCourse then
 		self:debug('Fieldwork course with unload/refill course loaded.')

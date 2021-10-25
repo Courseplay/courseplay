@@ -1061,7 +1061,7 @@ end
 
 --- Return a copy of the course
 function Course:copy(vehicle)
-	return Course(vehicle, self.waypoints)
+	return Course(vehicle or self.vehicle, self.waypoints)
 end
 
 --- Append a single waypoint to the course
