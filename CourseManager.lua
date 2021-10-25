@@ -470,6 +470,7 @@ function CourseManager:loadCourseSelectedInHud(vehicle, index)
 end
 
 function CourseManager:assignCourseToVehicle(vehicle, course)
+	course:setVehicle(vehicle)
 	self:assign(vehicle, course)
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'course %s assigned', course:getName())
 	self:updateLegacyCourseData(vehicle)
@@ -617,7 +618,7 @@ end
 --- in the order they were added to the vehicle in the HUD
 function CourseManager:getCourse(vehicle, excludeFieldworkCourses)
 	local _, assignment = self:getAssignment(vehicle)
-	local course = assignment.courses[1]:copy()
+	local course = assignment.courses[1]:copy(vehicle)
 	for i = 2, #assignment.courses do
 		if not excludeFieldworkCourses or (excludeFieldworkCourses and not course:isFieldworkCourse()) then
 			course:append(assignment.courses[i])
@@ -782,7 +783,8 @@ end
 
 function courseplay:clearCurrentLoadedCourse(vehicle)
 	g_courseManager:unloadAllCoursesFromVehicle(vehicle)
-	CourseEvent.sendEvent(vehicle, nil)
+	-- empty course list means we removed all courses
+	CourseEvent.sendEvent(vehicle, {})
 end
 
 function courseplay:loadCourse(vehicle, index)
