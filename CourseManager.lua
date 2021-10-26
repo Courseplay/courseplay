@@ -487,6 +487,13 @@ function CourseManager:unloadAllCoursesFromVehicle(vehicle)
 	self:updateLegacyCourseData(vehicle)
 end
 
+-- next two are the same as of now, may want to handle differently later
+function CourseManager:loadRecordedCourse(vehicle, course)
+	self:unloadAllCoursesFromVehicle(vehicle)
+	self:assignCourseToVehicle(vehicle, course)
+	CourseEvent.sendEvent(vehicle, self:getAssignedCourses(vehicle))
+end
+
 function CourseManager:loadGeneratedCourse(vehicle, course)
 	-- for now, when loading a generated course, remove all other courses from the vehicle
 	self:unloadAllCoursesFromVehicle(vehicle)
@@ -618,19 +625,30 @@ end
 --- in the order they were added to the vehicle in the HUD
 function CourseManager:getCourse(vehicle, excludeFieldworkCourses)
 	local _, assignment = self:getAssignment(vehicle)
-	local course = assignment.courses[1]:copy(vehicle)
-	for i = 2, #assignment.courses do
+	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'getting courses:')
+	local combinedCourse = Course(vehicle, {})
+	local nCurses = 0
+	for _, course in ipairs(assignment.courses) do
 		if not excludeFieldworkCourses or (excludeFieldworkCourses and not course:isFieldworkCourse()) then
-			course:append(assignment.courses[i])
+			courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, '\t adding %s', course:getName())
+			if combinedCourse:getName() == '' then
+				combinedCourse:setName(course:getName())
+			end
+			combinedCourse:append(course)
+			nCurses = nCurses + 1
 		end
 	end
-	return course
+	if nCurses > 1 then
+		combinedCourse:setName(string.format('%s + %d', combinedCourse:getName(), nCurses - 1))
+	end
+	return combinedCourse
 end
 
 function CourseManager:getFieldworkCourse(vehicle)
 	local _, assignment = self:getAssignment(vehicle)
 	for _, course in ipairs(assignment.courses) do
 		if course:isFieldworkCourse() then
+			courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'getting fieldwork course %s', course:getName())
 			return course
 		end
 	end

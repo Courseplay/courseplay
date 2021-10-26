@@ -112,20 +112,8 @@ function courseplay:stop_record(vehicle)
 	courseplay:set_crossing(vehicle, true);
 	courseplay:setIsRecording(vehicle, false);
 	courseplay:setRecordingIsPaused(vehicle, false);
-	vehicle:setCpVar('distanceCheck',false,courseplay.isClient);
-	vehicle:setCpVar('canDrive',true,courseplay.isClient);
-	vehicle.cp.numWaypoints = vehicle.cp.waypointIndex - 1;
-	courseplay:setWaypointIndex(vehicle, 1,true);
-	vehicle.cp.numCourses = 1;
-
-	courseplay:validateCanSwitchMode(vehicle);
-	courseplay.signs:updateWaypointSigns(vehicle);
-	--courseplay.buttons:setActiveEnabled(vehicle, 'recording');
-
-	-- SETUP 2D COURSE DRAW DATA
-	vehicle.cp.course2dUpdateDrawData = true;
-	
-	courseplay.hud:setReloadPageOrder(vehicle, vehicle.cp.hud.currentPage, true)
+	local recordedCourse = Course(vehicle, vehicle.Waypoints)
+	g_courseManager:loadRecordedCourse(vehicle, recordedCourse)
 end;
 
 function courseplay:setRecordingPause(vehicle)
