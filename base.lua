@@ -402,6 +402,9 @@ function courseplay:onUpdate(dt)
 			self.cp.driver:postInit()
 		end
 		self.cp.settings.driverMode:postInit()
+		--- Refreshes all field number settings on start,
+		--- as clients might have a corrupted version.
+		FieldNumberSetting.refreshOnStart()
 		self.cp.postInitDone = true
 	end
 

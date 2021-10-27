@@ -2021,9 +2021,13 @@ end
 --- Setting to select a field
 ---@class FieldNumberSetting : SettingList
 FieldNumberSetting = CpObject(SettingList)
+FieldNumberSetting.Settings = {}
 function FieldNumberSetting:init(name, label, toolTip, vehicle)
 	local values, texts = self:loadFields()
 	SettingList.init(self, name, label, toolTip, vehicle, values, texts)
+	--- Store all instances of this setting in a global table,
+	--- for direct access to update their manual tool positions.	
+	table.insert(FieldNumberSetting.Settings,self)
 end
 
 function FieldNumberSetting:loadFields()
@@ -2051,6 +2055,14 @@ function FieldNumberSetting:refresh()
 		self.valueFromXml = nil
 	end
 	self.current = math.min(self.current, #self.values)
+end
+
+--- Refreshes all field number settings on start,
+--- as clients might have a corrupted version.
+function FieldNumberSetting.refreshOnStart()
+	for _,setting in pairs(FieldNumberSetting.Settings) do 
+		setting:refresh()
+	end
 end
 
 -- see above, refresh in case it was not initialized
