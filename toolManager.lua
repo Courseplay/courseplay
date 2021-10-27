@@ -566,7 +566,7 @@ end
 ---@param object table
 ---@param logPrefix string
 function WorkWidthUtil.getShovelWorkWidth(object,logPrefix)
-	if object.spec_shovel then 
+	if object.spec_shovel and object.spec_shovel.shovelNodes and object.spec_shovel.shovelNodes[1] then 
 		local width = object.spec_shovel.shovelNodes[1].width
 		WorkWidthUtil.debug(object,logPrefix,'is a shovel with work width: %.1f',width)
 		return width
