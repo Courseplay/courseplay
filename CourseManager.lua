@@ -191,6 +191,7 @@ end
 function FileSystemEntityView:showUnfoldButton()
 	return false
 end
+
 function FileSystemEntityView:showFoldButton()
 	return false
 end
@@ -765,8 +766,9 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 		local unfoldButton = buttonsByRow[row]['unfold']
 		local foldButton = buttonsByRow[row]['fold']
 		local loadButton = buttonsByRow[row]['loadCourse']
-		local addButton = buttonsByRow[row]['addSortedCourse']
+		local addButton = buttonsByRow[row]['appendCourse']
 		local deleteButton = buttonsByRow[row]['deleteSortedItem']
+		local createSubFolderButton = buttonsByRow[row]['createSubFolder']
 		local saveButton = buttonsByRow[row]['saveCourseToFolder']
 		if entryId <= #entries then
 			unfoldButton:setShow(entries[entryId]:showUnfoldButton())
@@ -774,6 +776,7 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 			loadButton:setShow(entries[entryId]:showLoadButton())
 			addButton:setShow(entries[entryId]:showAddButton())
 			deleteButton:setShow(entries[entryId]:showDeleteButton())
+			createSubFolderButton:setShow(entries[entryId]:isDirectory())
 			saveButton:setShow(entries[entryId]:showSaveButton())
 		else
 			foldButton:setShow(false)
@@ -805,15 +808,32 @@ function courseplay:clearCurrentLoadedCourse(vehicle)
 	CourseEvent.sendEvent(vehicle, {})
 end
 
+--- Load the course selected in the HUD (and remove all existing courses before)
 function courseplay:loadCourse(vehicle, index)
+	if type(vehicle.cp.hud.courses[index]) ~= nil then
+		g_courseManager:unloadAllCoursesFromVehicle(vehicle)
+		g_courseManager:loadCourseSelectedInHud(vehicle, index)
+	end
+end
+
+--- Append the course selected in the HUD to courses already loaded in the vehicle
+function courseplay:appendCourse(vehicle, index)
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
 		g_courseManager:loadCourseSelectedInHud(vehicle, index)
 	end
 end
 
+--- Saving course to folder selected in HUD
 function courseplay:saveCourseToFolder(vehicle, index)
 	courseplay:lockContext(false)
 	g_inputCourseNameDialogue:setCourseMode(vehicle, index)
+	g_gui:showGui("inputCourseNameDialogue")
+end
+
+--- Saving course to root folder
+function courseplay:saveCourseToRootFolder(vehicle, index)
+	courseplay:lockContext(false)
+	g_inputCourseNameDialogue:setCourseMode(vehicle, nil)
 	g_gui:showGui("inputCourseNameDialogue")
 end
 

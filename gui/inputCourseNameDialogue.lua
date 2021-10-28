@@ -34,13 +34,17 @@ function inputCourseNameDialogue:new(target, custom_mt)
 	-- needed for onClickBack to work.
 	self.returnScreenName = "";
 	self.mode = self.MODE_COURSE
-	self.index = 1
 	return self
 end; --END new()
+
+function inputCourseNameDialogue:debug(...)
+	courseplay.debugVehicle(courseplay.DBG_COURSES, self.vehicle, 'courseNameDialog: ' .. string.format(...))
+end
 
 ---@param index number selected entry in the HUD, to pass on to the course manager
 function inputCourseNameDialogue:setCourseMode(vehicle, index)
 	self.vehicle = vehicle
+	self:debug('saving course to folder at index %s', tostring(index))
 	self.mode = self.MODE_COURSE
 	self.index = index
 end
@@ -48,6 +52,7 @@ end
 ---@param index number selected entry in the HUD, to pass on to the course manager
 function inputCourseNameDialogue:setFolderMode(vehicle, index)
 	self.vehicle = vehicle
+	self:debug('creating folder in folder at index %s', tostring(index))
 	self.mode = self.MODE_FOLDER
 	self.index = index
 end
