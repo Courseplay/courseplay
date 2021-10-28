@@ -18,7 +18,7 @@ end
 function CourseEvent:readStream(streamId, connection) -- wird aufgerufen wenn mich ein Event erreicht
 	courseplay.debugVehicle(courseplay.DBG_MULTIPLAYER,self.vehicle,"readStream course event")
 	self.vehicle = NetworkUtil.getObject(streamReadInt32(streamId))
-	local nCourses = NetworkUtil.getObject(streamReadInt32(streamId))
+	local nCourses = streamReadInt32(streamId)
 	self.courses = {}
 	for _ = 1, nCourses do
 		table.insert(self.courses, Course.createFromStream(streamId, connection))

@@ -1616,7 +1616,7 @@ function courseplay.hud:setupCoursePageButtons(vehicle,page)
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'save' }, 'saveCourseToFolder',
 			i, self.buttonCoursesPosX[2], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false,
 			courseplay:loc('COURSEPLAY_SAVE_CURRENT_COURSE_IN_FOLDER'), true);
-		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'delete' }, 'deleteSortedItem',
+		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, { 'iconSprite.png', 'delete' }, 'deleteItem',
 			i, self.buttonCoursesPosX[1], self.linesButtonPosY[i], wSmall, hSmall, i, nil, false, false, false,
 			courseplay:loc('COURSEPLAY_DELETE_COURSE'), true);
 		courseplay.button:new(vehicle, self.COURSE_MANAGEMENT_BUTTONS, nil, nil, nil,

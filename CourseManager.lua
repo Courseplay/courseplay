@@ -80,6 +80,11 @@ function File:__tostring()
 	return 'File: ' .. FileSystemEntity.__tostring(self) .. '\n'
 end
 
+function File:delete()
+	getfenv(0).deleteFile(self:getFullPath())
+	courseplay.debugFormat(courseplay.DBG_COURSES, 'deleted file %s', self:getFullPath())
+end
+
 --- A directory on the file system. This can recursively be traversed to all subdirectories.
 ---@class Directory : FileSystemEntity
 Directory = CpObject(FileSystemEntity)
@@ -125,6 +130,23 @@ end
 function Directory:deleteFile(name)
 	getfenv(0).deleteFile(self.entries[name]:getFullPath())
 	self.entries[name] = nil
+end
+
+function Directory:delete()
+	if self:isEmpty() then
+		getfenv(0).deleteFolder(self:getFullPath())
+		courseplay.debugFormat(courseplay.DBG_COURSES, 'deleted folder %s', self:getFullPath())
+	else
+		courseplay.debugFormat(courseplay.DBG_COURSES, 'folder %s is not empty, cannot delete', self:getFullPath())
+	end
+end
+
+function Directory:isEmpty()
+	-- (can't use # as this is a dictionary, not an array)
+	for _, _ in pairs(self.entries) do
+		return false
+	end
+	return true
 end
 
 function Directory:createDirectory(name)
@@ -196,9 +218,8 @@ function FileSystemEntityView:showFoldButton()
 	return false
 end
 
--- for now, disable delete and move
 function FileSystemEntityView:showDeleteButton()
-	return false
+	return true
 end
 
 function FileSystemEntityView:showSaveButton()
@@ -315,6 +336,10 @@ function DirectoryView:showSaveButton()
 	return true
 end
 
+function DirectoryView:showDeleteButton()
+	return self:getEntity():isEmpty()
+end
+
 --- Represents an assignment: the courses assigned (loaded) to a vehicle
 ---@class CourseAssignment
 CourseAssignment = CpObject()
@@ -383,20 +408,20 @@ function CourseManager:getCurrentEntry()
 end
 
 --- Return directory view displayed at index on the HUD
-function CourseManager:getDirViewAtIndex(index)
+function CourseManager:getViewAtIndex(index)
 	return self.courseDirView:getEntries()[self:getCurrentEntry() - 1 + index]
 end
 
 -- Unfold (expand) a folder
 function CourseManager:unfold(index)
-	local dir = self:getDirViewAtIndex(index)
+	local dir = self:getViewAtIndex(index)
 	dir:unfold()
 	self:debug('%s unfolded', dir:getName())
 end
 
 -- Fold (hide contents) a folder
 function CourseManager:fold(index)
-	local dir = self:getDirViewAtIndex(index)
+	local dir = self:getViewAtIndex(index)
 	dir:fold()
 	self:debug('%s folded', dir:getName())
 end
@@ -404,7 +429,7 @@ end
 function CourseManager:createDirectory(index, name)
 	-- if index is given, it points to a directory in the HUD, so create the new directory under that,
 	-- otherwise under the root
-	local dir = index and self:getDirViewAtIndex(index):getEntity() or self.courseDir
+	local dir = index and self:getViewAtIndex(index):getEntity() or self.courseDir
 	dir:createDirectory(name)
 	self:refresh()
 end
@@ -412,7 +437,7 @@ end
 --- Take all the courses currently assigned to the vehicle and concatenate them into a single course
 --- and then save this course to the directory at index in the HUD
 function CourseManager:saveCourseFromVehicle(index, vehicle, name)
-	local dir = index and self:getDirViewAtIndex(index):getEntity() or self.courseDir
+	local dir = index and self:getViewAtIndex(index):getEntity() or self.courseDir
 	courseplay.debugVehicle(courseplay.DBG_COURSES, vehicle, 'saving course %s in folder %s', name, dir:getName())
 	local courses = self:getAssignedCourses(vehicle)
 	local course = courses[1]:copy()
@@ -468,6 +493,13 @@ function CourseManager:loadCourseSelectedInHud(vehicle, index)
 	delete(courseXml);
 	self:assignCourseToVehicle(vehicle, course)
 	CourseEvent.sendEvent(vehicle, self:getAssignedCourses(vehicle))
+end
+
+function CourseManager:deleteEntitySelectedInHud(vehicle, index)
+	self:getCurrentEntry()
+	local entity = self:getViewAtIndex(index):getEntity()
+	entity:delete()
+	self:refresh()
 end
 
 function CourseManager:assignCourseToVehicle(vehicle, course)
@@ -767,7 +799,7 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 		local foldButton = buttonsByRow[row]['fold']
 		local loadButton = buttonsByRow[row]['loadCourse']
 		local addButton = buttonsByRow[row]['appendCourse']
-		local deleteButton = buttonsByRow[row]['deleteSortedItem']
+		local deleteButton = buttonsByRow[row]['deleteItem']
 		local createSubFolderButton = buttonsByRow[row]['createSubFolder']
 		local saveButton = buttonsByRow[row]['saveCourseToFolder']
 		if entryId <= #entries then
@@ -821,6 +853,10 @@ function courseplay:appendCourse(vehicle, index)
 	if type(vehicle.cp.hud.courses[index]) ~= nil then
 		g_courseManager:loadCourseSelectedInHud(vehicle, index)
 	end
+end
+
+function courseplay:deleteItem(vehicle, index)
+	g_courseManager:deleteEntitySelectedInHud(vehicle, index)
 end
 
 --- Saving course to folder selected in HUD
