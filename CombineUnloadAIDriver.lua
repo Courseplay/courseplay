@@ -1886,6 +1886,10 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 		-- switch to driving only when not holding for maneuvering combine
 		-- for some reason (like combine turned) we are not in a good position anymore then set us up again
 		self:startDrivingToCombine()
+	elseif self.combineToUnload.cp.driver:isWaitingForUnload() then
+		-- combine is waiting for unload for example because it got full before reaching the rendezvous point
+		self:info('supposed to unload moving combine but it is stopped waiting for unload, trying to recover')
+		self:startDrivingToCombine()
 	end
 end
 
