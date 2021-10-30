@@ -296,8 +296,8 @@
 		<text name="COURSEPLAY_CURRENT_FIELD_EDGE_PATH_NUMBER" 				text="Número da borda do campo" />
 		<text name="COURSEPLAY_ADD_CUSTOM_FIELD_EDGE_PATH_TO_LIST" 			text="Adicionar borda do campo %d na lista" />
 		<text name="COURSEPLAY_OVERWRITE_CUSTOM_FIELD_EDGE_PATH_IN_LIST"	text="Reescrever borda do campo %d na lista" />
-		<text name="COURSEPLAY_CLEAR_CUSTOM_FIELD_EDGE_PATH"				text="Clear current field edge path" />
-		<text name="COURSEPLAY_CHANGE_VISIBILITY_CUSTOM_FIELD_EDGE_PATH"	text="Change current field edge path visibility" />
+		<text name="COURSEPLAY_CLEAR_CUSTOM_FIELD_EDGE_PATH"				text="Limpar o caminho da borda do campo atual" />
+		<text name="COURSEPLAY_CHANGE_VISIBILITY_CUSTOM_FIELD_EDGE_PATH"	text="Alterar a visibilidade do caminho da borda do campo atual" />
 		<text name="COURSEPLAY_USER" 										text="Usuário" />
 		<text name="COURSEPLAY_DAMAGE_SHOULD_BE_REPAIRED" 					text="Deverá ser consertado em breve" />
 		<text name="COURSEPLAY_DAMAGE_MUST_BE_REPAIRED" 					text="Precisa ser consertado" />
