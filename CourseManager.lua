@@ -245,10 +245,6 @@ function FileView:showLoadButton()
 	return true
 end
 
-function FileView:showAddButton()
-	return true
-end
-
 --- View of a directory of saved courses
 ---@class DirectoryView
 DirectoryView = CpObject(FileSystemEntityView)
@@ -806,9 +802,13 @@ function courseplay.hud:updateCourseButtonsVisibility(vehicle)
 			unfoldButton:setShow(entries[entryId]:showUnfoldButton())
 			foldButton:setShow(entries[entryId]:showFoldButton())
 			loadButton:setShow(entries[entryId]:showLoadButton())
-			addButton:setShow(entries[entryId]:showAddButton())
 			deleteButton:setShow(entries[entryId]:showDeleteButton())
+
+			-- these are mutually exclusive, you can always append a course
+			addButton:setShow(not entries[entryId]:isDirectory())
+			-- and you can always create a subfolder in a folder
 			createSubFolderButton:setShow(entries[entryId]:isDirectory())
+
 			saveButton:setShow(entries[entryId]:showSaveButton())
 		else
 			foldButton:setShow(false)
