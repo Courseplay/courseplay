@@ -158,6 +158,20 @@ function CombineUnloadAIDriver:debug(...)
 	courseplay.debugVehicle(self.debugChannel, self.vehicle, combineName .. ': ' .. string.format( ... ))
 end
 
+function CombineUnloadAIDriver:showPathfinderResult(path, goalNodeInvalid, ...)
+	local pathfinderRuntimeMs = self.vehicle.timer - (self.pathfindingStartedAt or self.vehicle.timer)
+	if goalNodeInvalid then
+		self:debug(string.format('Pathfinder result: failed after %d ms, goal node invalid, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	elseif path == nil or #path < 2 then
+		self:debug(string.format('Pathfinder result: failed after %d ms, no path found, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	else
+		self:debug(string.format('Pathfinder result: successful after %d ms, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	end
+end
+
 function CombineUnloadAIDriver:start(startingPoint)
 
 	self:beforeStart()
@@ -1303,6 +1317,7 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToMovingCombine(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to moving combine')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.combineToUnload)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
@@ -1349,7 +1364,10 @@ function CombineUnloadAIDriver:startPathfindingForDistance()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneForDistance(path, goalNodeInvalid)
-	local pauseMs = math.min(self.vehicle.timer - (self.pathfindingStartedAt or 0), 15000)
+	self:showPathfinderResult(path, goalNodeInvalid, 'for distance')
+	-- wait at least 5 seconds and more if the pathfinding take long so the combine moves a bit, there is no point
+	-- trying again with everything in the same position
+	local pauseMs = math.min(math.max(self.vehicle.timer - (self.pathfindingStartedAt or self.vehicle.timer), 15000), 5000)
 	self:debug('No pathfinding for distance for %d milliseconds', pauseMs)
 	self.justFinishedPathfindingForDistance:set(true, pauseMs)
 	if self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
@@ -1399,6 +1417,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to stopped combine/chopper')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.combineToUnload)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
@@ -1473,6 +1492,7 @@ function CombineUnloadAIDriver:startPathfindingToFirstUnloader(onPathfindingDone
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToFirstUnloader(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to other unloader')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.firstUnloader)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToFirstUnloaderCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToFirstUnloaderCourse, 1)
@@ -1510,6 +1530,7 @@ function CombineUnloadAIDriver:startPathfindingToTurnEnd(xOffset, zOffset)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToTurnEnd(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to turn end')
 	if self:isPathFound(path, goalNodeInvalid, 'turn end', true) then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)

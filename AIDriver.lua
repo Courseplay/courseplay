@@ -361,6 +361,8 @@ function AIDriver:stop(msgReference)
 	-- not much to do here, see the derived classes
 	self:setInfoText(msgReference)
 	self.state = self.states.STOPPED
+	-- deactivate pathfinder
+	self.pathfinder = nil
 end
 
 function AIDriver:stopAtWaitPoint()
