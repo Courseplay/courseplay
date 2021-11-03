@@ -128,6 +128,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineToUnloadReversing = 0
 	self.doNotSwerveForVehicle = CpTemporaryObject()
 	self.justFinishedPathfindingForDistance = CpTemporaryObject()
+	self.isRecoveringFromDeadlock = CpTemporaryObject()
 end
 
 function CombineUnloadAIDriver:getAssignedCombines()
@@ -1911,8 +1912,12 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 		-- combine is waiting for unload for example because it got full before reaching the rendezvous point
 		-- and we are not moving either (for instance we are in front of the combine and waiting for it to
 		-- get to us. Attempt to resolve this deadlock situation.
-		self:info('supposed to unload moving combine but it is stopped waiting for unload, trying to recover')
-		self:startDrivingToCombine()
+		if not self.isRecoveringFromDeadlock:get() then
+			-- give ourselves a few seconds before attempting to recover again (allowing for even a long pathfinder run)
+			self.isRecoveringFromDeadlock:set(true, 30000)
+			self:info('supposed to unload moving combine but it is stopped waiting for unload, trying to recover')
+			self:startDrivingToCombine()
+		end
 	end
 end
 
