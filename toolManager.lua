@@ -556,7 +556,7 @@ end
 ---@param object table
 ---@param logPrefix string
 function WorkWidthUtil.getShieldWorkWidth(object,logPrefix)
-	if object.spec_leveler then 
+	if object.spec_leveler and object.spec_leveler.nodes and object.spec_leveler.nodes[1] and object.spec_leveler.nodes[1].maxDropWidth then 
 		local width = object.spec_leveler.nodes[1].maxDropWidth * 2
 		WorkWidthUtil.debug(object,logPrefix,'is a shield with work width: %.1f',width)
 		return width

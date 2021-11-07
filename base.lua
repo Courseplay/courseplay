@@ -401,6 +401,9 @@ function courseplay:onUpdate(dt)
 			---set correctly at the first courseplay:setAIDriver() call.
 			self.cp.driver:postInit()
 		end
+		--- The saved value gets applied, before all implements are attached.
+		--- So only allow automatic changes after all implements are attached on savegame start.
+		self.cp.courseGeneratorSettings.workWidth:postInit()
 		self.cp.settings.driverMode:postInit()
 		--- Refreshes all field number settings on start,
 		--- as clients might have a corrupted version.
