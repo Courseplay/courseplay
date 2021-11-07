@@ -206,7 +206,7 @@ function BunkerSiloAIDriver:isHeapSearchAllowed()
 end
 
 function BunkerSiloAIDriver:getWorkWidth()
-	return self.courseGeneratorSettings.workWidth:get()
+	return math.max(self.courseGeneratorSettings.workWidth:get(),3)
 end
 
 --- If true then the drive into silo course is reverse and 

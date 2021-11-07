@@ -125,13 +125,20 @@ function WorkWidthSetting:init(vehicle)
 	-- and parentName is not set.
 	-- TODO: move creating the course gen (or others too?) settings to onPostLoad() (instead of onLoad())
 	-- TODO: add parentName to the constructor of the settings instead of the explicit setter.
-	self:setToDefault(true)
 	self:refresh()
 	self.WORK_WIDTH_EVENT = self:registerFloatEvent(self.setWorkWidthFromNetwork)
 	self.AUTO_WORK_WIDTH_EVENT = self:registerFloatEvent(self.setAutoWorkWidthFromNetwork)
 	if g_server then
 		self:updateAutoWorkWidth()
+		self:setToDefault(true)
 	end
+	self.loaded = false
+end
+
+--- The saved value gets applied, before all implements are attached.
+--- So only allow automatic changes after all implements are attached on savegame start.
+function WorkWidthSetting:postInit()
+	self.loaded = true
 end
 
 function WorkWidthSetting:loadFromXml(xml, parentKey)
@@ -234,9 +241,13 @@ end
 --- so we update it on a attach/detach of an implement and 
 --- send the changed value with an event to the client.
 function WorkWidthSetting:updateAutoWorkWidth()
+	if g_server == nil then return end
 	local value = WorkWidthUtil.getAutomaticWorkWidth(self.vehicle) or 0
 	self.automaticValue:set(value,true)
-	self.value:set(value,true)
+	if self.loaded then
+		self.value:set(value,true)
+	end
+	self:refresh()
 	self:sendAutoWorkWidthEvent(value)
 end
 
