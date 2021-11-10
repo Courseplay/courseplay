@@ -729,8 +729,8 @@ function HybridAStarWithAStarInTheMiddle:start(start, goal, turnRadius, allowRev
 	self.middleToEndRetries = 0
 	self.allHybridRetries = 0
 	self.constraints:resetConstraints()
-	-- strict mode for the middle part, stay close to the field
-	self.constraints:setStrictMode()
+	-- strict mode for the middle part, stay close to the field, for future improvements, disabled for now
+	-- self.constraints:setStrictMode()
 	return self:resume(self.startNode, self.goalNode, turnRadius, false, constraints, hitchLength)
 end
 
