@@ -21,6 +21,30 @@ Make your own fully automatic farm that fits your play style perfectly!
 
 Courseplay does not replace the in game worker system, it makes a new AI worker that can run side by side with your regular farm workers.
 
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
+
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</en>
 		<cz>
@@ -30,10 +54,58 @@ Po vaší farmě můžete mít spoustu pracovníků, kteří vám budou automati
 Vytvořte si svou vlastní plně automatizovanou farmu, která perfektně zapadá do vašeho herního stylu!
 Courseplay nenahrazuje systém herních pracovníků, vytváří nového pracovníka AI, který může běžet bok po boku s vašimi běžnými pracovníky na farmě.
 
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
+
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</cz>
 		<de>
 <![CDATA[Courseplay ist eine Modifikation  für den Landwirtschafts-Simulator 19, die es ermöglicht, verschiedenste Fahrzeuge autonom Kurse abfahren zu lassen, Arbeiten zu erledigen, Mähdrescher abzutanken, Früchte zu Verkaufsstellen zu fahren, einen Bunker oder Anhänger per Schaufel zu füllen, Silo zu verdichten  und vieles mehr...
+
+Changelog 6.5.0.0
+
+- Endlose fixes für SP and MP.
+- Debugchannel auch für die nicht Entwicklerversion aktiviert.
+- Modus9 Kurs vereinfacht, es wird nur ein Wartepunkt am Entladepunkt benötigt.
+	Für weitere Infos, besucht unsere GitHub Seite oder Webseite.
+- Ropa Maus5 funktioniert im Modus9 (Start, fahre ein bisschen vorwärts und stoppe).
+- Futtermischer funktioniert im Modus9.
+- Modus10 ändert seinen Arbeitsmodus automatisch, abhängig vom benutzen Tool.
+- Schild kann an auch an der Front angebaut werden (auch für Fahrzeuge mit gedrehten Kabinen).
+- Schild und Schaufel Breite wird automatisch berechnet, die visuelle Darstellung beim ändern wird nun besser angezeigt.
+- Suchradius im Modus10 für Abfahrer wird bei Änderung dargestellt.
+- Modus2 kann zusammen mit AD benutzt werden.
+- Ein paar kleine Verbesserungen für den Modus2.
+- Bessere Taschenbehandlung für Drescher.
+- Häcksler durch ein Wendemanöver verfolgen funktioniert besser und schneller.
+- Toolposition kann im Modus8, Drescher und Zuckerrohranhänger gespeichert werden.
+- Zuckerrohranhänger können für den Modus3 benutzt werden.
+- Kursgenerator Einstellungen werden in der vehicles.xml gespeichert.
+- Verbesserungen für den Treibstoffsparmodus.
+- Siloschieben angepasst um weniger Material aus dem Bunker zu schieben by @MddMBorg.
+- Helferlimit gefixt by @tn4799.
+- Zeige kompletten Fahrzeugname by @KITT3000.
 
 WICHTIG: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die neueste Version von AutoDrive von GitHub laden!(Version 1.1.1.0 oder höher)]]>
 		</de>
@@ -42,6 +114,30 @@ WICHTIG: Wenn ihr AutoDrive mit Courseplay benutzen wollt, dann müsst ihr die n
 En utilisant Courseplay, vous pouvez engager des ouvriers pour la majorité des travaux de votre ferme, du travail des champs en passant par la gestion des bennes lors des récoltes jusqu’à la livraison de vos produits dans les différents points de vente.
 Vous pouvez avoir un grand nombre d’ouvriers qui conduisent de façon complément automatique pour réaliser vos travaux. Avec un peu d’expérience et de peaufinages, Courseplay peut permettre de remplir vos silos, charger une benne avec un télescopique, niveler et compacter un silo d’ensilage, et bien plus encore…
 Courseplay ne remplace pas le système d’ouvrier du jeu, il propose un nouveau type d’ouvriers avec une nouvelle IA, ils peuvent travailler les uns à côté des autres
+
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
 
 IMPORTANT: Si vous souhaitez utiliser AutoDrive avec Courseplay, vous devez avoir la dernière version de l’AutoDrive disponible sur GitHub! (Version 1.1.1.0 ou plus récente)]]>
 
@@ -55,6 +151,30 @@ Puede tener un montón de trabajadores manejando alrededor de su granja automát
 
 Courseplay no reemplaza el sistema de trabajo en el juego, crea un nuevo trabajador de IA que puede correr al lado de tus trabajadores agrícolas habituales.
 
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
+
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</es>
 		<ru>
@@ -66,10 +186,58 @@ IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest Aut
 
 Courseplay не заменяет игровую рабочую систему, он создает новый искусственный интеллект, который может работать бок о бок с обычными работниками фермы.
 
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
+
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</ru>
 		<pl>
 <![CDATA[Courseplay to modyfikacja dla gry Farming Simulator 19. Pozwala ona wielu pojazdom na poruszanie się w sposób całkowicie autonomiczny i automatyczny - pracować na polach, wyładowywać kombajny, dowozić produkty do punktów sprzedaży, wypełniać silosy przejazdowe lub naczepę samoładującą, wyrównywać czy ugniatać kiszonkę, oraz wiele więcej...
+
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
 
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</pl>
@@ -82,10 +250,58 @@ Crea la tua fattoria completamente automatica che si adatta perfettamente al tuo
 
 Courseplay non sostituisce il sistema di gioco in gioco, ma crea un nuovo lavoratore AI che può correre fianco a fianco con i tuoi normali lavoratori agricoli.
 
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
+
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</it>
         <nl>
 <![CDATA[Courseplay is een modificatie voor Farming Simulator 19. Het geeft je de mogelijkheid om veel verschillende voertuigen autonoom en automatisch te laten rond rijden, veldwerk uit te voeren, dorsen & hakselen, granen en goederen te verkopen aan verkooppunten, een bunker of trailer met een shovel te vullen, niveleren en aanrijden van kuilvoer en nog veel meer...
+
+Changelog 6.5.0.0
+
+- Countless fixes for SP and MP.
+- Enabled debug channels for non-developer version.
+- Mode9 course simplified, now only needs a wait point at the unload position.
+    For more details, check GitHub or website.
+- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
+- Food mixer now works in Mode9.
+- Mode10 now change its work mode based on the attached tool.
+- Shields can now be attached at the front (also for vehicle with turned cabin).
+- Shield and shovel work width is now calculated automatically and better visual when change the value.
+- Search radius in Mode10 is now visible when changing the value.
+- Mode2 can now be used with AD.
+- Some Mode2 tweaks.
+- Better pocket handling for combines.
+- Follow chopper through turn is now better and faster.
+- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
+- Sugarcane trailer can now be used to overload in Mode3.
+- Course generator settings are now saved in the vehicles.xml.
+- Fuel save improved.
+- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
+- Fixed HelperLimit by @tn4799.
+- Display full vehicle name by @KITT3000.
 
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</nl>
