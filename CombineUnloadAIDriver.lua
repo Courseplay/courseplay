@@ -1402,8 +1402,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
 	local x, z = self:getPipeOffset(self.combineToUnload)
-	xOffset = xOffset or x
-	zOffset = zOffset or z
+	xOffset = (xOffset or x) + 0.5
+	zOffset = (zOffset or z) - (AIDriverUtil.getVehicleAndImplementsTotalLength(self.vehicle)/3)
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
 	-- when it is on the headland.
@@ -1450,7 +1450,7 @@ function CombineUnloadAIDriver:arrangeRendezvousWithCombine(d)
 			self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 			-- just in case, as the combine may give us a rendezvous waypoint
 			-- where it is full, make sure we are behind the combine
-			zOffset = - self:getCombinesMeasuredBackDistance() - 5
+			zOffset = - self:getCombinesMeasuredBackDistance() - (AIDriverUtil.getVehicleAndImplementsTotalLength(self.vehicle)/3)
 			self:debug('Start pathfinding to moving combine, %d m, ETE: %d s, meet combine at waypoint %d, xOffset = %.1f, zOffset = %.1f',
 					d, estimatedSecondsEnroute, rendezvousWaypointIx, xOffset, zOffset)
 			self:startPathfinding(rendezvousWaypoint, xOffset, zOffset,

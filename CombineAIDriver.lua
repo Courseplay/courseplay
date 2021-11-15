@@ -613,7 +613,7 @@ function CombineAIDriver:checkDistanceUntilFull(ix)
 		self:debug('Fill rate is %.1f l/m, %.1f l/s', self.litersPerMeter, self.litersPerSecond)
 	end
 	local litersUntilFull = self.combine:getFillUnitCapacity(self.combine.fillUnitIndex) - fillLevel
-	local dUntilFull = litersUntilFull / self.litersPerMeter * 0.9  -- safety margin
+	local dUntilFull = litersUntilFull / self.litersPerMeter * 0.7  -- safety margin
 	self.secondsUntilFull = self.litersPerSecond > 0 and (litersUntilFull / self.litersPerSecond) or nil
 	self.waypointIxWhenFull = self.course:getNextWaypointIxWithinDistance(ix, dUntilFull) or self.course:getNumberOfWaypoints()
 	self.distanceToWaypointWhenFull =
