@@ -729,6 +729,8 @@ function HybridAStarWithAStarInTheMiddle:start(start, goal, turnRadius, allowRev
 	self.middleToEndRetries = 0
 	self.allHybridRetries = 0
 	self.constraints:resetConstraints()
+	-- strict mode for the middle part, stay close to the field, for future improvements, disabled for now
+	-- self.constraints:setStrictMode()
 	return self:resume(self.startNode, self.goalNode, turnRadius, false, constraints, hitchLength)
 end
 
@@ -791,6 +793,7 @@ function HybridAStarWithAStarInTheMiddle:resume(...)
 				end
 			end
 		elseif self.phase == self.MIDDLE then
+			self.constraints:resetStrictMode()
 			if not path then return true, nil, goalNodeInvalid end
 			local lMiddlePath = HybridAStar.length(path)
 			self:debug('Direct path is %d m', lMiddlePath)

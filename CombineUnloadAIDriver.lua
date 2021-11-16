@@ -128,6 +128,7 @@ function CombineUnloadAIDriver:init(vehicle)
 	self.combineToUnloadReversing = 0
 	self.doNotSwerveForVehicle = CpTemporaryObject()
 	self.justFinishedPathfindingForDistance = CpTemporaryObject()
+	self.isRecoveringFromDeadlock = CpTemporaryObject()
 end
 
 function CombineUnloadAIDriver:getAssignedCombines()
@@ -156,6 +157,20 @@ end
 function CombineUnloadAIDriver:debug(...)
 	local combineName = self.combineToUnload and (' -> ' .. nameNum(self.combineToUnload)) or '(unassigned)'
 	courseplay.debugVehicle(self.debugChannel, self.vehicle, combineName .. ': ' .. string.format( ... ))
+end
+
+function CombineUnloadAIDriver:showPathfinderResult(path, goalNodeInvalid, ...)
+	local pathfinderRuntimeMs = self.vehicle.timer - (self.pathfindingStartedAt or self.vehicle.timer)
+	if goalNodeInvalid then
+		self:debug(string.format('Pathfinder result: failed after %d ms, goal node invalid, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	elseif path == nil or #path < 2 then
+		self:debug(string.format('Pathfinder result: failed after %d ms, no path found, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	else
+		self:debug(string.format('Pathfinder result: successful after %d ms, ', pathfinderRuntimeMs) ..
+			string.format(...))
+	end
 end
 
 function CombineUnloadAIDriver:start(startingPoint)
@@ -1303,6 +1318,7 @@ function CombineUnloadAIDriver:startDrivingToCombine()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToMovingCombine(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to moving combine')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.combineToUnload)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
@@ -1349,7 +1365,10 @@ function CombineUnloadAIDriver:startPathfindingForDistance()
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneForDistance(path, goalNodeInvalid)
-	local pauseMs = math.min(self.vehicle.timer - (self.pathfindingStartedAt or 0), 15000)
+	self:showPathfinderResult(path, goalNodeInvalid, 'for distance')
+	-- wait at least 5 seconds and more if the pathfinding take long so the combine moves a bit, there is no point
+	-- trying again with everything in the same position
+	local pauseMs = math.min(math.max(self.vehicle.timer - (self.pathfindingStartedAt or self.vehicle.timer), 15000), 5000)
 	self:debug('No pathfinding for distance for %d milliseconds', pauseMs)
 	self.justFinishedPathfindingForDistance:set(true, pauseMs)
 	if self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
@@ -1383,8 +1402,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------
 function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, xOffset, zOffset)
 	local x, z = self:getPipeOffset(self.combineToUnload)
-	xOffset = xOffset or x
-	zOffset = zOffset or z
+	xOffset = (xOffset or x) + 0.5
+	zOffset = (zOffset or z) - (AIDriverUtil.getVehicleAndImplementsTotalLength(self.vehicle)/3)
 	self:debug('Finding path to %s, xOffset = %.1f, zOffset = %.1f', self.combineToUnload:getName(), xOffset, zOffset)
 	-- TODO: here we may have to pass in the combine to ignore once we start driving to a moving combine, at least
 	-- when it is on the headland.
@@ -1399,6 +1418,7 @@ function CombineUnloadAIDriver:startPathfindingToCombine(onPathfindingDoneFunc, 
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToCombine(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to stopped combine/chopper')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.combineToUnload)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
@@ -1430,7 +1450,7 @@ function CombineUnloadAIDriver:arrangeRendezvousWithCombine(d)
 			self:setNewOnFieldState(self.states.WAITING_FOR_PATHFINDER)
 			-- just in case, as the combine may give us a rendezvous waypoint
 			-- where it is full, make sure we are behind the combine
-			zOffset = - self:getCombinesMeasuredBackDistance() - 5
+			zOffset = - self:getCombinesMeasuredBackDistance() - (AIDriverUtil.getVehicleAndImplementsTotalLength(self.vehicle)/3)
 			self:debug('Start pathfinding to moving combine, %d m, ETE: %d s, meet combine at waypoint %d, xOffset = %.1f, zOffset = %.1f',
 					d, estimatedSecondsEnroute, rendezvousWaypointIx, xOffset, zOffset)
 			self:startPathfinding(rendezvousWaypoint, xOffset, zOffset,
@@ -1473,6 +1493,7 @@ function CombineUnloadAIDriver:startPathfindingToFirstUnloader(onPathfindingDone
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToFirstUnloader(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to other unloader')
 	if self:isPathFound(path, goalNodeInvalid, nameNum(self.firstUnloader)) and self.onFieldState == self.states.WAITING_FOR_PATHFINDER then
 		local driveToFirstUnloaderCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToFirstUnloaderCourse, 1)
@@ -1510,6 +1531,7 @@ function CombineUnloadAIDriver:startPathfindingToTurnEnd(xOffset, zOffset)
 end
 
 function CombineUnloadAIDriver:onPathfindingDoneToTurnEnd(path, goalNodeInvalid)
+	self:showPathfinderResult(path, goalNodeInvalid, 'to turn end')
 	if self:isPathFound(path, goalNodeInvalid, 'turn end', true) then
 		local driveToCombineCourse = Course(self.vehicle, courseGenerator.pointsToXzInPlace(path), true)
 		self:startCourse(driveToCombineCourse, 1)
@@ -1886,6 +1908,16 @@ function CombineUnloadAIDriver:unloadMovingCombine()
 		-- switch to driving only when not holding for maneuvering combine
 		-- for some reason (like combine turned) we are not in a good position anymore then set us up again
 		self:startDrivingToCombine()
+	elseif self.combineToUnload.cp.driver:isWaitingForUnload() and self:isStopped() then
+		-- combine is waiting for unload for example because it got full before reaching the rendezvous point
+		-- and we are not moving either (for instance we are in front of the combine and waiting for it to
+		-- get to us. Attempt to resolve this deadlock situation.
+		if not self.isRecoveringFromDeadlock:get() then
+			-- give ourselves a few seconds before attempting to recover again (allowing for even a long pathfinder run)
+			self.isRecoveringFromDeadlock:set(true, 30000)
+			self:info('supposed to unload moving combine but it is stopped waiting for unload, trying to recover')
+			self:startDrivingToCombine()
+		end
 	end
 end
 

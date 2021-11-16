@@ -438,6 +438,7 @@ function PathfinderConstraints:init(context, maxFruitPercent, offFieldPenalty, f
 	self.areaToAvoidPenaltyCount = 0
     self.initialMaxFruitPercent = self.maxFruitPercent
     self.initialOffFieldPenalty = self.offFieldPenalty
+	self.strictMode = false
     self:resetCounts()
 	local areaText = self.areaToAvoid and
 		string.format('%.1f x %.1f m', self.areaToAvoid.length, self.areaToAvoid.width) or 'none'
@@ -513,24 +514,31 @@ function PathfinderConstraints:isValidAnalyticSolutionNode(node, log)
         end
         return false
     end
-    return self:isValidNode(node, log)
+	-- off field nodes are always valid (they have a penalty) as we may need to make bigger loops to
+	-- align properly with our target and don't want to restrict ourselves too much
+    return self:isValidNode(node, log, false, true)
 end
 
 -- A helper node to calculate world coordinates
 local function ensureHelperNode()
-		if not PathfinderUtil.helperNode then
-				PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', 0, 0, 0)
-		end
+	if not PathfinderUtil.helperNode then
+		PathfinderUtil.helperNode = courseplay.createNode('pathfinderHelper', 0, 0, 0)
+	end
 end
 
 --- Check if node is valid: would we collide with another vehicle or shape here?
 ---@param node State3D
 ---@param log boolean log colliding shapes/vehicles
 ---@param ignoreTrailer boolean don't check the trailer
-function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
-		ensureHelperNode()
-		PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
-			node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
+---@param offFieldValid boolean consider nodes well off the field valid even in strict mode
+function PathfinderConstraints:isValidNode(node, log, ignoreTrailer, offFieldValid)
+	if not offFieldValid and self.strictMode then
+		local isField, _, _ = courseplay:isField(node.x, -node.y, 15, 15)
+		if not isField then return false end
+	end
+	ensureHelperNode()
+	PathfinderUtil.setWorldPositionAndRotationOnTerrain(PathfinderUtil.helperNode,
+		node.x, -node.y, courseGenerator.toCpAngle(node.t), 0.5)
 
     -- check the vehicle and all implements attached to it except a trailer or towed implement
     local myCollisionData = PathfinderUtil.getBoundingBoxInWorldCoordinates(PathfinderUtil.helperNode, self.context.vehicleData, 'me')
@@ -554,6 +562,16 @@ function PathfinderConstraints:isValidNode(node, log, ignoreTrailer)
         self.collisionNodeCount = self.collisionNodeCount + 1
     end
     return isValid
+end
+
+--- In strict mode there is no off field penalty, anything far enough from the field is just invalid.
+--- This is to reduce the number of nodes to expand for the A* part of the algorithm to improve performance.
+function PathfinderConstraints:setStrictMode()
+	self.strictMode = true
+end
+
+function PathfinderConstraints:resetStrictMode()
+	self.strictMode = false
 end
 
 function PathfinderConstraints:relaxConstraints()
@@ -733,7 +751,7 @@ function PathfinderUtil.getNodePositionAndDirection(node, xOffset, zOffset)
     return x, z, yRot
 end
 
----@param vehicle Vehicle
+---@param vehicle table
 ---@return State3D position/heading of vehicle
 function PathfinderUtil.getVehiclePositionAsState3D(vehicle)
 		local x, z, yRot = PathfinderUtil.getNodePositionAndDirection(AIDriverUtil.getDirectionNode(vehicle))
