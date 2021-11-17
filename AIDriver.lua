@@ -2273,7 +2273,7 @@ function AIDriver:closeCovers(object)
 end
 
 ---  This function fixes cover handling in MP.
-local function fixCoverMP(self,superFunc,state,noEventSend)
+local function coverFixMP(self,superFunc,state,noEventSend)
 	local rootVehicle = self.getRootVehicle and self:getRootVehicle()
 	if g_server and courseplay:isAIDriverActive(rootVehicle) then 
 		superFunc(self,state)
@@ -2281,7 +2281,7 @@ local function fixCoverMP(self,superFunc,state,noEventSend)
 		superFunc(self,state,noEventSend)
 	end
 end
-Cover.setCoverState = Utils.overwrittenFunction(Cover.setCoverState,fixCoverMP)
+Cover.setCoverState = Utils.overwrittenFunction(Cover.setCoverState,coverFixMP)
 
 --disable detaching, while CP is driving
 function AIDriver:isDetachAllowed(superFunc,preSuperFunc)
