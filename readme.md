@@ -3,6 +3,8 @@
 
  **[Download the latest developer version](https://github.com/Courseplay/courseplay/releases/latest)** (the file FS19_Courseplay.zip).
 
+# Looking for [Courseplay Beta for Farming Simulator 2022](https://github.com/Courseplay/Courseplay_FS22)?
+
 ## Note that the current version has limited multiplayer support!
 
 ### Important Update Information™
