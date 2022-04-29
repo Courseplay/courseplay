@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="53">
-	<version>6.5.0.0</version>
-	<author><![CDATA[Courseplay.devTeam]]></author>
+	<version>6.5.0.1</version>
+	<author><![CDATA[Courseplay.devTeam, Shutupface]]></author>
 	<title>
 		<en>CoursePlay</en>
 		<cs>课程玩法</cs>
@@ -21,29 +21,9 @@ Make your own fully automatic farm that fits your play style perfectly!
 
 Courseplay does not replace the in game worker system, it makes a new AI worker that can run side by side with your regular farm workers.
 
-Changelog 6.5.0.0
+Changelog 6.5.0.1
 
-- Countless fixes for SP and MP.
-- Enabled debug channels for non-developer version.
-- Mode9 course simplified, now only needs a wait point at the unload position.
-For more details, check GitHub or the website.
-- Ropa Maus5 now works in Mode9 (Start, drive a bit forwards and stop).
-- Food mixer now works in Mode9.
-- Mode10 now change its work mode based on the attached tool.
-- Shields can now be attached at the front (also for vehicle with turned cabin).
-- Shield and shovel work width is now calculated automatically and better visual when change the value.
-- Search radius in Mode10 is now visible when changing the value.
-- Mode2 can now be used with AD.
-- Some Mode2 tweaks.
-- Better pocket handling for combines.
-- Follow chopper through turn is now better and faster.
-- Tool position can now be saved in Mode8, for combine and sugarcane trailer.
-- Sugarcane trailer can now be used to overload in Mode3.
-- Course generator settings are now saved in the vehicles.xml.
-- Fuel save improved.
-- Modified the SiloDriver to drive back less to prevent pushing chaff out of bunker by @MddMBorg.
-- Fixed HelperLimit by @tn4799.
-- Display full vehicle name by @KITT3000.
+- Fixed modDesc.xml. (Shutupface
 
 IMPORTANT: If you want to use AutoDrive with Courseplay, you need the newest AutoDrive Version from GitHub! (Version 1.1.1.0 or higher)]]>
 		</en>
